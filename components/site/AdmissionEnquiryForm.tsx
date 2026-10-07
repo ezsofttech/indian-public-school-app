@@ -117,10 +117,10 @@ export function AdmissionEnquiryForm({
           className="py-8 text-center space-y-4"
         >
           <div className="space-y-2">
-            <h3 className="text-2xl font-extrabold text-[var(--navy)]">
+            <h3 className="text-2xl font-extrabold text-foreground font-[var(--font-display)]">
               Enquiry Received Successfully
             </h3>
-            <p className="mx-auto max-w-md text-sm font-medium leading-relaxed text-slate-600">
+            <p className="mx-auto max-w-md text-sm font-medium leading-relaxed text-muted-foreground">
               Thank you! Your inquiry has been logged with our admissions desk. Our team will reach out to you shortly.
             </p>
           </div>
@@ -133,7 +133,7 @@ export function AdmissionEnquiryForm({
               <span className="block text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">
                 Reference ID
               </span>
-              <span className="font-mono text-base font-bold text-[var(--navy)]">
+              <span className="font-mono text-base font-bold text-foreground">
                 {inquiryId}
               </span>
             </div>
@@ -142,7 +142,7 @@ export function AdmissionEnquiryForm({
           <div className="pt-2 flex items-center justify-center gap-3">
             <Button
               variant="outline"
-              className="border-slate-300 font-bold text-[var(--primary)] hover:bg-[var(--primary)]/10"
+              className="border-border font-bold text-[var(--primary)] hover:bg-[var(--primary)]/10"
               style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
               onClick={() => {
                 form.reset();
@@ -173,13 +173,13 @@ export function AdmissionEnquiryForm({
                   name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-bold text-[var(--navy)]">
+                      <FormLabel className="text-xs font-bold text-foreground">
                         Name
                       </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g. Rahul Sharma"
-                          className="h-11 border-border bg-slate-50/70 text-sm font-medium text-slate-900 focus:bg-white focus:border-[var(--primary)]"
+                          className="h-11 border-border bg-secondary/40 text-sm font-medium text-foreground focus:bg-card focus:border-[var(--primary)]"
                           style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                           {...field}
                         />
@@ -195,7 +195,7 @@ export function AdmissionEnquiryForm({
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-bold text-[var(--navy)]">
+                      <FormLabel className="text-xs font-bold text-foreground">
                         Contact Number
                       </FormLabel>
                       <FormControl>
@@ -203,7 +203,7 @@ export function AdmissionEnquiryForm({
                           type="tel"
                           inputMode="tel"
                           placeholder="e.g. +91 9876543210"
-                          className="h-11 border-border bg-slate-50/70 text-sm font-medium text-slate-900 focus:bg-white focus:border-[var(--primary)]"
+                          className="h-11 border-border bg-secondary/40 text-sm font-medium text-foreground focus:bg-card focus:border-[var(--primary)]"
                           style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                           {...field}
                         />
@@ -219,21 +219,21 @@ export function AdmissionEnquiryForm({
                   name="inquiryType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-bold text-[var(--navy)]">
+                      <FormLabel className="text-xs font-bold text-foreground">
                         Enquiry Type
                       </FormLabel>
                       <Select onValueChange={field.onChange} value={field.value || "Admission"}>
                         <FormControl>
                           <SelectTrigger
-                            className="h-11 border-border bg-slate-50/70 text-sm font-medium text-slate-900 focus:bg-white focus:border-[var(--primary)] cursor-pointer"
+                            className="h-11 border-border bg-secondary/40 text-sm font-medium text-foreground focus:bg-card focus:border-[var(--primary)] cursor-pointer"
                             style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                           >
                             <SelectValue placeholder="Select enquiry type" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="z-[10001] bg-white text-slate-900 border border-slate-200 shadow-2xl">
+                        <SelectContent className="z-[10001] bg-card text-card-foreground border border-border shadow-2xl">
                           {ENQUIRY_TYPES.map((type) => (
-                            <SelectItem key={type} value={type} className="cursor-pointer font-medium py-2.5 hover:bg-slate-100">
+                            <SelectItem key={type} value={type} className="cursor-pointer font-medium py-2.5 hover:bg-secondary focus:bg-secondary">
                               {type}
                             </SelectItem>
                           ))}
@@ -250,14 +250,14 @@ export function AdmissionEnquiryForm({
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-bold text-[var(--navy)]">
+                      <FormLabel className="text-xs font-bold text-foreground">
                         Email Address
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="email"
                           placeholder="you@example.com"
-                          className="h-11 border-border bg-slate-50/70 text-sm font-medium text-slate-900 focus:bg-white focus:border-[var(--primary)]"
+                          className="h-11 border-border bg-secondary/40 text-sm font-medium text-foreground focus:bg-card focus:border-[var(--primary)]"
                           style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                           {...field}
                         />
@@ -283,3 +283,4 @@ export function AdmissionEnquiryForm({
     </AnimatePresence>
   );
 }
+

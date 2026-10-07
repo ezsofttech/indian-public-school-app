@@ -16,7 +16,7 @@ import {
   LoaderCircle,
   Eye,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, getAssetUrl } from "@/lib/utils";
 import { isPdfFile, isDocumentFile, getPdfProxyUrl, getGoogleDocsViewerUrl } from "@/lib/file-preview";
 
 export type MediaType = "image" | "video" | "audio" | "document" | "unknown";
@@ -133,10 +133,23 @@ export function UniversalMedia({
   const [audioDuration, setAudioDuration] = useState(0);
 
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
+  const videoRef = React.useRef<HTMLVideoElement | null>(null);
 
   const mediaType = useMemo(() => {
     return type && type !== "unknown" ? type : detectMediaType(src);
   }, [src, type]);
+
+  React.useEffect(() => {
+    if (mediaType === "video" && autoPlay && videoRef.current) {
+      videoRef.current.muted = muted;
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Video autoplay prevented by browser policy
+        });
+      }
+    }
+  }, [mediaType, autoPlay, muted, src]);
 
   const youtubeId = useMemo(() => {
     return mediaType === "video" ? parseYouTubeVideoId(src) : null;
@@ -203,15 +216,16 @@ export function UniversalMedia({
     return (
       <div
         className={cn(
-          "relative overflow-hidden rounded-2xl bg-black shadow-md border border-slate-800",
+          "relative overflow-hidden rounded-2xl bg-black shadow-md border border-slate-800 isolate",
           aspectClass || "aspect-video",
           containerClassName
         )}
+        style={{ transform: "translateZ(0)", WebkitMaskImage: "-webkit-radial-gradient(white, black)" }}
       >
         <iframe
           src={embedUrl}
           title={title || alt}
-          className={cn("h-full w-full border-0", className)}
+          className={cn("h-full w-full border-0 rounded-[inherit]", className)}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         />
@@ -233,15 +247,16 @@ export function UniversalMedia({
     return (
       <div
         className={cn(
-          "relative overflow-hidden rounded-2xl bg-black shadow-md border border-slate-800",
+          "relative overflow-hidden rounded-2xl bg-black shadow-md border border-slate-800 isolate",
           aspectClass || "aspect-video",
           containerClassName
         )}
+        style={{ transform: "translateZ(0)", WebkitMaskImage: "-webkit-radial-gradient(white, black)" }}
       >
         <iframe
           src={embedUrl}
           title={title || alt}
-          className={cn("h-full w-full border-0", className)}
+          className={cn("h-full w-full border-0 rounded-[inherit]", className)}
           allow="autoplay; fullscreen; picture-in-picture"
           allowFullScreen
         />
@@ -256,24 +271,28 @@ export function UniversalMedia({
 
   // Render HTML5 / Direct Video File
   if (mediaType === "video") {
+    const validPoster = (poster && typeof poster === "string" && poster.trim().length > 0 && !isDocumentFile(poster)) ? poster.trim() : undefined;
+
     return (
       <div
         className={cn(
-          "relative overflow-hidden rounded-2xl bg-slate-950 border border-slate-800 shadow-md group",
+          "relative overflow-hidden rounded-2xl bg-slate-950 border border-slate-800 shadow-md group isolate",
           aspectClass || "aspect-video",
           containerClassName
         )}
+        style={{ transform: "translateZ(0)", WebkitMaskImage: "-webkit-radial-gradient(white, black)" }}
         onClick={() => onMediaClick?.(src, "video")}
       >
         <video
+          ref={videoRef}
           src={src}
-          poster={poster}
+          poster={validPoster}
           autoPlay={autoPlay}
           loop={loop}
           muted={muted}
           controls={controls}
           playsInline
-          className={cn("h-full w-full", fitClass, className)}
+          className={cn("h-full w-full rounded-[inherit]", fitClass, className)}
           aria-label={alt}
         >
           Your browser does not support playing this video format.
@@ -433,7 +452,22 @@ export function UniversalMedia({
   }
 
   // Render Responsive Image (Default fallback)
-  const currentSrc = imageError ? fallbackSrc : src;
+  if (imageError && !fallbackSrc) {
+    return (
+      <div
+        className={cn(
+          "flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-400 p-4",
+          aspectClass,
+          containerClassName
+        )}
+      >
+        <ImageIcon className="h-8 w-8 text-slate-400 shrink-0" />
+      </div>
+    );
+  }
+
+  const resolvedSrc = getAssetUrl(src) || src;
+  const currentSrc = imageError ? (getAssetUrl(fallbackSrc) || fallbackSrc) : resolvedSrc;
 
   return (
     <div

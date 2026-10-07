@@ -8,6 +8,7 @@ import { getAssetUrl } from "@/lib/utils";
 import { ImageStudioModal } from "./ImageStudioModal";
 import { FileViewerModal } from "@/components/ui/FileViewerModal";
 import { PdfCanvasThumbnail } from "@/components/ui/PdfCanvasThumbnail";
+import { SmartFileThumbnail } from "@/components/ui/SmartFileThumbnail";
 import { getCloudinaryPdfThumbnailUrl, isPdfFile, isDocumentFile, isWordFile, isExcelFile, isGoogleDocUrl, isGoogleSheetUrl } from "@/lib/file-preview";
 
 interface CloudinaryGalleryModalProps {
@@ -449,9 +450,8 @@ export function CloudinaryGalleryModal({
                           </span>
                         </div>
                       ) : (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img
-                          src={item.url}
+                        <SmartFileThumbnail
+                          url={item.url}
                           alt={item.title}
                           className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                         />

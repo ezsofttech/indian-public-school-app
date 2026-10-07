@@ -60,9 +60,8 @@ export const metadata: Metadata = {
   },
   verification: {
     google: [
-      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "Zq_pKkfmm7LheNW3ugOusir-RTMzdg_Zypu2WiiJVd8",
-      "Oykdy_Xrmt1PQ8av-NNfc53L-FqE-w8l-LkhJidECHM",
-    ],
+      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "MEu__f_ieLX2bOc3aeCCHfzqtqwygpWDOGnq"
+    ]
   },
 };
 

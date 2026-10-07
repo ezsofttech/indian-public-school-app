@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { GraduationCap, LoaderCircle, LockKeyhole } from "lucide-react";
+import { DEFAULT_CREST_LOGO, imageUrl } from "@/lib/site-data";
 
 const API_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
 
@@ -38,7 +39,20 @@ export function AdminLogin() {
 
   return <main className="grid min-h-screen place-items-center bg-[#eef4fb] p-5">
     <form onSubmit={submit} className="w-full max-w-md rounded-3xl border border-white bg-white p-8 shadow-2xl shadow-blue-950/10">
-      <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#102a4c] text-[#f4bd4f]"><GraduationCap size={26} /></div>
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white p-1.5 ring-4 ring-blue-50 shadow-lg border border-slate-100 overflow-hidden">
+        <img
+          src={imageUrl(DEFAULT_CREST_LOGO)}
+          alt="IPS Shield Crest Logo"
+          className="h-full w-full object-contain mix-blend-multiply"
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (!target.dataset.triedLocal) {
+              target.dataset.triedLocal = "true";
+              target.src = "/assets/Settings/Logos/IPSStandardLogo.png";
+            }
+          }}
+        />
+      </div>
       <p className="mt-7 text-xs font-bold uppercase tracking-[0.18em] text-[#bd8418]">Indian Public School</p>
       <h1 className="mt-2 font-display text-3xl font-bold text-[#102a4c]">Admin sign in</h1>
       <p className="mt-2 text-sm leading-6 text-slate-500">Use your authorised school account to access administration.</p>

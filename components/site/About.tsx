@@ -9,6 +9,8 @@ import { ArrowRight, Compass, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/site/Reveal";
 import { UniversalMedia } from "@/components/ui/UniversalMedia";
+import { SmartFileThumbnail } from "@/components/ui/SmartFileThumbnail";
+import { getAssetUrl, toCleanRelativeAssetPath } from "@/lib/utils";
 import {
   firstSection,
   homeData,
@@ -38,7 +40,7 @@ export function About() {
   const brief = Array.isArray(section.briefCard)
     ? (section.briefCard[0] as Record<string, unknown>)
     : {};
-  const briefImage = imageUrl(brief.fileUrl) || "";
+  const briefImage = getAssetUrl(brief.fileUrl as string) || "/assets/Album/CampusAerial.png";
   const briefHeading = text(brief.heading, "A green, purpose-built campus for modern learning");
   const ref = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
@@ -70,15 +72,15 @@ export function About() {
               type="video"
               alt={text(secVid.title || section.heading || "IPS Intro Video")}
               title={text(secVid.title || section.heading || "Experience life at Indian Public School")}
-              poster={briefImage}
+              poster={briefImage || undefined}
               autoPlay={typeof secVid.autoPlay === "boolean" ? secVid.autoPlay : true}
               muted={typeof secVid.muted === "boolean" ? secVid.muted : true}
               loop={typeof secVid.loop === "boolean" ? secVid.loop : true}
               controls={typeof secVid.controls === "boolean" ? secVid.controls : true}
-              aspectRatio="auto"
+              aspectRatio="video"
               objectFit="cover"
-              className="w-full h-full object-cover min-h-[300px] sm:min-h-[400px] lg:min-h-[480px] xl:min-h-[520px]"
-              containerClassName="w-full overflow-hidden min-h-[300px] sm:min-h-[400px] lg:min-h-[480px] xl:min-h-[520px]"
+              className="w-full h-full object-cover rounded-[inherit]"
+              containerClassName="w-full aspect-video overflow-hidden rounded-[inherit] border-0 shadow-none bg-black"
             />
           </motion.div>
 
@@ -91,13 +93,10 @@ export function About() {
             className="flex items-center gap-4 bg-white dark:bg-slate-900 p-3.5 shadow-sm dark:border-slate-800"
             style={{ borderRadius: "var(--card-radius, 1rem)", border: "1px solid var(--border, rgba(226, 232, 240, 0.7))" }}
           >
-            <img
-              src={briefImage}
+            <SmartFileThumbnail
+              url={briefImage}
               alt={briefHeading}
-              width={120}
-              height={80}
-              loading="lazy"
-              className="h-14 w-20 flex-shrink-0 object-cover"
+              className="h-14 w-20 flex-shrink-0"
               style={{ borderRadius: "calc(var(--card-radius, 1rem) * 0.7)" }}
             />
             <div>
@@ -192,24 +191,30 @@ export function About() {
           </div>
 
           <Reveal delay={0.2}>
-            <Button
-              asChild
-              size="lg"
-              className="group mt-8 text-white px-7 shadow-lg transition-all duration-300 hover:opacity-90 hover:scale-[1.02]"
-              style={{
-                borderRadius: "var(--btn-radius, 9999px)",
-                background: "var(--gradient-navy, var(--navy, #102a4c))",
-              }}
-            >
-              <a href={text((section.btnLinkText as Record<string, unknown> | undefined)?.url, "#academics")}>
-                {text(
-                  (section.btnLinkText as Record<string, unknown> | undefined)
-                    ?.text,
-                  "Discover Our Story",
-                )}
-                <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
-              </a>
-            </Button>
+            {(() => {
+              const rawStoryUrl = text((section.btnLinkText as Record<string, unknown> | undefined)?.url);
+              const cleanStoryUrl = rawStoryUrl ? toCleanRelativeAssetPath(rawStoryUrl) : "/about/school-establishment";
+              return (
+                <Button
+                  asChild
+                  size="lg"
+                  className="group mt-8 text-white px-7 shadow-lg transition-all duration-300 hover:opacity-90 hover:scale-[1.02]"
+                  style={{
+                    borderRadius: "var(--btn-radius, 9999px)",
+                    background: "var(--gradient-navy, var(--navy, #102a4c))",
+                  }}
+                >
+                  <a href={cleanStoryUrl}>
+                    {text(
+                      (section.btnLinkText as Record<string, unknown> | undefined)
+                        ?.text,
+                      "Discover Our Story",
+                    )}
+                    <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
+                  </a>
+                </Button>
+              );
+            })()}
           </Reveal>
         </div>
       </div>

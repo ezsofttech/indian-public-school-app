@@ -56,7 +56,9 @@ export function HomeBannerTab({ homeObj, updateHome, uploadImage }: HomeBannerTa
             return (
               <div key={idx} className="group relative aspect-video overflow-hidden rounded-xl border border-slate-200 bg-slate-900 shadow-xs">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={imgUrl} alt={`Banner ${idx + 1}`} className="h-full w-full object-cover" />
+                {imgUrl ? (
+                  <img src={imgUrl} alt={`Banner ${idx + 1}`} className="h-full w-full object-cover" />
+                ) : null}
                 <button
                   type="button"
                   onClick={() => {

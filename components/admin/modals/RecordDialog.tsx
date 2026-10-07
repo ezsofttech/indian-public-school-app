@@ -25,6 +25,8 @@ import { RichTextBox } from "@/components/ui/RichTextBox";
 import { CloudinaryGalleryModal, getFileType } from "@/components/admin/CloudinaryGalleryModal";
 import { PdfCanvasThumbnail } from "@/components/ui/PdfCanvasThumbnail";
 import { isPdfFile, getCloudinaryInlineViewerUrl } from "@/lib/file-preview";
+import { SmartFileThumbnail } from "@/components/ui/SmartFileThumbnail";
+import { toCleanRelativeAssetPath, getAssetUrl } from "@/lib/utils";
 import { HomeLayoutEditorModal } from "./HomeLayoutEditorModal";
 import { Resource, RecordItem } from "../types/admin.types";
 import { API_URL, resources } from "../config/admin.config";
@@ -85,7 +87,7 @@ export function RecordDialog({
         ? record.allowedModules
         : initial.role === "Super Admin"
           ? ["*"]
-          : ["students", "notices", "gallery"];
+          : ["students", "news", "gallery"];
     }
   }
 
@@ -107,7 +109,7 @@ export function RecordDialog({
       formData.append("file", file);
       if ((resource.key as string) === "school-settings" || (resource.key as string) === "settings") {
         formData.append("album", "Settings");
-        formData.append("folder", "indian-public-school/assets/Settings");
+        formData.append("folder", "Settings");
       } else {
         formData.append("album", resource.label);
 
@@ -130,11 +132,12 @@ export function RecordDialog({
       });
 
       const data = res.data?.data ?? res.data;
-      const uploadedUrl = data?.url || (Array.isArray(data?.fileUrl) ? data.fileUrl[0] : data?.fileUrl);
+      const rawUrl = data?.url || (Array.isArray(data?.fileUrl) ? data.fileUrl[0] : data?.fileUrl);
 
-      if (!uploadedUrl) {
+      if (!rawUrl) {
         throw new Error("No URL returned from upload response.");
       }
+      const uploadedUrl = toCleanRelativeAssetPath(rawUrl);
 
       if (field === "fileUrl" || Array.isArray(values[field])) {
         const existingList = Array.isArray(values[field]) ? (values[field] as string[]) : typeof values[field] === "string" && values[field] ? [values[field] as string] : [];
@@ -176,7 +179,7 @@ export function RecordDialog({
       payload.redirectUrl = String(payload.attachmentUrl);
     }
     if (resource.key === "gallery" && typeof payload.fileUrl === "string") {
-      payload.fileUrl = String(payload.fileUrl).split("\n").map((url) => url.trim()).filter(Boolean);
+      payload.fileUrl = String(payload.fileUrl).split("\n").map((url) => toCleanRelativeAssetPath(url.trim())).filter(Boolean);
     }
     if (resource.key === "school-settings" && typeof payload.value === "string") {
       try { payload.value = JSON.parse(payload.value); } catch { /* Plain-text setting values are valid. */ }
@@ -277,7 +280,7 @@ export function RecordDialog({
                                 <div className="relative h-32 w-full overflow-hidden bg-slate-950 flex items-center justify-center">
                                   {fType === "video" ? (
                                     <div className="relative h-full w-full flex flex-col items-center justify-center text-white bg-slate-950">
-                                      <video src={url} muted className="h-full w-full object-cover opacity-70" />
+                                      <video src={getAssetUrl(url)} muted className="h-full w-full object-cover opacity-70" />
                                       <Video size={28} className="absolute text-blue-400 drop-shadow-md" />
                                     </div>
                                   ) : fType === "audio" ? (
@@ -298,8 +301,22 @@ export function RecordDialog({
                                       <span className="text-[11px] font-bold text-slate-300 truncate w-full px-2">{filename}</span>
                                     </div>
                                   ) : (
-                                    /* eslint-disable-next-line @next/next/no-img-element */
-                                    <img src={url} alt="Uploaded Cloudinary preview" className="h-full w-full object-cover transition group-hover:scale-105" />
+                                    <img
+                                      src={getAssetUrl(url) || url}
+                                      alt={filename || "Image preview"}
+                                      className="h-full w-full object-cover transition group-hover:scale-105"
+                                      onError={(e) => {
+                                        const target = e.currentTarget;
+                                        const clean = url?.trim() || "";
+                                        if (clean && target.src !== clean && !target.dataset.triedOriginal) {
+                                          target.dataset.triedOriginal = "true";
+                                          target.src = clean;
+                                        } else if (clean && !clean.startsWith("http") && !clean.startsWith("/") && !target.dataset.triedUploads) {
+                                          target.dataset.triedUploads = "true";
+                                          target.src = `https://indianpublicschool.in/admin/uploads/images/${clean}`;
+                                        }
+                                      }}
+                                    />
                                   )}
                                   <div className="absolute top-2 right-2 flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition">
                                     <a

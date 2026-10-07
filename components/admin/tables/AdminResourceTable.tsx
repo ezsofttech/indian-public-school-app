@@ -29,11 +29,12 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { CloudinaryGalleryModal } from "@/components/admin/CloudinaryGalleryModal";
-import { DEFAULT_LOGO, imageUrl } from "@/lib/site-data";
+import { DEFAULT_LOGO, DEFAULT_SECONDARY_LOGO, imageUrl, isBannerLogoUrl } from "@/lib/site-data";
 import { RecordItem, Resource, PaginationMeta, QueryParamsState } from "../types/admin.types";
 import { API_URL } from "../config/admin.config";
 import { isSuperAdminRole, itemId, formatValue, getPreviewUrl } from "../utils/admin.helpers";
 import { MediaDetailDialog } from "../modals/MediaDetailDialog";
+import { SmartFileThumbnail } from "@/components/ui/SmartFileThumbnail";
 
 function Empty({ text }: { text: string }) {
   return <div className="px-5 py-12 text-center text-sm text-slate-400">{text}</div>;
@@ -294,9 +295,11 @@ export function HeaderFooterSettingsCard({
   const partnerItem = useMemo(() => items.find((i) => i.key === "academic_partner"), [items]);
 
   const [siteLogo, setSiteLogo] = useState({
-    logoUrl: "",
-    logoText: "Indian Public School",
-    logoSubText: "Learn · Lead · Inspire",
+    logoUrl: "/Settings/Logos/IPSLogo.png",
+    secondaryLogoUrl: "/Settings/Logos/AakashFoundationLogo.png",
+    showSecondaryLogo: true,
+    logoText: "",
+    logoSubText: "",
   });
 
   const [certifiedBoard, setCertifiedBoard] = useState({
@@ -326,33 +329,81 @@ export function HeaderFooterSettingsCard({
     enabled: true,
   });
 
+  const [fetchedDsValue, setFetchedDsValue] = useState<Record<string, any> | null>(null);
+
   useEffect(() => {
-    const dsVal = (siteDsItem?.value as Record<string, any>) || {};
-    const homeIdentity = (Array.isArray(dsVal.home) ? dsVal.home[0]?.identity : dsVal.identity) || {};
+    let isMounted = true;
+    const loadFullSettings = async () => {
+      let rawDsVal: any = siteDsItem?.value;
+      if (!rawDsVal) {
+        try {
+          const res = await axios.get(`${API_URL}/school-settings/key/site_datasource`);
+          const itemData = res.data?.data ?? res.data;
+          if (itemData?.value) {
+            rawDsVal = itemData.value;
+          }
+        } catch {
+          try {
+            const res2 = await axios.get(`${API_URL}/regarding/datasource`);
+            rawDsVal = res2.data?.data ?? res2.data;
+          } catch {
+            // Keep default fallback
+          }
+        }
+      }
 
-    if (homeIdentity.site_logo && typeof homeIdentity.site_logo === "object") {
-      setSiteLogo((prev) => ({ ...prev, ...(homeIdentity.site_logo as object) }));
-    } else if (logoItem?.value && typeof logoItem.value === "object") {
-      setSiteLogo((prev) => ({ ...prev, ...(logoItem.value as object) }));
-    }
+      if (typeof rawDsVal === "string") {
+        try {
+          rawDsVal = JSON.parse(rawDsVal);
+        } catch {
+          rawDsVal = {};
+        }
+      }
 
-    if (homeIdentity.certified_board && typeof homeIdentity.certified_board === "object") {
-      setCertifiedBoard((prev) => ({ ...prev, ...(homeIdentity.certified_board as object) }));
-    } else if (certItem?.value && typeof certItem.value === "object") {
-      setCertifiedBoard((prev) => ({ ...prev, ...(certItem.value as object) }));
-    }
+      const dsVal = (rawDsVal && typeof rawDsVal === "object") ? rawDsVal : {};
+      if (isMounted) setFetchedDsValue(dsVal);
 
-    if (homeIdentity.trust_board && typeof homeIdentity.trust_board === "object") {
-      setTrustBoard((prev) => ({ ...prev, ...(homeIdentity.trust_board as object) }));
-    } else if (trustItem?.value && typeof trustItem.value === "object") {
-      setTrustBoard((prev) => ({ ...prev, ...(trustItem.value as object) }));
-    }
+      const homeIdentity = (Array.isArray(dsVal.home) ? dsVal.home[0]?.identity : dsVal.identity) || {};
 
-    if (homeIdentity.academic_partner && typeof homeIdentity.academic_partner === "object") {
-      setAcademicPartner((prev) => ({ ...prev, ...(homeIdentity.academic_partner as object) }));
-    } else if (partnerItem?.value && typeof partnerItem.value === "object") {
-      setAcademicPartner((prev) => ({ ...prev, ...(partnerItem.value as object) }));
-    }
+      const logoVal = homeIdentity.site_logo || dsVal.site_logo;
+      if (logoVal && typeof logoVal === "object") {
+        setSiteLogo((prev) => ({ ...prev, ...(logoVal as object) }));
+      } else if (logoItem?.value) {
+        let lVal = logoItem.value;
+        if (typeof lVal === "string") { try { lVal = JSON.parse(lVal); } catch { } }
+        if (lVal && typeof lVal === "object") setSiteLogo((prev) => ({ ...prev, ...(lVal as object) }));
+      }
+
+      const certVal = homeIdentity.certified_board || dsVal.certified_board;
+      if (certVal && typeof certVal === "object") {
+        setCertifiedBoard((prev) => ({ ...prev, ...(certVal as object) }));
+      } else if (certItem?.value) {
+        let cVal = certItem.value;
+        if (typeof cVal === "string") { try { cVal = JSON.parse(cVal); } catch { } }
+        if (cVal && typeof cVal === "object") setCertifiedBoard((prev) => ({ ...prev, ...(cVal as object) }));
+      }
+
+      const trustVal = homeIdentity.trust_board || dsVal.trust_board;
+      if (trustVal && typeof trustVal === "object") {
+        setTrustBoard((prev) => ({ ...prev, ...(trustVal as object) }));
+      } else if (trustItem?.value) {
+        let tVal = trustItem.value;
+        if (typeof tVal === "string") { try { tVal = JSON.parse(tVal); } catch { } }
+        if (tVal && typeof tVal === "object") setTrustBoard((prev) => ({ ...prev, ...(tVal as object) }));
+      }
+
+      const partnerVal = homeIdentity.academic_partner || dsVal.academic_partner;
+      if (partnerVal && typeof partnerVal === "object") {
+        setAcademicPartner((prev) => ({ ...prev, ...(partnerVal as object) }));
+      } else if (partnerItem?.value) {
+        let pVal = partnerItem.value;
+        if (typeof pVal === "string") { try { pVal = JSON.parse(pVal); } catch { } }
+        if (pVal && typeof pVal === "object") setAcademicPartner((prev) => ({ ...prev, ...(pVal as object) }));
+      }
+    };
+
+    loadFullSettings();
+    return () => { isMounted = false; };
   }, [siteDsItem, logoItem, certItem, trustItem, partnerItem]);
 
   const saveSettings = async () => {
@@ -366,11 +417,26 @@ export function HeaderFooterSettingsCard({
 
     try {
       const headers = { Authorization: `Bearer ${token}` };
-      const currentDsVal = (siteDsItem?.value as Record<string, any>) || {};
+      const currentDsVal = fetchedDsValue || (typeof siteDsItem?.value === "string" ? JSON.parse(siteDsItem.value) : siteDsItem?.value) || {};
       const homeList = Array.isArray(currentDsVal.home) ? [...currentDsVal.home] : [{}];
       const firstHome = { ...(homeList[0] || {}) };
+
+      const currentHeader = { ...(firstHome.identity?.header || currentDsVal.header || {}) };
+      const currentFooter = { ...(firstHome.identity?.footer || currentDsVal.footer || {}) };
+
+      if (siteLogo.logoUrl !== undefined) {
+        currentHeader.logoUrl = siteLogo.logoUrl;
+        currentFooter.logoUrl = siteLogo.logoUrl;
+      }
+      currentHeader.logoText = siteLogo.logoText || "";
+      currentFooter.logoText = siteLogo.logoText || "";
+      currentHeader.logoSubText = siteLogo.logoSubText || "";
+      currentFooter.logoSubText = siteLogo.logoSubText || "";
+
       const identityObj = {
         ...(firstHome.identity || {}),
+        header: currentHeader,
+        footer: currentFooter,
         site_logo: siteLogo,
         certified_board: certifiedBoard,
         trust_board: trustBoard,
@@ -381,6 +447,8 @@ export function HeaderFooterSettingsCard({
 
       const finalVal = {
         ...currentDsVal,
+        header: currentHeader,
+        footer: currentFooter,
         site_logo: siteLogo,
         certified_board: certifiedBoard,
         trust_board: trustBoard,
@@ -400,6 +468,23 @@ export function HeaderFooterSettingsCard({
         },
         { headers }
       );
+
+      try {
+        await axios.post(
+          `${API_URL}/school-settings`,
+          {
+            key: "site_logo",
+            category: "Branding",
+            description: "School logo and header branding titles",
+            value: siteLogo,
+            isPublic: true,
+            status: "Active",
+          },
+          { headers }
+        );
+      } catch (e) {
+        console.warn("Syncing standalone site_logo skipped or failed:", e);
+      }
 
       setMessage("Header & Footer identity settings saved successfully inside site_datasource!");
       onSaveComplete();
@@ -462,7 +547,7 @@ export function HeaderFooterSettingsCard({
           className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${activeTab === "logo" ? "bg-[#102a4c] text-white shadow-xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
         >
-          <UploadCloud size={15} /> School Logo & Text
+          <UploadCloud size={15} /> School Logo
         </button>
         <button
           type="button"
@@ -513,44 +598,26 @@ export function HeaderFooterSettingsCard({
                 </button>
               </div>
             </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700">School Name</label>
-              <input
-                type="text"
-                value={siteLogo.logoText}
-                onChange={(e) => setSiteLogo((p) => ({ ...p, logoText: e.target.value }))}
-                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-[#1a5d9c]"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700">Tagline / Subtext</label>
-              <input
-                type="text"
-                value={siteLogo.logoSubText}
-                onChange={(e) => setSiteLogo((p) => ({ ...p, logoSubText: e.target.value }))}
-                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-[#1a5d9c]"
-              />
-            </div>
           </div>
 
           <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 p-6 text-center">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">Live Header Preview</span>
-            <div className="flex items-center gap-3 rounded-2xl bg-[#102a4c] p-4 text-white shadow-md">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-[#f4bd4f] text-[#102a4c] overflow-hidden p-1">
-                {siteLogo.logoUrl ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={imageUrl(siteLogo.logoUrl)} alt="Logo" className="h-full w-full object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = imageUrl(DEFAULT_LOGO); }} />
-                ) : (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={imageUrl(DEFAULT_LOGO)} alt="IPS Logo" className="h-full w-full object-contain" onError={(e) => { e.currentTarget.onerror = null; }} />
-                )}
-              </div>
-              <div className="text-left">
-                <p className="font-display text-base font-bold text-white">{siteLogo.logoText || "Indian Public School"}</p>
-                <p className="text-[11px] text-blue-200">{siteLogo.logoSubText || "Learn · Lead · Inspire"}</p>
-              </div>
+            <div className="flex items-center justify-center gap-3 rounded-2xl bg-white p-4 text-slate-900 shadow-sm border border-slate-200 min-w-[280px]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imageUrl(siteLogo.logoUrl || DEFAULT_LOGO)}
+                alt="Main Logo"
+                className="h-8 md:h-10 w-auto object-contain"
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = imageUrl(DEFAULT_LOGO); }}
+              />
+              <div className="h-6 w-[1.5px] bg-slate-300 rounded-full" aria-hidden="true" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imageUrl(siteLogo.secondaryLogoUrl || DEFAULT_SECONDARY_LOGO)}
+                alt="Aakash Foundation Logo"
+                className="h-7 md:h-8 w-auto object-contain"
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = imageUrl(DEFAULT_SECONDARY_LOGO); }}
+              />
             </div>
           </div>
         </div>
@@ -663,9 +730,25 @@ export function HeaderFooterSettingsCard({
           <div className="flex flex-col justify-center space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-6">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Footer Trust Badge Preview</span>
             <div className="rounded-xl border border-blue-200 bg-white p-4 shadow-2xs flex items-center gap-3">
-              <div className="grid h-10 w-10 place-items-center rounded-lg bg-blue-100 text-[#1a5d9c] font-bold text-xs">
-                TRUST
-              </div>
+              {trustBoard.logoUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={imageUrl(trustBoard.logoUrl)}
+                  alt=""
+                  className="h-10 w-10 object-contain"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.dataset.triedLocal && trustBoard.logoUrl) {
+                      target.dataset.triedLocal = "true";
+                      target.src = trustBoard.logoUrl;
+                    }
+                  }}
+                />
+              ) : (
+                <div className="grid h-10 w-10 place-items-center rounded-lg bg-blue-100 text-[#1a5d9c] font-bold text-xs">
+                  TRUST
+                </div>
+              )}
               <div>
                 <p className="font-bold text-xs text-[#102a4c]">{trustBoard.trustName}</p>
                 <p className="text-[11px] text-slate-500">{trustBoard.regNo}</p>
@@ -985,11 +1068,10 @@ export function ResourceView({
                       key={itemId(item)}
                       className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xs transition hover:border-slate-300 hover:shadow-md"
                     >
-                      <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={mediaUrl}
-                          alt=""
+                      <div className="relative aspect-video w-full overflow-hidden bg-slate-100 flex items-center justify-center">
+                        <SmartFileThumbnail
+                          url={mediaUrl}
+                          alt={String(item.eventName || item.title || item.name || "Asset")}
                           className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-slate-950/40 opacity-0 transition group-hover:opacity-100 flex items-center justify-center gap-2">

@@ -219,15 +219,34 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const fetchActiveTheme = useCallback(async () => {
     try {
       const isAdminPage = typeof window !== "undefined" && window.location.pathname.startsWith("/admin");
-      const portalParam = isAdminPage ? "admin" : "web";
-      const res = await axios.get(`${API_BASE}/theme/active?portal=${portalParam}`, { timeout: 4000 });
-      if (res.data) {
-        const themeData = res.data.data || res.data;
-        if (themeData && themeData.colors) {
-          setActiveTheme(themeData);
-          if (!previewTheme) {
-            applyCssVars(themeData);
+      const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+      const previewId = urlParams?.get("preview_theme_id");
+
+      let themeData: ThemeConfig | null = null;
+
+      if (previewId && !isAdminPage) {
+        try {
+          const previewRes = await axios.get(`${API_BASE}/theme/${previewId}`, { timeout: 4000 });
+          if (previewRes.data) {
+            themeData = previewRes.data.data || previewRes.data;
           }
+        } catch {
+          // fallback to default active theme if preview theme fetch fails
+        }
+      }
+
+      if (!themeData) {
+        const portalParam = isAdminPage ? "admin" : "web";
+        const res = await axios.get(`${API_BASE}/theme/active?portal=${portalParam}`, { timeout: 4000 });
+        if (res.data) {
+          themeData = res.data.data || res.data;
+        }
+      }
+
+      if (themeData && themeData.colors) {
+        setActiveTheme(themeData);
+        if (!previewTheme) {
+          applyCssVars(themeData);
         }
       }
     } catch {

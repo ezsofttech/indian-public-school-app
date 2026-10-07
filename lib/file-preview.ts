@@ -17,7 +17,7 @@ export function normalizePdfUrl(url?: string | null): string {
       const format = urlObj.searchParams.get("format") || "pdf";
       const pathParts = urlObj.pathname.split("/");
       const cloudIdx = pathParts.indexOf("v1_1");
-      const cloudName = cloudIdx !== -1 ? pathParts[cloudIdx + 1] : "niefrrkx";
+      const cloudName = cloudIdx !== -1 ? pathParts[cloudIdx + 1] : "dnw7mgysa";
 
       if (publicId && cloudName) {
         const decodedPublicId = decodeURIComponent(publicId);

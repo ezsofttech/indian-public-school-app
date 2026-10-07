@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { cn } from "@/lib/utils";
+import { cn, getAssetUrl } from "@/lib/utils";
 import { DEFAULT_HERO_IMAGE } from "@/lib/site-data";
 
 export interface SmartImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
@@ -24,11 +24,14 @@ export function SmartImage({
 }: SmartImageProps & { containerClassName?: string }) {
   const resolveSrc = (source?: string | object): string => {
     if (!source) return fallbackSrc;
-    if (typeof source === "string") return source;
-    if (typeof source === "object" && "src" in source && typeof (source as { src: string }).src === "string") {
-      return (source as { src: string }).src;
+    let s = "";
+    if (typeof source === "string") s = source;
+    else if (typeof source === "object" && "src" in source && typeof (source as { src: string }).src === "string") {
+      s = (source as { src: string }).src;
+    } else {
+      s = String(source);
     }
-    return String(source);
+    return getAssetUrl(s) || s || fallbackSrc;
   };
 
   const initialSrc = resolveSrc(src);

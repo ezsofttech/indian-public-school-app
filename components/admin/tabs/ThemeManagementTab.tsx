@@ -503,17 +503,16 @@ export function ThemeManagementTab({ token }: ThemeManagementTabProps) {
                       {/* Row 2: Secondary Tool Actions (Preview, Modify, Delete) */}
                       <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-200/60 dark:border-slate-800">
                         <div className="flex items-center gap-1.5">
-                          <button
-                            onClick={() => setPreviewTheme(isCurrentPreview ? null : theme)}
-                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all flex items-center gap-1 ${isCurrentPreview
-                              ? "bg-amber-500 text-white border-amber-600 shadow-2xs"
-                              : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100"
-                              }`}
-                            title={isCurrentPreview ? "Clear Live Preview" : "Preview Theme Live on Public Site"}
+                          <a
+                            href={theme._id ? `/?preview_theme_id=${theme._id}` : "/"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 transition-all flex items-center gap-1 cursor-pointer"
+                            title="Redirect to Public Web Portal to preview theme"
                           >
-                            <i className="bi bi-eye-fill"></i>
+                            <i className="bi bi-box-arrow-up-right"></i>
                             <span>Preview</span>
-                          </button>
+                          </a>
 
                           <button
                             onClick={() => handleStartCustomizing(theme)}

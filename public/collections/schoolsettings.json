@@ -8,14 +8,14 @@
         {
           "identity": {
             "header": {
-              "noticeText": "Admissions Open for Session 2026-27",
+              "noticeText": "",
               "phone": "",
               "email": "",
               "ctaText": "Apply Now",
               "ctaUrl": "/#admissions",
-              "logoText": "Indian Public School",
-              "logoSubText": "Learn · Lead · Inspire",
-              "logoUrl": ""
+              "logoText": "",
+              "logoSubText": "",
+              "logoUrl": "/Settings/Logos/IPSLogo.png"
             },
             "footer": {
               "aboutText": "A co-educational CBSE school committed to academic excellence, strong character and genuine care for every child.",
@@ -23,13 +23,13 @@
               "phone": "+91 8114320555",
               "email": "info@indianpublicschool.in",
               "copyright": "© 2026 Indian Public School. All rights reserved.",
-              "logoText": "Indian Public School",
-              "logoSubText": "Learn · Lead · Inspire"
+              "logoText": "",
+              "logoSubText": ""
             },
             "site_logo": {
-              "logoUrl": "/assets/Settings/Logos/IPSStandardLogo.png",
-              "logoText": "Indian Public School",
-              "logoSubText": "Learn · Lead · Inspire"
+              "logoUrl": "/Settings/Logos/IPSLogo.png",
+              "logoText": "",
+              "logoSubText": ""
             },
             "whatsapp": {
               "enabled": true,
@@ -50,7 +50,7 @@
               "code": "Affiliation No. 1530211 | School Code: 53123",
               "badgeUrl": "/assets/Settings/Logos/AAKASH_FOUNDATION_LOGO.jpg",
               "description": "Affiliated to Central Board of Secondary Education, New Delhi",
-              "linkUrl": "/mandatory-disclosure",
+              "linkUrl": "https://www.cbse.gov.in",
               "enabled": true
             },
             "trust_board": {
@@ -60,6 +60,18 @@
               "description": "Dedicated to character building, academic excellence, and holistic personality development.",
               "linkUrl": "/about/school-establishment",
               "enabled": true
+            },
+            "popupBanner": {
+              "enabled": true,
+              "imageUrl": "/assets/Settings/Home/POP_UP_IMAGE.jpeg",
+              "title": "Admissions Open 2026–27",
+              "subtitle": "Indian Public School, Sambalpur",
+              "enquiryButtonText": "Enquiry Now",
+              "closeButtonText": "Close",
+              "modalWidth": "lg",
+              "aspectRatio": "16/10",
+              "imageFit": "contain",
+              "onlyOncePerSession": false
             }
           },
           "hero": {
@@ -95,7 +107,30 @@
               }
             ],
             "fileUrls": [
-              "/assets/Home/file_ljuhl7.png"
+              "/assets/Settings/Home/Banner_1.jpg",
+              "/assets/Settings/Home/Banner_2.jpg",
+              "/assets/Settings/Home/Banner_3.jpg",
+              "/assets/Settings/Home/Banner_4.jpg",
+              "/assets/Settings/Home/Banner_5.jpg",
+              "/assets/Settings/Home/Banner_6.jpg"
+            ],
+            "bannerUrl": "/assets/Settings/Home/Banner_1.jpg",
+            "slides": [
+              {
+                "bannerUrl": "/assets/Settings/Home/Banner_1.jpg",
+                "enableOverlay": true,
+                "showText": true
+              },
+              {
+                "bannerUrl": "/assets/Settings/Home/Banner_2.jpg",
+                "enableOverlay": true,
+                "showText": true
+              },
+              {
+                "bannerUrl": "/assets/Settings/Home/Banner_3.jpg",
+                "enableOverlay": true,
+                "showText": true
+              }
             ]
           },
           "menuCard": [
@@ -183,7 +218,7 @@
               "sub-heading": "Pre-primary to Grade XII"
             },
             {
-              "count": "75+",
+              "count": "50+",
               "heading": "Faculty & Staff",
               "sub-heading": "Trained CBSE educators"
             },
@@ -1838,9 +1873,9 @@
         "email": "",
         "ctaText": "Apply Now",
         "ctaUrl": "/#admissions",
-        "logoText": "Indian Public School",
-        "logoSubText": "Learn · Lead · Inspire",
-        "logoUrl": ""
+        "logoText": "",
+        "logoSubText": "",
+        "logoUrl": "/Settings/Logos/IPSLogo.png"
       },
       "footer": {
         "aboutText": "A co-educational CBSE school committed to academic excellence, strong character and genuine care for every child.",
@@ -1848,8 +1883,8 @@
         "phone": "+91 8114320555",
         "email": "info@indianpublicschool.in",
         "copyright": "© 2026 Indian Public School. All rights reserved.",
-        "logoText": "Indian Public School",
-        "logoSubText": "Learn · Lead · Inspire"
+        "logoText": "",
+        "logoSubText": ""
       },
       "whatsapp": {
         "enabled": true,
@@ -1866,9 +1901,9 @@
         "position": "bottom-left"
       },
       "site_logo": {
-        "logoUrl": "/assets/Settings/Logos/IPSStandardLogo.png",
-        "logoText": "Indian Public School",
-        "logoSubText": "Learn · Lead · Inspire"
+        "logoUrl": "/Settings/Logos/IPSLogo.png",
+        "logoText": "",
+        "logoSubText": ""
       },
       "certified_board": {
         "title": "CBSE Affiliated School",

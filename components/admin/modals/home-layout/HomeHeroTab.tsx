@@ -18,6 +18,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { CloudinaryGalleryModal } from "@/components/admin/CloudinaryGalleryModal";
+import { imageUrl } from "@/lib/site-data";
 
 interface HomeHeroTabProps {
   homeObj: any;
@@ -272,7 +273,14 @@ export function HomeHeroTab({ homeObj, updateHome, uploadImage }: HomeHeroTabPro
                     }`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={slide.bannerUrl} alt={`Slide ${idx + 1}`} className="size-full object-cover pointer-events-none" />
+                  {slide.bannerUrl ? (
+                    <img src={imageUrl(slide.bannerUrl) || slide.bannerUrl} alt={`Slide ${idx + 1}`} className="size-full object-cover pointer-events-none" />
+                  ) : (
+                    <div className="size-full bg-slate-800 flex flex-col items-center justify-center gap-1 text-slate-400 p-2 text-center pointer-events-none">
+                      <ImageIcon className="size-6 text-slate-500 opacity-60" />
+                      <span className="text-[11px] font-medium text-slate-400">No Image Selected</span>
+                    </div>
+                  )}
 
                   {/* Top Bar Badges & Actions */}
                   <div className="absolute top-1.5 inset-x-1.5 z-20 flex items-center justify-between pointer-events-none">

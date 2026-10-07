@@ -2,16 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Award, BookOpen, ChevronRight, Download, ExternalLink, FileText, GraduationCap, Lock } from "lucide-react";
 import datasource from "@/public/cloud-datasource.json";
-import { DEFAULT_HERO_IMAGE } from "@/lib/site-data";
+import { DEFAULT_HERO_IMAGE, imageUrl, processHtmlAssetUrls } from "@/lib/site-data";
 import { getAssetUrl } from "@/lib/utils";
-
-function processHtmlAssetUrls(html: string): string {
-  if (!html) return "";
-  return html.replace(/(src|href)=["'](\/assets\/[^"']+|assets\/[^"']+|\/indian-public-school\/assets\/[^"']+)["']/g, (_match, attr, path) => {
-    const fullUrl = getAssetUrl(path);
-    return `${attr}="${fullUrl}"`;
-  });
-}
 
 type Content = Record<string, unknown>;
 
@@ -412,7 +404,7 @@ export default async function ContentPage({
   const htmlContent = processHtmlAssetUrls(rawHtmlContent);
   const breadcrumbs = buildBreadcrumbs(slug, title);
 
-  const bannerImg =
+  const rawBannerImg =
     typeof activePage?.heroImage === "string" && activePage.heroImage
       ? (activePage.heroImage as string)
       : typeof activePage?.bannerImage === "string" && activePage.bannerImage
@@ -420,6 +412,7 @@ export default async function ContentPage({
         : typeof activePage?.image === "string" && activePage.image
           ? (activePage.image as string)
           : DEFAULT_HERO_IMAGE;
+  const bannerImg = imageUrl(rawBannerImg);
 
   return (
     <main className="flex-1">
@@ -554,7 +547,7 @@ export default async function ContentPage({
             {images.map((src, index) => (
               <img
                 key={src}
-                src={src}
+                src={imageUrl(src)}
                 alt={`${title} ${index + 1}`}
                 className="aspect-[4/3] w-full rounded-2xl object-cover shadow-soft transition-transform duration-300 hover:scale-[1.02]"
               />
