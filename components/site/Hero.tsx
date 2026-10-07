@@ -2,10 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { EASE } from "@/lib/motion-presets";
-import { firstSection, homeData, imageUrl, text } from "@/lib/site-data";
+import { DEFAULT_HERO_IMAGE, firstSection, homeData, imageUrl, text } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { SmartImage } from "@/components/ui/SmartImage";
-import fallbackHeroImage from "@/assets/hero-campus.jpg";
 import fallbackSiteData from "@/public/cloud-datasource.json";
 
 export interface HeroSlide {
@@ -69,7 +68,7 @@ export function Hero() {
 
   // Build array of slides with per-slide properties
   const rawSlides: any[] = Array.isArray(hero.slides) ? hero.slides : [];
-  const slides: HeroSlide[] = useMemoSlides(rawSlides, hero, content, jsonHeroImage, fallbackHeroImage.src);
+  const slides: HeroSlide[] = useMemoSlides(rawSlides, hero, content, jsonHeroImage, DEFAULT_HERO_IMAGE);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -140,7 +139,7 @@ export function Hero() {
         >
           <SmartImage
             src={currentSlide.bannerUrl}
-            fallbackSrc={jsonHeroImage || fallbackHeroImage.src}
+            fallbackSrc={jsonHeroImage || DEFAULT_HERO_IMAGE}
             alt={rawH1 || rawTitle || "Indian Public School Campus Banner"}
             width={1920}
             height={1080}

@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Award, Building2, Facebook, GraduationCap, Instagram, Linkedin, ShieldCheck, Youtube } from "lucide-react";
+import { Award, Building2, Facebook, GraduationCap, Instagram, Linkedin, ShieldCheck, Sparkles, Youtube } from "lucide-react";
 import Link from "next/link";
 import { Reveal } from "@/components/site/Reveal";
-import { buildMenuHierarchy, homeData, imageUrl, text } from "@/lib/site-data";
+import { cn } from "@/lib/utils";
+import { buildMenuHierarchy, DEFAULT_LOGO, DEFAULT_SECONDARY_LOGO, homeData, imageUrl, isBannerLogoUrl, text } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { API_URL } from "@/lib/api-client";
 import { openAdmissionModal } from "@/components/site/AdmissionApplicationModal";
+import { SmartFileThumbnail } from "@/components/ui/SmartFileThumbnail";
 
 interface ApiMenuItem {
   _id?: string;
@@ -166,12 +168,17 @@ export function Footer() {
     { icon: Linkedin, label: "LinkedIn", href: text(footerConfig.linkedin) || text(socialsObj.linkedin, "https://linkedin.com") },
   ];
 
-  const headerConfig = (homeIdentity.header as Record<string, string>) || (siteData?.header as Record<string, string>) || {};
-  const siteLogo = (homeIdentity.site_logo as Record<string, string>) || (siteData?.site_logo as Record<string, string>) || {};
-  const rawLogoUrl = text(footerConfig.logoUrl) || siteLogo.logoUrl?.trim() || headerConfig.logoUrl?.trim() || "/assets/Logos/IPSLOGO.png";
-  const customLogoUrl = rawLogoUrl === "/assets/IPSLOGO.png" ? "/assets/Logos/IPSLOGO.png" : rawLogoUrl;
-  const displayBrandTitle = text(footerConfig.logoText) || siteLogo.logoText?.trim() || headerConfig.logoText?.trim() || brandTitle;
-  const displayBrandSubTitle = text(footerConfig.logoSubText) || siteLogo.logoSubText?.trim() || headerConfig.logoSubText?.trim() || brandSubTitle;
+  const headerConfig = (homeIdentity.header as Record<string, any>) || (siteData?.header as Record<string, any>) || {};
+  const siteLogo = (siteData?.site_logo as Record<string, any>) || (homeIdentity.site_logo as Record<string, any>) || {};
+  const rawLogoUrl = (siteLogo.logoUrl ? String(siteLogo.logoUrl).trim() : "") || text(footerConfig.logoUrl) || (headerConfig.logoUrl ? String(headerConfig.logoUrl).trim() : "") || DEFAULT_LOGO;
+  const customLogoUrl = imageUrl(rawLogoUrl);
+  const isBanner = isBannerLogoUrl(rawLogoUrl);
+  const displayBrandTitle = (siteLogo.logoText ? String(siteLogo.logoText).trim() : "") || text(footerConfig.logoText) || (headerConfig.logoText ? String(headerConfig.logoText).trim() : "") || brandTitle;
+  const displayBrandSubTitle = (siteLogo.logoSubText ? String(siteLogo.logoSubText).trim() : "") || text(footerConfig.logoSubText) || (headerConfig.logoSubText ? String(headerConfig.logoSubText).trim() : "") || brandSubTitle;
+
+  const rawSecondaryLogoUrl = (siteLogo.secondaryLogoUrl ? String(siteLogo.secondaryLogoUrl).trim() : "") || text(footerConfig.secondaryLogoUrl) || (headerConfig.secondaryLogoUrl ? String(headerConfig.secondaryLogoUrl).trim() : "") || DEFAULT_SECONDARY_LOGO;
+  const secondaryLogoUrl = imageUrl(rawSecondaryLogoUrl);
+  const showSecondaryLogo = siteLogo.showSecondaryLogo !== false && (footerConfig as any).showSecondaryLogo !== false;
 
   const certifiedBoard = (homeIdentity.certified_board as Record<string, unknown>) || (siteData?.certified_board as Record<string, unknown>) || (footerConfig.certified_board as Record<string, unknown>) || {};
   const certifiedEnabled = certifiedBoard.enabled !== false && Boolean(certifiedBoard.title || certifiedBoard.badgeUrl || certifiedBoard.code);
@@ -179,25 +186,27 @@ export function Footer() {
   const trustBoard = (homeIdentity.trust_board as Record<string, unknown>) || (siteData?.trust_board as Record<string, unknown>) || (footerConfig.trust_board as Record<string, unknown>) || {};
   const trustEnabled = trustBoard.enabled !== false && Boolean(trustBoard.trustName || trustBoard.logoUrl || trustBoard.regNo);
 
+  const academicPartner = (homeIdentity.academic_partner as Record<string, unknown>) || (siteData?.academic_partner as Record<string, unknown>) || (footerConfig.academic_partner as Record<string, unknown>) || {};
+  const partnerEnabled = academicPartner.enabled !== false && Boolean(academicPartner.title || academicPartner.logoUrl);
+
   return (
     <footer className="surface-navy pt-16 pb-8">
       <div className="container-page">
-        {(certifiedEnabled || trustEnabled) && (
-          <div className="mb-12 grid gap-6 border-b border-navy-foreground/15 pb-10 sm:grid-cols-2">
+        {(certifiedEnabled || trustEnabled || partnerEnabled) && (
+          <div className="mb-12 grid gap-6 border-b border-navy-foreground/15 pb-10 sm:grid-cols-2 lg:grid-cols-3">
             {certifiedEnabled && (
               <Reveal>
-                <div className="flex items-start gap-4 rounded-2xl border border-navy-foreground/20 bg-white/5 p-5 backdrop-blur-xs transition-colors hover:border-gold/30">
-                  {certifiedBoard.badgeUrl ? (
-                    <img
-                      src={imageUrl(certifiedBoard.badgeUrl)}
-                      alt={String(certifiedBoard.title || "Certified Board")}
-                      className="size-14 rounded-xl object-contain bg-white/10 p-1.5 shrink-0"
-                    />
-                  ) : (
-                    <div className="grid size-12 shrink-0 place-items-center rounded-xl bg-gold/20 text-gold">
-                      <Award className="size-6" />
-                    </div>
-                  )}
+                <div className="flex items-start gap-4 rounded-2xl border border-navy-foreground/20 bg-white/5 p-5 backdrop-blur-xs transition-colors hover:border-gold/30 h-full">
+                  <SmartFileThumbnail
+                    url={certifiedBoard.badgeUrl ? imageUrl(String(certifiedBoard.badgeUrl)) : null}
+                    alt={String(certifiedBoard.title || "Certified Board")}
+                    className="size-14 rounded-xl object-contain bg-white/10 p-1.5 shrink-0"
+                    fallbackIcon={
+                      <div className="grid size-12 shrink-0 place-items-center rounded-xl bg-gold/20 text-gold">
+                        <Award className="size-6" />
+                      </div>
+                    }
+                  />
                   <div>
                     <div className="flex items-center gap-1.5">
                       <span className="text-[11px] font-bold tracking-wider text-gold uppercase">Certified Company Board</span>
@@ -228,18 +237,17 @@ export function Footer() {
 
             {trustEnabled && (
               <Reveal delay={0.1}>
-                <div className="flex items-start gap-4 rounded-2xl border border-navy-foreground/20 bg-white/5 p-5 backdrop-blur-xs transition-colors hover:border-gold/30">
-                  {trustBoard.logoUrl ? (
-                    <img
-                      src={imageUrl(trustBoard.logoUrl)}
-                      alt={String(trustBoard.trustName || "Trust Board")}
-                      className="size-14 rounded-xl object-contain bg-white/10 p-1.5 shrink-0"
-                    />
-                  ) : (
-                    <div className="grid size-12 shrink-0 place-items-center rounded-xl bg-gold/20 text-gold">
-                      <Building2 className="size-6" />
-                    </div>
-                  )}
+                <div className="flex items-start gap-4 rounded-2xl border border-navy-foreground/20 bg-white/5 p-5 backdrop-blur-xs transition-colors hover:border-gold/30 h-full">
+                  <SmartFileThumbnail
+                    url={trustBoard.logoUrl ? imageUrl(String(trustBoard.logoUrl)) : null}
+                    alt={String(trustBoard.trustName || "Trust Board")}
+                    className="size-14 rounded-xl object-contain bg-white/10 p-1.5 shrink-0"
+                    fallbackIcon={
+                      <div className="grid size-12 shrink-0 place-items-center rounded-xl bg-gold/20 text-gold">
+                        <Building2 className="size-6" />
+                      </div>
+                    }
+                  />
                   <div>
                     <div className="flex items-center gap-1.5">
                       <span className="text-[11px] font-bold tracking-wider text-gold uppercase">Trust Board</span>
@@ -259,8 +267,46 @@ export function Footer() {
                       </p>
                     )}
                     {Boolean(trustBoard.linkUrl) && (
-                      <Link href={String(trustBoard.linkUrl)} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-gold transition-transform hover:translate-x-1">
+                      <Link href={String(trustBoard.linkUrl) || "https://www.cbse.gov.in"} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-gold transition-transform hover:translate-x-1">
                         Learn About Trust &rarr;
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </Reveal>
+            )}
+
+            {partnerEnabled && (
+              <Reveal delay={0.2}>
+                <div className="flex items-start gap-4 rounded-2xl border border-navy-foreground/20 bg-white/5 p-5 backdrop-blur-xs transition-colors hover:border-gold/30 h-full">
+                  <SmartFileThumbnail
+                    url={academicPartner.logoUrl ? imageUrl(String(academicPartner.logoUrl)) : null}
+                    alt={String(academicPartner.title || "Academic Partner")}
+                    className="size-14 rounded-xl object-contain bg-white/10 p-1.5 shrink-0"
+                    fallbackIcon={
+                      <div className="grid size-12 shrink-0 place-items-center rounded-xl bg-gold/20 text-gold">
+                        <GraduationCap className="size-6" />
+                      </div>
+                    }
+                  />
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[11px] font-bold tracking-wider text-gold uppercase">
+                        {String(academicPartner.subtitle || "Our Academic Partner")}
+                      </span>
+                      <i className="bi bi-briefcase text-gold text-[14px]"></i>
+                    </div>
+                    <h4 className="mt-1 text-sm font-semibold text-navy-foreground">
+                      {String(academicPartner.title || "Aakash Institute Partner")}
+                    </h4>
+                    {Boolean(academicPartner.description) && (
+                      <p className="mt-1 text-xs text-navy-foreground/70 leading-relaxed">
+                        {String(academicPartner.description)}
+                      </p>
+                    )}
+                    {Boolean(academicPartner.linkUrl) && (
+                      <Link href={String(academicPartner.linkUrl)} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-gold transition-transform hover:translate-x-1">
+                        Explore Courses &rarr;
                       </Link>
                     )}
                   </div>
@@ -273,28 +319,37 @@ export function Footer() {
         <div className="grid gap-10 lg:grid-cols-[1.2fr_2fr] items-start">
           <Reveal>
             <div className="flex items-center gap-3">
-              {customLogoUrl ? (
+              <div className="inline-flex items-center gap-2.5 rounded-xl bg-white/95 p-2 sm:p-2.5 shadow-xs border border-white/15 backdrop-blur-xs transition-transform duration-300 hover:scale-[1.015]">
                 <img
-                  src={customLogoUrl}
-                  alt={displayBrandTitle}
-                  className="h-11 max-w-[150px] object-contain"
+                  src={customLogoUrl || "/assets/Settings/Logos/IPSLogo.png"}
+                  alt={displayBrandTitle || "Indian Public School"}
+                  className="h-8 sm:h-9 md:h-10 w-auto max-w-[150px] sm:max-w-[180px] object-contain shrink-0"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.dataset.triedLocal) {
+                      target.dataset.triedLocal = "true";
+                      target.src = "/assets/Settings/Logos/IPSLogo.png";
+                    }
+                  }}
                 />
-              ) : (
-                <span
-                  className="grid size-11 place-items-center bg-gold text-gold-foreground"
-                  style={{ borderRadius: "var(--logo-radius, 50%)" }}
-                >
-                  <GraduationCap className="size-5" />
-                </span>
-              )}
-              <span>
-                <span className="block font-display text-lg font-semibold text-navy-foreground">
-                  {displayBrandTitle}
-                </span>
-                <span className="block text-[10px] font-semibold tracking-[0.2em] text-gold uppercase">
-                  {displayBrandSubTitle}
-                </span>
-              </span>
+                {showSecondaryLogo && secondaryLogoUrl && (
+                  <>
+                    <div className="h-6 sm:h-7 w-[1.5px] bg-slate-300/80 rounded-full shrink-0" aria-hidden="true" />
+                    <img
+                      src={secondaryLogoUrl}
+                      alt="Aakash Foundation"
+                      className="h-7 sm:h-8 md:h-9 w-auto max-w-[100px] sm:max-w-[125px] object-contain shrink-0"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (!target.dataset.triedLocal) {
+                          target.dataset.triedLocal = "true";
+                          target.src = "/assets/Settings/Logos/AakashFoundationLogo.png";
+                        }
+                      }}
+                    />
+                  </>
+                )}
+              </div>
             </div>
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-navy-foreground/70">
               {aboutText}

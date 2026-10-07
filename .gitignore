@@ -49,3 +49,6 @@ next-env.d.ts
 
 # Documents
 documents/
+
+# Videos
+public/assets/Videos

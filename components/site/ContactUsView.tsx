@@ -48,8 +48,7 @@ import {
 import { SectionHeading } from "@/components/site/Reveal";
 import { EASE } from "@/lib/motion-presets";
 import { useSiteData } from "@/components/site/SiteDataProvider";
-import { getOfficeTimingsList, text, type OfficeTimingItem } from "@/lib/site-data";
-import fallbackHeroImage from "@/assets/campus-aerial.jpg";
+import { DEFAULT_HERO_IMAGE, getOfficeTimingsList, text, type OfficeTimingItem } from "@/lib/site-data";
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
 
@@ -279,7 +278,7 @@ export function ContactUsView() {
       <section className="relative overflow-hidden bg-slate-950 py-12 lg:py-16 text-white shadow-xl border-b border-gold/30">
         <div className="absolute inset-0 z-0">
           <img
-            src={fallbackHeroImage.src}
+            src={DEFAULT_HERO_IMAGE}
             alt="Indian Public School Contact"
             className="h-full w-full object-cover object-center filter brightness-[0.35] contrast-[1.15] scale-105"
           />

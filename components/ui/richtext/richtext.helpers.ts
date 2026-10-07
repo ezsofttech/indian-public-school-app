@@ -604,7 +604,7 @@ export function getComponentHtmlSnippet(type: string): string {
 </section><p><br></p>`;
         case "slider":
             return `<section style="position: relative; overflow: hidden; border-radius: 1.5rem; margin-bottom: 2rem; background-color: #0f172a;">
-  <img src="https://res.cloudinary.com/niefrrkx/image/upload/v1789163175/indian-public-school/assets/Home/hero-campus.jpg" alt="Campus Banner" style="width: 100%; height: 360px; object-fit: cover; opacity: 0.85; display: block;" />
+  <img src="" alt="Campus Banner" style="width: 100%; height: 360px; object-fit: cover; opacity: 0.85; display: block;" />
   <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem; background: linear-gradient(transparent, rgba(15,23,42,0.95)); color: #ffffff;">
     <h2 style="font-size: 2rem; font-weight: 800; margin: 0 0 0.5rem 0; color: #ffffff;">Modern Campus Infrastructure</h2>
     <p style="margin: 0; font-size: 1rem; color: #e2e8f0; max-width: 36rem;">State-of-the-art science labs, digital libraries, and world-class athletic facilities.</p>

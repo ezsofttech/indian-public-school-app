@@ -1242,18 +1242,19 @@
   },
   {
     "_id": "6ab9fd6a2704543305a8706d",
-    "menuId": "home",
-    "title": "Home",
-    "slug": "home",
-    "parentId": null,
-    "level": 1,
-    "targetUrl": "/",
+    "__v": 0,
     "category": "Header",
-    "order": 0,
-    "isPublished": true,
-    "icon": "",
     "createdAt": "2026-09-28T05:38:50.837Z",
-    "updatedAt": "2026-09-28T05:38:50.837Z",
-    "__v": 0
+    "icon": "",
+    "isPublished": true,
+    "level": 1,
+    "menuId": "home",
+    "order": 0,
+    "parentId": null,
+    "publicId": "MENU-MUV8KRVU-VNNRO",
+    "slug": "home",
+    "targetUrl": "/",
+    "title": "Home",
+    "updatedAt": "2026-09-28T05:38:50.837Z"
   }
 ]

@@ -20,6 +20,15 @@ const FALLBACK_HEIGHTS = [
   "h-64 sm:h-80",
 ];
 
+const DEFAULT_STUDENT_LIFE_IMAGES: Record<string, string> = {
+  ClassRoom: "/assets/Album/ClassRoom.webp",
+  ComputerLab: "/assets/Album/ComputerLab.webp",
+  Library: "/assets/Album/Library.webp",
+  LifeArts: "/assets/Album/LifeArts.png",
+  LifeKids: "/assets/Album/LifeKids.jpg",
+  Sports: "/assets/Album/Sports.png",
+};
+
 export function StudentLife() {
   const section = firstSection(homeData(useSiteData()), "section-7");
   const shots = Array.isArray(section.cardItem)
@@ -42,8 +51,11 @@ export function StudentLife() {
           className="mt-14 columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4"
         >
           {shots.map((shot, index) => {
-            const alt = text(shot.title) || text(shot.heading) || "Student life at Indian Public School";
-            const shotImage = imageUrl(shot.fileUrl);
+            const titleKey = text(shot.title) || text(shot.heading) || "";
+            const alt = titleKey || "Student life at Indian Public School";
+            const rawUrl = text(shot.fileUrl);
+            const fallbackImg = DEFAULT_STUDENT_LIFE_IMAGES[titleKey] || Object.values(DEFAULT_STUDENT_LIFE_IMAGES)[index % 6] || "/assets/Album/ClassRoom.webp";
+            const shotImage = (rawUrl ? imageUrl(rawUrl) : "") || fallbackImg;
             return (
               <motion.figure
                 key={`${alt}-${index}`}
@@ -57,16 +69,16 @@ export function StudentLife() {
                 }}
                 className={`group relative ${FALLBACK_HEIGHTS[index % FALLBACK_HEIGHTS.length]} break-inside-avoid overflow-hidden rounded-3xl shadow-soft`}
               >
-                {shotImage ? (
-                  <Image
-                    src={shotImage}
-                    alt={alt}
-                    loading="lazy"
-                    fill
-                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-[900ms] group-hover:scale-105"
-                  />
-                ) : null}
+                <img
+                  src={shotImage}
+                  alt={alt}
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = fallbackImg;
+                  }}
+                  className="size-full object-cover transition-transform duration-[900ms] group-hover:scale-105"
+                />
                 <figcaption className="absolute inset-0 flex items-end bg-gradient-to-t from-navy-deep/80 to-transparent p-5 text-sm font-medium text-navy-foreground opacity-0 transition-opacity duration-500 group-hover:opacity-100">
                   {alt}
                 </figcaption>

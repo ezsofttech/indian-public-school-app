@@ -61,7 +61,7 @@ import { CloudinaryGalleryModal, getFileType } from "@/components/admin/Cloudina
 import { FileViewerModal } from "@/components/ui/FileViewerModal";
 import { PdfCanvasThumbnail } from "@/components/ui/PdfCanvasThumbnail";
 import { getCloudinaryPdfThumbnailUrl, isPdfFile, getCloudinaryInlineViewerUrl } from "@/lib/file-preview";
-import { imageUrl } from "@/lib/site-data";
+import { DEFAULT_LOGO, DEFAULT_CREST_LOGO, imageUrl } from "@/lib/site-data";
 import { useInquiryNotifications } from "@/lib/hooks/useInquiryNotifications";
 import { CareersAdmin } from "@/components/admin/careers/CareersAdmin";
 import { ThemeManagementTab } from "@/components/admin/tabs/ThemeManagementTab";
@@ -258,12 +258,12 @@ export function AdminConsole() {
         const items = Array.isArray(res.data) ? res.data : Array.isArray(res.data?.items) ? res.data.items : [];
         if (items.length > 0) setPublishedPages(items);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const combinedPages = useMemo(() => {
     const pageMap = new Map<string, RecordItem>();
-    ((fallbackSiteData.pages as RecordItem[]) || []).forEach((p) => {
+    (((fallbackSiteData as any).pages as RecordItem[]) || []).forEach((p) => {
       const id = String(p.slug || p.targetUrl || p._id || p.publicId || "");
       if (id) pageMap.set(id, p);
     });
@@ -392,7 +392,31 @@ export function AdminConsole() {
 
   return <main className="min-h-screen bg-[#f4f7fb] text-slate-800">
     <aside className={`fixed inset-y-0 left-0 z-30 flex w-[272px] flex-col bg-[#102a4c] px-4 py-5 text-slate-200 shadow-2xl transition-transform lg:translate-x-0 ${mobileMenu ? "translate-x-0" : "-translate-x-full"}`}>
-      <div className="mb-9 flex items-center gap-3 px-2"><div className="grid h-10 w-10 place-items-center rounded-xl bg-[#f4bd4f] text-[#102a4c] overflow-hidden p-1"><img src="/assets/Logos/IPSLOGO.png" alt="IPS Logo" className="h-full w-full object-contain" /></div><div><p className="font-display text-lg font-bold text-white">IPS Admin</p><p className="text-xs text-blue-200">Indian Public School</p></div></div>
+      <div className="mb-8 flex items-center gap-3.5 rounded-2xl bg-white/5 p-2.5 border border-white/10 backdrop-blur-md shadow-inner">
+        <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-white p-1 shadow-md shrink-0 ring-2 ring-amber-400/50 overflow-hidden">
+          <img
+            src={imageUrl(DEFAULT_CREST_LOGO)}
+            alt="IPS Shield Logo"
+            className="h-full w-full object-contain mix-blend-multiply"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (!target.dataset.triedLocal) {
+                target.dataset.triedLocal = "true";
+                target.src = "/assets/Settings/Logos/IPSStandardLogo.png";
+              } else if (!target.dataset.triedFallback) {
+                target.dataset.triedFallback = "true";
+                target.src = "/assets/Settings/Logos/IPSLogo.png";
+              }
+            }}
+          />
+        </div>
+        <div className="min-w-0">
+          <div className="flex items-center gap-1.5">
+            <p className="font-display text-base font-extrabold text-white tracking-wide truncate">IPS Admin</p>
+          </div>
+          <p className="text-[11px] font-semibold text-blue-200/90 truncate">Indian Public School</p>
+        </div>
+      </div>
       <nav className="flex-1 space-y-5 overflow-y-auto">
         <button onClick={() => { setActive("overview"); setMobileMenu(false); }} className={`sidebar-link ${active === "overview" ? "sidebar-link-active" : ""}`}><LayoutDashboard size={18} /> Overview</button>
         {sectionNames.slice(1).map((section) => {

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { getBaseUrl, getSchoolJsonLd, getSeoSourceData } from "@/lib/seo";
+import { getAssetUrl } from "@/lib/utils";
+import { DEFAULT_LOGO } from "@/lib/site-data";
 
 const baseUrl = getBaseUrl();
 const seoData = getSeoSourceData();
@@ -32,7 +34,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: `${baseUrl}/assets/Logos/IPSLOGO.png`,
+        url: getAssetUrl(DEFAULT_LOGO),
         width: 800,
         height: 800,
         alt: `${seoData.name} Logo`,
@@ -43,7 +45,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: seoData.pages.home.title,
     description: seoData.pages.home.description,
-    images: [`${baseUrl}/assets/Logos/IPSLOGO.png`],
+    images: [getAssetUrl(DEFAULT_LOGO)],
   },
   robots: {
     index: true,
@@ -58,9 +60,8 @@ export const metadata: Metadata = {
   },
   verification: {
     google: [
-      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "Zq_pKkfmm7LheNW3ugOusir-RTMzdg_Zypu2WiiJVd8",
-      "Oykdy_Xrmt1PQ8av-NNfc53L-FqE-w8l-LkhJidECHM",
-    ],
+      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "MEu__f_ieLX2bOc3aeCCHfzqtqwygpWDOGnq"
+    ]
   },
 };
 

@@ -68,7 +68,7 @@ export function AdmissionApplicationModal() {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
           transition={{ duration: 0.25, ease: EASE }}
-          className="relative z-10 w-full max-w-lg overflow-hidden border border-border bg-white text-slate-900 shadow-2xl my-auto flex flex-col"
+          className="relative z-10 w-full max-w-lg overflow-hidden border border-border bg-card text-card-foreground shadow-2xl my-auto flex flex-col"
           style={{ borderRadius: "var(--card-radius, 1.5rem)" }}
         >
           {/* Header Banner - Standard School Theme Navy & Gold Combination */}
@@ -105,7 +105,7 @@ export function AdmissionApplicationModal() {
           </div>
 
           {/* Form Body */}
-          <div className="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1 bg-white">
+          <div className="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1 bg-card text-card-foreground">
             <AdmissionEnquiryForm defaultGrade={defaultGrade} onClose={() => setIsOpen(false)} />
           </div>
         </motion.div>

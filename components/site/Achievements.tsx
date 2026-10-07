@@ -13,12 +13,7 @@ import {
 } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 
-const FALLBACK_IMAGES = [
-  "https://res.cloudinary.com/niefrrkx/image/upload/v1789163180/indian-public-school/assets/Home/PrePrimary.jpg",
-  "https://res.cloudinary.com/niefrrkx/image/upload/v1789163181/indian-public-school/assets/Home/PrimaryLevel.jpg",
-  "https://res.cloudinary.com/niefrrkx/image/upload/v1789163184/indian-public-school/assets/Home/SecondaryLevel.jpg",
-  "https://res.cloudinary.com/niefrrkx/image/upload/v1789163185/indian-public-school/assets/Home/SeniorSecondLevel.jpg",
-];
+
 
 const CARDS = [
   {
@@ -39,6 +34,13 @@ const CARDS = [
   },
 ];
 
+const DEFAULT_COURSE_IMAGES = [
+  "/assets/Album/PrePrimary.webp",
+  "/assets/Album/PrimaryLevel.webp",
+  "/assets/Album/SecondaryLevel.webp",
+  "/assets/Album/SeniorSecondLevel.webp",
+];
+
 export function Achievements() {
   const section = firstSection(homeData(useSiteData()), "section-8");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -53,19 +55,19 @@ export function Achievements() {
 
   const activeCard = cards[activeIndex] || cards[0];
   const activeCardRec = activeCard as Record<string, unknown>;
-  const activeCardImg = imageUrl(
-    (activeCardRec?.fileUrl as string) || (activeCardRec?.image as string) || ""
-  );
+  const rawCardFile = (activeCardRec?.fileUrl as string) || (activeCardRec?.image as string) || "";
+  const activeCardImg = rawCardFile ? imageUrl(rawCardFile) : "";
 
   const sectionImg = imageUrl(
     Array.isArray(section.fileUrls) ? section.fileUrls[0] : (section.fileUrl as string) || ""
   );
 
+  const fallbackCourseImg = DEFAULT_COURSE_IMAGES[activeIndex % DEFAULT_COURSE_IMAGES.length] || "/assets/Album/PrePrimary.webp";
+
   const currentImage =
     activeCardImg ||
     sectionImg ||
-    FALLBACK_IMAGES[activeIndex % FALLBACK_IMAGES.length] ||
-    FALLBACK_IMAGES[0];
+    fallbackCourseImg;
 
   const currentTitle = text(activeCard?.heading || section.heading, "Our Courses");
 
@@ -98,6 +100,10 @@ export function Achievements() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}
                   transition={{ duration: 0.5, ease: EASE }}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = fallbackCourseImg;
+                  }}
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               </AnimatePresence>

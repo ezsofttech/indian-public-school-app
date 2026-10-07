@@ -11,9 +11,9 @@ import { homeData, imageUrls, imageUrl, text } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { getOptionalApi, unwrapCollection } from "@/lib/api-client";
 
-type Category = "Campus" | "Events" | "Sports" | "Activities" | "Hostel" | "Arts" | "Settings";
+type Category = "Campus" | "Events" | "Sports" | "Activities" | "Hostel" | "Arts";
 
-const CATEGORIES: ("All" | Category)[] = ["All", "Campus", "Events", "Sports", "Activities", "Hostel", "Arts", "Settings"];
+const CATEGORIES: ("All" | Category)[] = ["All", "Campus", "Events", "Sports", "Activities", "Hostel", "Arts"];
 
 interface AlbumImage {
   src: string;
@@ -49,6 +49,9 @@ const FORBIDDEN_TERMS = [
   "school_settings",
   "assets/settings",
   "assets/Settings",
+  "review",
+  "reviews",
+  "album/reviews",
 ];
 
 function isStaffStudentOrPressItem(item: Record<string, unknown>): boolean {
@@ -72,7 +75,8 @@ function isStaffStudentOrPressItem(item: Record<string, unknown>): boolean {
     name.includes("student profile") ||
     name.includes("press release") ||
     name.includes("press document") ||
-    name.includes("setting")
+    name.includes("setting") ||
+    name.includes("review")
   ) {
     return true;
   }
@@ -100,6 +104,10 @@ function isStaffStudentOrPressUrl(url: string): boolean {
     "/Settings/",
     "/assets/settings/",
     "/assets/Settings/",
+    "/review/",
+    "/reviews/",
+    "/assets/review/",
+    "/assets/Review/",
     "staff_photo",
     "student_photo",
     "staff-photo",
@@ -111,6 +119,10 @@ function isStaffStudentOrPressUrl(url: string): boolean {
     "pressrelease",
     "press_doc",
     "press-doc",
+    "review",
+    "review_1",
+    "review_2",
+    "review_3",
     "logo",
     "favicon",
   ];
@@ -141,7 +153,7 @@ function mapEventTypeToCategory(rawType: unknown): Category {
     const matched = CATEGORIES.find((c) => c.toLowerCase() === folder.toLowerCase());
     if (matched && matched !== "All") return matched as Category;
   }
-  if (["Campus", "Events", "Sports", "Activities", "Hostel", "Arts", "Settings"].includes(t)) {
+  if (["Campus", "Events", "Sports", "Activities", "Hostel", "Arts"].includes(t)) {
     return t as Category;
   }
   const lower = t.toLowerCase();
@@ -152,106 +164,19 @@ function mapEventTypeToCategory(rawType: unknown): Category {
     lower.includes("experiential") ||
     lower.includes("training") ||
     lower.includes("trip") ||
-    lower.includes("speech")
+    lower.includes("speech") ||
+    lower.includes("competition") ||
+    lower.includes("empowerment")
   ) {
     return "Activities";
   }
   if (lower.includes("hostel")) return "Hostel";
   if (lower.includes("art") || lower.includes("cultural")) return "Arts";
-  if (lower.includes("campus")) return "Campus";
+  if (lower.includes("campus") || lower.includes("partner")) return "Campus";
   return "Events";
 }
 
-const DEFAULT_CLOUDINARY_MEDIA: AlbumImage[] = [
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789163175/indian-public-school/assets/Home/hero-campus.jpg",
-    alt: "Campus Aerial Main View",
-    category: "Campus",
-    album: "Main Campus Aerial Banners",
-    directory: "/album/campus",
-    directoryName: "/album/campus",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1562774053-701939374585?w=1200&auto=format&fit=crop&q=80",
-    alt: "School Academic Building Front View",
-    category: "Campus",
-    album: "School Infrastructure",
-    directory: "/album/campus",
-    directoryName: "/album/campus",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&auto=format&fit=crop&q=80",
-    alt: "Smart Science & Innovation Lab",
-    category: "Activities",
-    album: "Science & Innovation",
-    directory: "/album/activities",
-    directoryName: "/album/activities",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1577896851231-70ef18881754?w=1200&auto=format&fit=crop&q=80",
-    alt: "Digital Smart Interactive Classroom",
-    category: "Campus",
-    album: "Classrooms & Labs",
-    directory: "/album/campus",
-    directoryName: "/album/campus",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200&auto=format&fit=crop&q=80",
-    alt: "Central Library & Knowledge Hub",
-    category: "Campus",
-    album: "Library",
-    directory: "/album/campus",
-    directoryName: "/album/campus",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789163160/indian-public-school/assets/Home/Banner_2.jpg",
-    alt: "Annual Athletic Sports Field",
-    category: "Sports",
-    album: "Sports Ground",
-    directory: "/album/sports",
-    directoryName: "/album/sports",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789163161/indian-public-school/assets/Home/Banner_3.jpg",
-    alt: "Cultural Festival & Auditorium Stage",
-    category: "Events",
-    album: "Auditorium & Events",
-    directory: "/album/events",
-    directoryName: "/album/events",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789163162/indian-public-school/assets/Home/Banner_4.jpg",
-    alt: "Student Activity Center",
-    category: "Activities",
-    album: "Co-Curricular Activities",
-    directory: "/album/activities",
-    directoryName: "/album/activities",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789163164/indian-public-school/assets/Home/Banner_6.jpg",
-    alt: "Art Studio & Creative Corner",
-    category: "Arts",
-    album: "Art & Craft Studio",
-    directory: "/album/arts",
-    directoryName: "/album/arts",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789163165/indian-public-school/assets/Home/Banner_7.jpg",
-    alt: "Hostel & Living Facility",
-    category: "Hostel",
-    album: "Hostel Premises",
-    directory: "/album/hostel",
-    directoryName: "/album/hostel",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789163166/indian-public-school/assets/Home/Banner_8.jpg",
-    alt: "Open Green Playgrounds",
-    category: "Sports",
-    album: "Playgrounds",
-    directory: "/album/sports",
-    directoryName: "/album/sports",
-  },
-];
+
 
 export function Gallery() {
   const siteData = useSiteData();
@@ -368,7 +293,7 @@ export function Gallery() {
 
   // Combined & deduplicated album images
   const allAlbumImages = useMemo(() => {
-    const combined = [...extraApiImages, ...datasourceImages, ...DEFAULT_CLOUDINARY_MEDIA];
+    const combined = [...extraApiImages, ...datasourceImages];
     const seen = new Set<string>();
     const uniqueList: AlbumImage[] = [];
 
@@ -440,7 +365,7 @@ export function Gallery() {
           ))}
         </div>
 
-        <motion.div layout className="mt-10 columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
+        <motion.div layout className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
             {homepageShown.map((img, i) => (
               <motion.button
@@ -452,14 +377,28 @@ export function Gallery() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.94 }}
                 transition={{ duration: 0.45, ease: EASE, delay: i * 0.03 }}
-                className="group block w-full break-inside-avoid overflow-hidden rounded-2xl shadow-soft"
+                className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-xl text-left"
               >
-                <img
-                  src={img.src}
-                  alt={img.alt}
-                  loading="lazy"
-                  className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <span className="absolute top-3 left-3 rounded-lg bg-slate-900/75 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur-md">
+                    {img.category}
+                  </span>
+                </div>
+                <div className="p-3.5 flex flex-col justify-between flex-1">
+                  <h3 className="line-clamp-1 text-xs font-bold text-slate-800 group-hover:text-primary">
+                    {img.alt}
+                  </h3>
+                  <p className="mt-0.5 line-clamp-1 text-[11px] font-medium text-slate-500">
+                    Album: {img.album}
+                  </p>
+                </div>
               </motion.button>
             ))}
           </AnimatePresence>

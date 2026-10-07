@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FileText, X, Image as ImageIcon, Eye, Check } from "lucide-react";
 import { generatePdfCardHtml } from "./richtext.helpers";
 
@@ -25,6 +25,17 @@ export function PdfStudioModal({
   const [pdfStudioSubtitle, setPdfStudioSubtitle] = useState("");
   const [pdfStudioButtonText, setPdfStudioButtonText] = useState("Open Document");
   const [pdfStudioMaxHeight, setPdfStudioMaxHeight] = useState(420);
+
+  useEffect(() => {
+    if (initialPdfUrl) {
+      setPdfStudioUrl(initialPdfUrl);
+      const rawFileName = initialPdfUrl.split("/").pop() || "Official Document";
+      const cleanName = rawFileName.replace(/\.(pdf|jpg|jpeg|png|webp)$/i, "").replace(/[-_]/g, " ");
+      if (cleanName) {
+        setPdfStudioTitle(cleanName.charAt(0).toUpperCase() + cleanName.slice(1));
+      }
+    }
+  }, [initialPdfUrl]);
 
   if (!isOpen) return null;
 

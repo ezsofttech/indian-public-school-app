@@ -1,6 +1,4 @@
-/**
- * File Preview Utilities for Cloudinary & Universal File Viewer
- */
+import { getAssetUrl } from "./utils";
 
 export function isCloudinaryUrl(url?: string | null): boolean {
   if (!url) return false;
@@ -19,7 +17,7 @@ export function normalizePdfUrl(url?: string | null): string {
       const format = urlObj.searchParams.get("format") || "pdf";
       const pathParts = urlObj.pathname.split("/");
       const cloudIdx = pathParts.indexOf("v1_1");
-      const cloudName = cloudIdx !== -1 ? pathParts[cloudIdx + 1] : "niefrrkx";
+      const cloudName = cloudIdx !== -1 ? pathParts[cloudIdx + 1] : "dnw7mgysa";
 
       if (publicId && cloudName) {
         const decodedPublicId = decodeURIComponent(publicId);
@@ -35,7 +33,7 @@ export function normalizePdfUrl(url?: string | null): string {
   if (clean.toLowerCase().endsWith(".pdf.pdf")) {
     clean = clean.substring(0, clean.length - 4);
   }
-  return clean;
+  return getAssetUrl(clean);
 }
 
 export function getCleanUrl(url?: string | null): string {
@@ -95,11 +93,12 @@ export function getCloudinaryPdfThumbnailUrl(url?: string | null, page = 1, widt
   const trimmed = normalizePdfUrl(url);
 
   if (isCloudinaryUrl(trimmed)) {
-    if (trimmed.includes("/raw/upload/")) {
-      return `/api/pdf-proxy?url=${encodeURIComponent(trimmed)}`;
+    let cdnUrl = trimmed;
+    if (cdnUrl.includes("/raw/upload/")) {
+      cdnUrl = cdnUrl.replace("/raw/upload/", "/image/upload/");
     }
-    if (trimmed.includes("/image/upload/")) {
-      const parts = trimmed.split("/image/upload/");
+    if (cdnUrl.includes("/image/upload/")) {
+      const parts = cdnUrl.split("/image/upload/");
       const transformation = `pg_${page},f_jpg,w_${width},q_auto,c_limit/`;
       const rest = parts[1];
       return `${parts[0]}/image/upload/${transformation}${rest}`;

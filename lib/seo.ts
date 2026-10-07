@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import seoSource from "@/public/seo-source.json";
+import { getAssetUrl } from "@/lib/utils";
+import { DEFAULT_LOGO } from "@/lib/site-data";
 
 export interface SeoPageConfig {
   title: string;
@@ -34,7 +36,7 @@ export const getSchoolJsonLd = () => {
     name: seoSource.name,
     alternateName: seoSource.alternateName,
     url: baseUrl,
-    logo: `${baseUrl}/assets/Logos/IPSLOGO.png`,
+    logo: getAssetUrl(DEFAULT_LOGO),
     image: campusImages.length > 0 ? campusImages[0] : `${baseUrl}/assets/campus-aerial.jpg`,
     photos: campusImages,
     description: seoSource.description,
@@ -106,7 +108,7 @@ export const getPageSeoMetadata = (
           alt: `${pageData.title} - ${seoSource.name}`,
         },
         {
-          url: `${baseUrl}/assets/Logos/IPSLOGO.png`,
+          url: getAssetUrl(DEFAULT_LOGO),
           width: 800,
           height: 800,
           alt: `${seoSource.name} Logo`,

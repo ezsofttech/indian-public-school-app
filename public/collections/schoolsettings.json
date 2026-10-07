@@ -8,14 +8,14 @@
         {
           "identity": {
             "header": {
-              "noticeText": "Admissions Open for Session 2026-27",
+              "noticeText": "",
               "phone": "",
               "email": "",
               "ctaText": "Apply Now",
               "ctaUrl": "/#admissions",
-              "logoText": "Indian Public School",
-              "logoSubText": "Learn · Lead · Inspire",
-              "logoUrl": ""
+              "logoText": "",
+              "logoSubText": "",
+              "logoUrl": "/Settings/Logos/IPSLogo.png"
             },
             "footer": {
               "aboutText": "A co-educational CBSE school committed to academic excellence, strong character and genuine care for every child.",
@@ -23,13 +23,13 @@
               "phone": "+91 8114320555",
               "email": "info@indianpublicschool.in",
               "copyright": "© 2026 Indian Public School. All rights reserved.",
-              "logoText": "Indian Public School",
-              "logoSubText": "Learn · Lead · Inspire"
+              "logoText": "",
+              "logoSubText": ""
             },
             "site_logo": {
-              "logoUrl": "/assets/Logos/IPSLOGO.png",
-              "logoText": "Indian Public School",
-              "logoSubText": "Learn · Lead · Inspire"
+              "logoUrl": "/Settings/Logos/IPSLogo.png",
+              "logoText": "",
+              "logoSubText": ""
             },
             "whatsapp": {
               "enabled": true,
@@ -48,18 +48,30 @@
             "certified_board": {
               "title": "CBSE Affiliated School",
               "code": "Affiliation No. 1530211 | School Code: 53123",
-              "badgeUrl": "/assets/Logos/AAKASH_FOUNDATION_LOGO.jpg",
+              "badgeUrl": "/assets/Settings/Logos/AAKASH_FOUNDATION_LOGO.jpg",
               "description": "Affiliated to Central Board of Secondary Education, New Delhi",
-              "linkUrl": "/mandatory-disclosure",
+              "linkUrl": "https://www.cbse.gov.in",
               "enabled": true
             },
             "trust_board": {
               "trustName": "K.S. Dalmia Education Trust",
               "regNo": "Established under KS Dalmia Education Trust",
-              "logoUrl": "/assets/Logos/DALMIA_LOGO.png",
+              "logoUrl": "/assets/Settings/Logos/DALMIA_LOGO.png",
               "description": "Dedicated to character building, academic excellence, and holistic personality development.",
               "linkUrl": "/about/school-establishment",
               "enabled": true
+            },
+            "popupBanner": {
+              "enabled": true,
+              "imageUrl": "/assets/Settings/Home/POP_UP_IMAGE.jpeg",
+              "title": "Admissions Open 2026–27",
+              "subtitle": "Indian Public School, Sambalpur",
+              "enquiryButtonText": "Enquiry Now",
+              "closeButtonText": "Close",
+              "modalWidth": "lg",
+              "aspectRatio": "16/10",
+              "imageFit": "contain",
+              "onlyOncePerSession": false
             }
           },
           "hero": {
@@ -95,7 +107,30 @@
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1790328995/indian-public-school/assets/Home/file_ljuhl7.png"
+              "/assets/Settings/Home/Banner_1.jpg",
+              "/assets/Settings/Home/Banner_2.jpg",
+              "/assets/Settings/Home/Banner_3.jpg",
+              "/assets/Settings/Home/Banner_4.jpg",
+              "/assets/Settings/Home/Banner_5.jpg",
+              "/assets/Settings/Home/Banner_6.jpg"
+            ],
+            "bannerUrl": "/assets/Settings/Home/Banner_1.jpg",
+            "slides": [
+              {
+                "bannerUrl": "/assets/Settings/Home/Banner_1.jpg",
+                "enableOverlay": true,
+                "showText": true
+              },
+              {
+                "bannerUrl": "/assets/Settings/Home/Banner_2.jpg",
+                "enableOverlay": true,
+                "showText": true
+              },
+              {
+                "bannerUrl": "/assets/Settings/Home/Banner_3.jpg",
+                "enableOverlay": true,
+                "showText": true
+              }
             ]
           },
           "menuCard": [
@@ -132,14 +167,14 @@
           ],
           "banner": {
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163157/indian-public-school/assets/Home/Banner_1.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163160/indian-public-school/assets/Home/Banner_2.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163161/indian-public-school/assets/Home/Banner_3.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163162/indian-public-school/assets/Home/Banner_4.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163163/indian-public-school/assets/Home/Banner_5.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163164/indian-public-school/assets/Home/Banner_6.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163165/indian-public-school/assets/Home/Banner_7.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163166/indian-public-school/assets/Home/Banner_8.jpg"
+              "/assets/Home/Banner_1.jpg",
+              "/assets/Home/Banner_2.jpg",
+              "/assets/Home/Banner_3.jpg",
+              "/assets/Home/Banner_4.jpg",
+              "/assets/Home/Banner_5.jpg",
+              "/assets/Home/Banner_6.jpg",
+              "/assets/Home/Banner_7.jpg",
+              "/assets/Home/Banner_8.jpg"
             ]
           },
           "section-1": [
@@ -170,7 +205,7 @@
               },
               "briefCard": [
                 {
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163167/indian-public-school/assets/Home/campus-aerial.jpg",
+                  "fileUrl": "/assets/Home/campus-aerial.jpg",
                   "heading": "A green, purpose-built campus"
                 }
               ]
@@ -183,7 +218,7 @@
               "sub-heading": "Pre-primary to Grade XII"
             },
             {
-              "count": "75+",
+              "count": "50+",
               "heading": "Faculty & Staff",
               "sub-heading": "Trained CBSE educators"
             },
@@ -373,42 +408,42 @@
                 {
                   "title": "Smart Classrooms",
                   "sub-title": "Digital boards and airy, light-filled rooms.",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163153/indian-public-school/assets/Home/about-classroom.jpg"
+                  "fileUrl": "/assets/Home/about-classroom.jpg"
                 },
                 {
                   "title": "Science Labs",
                   "sub-title": "Physics, chemistry and biology labs.",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163171/indian-public-school/assets/Home/facility-lab.jpg"
+                  "fileUrl": "/assets/Home/facility-lab.jpg"
                 },
                 {
                   "title": "Computer Lab",
                   "sub-title": "Modern workstations for coding and design.",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163170/indian-public-school/assets/Home/facility-computer.jpg"
+                  "fileUrl": "/assets/Home/facility-computer.jpg"
                 },
                 {
                   "title": "Library",
                   "sub-title": "Reading room with a growing collection.",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163173/indian-public-school/assets/Home/facility-library.jpg"
+                  "fileUrl": "/assets/Home/facility-library.jpg"
                 },
                 {
                   "title": "Sports Facilities",
                   "sub-title": "Courts, track and coached team practice.",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163174/indian-public-school/assets/Home/facility-sports.jpg"
+                  "fileUrl": "/assets/Home/facility-sports.jpg"
                 },
                 {
                   "title": "Playground",
                   "sub-title": "Safe, age-appropriate play zones.",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163167/indian-public-school/assets/Home/campus-aerial.jpg"
+                  "fileUrl": "/assets/Home/campus-aerial.jpg"
                 },
                 {
                   "title": "Hostel & Mess",
                   "sub-title": "Supervised residence with nutritious dining.",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163179/indian-public-school/assets/Home/life-kids.jpg"
+                  "fileUrl": "/assets/Home/life-kids.jpg"
                 },
                 {
                   "title": "Art & Music Rooms",
                   "sub-title": "Dedicated studios for creative practice.",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163178/indian-public-school/assets/Home/life-arts.jpg"
+                  "fileUrl": "/assets/Home/life-arts.jpg"
                 }
               ]
             }
@@ -423,27 +458,27 @@
               "cardItem": [
                 {
                   "title": "Creative Arts & Crafts",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163179/indian-public-school/assets/Home/life-kids.jpg"
+                  "fileUrl": "/assets/Home/life-kids.jpg"
                 },
                 {
                   "title": "Music & Performing Arts",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163178/indian-public-school/assets/Home/life-arts.jpg"
+                  "fileUrl": "/assets/Home/life-arts.jpg"
                 },
                 {
                   "title": "Sports & Athletic Training",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163174/indian-public-school/assets/Home/facility-sports.jpg"
+                  "fileUrl": "/assets/Home/facility-sports.jpg"
                 },
                 {
                   "title": "Interactive Learning & Library",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163173/indian-public-school/assets/Home/facility-library.jpg"
+                  "fileUrl": "/assets/Home/facility-library.jpg"
                 },
                 {
                   "title": "Campus Activities & Play",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163167/indian-public-school/assets/Home/campus-aerial.jpg"
+                  "fileUrl": "/assets/Home/campus-aerial.jpg"
                 },
                 {
                   "title": "Primary Education Workshops",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163180/indian-public-school/assets/Home/PrePrimary.jpg"
+                  "fileUrl": "/assets/Home/PrePrimary.jpg"
                 }
               ],
               "redirectUrl": "/about-us/director-message"
@@ -456,27 +491,24 @@
                 {
                   "title": "Pre-Primary",
                   "description": "The main aim of pre-primary education is to attain an optimal perceptual and motor, cognitive and socio-emotional levels as the basis for readiness for school education and the life in the society.",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163180/indian-public-school/assets/Home/PrePrimary.jpg"
+                  "fileUrl": "/assets/Home/PrePrimary.jpg"
                 },
                 {
                   "title": "Primary Level",
                   "description": "Learning Beyond the Objective in Primary Education explores an existential perspective for pedagogy proposed in response to the current technocratic paradigm of education prevalent in many countries worldwide.",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163181/indian-public-school/assets/Home/PrimaryLevel.jpg"
+                  "fileUrl": "/assets/Home/PrimaryLevel.jpg"
                 },
                 {
                   "title": "Secondary Level",
                   "description": "The key objective of secondary education is aimed at guaranteeing the development of the key competences, to the acquisition of which both primary and compulsory secondary education must contribute.",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163184/indian-public-school/assets/Home/SecondaryLevel.jpg"
+                  "fileUrl": "/assets/Home/SecondaryLevel.jpg"
                 },
                 {
                   "title": "Senior-Secondary Level",
                   "description": "Secondary Education is the second stage in the system of public education usually beginning with Class IX &amp; X of during which education is differentiated in varying degrees according to the needs and aptitudes of the pupils.",
-                  "fileUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163185/indian-public-school/assets/Home/SeniorSecondLevel.jpg"
+                  "fileUrl": "/assets/Home/SeniorSecondLevel.jpg"
                 }
-              ],
-              "introFileUrl": "https://res.cloudinary.com/niefrrkx/video/upload/v1789615686/IPSIntroVideo.mp4",
-              "videoUrl": "https://res.cloudinary.com/niefrrkx/video/upload/v1789615686/IPSIntroVideo.mp4",
-              "cloudinaryFolder": "indian-public-school/assets/Videos"
+              ]
             }
           ],
           "section-9": [
@@ -485,7 +517,7 @@
               "subHeading": "Best CBSE School in Odisha",
               "description": "The state-of-the-art school is backed by dedicated and experienced staff members and a highly committed and experienced management team – making it the ideal place for an educational experience par excellence. Our students work independently as well as cooperatively, learning to respect the needs of others as well as their own. A love of nature and a deep sense of responsibility for others and their environment are fostered. Also, the child should have fun and develop new friendships. Most importantly self - esteem is nurtured so that each child is proud of their ability and is confident in what they can achieve.",
               "fileUrls": [
-                "https://res.cloudinary.com/niefrrkx/image/upload/v1789163169/indian-public-school/assets/Home/Director.jpg"
+                "/assets/Home/Director.jpg"
               ],
               "redirectUrl": "/about-us"
             }
@@ -497,7 +529,7 @@
                 {
                   "createdAt": "2026-05-11T01:43:51.398Z",
                   "title": "Pre Exam Time Table for Class 10th & 12th",
-                  "redirectUrl": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163151/indian-public-school/assets/Downloads/TimeTable.webp"
+                  "redirectUrl": "/assets/Downloads/TimeTable.webp"
                 },
                 {
                   "createdAt": "2026-09-11T01:43:51.398Z",
@@ -512,9 +544,9 @@
               "eyebrow": "Discover IPS",
               "title": "Experience life at Indian Public School",
               "description": "Take a look at the campus, learning spaces and student life.",
-              "introFileUrl": "https://res.cloudinary.com/niefrrkx/video/upload/v1789615686/IPSIntroVideo.mp4",
-              "videoUrl": "https://res.cloudinary.com/niefrrkx/video/upload/v1789615686/IPSIntroVideo.mp4",
-              "cloudinaryFolder": "indian-public-school/assets/Videos"
+              "introFileUrl": "/Videos/IPSIntroVideo.mp4",
+              "videoUrl": "/Videos/IPSIntroVideo.mp4",
+              "cloudinaryFolder": "Videos"
             }
           ]
         }
@@ -685,7 +717,7 @@
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163213/indian-public-school/assets/Infrastructure/SchoolBuilding.jpg"
+              "/assets/Infrastructure/SchoolBuilding.jpg"
             ],
             "redirectUrl": "/infrastructure/school-building"
           },
@@ -699,9 +731,9 @@
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163201/indian-public-school/assets/Infrastructure/Lab_1.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163203/indian-public-school/assets/Infrastructure/Lab_2.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163204/indian-public-school/assets/Infrastructure/Lab_3.jpg"
+              "/assets/Infrastructure/Lab_1.jpg",
+              "/assets/Infrastructure/Lab_2.jpg",
+              "/assets/Infrastructure/Lab_3.jpg"
             ],
             "redirectUrl": "/infrastructure/laboratories"
           },
@@ -716,9 +748,9 @@
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163194/indian-public-school/assets/Infrastructure/Infirmary_1.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163195/indian-public-school/assets/Infrastructure/Infirmary_2.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163197/indian-public-school/assets/Infrastructure/Infirmary_3.jpg"
+              "/assets/Infrastructure/Infirmary_1.jpg",
+              "/assets/Infrastructure/Infirmary_2.jpg",
+              "/assets/Infrastructure/Infirmary_3.jpg"
             ],
             "redirectUrl": "/infrastructure/infirmary-medical"
           },
@@ -732,9 +764,9 @@
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163198/indian-public-school/assets/Infrastructure/KidPlaygroud_1.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163199/indian-public-school/assets/Infrastructure/KidPlaygroud_2.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163200/indian-public-school/assets/Infrastructure/KidPlaygroud_3.jpg"
+              "/assets/Infrastructure/KidPlaygroud_1.jpg",
+              "/assets/Infrastructure/KidPlaygroud_2.jpg",
+              "/assets/Infrastructure/KidPlaygroud_3.jpg"
             ],
             "redirectUrl": "/infrastructure/sport-room"
           },
@@ -752,9 +784,9 @@
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163198/indian-public-school/assets/Infrastructure/KidPlaygroud_1.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163199/indian-public-school/assets/Infrastructure/KidPlaygroud_2.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163200/indian-public-school/assets/Infrastructure/KidPlaygroud_3.jpg"
+              "/assets/Infrastructure/KidPlaygroud_1.jpg",
+              "/assets/Infrastructure/KidPlaygroud_2.jpg",
+              "/assets/Infrastructure/KidPlaygroud_3.jpg"
             ],
             "redirectUrl": "/infrastructure/playground"
           },
@@ -778,8 +810,8 @@
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163186/indian-public-school/assets/Infrastructure/Art_1.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163187/indian-public-school/assets/Infrastructure/Art_2.jpg"
+              "/assets/Infrastructure/Art_1.jpg",
+              "/assets/Infrastructure/Art_2.jpg"
             ],
             "redirectUrl": "/infrastructure/craft-room"
           },
@@ -793,10 +825,10 @@
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163208/indian-public-school/assets/Infrastructure/Music_Dance_Room_1.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163209/indian-public-school/assets/Infrastructure/Music_Dance_Room_2.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163211/indian-public-school/assets/Infrastructure/Music_Dance_Room_3.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163212/indian-public-school/assets/Infrastructure/Music_Dance_Room_4.jpg"
+              "/assets/Infrastructure/Music_Dance_Room_1.jpg",
+              "/assets/Infrastructure/Music_Dance_Room_2.jpg",
+              "/assets/Infrastructure/Music_Dance_Room_3.jpg",
+              "/assets/Infrastructure/Music_Dance_Room_4.jpg"
             ],
             "redirectUrl": "/infrastructure/music-dance-room"
           },
@@ -826,11 +858,11 @@
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163189/indian-public-school/assets/Infrastructure/Hostel_1.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163190/indian-public-school/assets/Infrastructure/Hostel_2.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163191/indian-public-school/assets/Infrastructure/Hostel_3.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163192/indian-public-school/assets/Infrastructure/Hostel_4.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163193/indian-public-school/assets/Infrastructure/Hostel_5.jpg"
+              "/assets/Infrastructure/Hostel_1.jpg",
+              "/assets/Infrastructure/Hostel_2.jpg",
+              "/assets/Infrastructure/Hostel_3.jpg",
+              "/assets/Infrastructure/Hostel_4.jpg",
+              "/assets/Infrastructure/Hostel_5.jpg"
             ],
             "redirectUrl": "/infrastructure/hostel"
           },
@@ -848,14 +880,14 @@
                   "Students must leave the Mess after the rising bell.",
                   "Suggestions/complaints can be communicated to student food committee Incharges/ House Mothers/ Asstt. House Mothers/ Chief Warden."
                 ],
-                "menu-preview": "https://res.cloudinary.com/niefrrkx/raw/upload/v1789163188/indian-public-school/assets/Infrastructure/food_menu"
+                "menu-preview": "/assets/Infrastructure/food_menu"
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163204/indian-public-school/assets/Infrastructure/Mess_1.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163205/indian-public-school/assets/Infrastructure/Mess_2.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163206/indian-public-school/assets/Infrastructure/Mess_3.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163207/indian-public-school/assets/Infrastructure/Mess_4.jpg"
+              "/assets/Infrastructure/Mess_1.jpg",
+              "/assets/Infrastructure/Mess_2.jpg",
+              "/assets/Infrastructure/Mess_3.jpg",
+              "/assets/Infrastructure/Mess_4.jpg"
             ],
             "redirectUrl": "/infrastructure/mess"
           }
@@ -1137,9 +1169,9 @@
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163216/indian-public-school/assets/LIFE%40IPS/LifeInHostel/LifeInHostel_1.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163217/indian-public-school/assets/LIFE%40IPS/LifeInHostel/LifeInHostel_2.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163218/indian-public-school/assets/LIFE%40IPS/LifeInHostel/LifeInHostel_3.jpg"
+              "/assets/LIFE%40IPS/LifeInHostel/LifeInHostel_1.jpg",
+              "/assets/LIFE%40IPS/LifeInHostel/LifeInHostel_2.jpg",
+              "/assets/LIFE%40IPS/LifeInHostel/LifeInHostel_3.jpg"
             ],
             "redirectUrl": "/life-hostel/life-in-hostel"
           },
@@ -1172,7 +1204,7 @@
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163214/indian-public-school/assets/LIFE%40IPS/Competition%40365Days/Competition_1.jpg"
+              "/assets/LIFE%40IPS/Competition%40365Days/Competition_1.jpg"
             ],
             "redirectUrl": "/life-hostel/competitions"
           },
@@ -1214,9 +1246,9 @@
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163219/indian-public-school/assets/LIFE%40IPS/OurLearningPartners/LearningPartner_1.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163220/indian-public-school/assets/LIFE%40IPS/OurLearningPartners/LearningPartner_2.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163221/indian-public-school/assets/LIFE%40IPS/OurLearningPartners/LearningPartner_3.jpg"
+              "/assets/LIFE%40IPS/OurLearningPartners/LearningPartner_1.jpg",
+              "/assets/LIFE%40IPS/OurLearningPartners/LearningPartner_2.jpg",
+              "/assets/LIFE%40IPS/OurLearningPartners/LearningPartner_3.jpg"
             ],
             "redirectUrl": "/life-hostel/our-learning-partners"
           },
@@ -1235,12 +1267,12 @@
               }
             ],
             "fileUrls": [
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163222/indian-public-school/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_1.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163223/indian-public-school/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_2.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163225/indian-public-school/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_3.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163226/indian-public-school/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_4.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163227/indian-public-school/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_5.jpg",
-              "https://res.cloudinary.com/niefrrkx/image/upload/v1789163228/indian-public-school/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_6.jpg"
+              "/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_1.jpg",
+              "/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_2.jpg",
+              "/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_3.jpg",
+              "/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_4.jpg",
+              "/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_5.jpg",
+              "/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_6.jpg"
             ],
             "redirectUrl": "/life-hostel/student-empowerment"
           }
@@ -1489,7 +1521,7 @@
           "createdAt": "2020-09-11T01:43:51.398Z",
           "rating": 3,
           "feedback": "Great school. All the teachers we had cares about both academic and personal growth. We have 3 kids so we didn’t just get lucky. It’s a small enough school so kids don’t get lost but big enough to have all the extra curricular activities to keep kids busy and be social. Love, love, love this school.",
-          "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163277/indian-public-school/assets/Review/Anonymous.png"
+          "avatar": "/assets/Review/Anonymous.png"
         },
         {
           "name": "Abhishek Prakash Jha",
@@ -1497,7 +1529,7 @@
           "createdAt": "2020-09-11T01:43:51.398Z",
           "rating": 5,
           "feedback": "good School, good environment.",
-          "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163276/indian-public-school/assets/Review/AbhishekPrakashJha.jpg"
+          "avatar": "/assets/Review/AbhishekPrakashJha.jpg"
         },
         {
           "name": "Shriyansh Shekhar Lenka",
@@ -1505,7 +1537,7 @@
           "createdAt": "2022-09-11T01:43:51.398Z",
           "rating": 5,
           "feedback": "Satisfied with studies and overall performance of the child.",
-          "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163281/indian-public-school/assets/Review/ShreyanshSekharJha.jpg"
+          "avatar": "/assets/Review/ShreyanshSekharJha.jpg"
         },
         {
           "name": "Samay Palta Singh",
@@ -1513,7 +1545,7 @@
           "createdAt": "2022-09-11T01:43:51.398Z",
           "rating": 3,
           "feedback": "Good studies and good overall performance .Good improvement shown .",
-          "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163283/indian-public-school/assets/Review/SmayPatlaSingh.jpg"
+          "avatar": "/assets/Review/SmayPatlaSingh.jpg"
         },
         {
           "name": "Ansh Singh",
@@ -1521,7 +1553,7 @@
           "createdAt": "2023-11-11T01:43:51.398Z",
           "rating": 5,
           "feedback": "Studies are good ..... satisfied with the academics and management of the school .",
-          "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163279/indian-public-school/assets/Review/AnshSingh.jpg"
+          "avatar": "/assets/Review/AnshSingh.jpg"
         }
       ],
       "press-release": [
@@ -1529,31 +1561,31 @@
           "title": "Press Release & Media Coverage Archives",
           "description": "Official newspaper clippings, CBSE board examination merit announcements, and media releases for Indian Public School.",
           "fileUrls": [
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453144/indian-public-school/assets/PressRelease/17862583261000230814.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453143/indian-public-school/assets/PressRelease/17757957511000058001.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453142/indian-public-school/assets/PressRelease/17753674921000050424.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453141/indian-public-school/assets/PressRelease/1715858224IMG-20240515-WA0014%282%29.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453140/indian-public-school/assets/PressRelease/1715858206IMG-20240514-WA0004.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453138/indian-public-school/assets/PressRelease/1715858187IMG-20240514-WA0001.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453138/indian-public-school/assets/PressRelease/1715858169IMG-20240514-WA0000.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453137/indian-public-school/assets/PressRelease/1715858150IMG-20240514-WA0002.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453136/indian-public-school/assets/PressRelease/1715858130IMG-20240514-WA0003.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453135/indian-public-school/assets/PressRelease/1708060020IMG-20240215-WA0022.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453134/indian-public-school/assets/PressRelease/1708059977IMG_20240216_102843.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453133/indian-public-school/assets/PressRelease/1684324770BEST_RESULT_OF_SAMBALPUR__page-000111.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453131/indian-public-school/assets/PressRelease/1684324697BEST_RESULT_OF_SAMBALPUR__page-0001.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453130/indian-public-school/assets/PressRelease/168432457210__12_nAVBHARAT.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453129/indian-public-school/assets/PressRelease/168432451610__12.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453128/indian-public-school/assets/PressRelease/168432446212.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453127/indian-public-school/assets/PressRelease/168432438910.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453126/indian-public-school/assets/PressRelease/1675064263Press_Release.png",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453125/indian-public-school/assets/PressRelease/1659155454WhatsApp_Image_2022-07-30_at_9.51.06_AM_11zon.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453123/indian-public-school/assets/PressRelease/1659155404WhatsApp_Image_2022-07-30_at_9.52.24_AM_11zon.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453122/indian-public-school/assets/PressRelease/1659155343WhatsApp_Image_2022-07-30_at_9.52.15_AM_11zon.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453121/indian-public-school/assets/PressRelease/1659155286nav_bharat_1_11zon.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453119/indian-public-school/assets/PressRelease/1633588204WhatsApp_Image_2021-09-18_at_16.38.23_-_Copy.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453118/indian-public-school/assets/PressRelease/1633588189WhatsApp_Image_2021-09-18_at_16.38.22_%281%29.jpg",
-            "https://res.cloudinary.com/niefrrkx/image/upload/v1789453117/indian-public-school/assets/PressRelease/1631531588EducationExellenceAward.jpg"
+            "/assets/PressRelease/17862583261000230814.jpg",
+            "/assets/PressRelease/17757957511000058001.jpg",
+            "/assets/PressRelease/17753674921000050424.jpg",
+            "/assets/PressRelease/1715858224IMG-20240515-WA0014%282%29.jpg",
+            "/assets/PressRelease/1715858206IMG-20240514-WA0004.jpg",
+            "/assets/PressRelease/1715858187IMG-20240514-WA0001.jpg",
+            "/assets/PressRelease/1715858169IMG-20240514-WA0000.jpg",
+            "/assets/PressRelease/1715858150IMG-20240514-WA0002.jpg",
+            "/assets/PressRelease/1715858130IMG-20240514-WA0003.jpg",
+            "/assets/PressRelease/1708060020IMG-20240215-WA0022.jpg",
+            "/assets/PressRelease/1708059977IMG_20240216_102843.jpg",
+            "/assets/PressRelease/1684324770BEST_RESULT_OF_SAMBALPUR__page-000111.jpg",
+            "/assets/PressRelease/1684324697BEST_RESULT_OF_SAMBALPUR__page-0001.jpg",
+            "/assets/PressRelease/168432457210__12_nAVBHARAT.jpg",
+            "/assets/PressRelease/168432451610__12.jpg",
+            "/assets/PressRelease/168432446212.jpg",
+            "/assets/PressRelease/168432438910.jpg",
+            "/assets/PressRelease/1675064263Press_Release.png",
+            "/assets/PressRelease/1659155454WhatsApp_Image_2022-07-30_at_9.51.06_AM_11zon.jpg",
+            "/assets/PressRelease/1659155404WhatsApp_Image_2022-07-30_at_9.52.24_AM_11zon.jpg",
+            "/assets/PressRelease/1659155343WhatsApp_Image_2022-07-30_at_9.52.15_AM_11zon.jpg",
+            "/assets/PressRelease/1659155286nav_bharat_1_11zon.jpg",
+            "/assets/PressRelease/1633588204WhatsApp_Image_2021-09-18_at_16.38.23_-_Copy.jpg",
+            "/assets/PressRelease/1633588189WhatsApp_Image_2021-09-18_at_16.38.22_%281%29.jpg",
+            "/assets/PressRelease/1631531588EducationExellenceAward.jpg"
           ]
         }
       ],
@@ -1600,35 +1632,35 @@
         {
           "self-certification": {
             "title": "Self Certification",
-            "fileUrl": "https://res.cloudinary.com/niefrrkx/raw/upload/v1789163244/indian-public-school/assets/MandatoryDisclosure/Self_Certificate"
+            "fileUrl": "/assets/MandatoryDisclosure/Self_Certificate"
           },
           "water-testing": {
             "title": "Water Testing",
-            "fileUrl": "https://res.cloudinary.com/niefrrkx/raw/upload/v1789163248/indian-public-school/assets/MandatoryDisclosure/Water_Testing"
+            "fileUrl": "/assets/MandatoryDisclosure/Water_Testing"
           },
           "general-information": {
             "title": "General Information",
-            "fileUrl": "https://res.cloudinary.com/niefrrkx/raw/upload/v1789163238/indian-public-school/assets/MandatoryDisclosure/General_Information"
+            "fileUrl": "/assets/MandatoryDisclosure/General_Information"
           },
           "mandatory-disclosure": {
             "title": "Mandatory Disclosure Details",
-            "fileUrl": "https://res.cloudinary.com/niefrrkx/raw/upload/v1789163239/indian-public-school/assets/MandatoryDisclosure/Mandatory_Disclosure_Details"
+            "fileUrl": "/assets/MandatoryDisclosure/Mandatory_Disclosure_Details"
           },
           "tc": {
             "title": "Transfer Certificate",
-            "fileUrl": "https://res.cloudinary.com/niefrrkx/raw/upload/v1789163245/indian-public-school/assets/MandatoryDisclosure/TC"
+            "fileUrl": "/assets/MandatoryDisclosure/TC"
           },
           "emergency-contact": {
             "title": "Contact Details (In Case Of Emergency Only)",
-            "fileUrl": "https://res.cloudinary.com/niefrrkx/raw/upload/v1789163236/indian-public-school/assets/MandatoryDisclosure/EMERGENCY_CONTACT_DETAILS"
+            "fileUrl": "/assets/MandatoryDisclosure/EMERGENCY_CONTACT_DETAILS"
           },
           "trustee": {
             "title": "Trustee",
-            "fileUrl": "https://res.cloudinary.com/niefrrkx/raw/upload/v1789163247/indian-public-school/assets/MandatoryDisclosure/TRUSTEE"
+            "fileUrl": "/assets/MandatoryDisclosure/TRUSTEE"
           },
           "staff-directory": {
             "title": "Staff Directory",
-            "fileUrl": "https://res.cloudinary.com/niefrrkx/raw/upload/v1789163231/indian-public-school/assets/MandatoryDisclosure/1787199685583STAFF_DIRECTORY"
+            "fileUrl": "/assets/MandatoryDisclosure/1787199685583STAFF_DIRECTORY"
           }
         }
       ],
@@ -1690,7 +1722,7 @@
           "designation": "Senior Teacher",
           "qualification": "M.A. in Hindi Literature",
           "joinDate": "2020-06-15T00:00:00.000Z",
-          "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163284/indian-public-school/assets/Staff/Amit.jpg"
+          "avatar": "/assets/Staff/Amit.jpg"
         },
         {
           "_id": "68ea145727b0470543a31e1e",
@@ -1704,7 +1736,7 @@
           "designation": "Senior Teacher",
           "qualification": "B.Tech in Computer Science",
           "joinDate": "2020-06-15T00:00:00.000Z",
-          "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/v1789163285/indian-public-school/assets/Staff/Sonam.jpg"
+          "avatar": "/assets/Staff/Sonam.jpg"
         }
       ],
       "students": [
@@ -1841,9 +1873,9 @@
         "email": "",
         "ctaText": "Apply Now",
         "ctaUrl": "/#admissions",
-        "logoText": "Indian Public School",
-        "logoSubText": "Learn · Lead · Inspire",
-        "logoUrl": ""
+        "logoText": "",
+        "logoSubText": "",
+        "logoUrl": "/Settings/Logos/IPSLogo.png"
       },
       "footer": {
         "aboutText": "A co-educational CBSE school committed to academic excellence, strong character and genuine care for every child.",
@@ -1851,8 +1883,8 @@
         "phone": "+91 8114320555",
         "email": "info@indianpublicschool.in",
         "copyright": "© 2026 Indian Public School. All rights reserved.",
-        "logoText": "Indian Public School",
-        "logoSubText": "Learn · Lead · Inspire"
+        "logoText": "",
+        "logoSubText": ""
       },
       "whatsapp": {
         "enabled": true,
@@ -1869,14 +1901,14 @@
         "position": "bottom-left"
       },
       "site_logo": {
-        "logoUrl": "/assets/Logos/IPSLOGO.png",
-        "logoText": "Indian Public School",
-        "logoSubText": "Learn · Lead · Inspire"
+        "logoUrl": "/Settings/Logos/IPSLogo.png",
+        "logoText": "",
+        "logoSubText": ""
       },
       "certified_board": {
         "title": "CBSE Affiliated School",
         "code": "Affiliation No. 1530211 | School Code: 53123",
-        "badgeUrl": "/assets/Logos/AAKASH_FOUNDATION_LOGO.jpg",
+        "badgeUrl": "/assets/Settings/Logos/AAKASH_FOUNDATION_LOGO.jpg",
         "description": "Affiliated to Central Board of Secondary Education, New Delhi",
         "linkUrl": "/mandatory-disclosure",
         "enabled": true
@@ -1884,7 +1916,7 @@
       "trust_board": {
         "trustName": "K.S. Dalmia Education Trust",
         "regNo": "Established under KS Dalmia Education Trust",
-        "logoUrl": "/assets/Logos/DALMIA_LOGO.png",
+        "logoUrl": "/assets/Settings/Logos/DALMIA_LOGO.png",
         "description": "Dedicated to character building, academic excellence, and holistic personality development.",
         "linkUrl": "/about/school-establishment",
         "enabled": true

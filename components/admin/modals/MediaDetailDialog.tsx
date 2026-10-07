@@ -18,8 +18,10 @@ import { PdfCanvasThumbnail } from "@/components/ui/PdfCanvasThumbnail";
 import {
   getCloudinaryPdfThumbnailUrl,
   isPdfFile,
+  isDocumentFile,
   getCloudinaryInlineViewerUrl,
 } from "@/lib/file-preview";
+import { SmartFileThumbnail } from "@/components/ui/SmartFileThumbnail";
 import { imageUrl } from "@/lib/site-data";
 import { RecordItem, Resource } from "../types/admin.types";
 import { titleCase, decodeHtmlEntities, getPreviewUrl } from "../utils/admin.helpers";
@@ -77,15 +79,14 @@ export function StructuredDetailValue({
 
   if (typeof val === "string" && (val.startsWith("http://") || val.startsWith("https://"))) {
     const isImg =
-      /\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i.test(val) ||
+      (/\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i.test(val) ||
       val.includes("cloudinary") ||
-      val.includes("/uploads/");
+      val.includes("/uploads/")) && !isDocumentFile(val);
     if (isImg) {
       return (
         <div className="flex items-center gap-3 font-sans">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={imageUrl(val)}
+          <SmartFileThumbnail
+            url={imageUrl(val)}
             alt={keyName}
             className="h-12 w-12 rounded-xl object-cover border border-slate-200 shadow-2xs shrink-0"
           />
@@ -98,7 +99,7 @@ export function StructuredDetailValue({
             >
               {val}
             </a>
-            <span className="text-[10px] text-slate-400 font-medium">Image Asset</span>
+            <span className="text-[10px] text-slate-400 font-medium">Asset Attachment</span>
           </div>
         </div>
       );

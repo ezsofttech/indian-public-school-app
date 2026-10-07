@@ -1,12 +1,23 @@
 import { getOptionalApi, unwrapCollection, unwrapSetting, type ApiRecord, type PaginatedData } from "@/lib/api-client";
+import { getAssetUrl, getCloudinaryRootFolder } from "@/lib/utils";
 import fallbackSiteData from "@/public/cloud-datasource.json";
+
+export const CLOUDINARY_ROOT_FOLDER = getCloudinaryRootFolder();
+export const DEFAULT_HERO_IMAGE = "/assets/Settings/Home/Banner_1.jpg";
+export const DEFAULT_LOGO = "/Settings/Logos/IPSLogo.png";
+export const DEFAULT_SECONDARY_LOGO = "https://res.cloudinary.com/dnw7mgysa/image/upload/ips-education/assets/Settings/Logos/file_xpnvia.png";
+export const DEFAULT_CREST_LOGO = "/Settings/Logos/IPSStandardLogo.png";
+export const DEFAULT_INTRO_VIDEO = "/Videos/IPSIntroVideo.mp4";
 
 export type SiteRecord = ApiRecord;
 
 export interface SiteLogoSetting {
   logoUrl?: string;
+  secondaryLogoUrl?: string;
+  showSecondaryLogo?: boolean;
   logoText?: string;
   logoSubText?: string;
+  [key: string]: unknown;
 }
 
 export interface CertifiedBoardSetting {
@@ -21,6 +32,15 @@ export interface CertifiedBoardSetting {
 export interface TrustBoardSetting {
   trustName?: string;
   regNo?: string;
+  logoUrl?: string;
+  description?: string;
+  linkUrl?: string;
+  enabled?: boolean;
+}
+
+export interface AcademicPartnerSetting {
+  title?: string;
+  subtitle?: string;
   logoUrl?: string;
   description?: string;
   linkUrl?: string;
@@ -162,6 +182,7 @@ export interface SiteData {
   site_logo?: SiteLogoSetting;
   certified_board?: CertifiedBoardSetting;
   trust_board?: TrustBoardSetting;
+  academic_partner?: AcademicPartnerSetting;
   whatsapp?: WhatsAppSetting;
   popupBanner?: PopupBannerSetting;
   [key: string]: unknown;
@@ -176,14 +197,16 @@ export async function getSiteData(): Promise<SiteData> {
       : [];
   const fallbackMenuitemsTree = buildMenuHierarchy(rawFallbackMenuitems as SiteRecord[]);
 
-  const [siteResponse, newsResponse, galleryResponse, reviewsResponse, menuItemsResponse] = await Promise.all([
+  const [siteResponse, logoSettingResponse, newsResponse, galleryResponse, reviewsResponse, menuItemsResponse] = await Promise.all([
     getOptionalApi<SiteData | { value?: SiteData; _doc?: { value?: SiteData } }>("/regarding/datasource"),
-    getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/news", { limit: 8, page: 1, sortOrder: "desc" }),
+    getOptionalApi<SiteLogoSetting | { value?: SiteLogoSetting }>("/school-settings/key/site_logo"),
+    getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/news", { limit: 10, page: 1, sortOrder: "desc" }),
     getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/gallery", { limit: 50, page: 1, sortOrder: "desc" }),
     getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/reviews", { limit: 12, page: 1, sortOrder: "desc" }),
     getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/menu-items", { publishedOnly: "true" }),
   ]);
   const siteData = siteResponse ? unwrapSetting<SiteData>(siteResponse) : fallback;
+  const dbLogoSetting = logoSettingResponse ? unwrapSetting<SiteLogoSetting>(logoSettingResponse) : null;
   const apiNews = unwrapCollection(newsResponse);
   const apiGallery = unwrapCollection(galleryResponse);
   const apiReviews = unwrapCollection(reviewsResponse);
@@ -199,12 +222,44 @@ export async function getSiteData(): Promise<SiteData> {
     ? buildMenuHierarchy(apiMenuItems)
     : fallbackMenuitemsTree;
 
+  const siteLogoFromDb = (dbLogoSetting && typeof dbLogoSetting === "object" && dbLogoSetting.logoUrl)
+    ? dbLogoSetting
+    : (siteData.site_logo || (siteData.home?.[0]?.identity as any)?.site_logo);
+
+  const homeList = Array.isArray(siteData.home) && siteData.home.length > 0 ? siteData.home : fallback.home;
+  const updatedHome = homeList.map((item, idx) => {
+    if (idx === 0 && siteLogoFromDb) {
+      const currentIdentity = (item.identity as Record<string, unknown>) || {};
+      const currentHeader = (currentIdentity.header as Record<string, unknown>) || {};
+      const currentFooter = (currentIdentity.footer as Record<string, unknown>) || {};
+      return {
+        ...item,
+        identity: {
+          ...currentIdentity,
+          header: {
+            ...currentHeader,
+            ...(siteLogoFromDb.logoUrl ? { logoUrl: siteLogoFromDb.logoUrl } : {}),
+            ...(siteLogoFromDb.logoText ? { logoText: siteLogoFromDb.logoText } : {}),
+            ...(siteLogoFromDb.logoSubText ? { logoSubText: siteLogoFromDb.logoSubText } : {}),
+          },
+          footer: {
+            ...currentFooter,
+            ...(siteLogoFromDb.logoUrl ? { logoUrl: siteLogoFromDb.logoUrl } : {}),
+            ...(siteLogoFromDb.logoText ? { logoText: siteLogoFromDb.logoText } : {}),
+            ...(siteLogoFromDb.logoSubText ? { logoSubText: siteLogoFromDb.logoSubText } : {}),
+          },
+          site_logo: siteLogoFromDb,
+        },
+      };
+    }
+    return item;
+  });
+
   return {
     ...fallback,
     ...siteData,
-    // Each public endpoint is independent. A missing content setting must not
-    // prevent live reviews, news, gallery, or menu records from being displayed.
-    home: siteData.home?.length ? siteData.home : fallback.home,
+    site_logo: siteLogoFromDb || fallback.site_logo,
+    home: updatedHome,
     news: apiNews.length ? apiNews : fallback.news,
     galleryItems: apiGallery.length ? apiGallery : fallbackGallery,
     reviewsItems: apiReviews.length ? apiReviews : fallbackReviews,
@@ -235,20 +290,98 @@ export function textList(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 }
 
+export function isBannerLogoUrl(url?: string | null): boolean {
+  if (!url) return true;
+  const lower = url.toLowerCase().trim();
+  return lower.includes("ipslogo") || lower.includes("bannerlogo") || lower.includes("banner_logo") || lower.includes("banner");
+}
+
 export function imageUrl(value: unknown): string {
   if (typeof value === "string") {
-    const url = value.trim();
+    let url = value.trim();
     if (!url) return "";
-    if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:") || url.startsWith("/")) {
-      return url;
+    if (
+      url === "/assets/Logos/IPSLOGO.png" ||
+      url === "/assets/IPSLOGO.png" ||
+      url === "assets/Logos/IPSLOGO.png" ||
+      url.includes("file_dzw3mb.png") ||
+      url.includes("BannerLogo.png")
+    ) {
+      url = DEFAULT_LOGO;
     }
-    return `/${url}`;
+    return getAssetUrl(url);
   }
   if (Array.isArray(value)) {
     const found = value.find((item): item is string => typeof item === "string" && item.trim().length > 0);
     return found ? imageUrl(found) : "";
   }
   return "";
+}
+
+export function processHtmlAssetUrls(html?: string | null): string {
+  if (!html || typeof html !== "string") return "";
+
+  let processed = html.replace(
+    /\bsrc=["']([^"']+)["']/gi,
+    (match, path) => {
+      const cleanPath = (path || "").trim();
+      if (!cleanPath) return match;
+      if (cleanPath.includes("cloudinary.com")) {
+        const fullUrl = imageUrl(cleanPath);
+        return `src="${fullUrl}"`;
+      }
+      if (
+        cleanPath.startsWith("http://") ||
+        cleanPath.startsWith("https://") ||
+        cleanPath.startsWith("data:") ||
+        cleanPath.startsWith("blob:") ||
+        cleanPath.startsWith("javascript:")
+      ) {
+        return match;
+      }
+      const fullUrl = imageUrl(cleanPath);
+      return `src="${fullUrl}"`;
+    }
+  );
+
+  processed = processed.replace(
+    /\bhref=["']([^"']+)["']/gi,
+    (match, path) => {
+      const cleanPath = (path || "").trim();
+      if (!cleanPath) return match;
+      if (cleanPath.includes("cloudinary.com")) {
+        const fullUrl = imageUrl(cleanPath);
+        return `href="${fullUrl}"`;
+      }
+      if (
+        cleanPath.startsWith("http://") ||
+        cleanPath.startsWith("https://") ||
+        cleanPath.startsWith("data:") ||
+        cleanPath.startsWith("blob:") ||
+        cleanPath.startsWith("#") ||
+        cleanPath.startsWith("mailto:") ||
+        cleanPath.startsWith("tel:") ||
+        cleanPath.startsWith("javascript:")
+      ) {
+        return match;
+      }
+      const lower = cleanPath.toLowerCase();
+      const isMediaLink =
+        /\.(jpg|jpeg|png|webp|svg|gif|avif|mp4|webm|pdf|doc|docx|xls|xlsx|zip)($|\?|#)/i.test(lower) ||
+        lower.includes("/assets/") ||
+        lower.includes("/uploads/") ||
+        lower.includes("/album/") ||
+        lower.includes("/documents/");
+
+      if (isMediaLink) {
+        const fullUrl = imageUrl(cleanPath);
+        return `href="${fullUrl}"`;
+      }
+      return match;
+    }
+  );
+
+  return processed;
 }
 
 export function imageUrls(record: SiteRecord): string[] {
@@ -328,8 +461,12 @@ export function getPopupBannerConfig(siteData?: SiteData | null): Required<Popup
   };
 
   const enabled = pb.enabled !== false;
-  const delaySeconds = typeof pb.delaySeconds === "number" ? pb.delaySeconds : (Number(pb.delaySeconds) || 3);
-  const imageUrl = pb.imageUrl !== undefined ? text(pb.imageUrl) : "https://res.cloudinary.com/niefrrkx/image/upload/v1789163166/indian-public-school/assets/Home/Banner_8.jpg?auto=format&fit=crop&w=1400&q=85";
+  const delaySeconds = typeof pb.delaySeconds === "number" ? pb.delaySeconds : (Number(pb.delaySeconds) || 1);
+  let rawImageUrl = pb.imageUrl !== undefined && text(pb.imageUrl).trim() !== "" ? text(pb.imageUrl) : "/assets/Settings/Home/POP_UP_IMAGE.jpeg";
+  if (rawImageUrl.includes("Banner_8") || rawImageUrl.includes("file_") || !rawImageUrl.trim()) {
+    rawImageUrl = "/assets/Settings/Home/POP_UP_IMAGE.jpeg";
+  }
+  const resolvedImageUrl = imageUrl(rawImageUrl) || getAssetUrl(rawImageUrl) || "/assets/Settings/Home/POP_UP_IMAGE.jpeg";
   const showTitle = pb.showTitle !== false;
   const title = showTitle ? (pb.title !== undefined ? text(pb.title) : "Admissions Open 2026–27") : "";
   const rawSubtitle = text(pb.subtitle) || "";
@@ -350,7 +487,7 @@ export function getPopupBannerConfig(siteData?: SiteData | null): Required<Popup
   return {
     enabled,
     delaySeconds,
-    imageUrl,
+    imageUrl: resolvedImageUrl,
     showTitle,
     title,
     subtitle,

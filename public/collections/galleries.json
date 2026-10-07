@@ -1,1196 +1,873 @@
 [
   {
-    "_id": "6aa8b188e43965656b59ef1e",
-    "__v": 0,
-    "createdAt": "2026-09-15T02:46:32.247Z",
-    "deletedAt": null,
-    "directory": "/album/visual-editor-picked",
-    "eventName": "Logo",
-    "eventType": "Visual Editor Picked",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789440390/indian-public-school/assets/Visual%20Editor%20Picked/file_avevn4.png"
-    ],
-    "publicId": "GAL-MU22LVE9-7H2F2",
-    "updatedAt": "2026-09-29T11:17:51.948Z"
-  },
-  {
-    "_id": "6aaa016f4edf5eee740a4762",
-    "__v": 0,
-    "createdAt": "2026-09-16T02:39:43.350Z",
-    "deletedAt": null,
-    "directory": "/album/visual-editor-picked",
-    "eventName": "Dalmia",
-    "eventType": "Visual Editor Picked",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789526382/indian-public-school/assets/Visual%20Editor%20Picked/file_izsu0r.png"
-    ],
-    "publicId": "GAL-MU3HSYK6-P5ILA",
-    "updatedAt": "2026-09-29T11:18:03.378Z"
-  },
-  {
-    "_id": "6aaa6ce6708ff52e509c34fd",
-    "__v": 0,
-    "createdAt": "2026-09-16T10:18:14.667Z",
-    "deletedAt": null,
-    "directory": "/album/gallery",
-    "eventName": "Introduction IPS",
-    "eventType": "Gallery",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/video/upload/v1789553891/indian-public-school/assets/Gallery/file_idnc0p.mp4"
-    ],
-    "publicId": "GAL-MU3Y6MF9-0DZ3A",
-    "updatedAt": "2026-09-29T11:18:55.104Z"
-  },
-  {
     "_id": "6aab59652c4c3ab7c6169ff7",
-    "__v": 0,
-    "createdAt": "2026-09-17T03:07:17.442Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Videos",
-    "eventName": "IntroIPS",
-    "eventType": "Campus",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/video/upload/v1789614434/indian-public-school/assets/Gallery/file_mpey2c.mp4"
-    ],
     "publicId": "GAL-MU4Y89IV-GJSJI",
-    "updatedAt": "2026-09-17T03:07:30.162Z"
+    "eventName": "IPS Introduction",
+    "eventType": "General",
+    "directory": "/album/videos",
+    "fileUrl": [
+      "/Videos/IPSIntroVideo.mp4"
+    ],
+    "mimeType": "video/mp4",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aab628c57ac46acecbf8365",
-    "createdAt": "2022-01-01T01:43:51.398Z",
+    "publicId": "GAL-MU4ZMIGO-CPLN0",
     "eventName": "Youth Awareness",
-    "eventType": "Awareness",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMIGO-CPLN0"
-  },
-  {
-    "_id": "6aab628c57ac46acecbf8366",
-    "createdAt": "2025-10-02T00:00:00.000Z",
-    "eventName": "Gandhi Jaynti",
-    "eventType": "BirthCelebration",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMIJ2-A240H"
-  },
-  {
-    "_id": "6aab628c57ac46acecbf8367",
-    "createdAt": "2025-10-02T00:00:00.000Z",
-    "eventName": "Vigilance Awareness",
-    "eventType": "Awareness",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMIKL-OQVLK"
-  },
-  {
-    "_id": "6aab628c57ac46acecbf8368",
-    "createdAt": "2022-08-01T00:00:00.000Z",
-    "eventName": "Vocation Training",
-    "eventType": "SkillDevelopment",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMILP-UW3DT"
-  },
-  {
-    "_id": "6aab628c57ac46acecbf8369",
-    "createdAt": "2023-11-15T00:00:00.000Z",
-    "eventName": "Foundation Day",
-    "eventType": "Ceremony",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMIMT-R64U3"
-  },
-  {
-    "_id": "6aab628c57ac46acecbf836a",
-    "createdAt": "2023-11-15T00:00:00.000Z",
-    "eventName": "Tips Suggession",
-    "eventType": "Expert Speech",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMIPI-TQQ9K"
-  },
-  {
-    "_id": "6aab628c57ac46acecbf836b",
-    "createdAt": "2023-11-15T00:00:00.000Z",
-    "eventName": "Covid Awareness",
-    "eventType": "Awareness",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMIQW-A64EQ"
-  },
-  {
-    "_id": "6aab628d57ac46acecbf836c",
-    "createdAt": "2023-11-15T00:00:00.000Z",
-    "eventName": "English Activity",
-    "eventType": "Subject Activity",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMIS7-OSZ6X"
-  },
-  {
-    "_id": "6aab628d57ac46acecbf836e",
-    "createdAt": "2023-11-15T00:00:00.000Z",
-    "eventName": "Public Speaking",
-    "eventType": "Awareness",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMIUH-M40M8"
-  },
-  {
-    "_id": "6aab628d57ac46acecbf836f",
-    "createdAt": "2023-11-15T00:00:00.000Z",
-    "eventName": "Parent-Teacher Meeting",
-    "eventType": "Parent Teacher Meeting",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMIW0-KA21W"
-  },
-  {
-    "_id": "6aab628d57ac46acecbf8370",
-    "createdAt": "2023-11-15T00:00:00.000Z",
-    "eventName": "Mathematics Group Activity",
-    "eventType": "Subject Activity",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMIY8-JDGFE"
-  },
-  {
-    "_id": "6aab628d57ac46acecbf8371",
-    "createdAt": "2023-11-15T00:00:00.000Z",
-    "eventName": "Activity on Vowels and Consonants",
-    "eventType": "Subject Activity",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMIZN-PY47Y"
-  },
-  {
-    "_id": "6aab628d57ac46acecbf8372",
-    "createdAt": "2023-11-15T00:00:00.000Z",
-    "eventName": "Winner of WorldBookofRecord",
-    "eventType": "Winner",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMJ37-MBZI5"
-  },
-  {
-    "_id": "6aab628d57ac46acecbf8373",
-    "createdAt": "2023-11-15T00:00:00.000Z",
-    "eventName": "NCC",
-    "eventType": "NCC Training",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMJ4H-7POKW"
-  },
-  {
-    "_id": "6aab628d57ac46acecbf8374",
-    "createdAt": "2023-11-15T00:00:00.000Z",
-    "eventName": "Skill Development",
-    "eventType": "Skill",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMJ68-7B3N3"
-  },
-  {
-    "_id": "6aab628d57ac46acecbf8375",
-    "createdAt": "2023-11-15T00:00:00.000Z",
-    "eventName": "Experiential Learning",
-    "eventType": "Experiential Learning",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMJ8C-P0G85"
-  },
-  {
-    "_id": "6aab628d57ac46acecbf8376",
-    "createdAt": "2023-11-15T00:00:00.000Z",
-    "eventName": "Glimpses of World Yoga Day",
-    "eventType": "Yoga Day",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMJAK-0QUQC"
-  },
-  {
-    "_id": "6aab628d57ac46acecbf8377",
-    "createdAt": "2026-01-24T00:00:00.000Z",
-    "eventName": "Visit to ISCON temple by toddlers of our pre primary wing",
-    "eventType": "Field Trip",
-    "fileUrl": [],
-    "publicId": "GAL-MU4ZMJD2-VG7H9"
+    "eventType": "General",
+    "directory": "/album/general",
+    "fileUrl": [
+      "/Album/Awareness.png"
+    ],
+    "mimeType": "image/png",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aabbe57e07d684cba87f012",
-    "__v": 0,
-    "createdAt": "2026-09-17T10:17:59.522Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
-    "eventName": "Self-Certification",
-    "eventType": "Documents",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789640278/indian-public-school/assets/Documents/yywnaazmzanxgenayllh.pdf"
-    ],
     "publicId": "GAL-MU5DM5EP-A1PAZ",
-    "updatedAt": "2026-09-17T10:18:05.506Z"
+    "eventName": "Self Certification",
+    "eventType": "Documents",
+    "directory": "/album/documents",
+    "fileUrl": [
+      "/Documents/SEL_CERTIFICATION.pdf"
+    ],
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aabc2ca3b6e83bee4ade7bb",
-    "__v": 0,
-    "createdAt": "2026-09-17T10:36:58.341Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MU5EAK4I-U0MA3",
     "eventName": "Water Testing",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789641415/indian-public-school/assets/Documents/1789641414788_Water_Testing.pdf"
+      "/Documents/WATER_TESTING.pdf"
     ],
-    "publicId": "GAL-MU5EAK4I-U0MA3",
-    "updatedAt": "2026-09-17T10:37:02.447Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aabc4b17e211514ae9dfd91",
-    "__v": 0,
-    "createdAt": "2026-09-17T10:45:05.295Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MU5EKZUZ-K09DR",
     "eventName": "CBSE Affiliation",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789641902/indian-public-school/assets/General/1789641902644_CBSE_AFFILIATION.pdf"
+      "/Documents/CBSE_AFFILIATION.pdf"
     ],
-    "publicId": "GAL-MU5EKZUZ-K09DR",
-    "updatedAt": "2026-09-17T10:45:27.271Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aabc7047e211514ae9dfd93",
-    "__v": 0,
-    "createdAt": "2026-09-17T10:55:00.048Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MU5EXQRZ-AVVW2",
     "eventName": "Transfer Certificate",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789642497/indian-public-school/assets/Documents/1789642497371_TC.pdf"
+      "/Documents/TRANSFER_CERTIFICATE.pdf"
     ],
-    "publicId": "GAL-MU5EXQRZ-AVVW2",
-    "updatedAt": "2026-09-17T10:55:02.415Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aabc94d7e211514ae9dfd94",
-    "__v": 0,
-    "createdAt": "2026-09-17T11:04:45.352Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MU5FAAEF-VEAXA",
     "eventName": "Emergency Contacts",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789643082/indian-public-school/assets/Documents/1789643083275_EMERGENCY_CONTACT_DETAILS.pdf"
+      "/Documents/EMERGENCY_CONTACT_DETAILS.pdf"
     ],
-    "publicId": "GAL-MU5FAAEF-VEAXA",
-    "updatedAt": "2026-09-17T11:04:49.093Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aabc97b7e211514ae9dfd95",
-    "__v": 0,
-    "createdAt": "2026-09-17T11:05:31.669Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MU5FBA51-3L09O",
     "eventName": "General Information",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789643128/indian-public-school/assets/Documents/1789643129478_General_Information.pdf"
+      "/Documents/GENERAL_INFORMATION.pdf"
     ],
-    "publicId": "GAL-MU5FBA51-3L09O",
-    "updatedAt": "2026-09-17T11:05:34.470Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aabe63bd3c16d5c8221ebb3",
-    "__v": 0,
-    "createdAt": "2026-09-17T13:08:11.933Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MU5JP1CS-O50ZD",
     "eventName": "Trustee",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789650490/indian-public-school/assets/Documents/1789650488228_TRUSTEE.pdf"
+      "/Documents/TRUSTEE.pdf"
     ],
-    "publicId": "GAL-MU5JP1CS-O50ZD",
-    "updatedAt": "2026-09-17T13:08:23.605Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aabea77d3c16d5c8221ebb4",
-    "__v": 0,
-    "createdAt": "2026-09-17T13:26:15.024Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MU5KC92K-QF3L9",
     "eventName": "Fire Safety",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789651573/indian-public-school/assets/Documents/1789651572654_FIRE_SAFETY_CERTIFICATE.pdf"
+      "/Documents/FIRE_SAFETY_CERTIFICATE.pdf"
     ],
-    "publicId": "GAL-MU5KC92K-QF3L9",
-    "updatedAt": "2026-09-17T13:26:51.201Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aabeefbd3c16d5c8221ebb5",
-    "__v": 0,
-    "createdAt": "2026-09-17T13:45:31.607Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MU5L11HZ-GZJDL",
     "eventName": "Staff Directory",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789652730/indian-public-school/assets/Documents/1789652729452_1787199685583STAFF_DIRECTORY.pdf"
+      "/Documents/STAFF_DIRECTORY.pdf"
     ],
-    "publicId": "GAL-MU5L11HZ-GZJDL",
-    "updatedAt": "2026-09-17T13:45:36.276Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aacae55d3c16d5c8221ebb6",
-    "__v": 0,
-    "createdAt": "2026-09-18T03:21:57.123Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MU6E6YYO-7C357",
     "eventName": "Population Certificate",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789701715/indian-public-school/assets/Documents/1789701715012_POPULATION_CERTIFICATE.pdf"
+      "/Documents/POPULATION_CERTIFICATE.pdf"
     ],
-    "publicId": "GAL-MU6E6YYO-7C357",
-    "updatedAt": "2026-09-18T03:22:27.051Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aacb30bd3c16d5c8221ebb7",
-    "__v": 0,
-    "createdAt": "2026-09-18T03:42:03.926Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MU6EWU50-092RX",
     "eventName": "Safe Drinking",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789702921/indian-public-school/assets/Documents/1789702917420_SAFE_DRINKING_AND_SANITATION_CERTIFICATE.pdf"
+      "/Documents/SAFE_DRINKING_AND_SANITATION_CERTIFICATE.pdf"
     ],
-    "publicId": "GAL-MU6EWU50-092RX",
-    "updatedAt": "2026-09-18T03:42:08.380Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aacb61bd3c16d5c8221ebb8",
-    "__v": 0,
-    "createdAt": "2026-09-18T03:55:07.367Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MU6FDMNA-VWBB3",
     "eventName": "Certificate Of Recognition",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789703705/indian-public-school/assets/Documents/1789703704135_CERTIFICATE_OF_RECOGNITION.pdf"
+      "/Documents/CERTIFICATE_OF_RECOGNITION.pdf"
     ],
-    "publicId": "GAL-MU6FDMNA-VWBB3",
-    "updatedAt": "2026-09-18T03:55:16.861Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aacb8bcd3c16d5c8221ebb9",
-    "__v": 0,
-    "createdAt": "2026-09-18T04:06:20.911Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MU6FS2CV-3PMBI",
     "eventName": "NOC",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789704378/indian-public-school/assets/Documents/1789704378440_NO_OBJECTION_CERTIFICATE.pdf"
+      "/Documents/NO_OBJECTION_CERTIFICATE.pdf"
     ],
-    "publicId": "GAL-MU6FS2CV-3PMBI",
-    "updatedAt": "2026-09-18T04:06:24.720Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aacd56d3f29e00020aec9e7",
-    "__v": 0,
-    "createdAt": "2026-09-18T06:08:45.379Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MU6K5HDS-YOJOU",
     "eventName": "Building Certificate",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789711723/indian-public-school/assets/Documents/1789711723214_BUILDING_SAFETY_CERTIFICATE.pdf"
+      "/Documents/BUILDING_SAFETY_CERTIFICATE.pdf"
     ],
-    "publicId": "GAL-MU6K5HDS-YOJOU",
-    "updatedAt": "2026-09-18T06:08:47.862Z"
-  },
-  {
-    "_id": "6aada51292be1e901bc6f82f",
-    "__v": 0,
-    "createdAt": "2026-09-18T20:54:42.537Z",
-    "deletedAt": null,
-    "directory": "/indian-public-school/assets/AdmissionDocuments",
-    "eventName": "MKD Birth.jpg",
-    "eventType": "AdmissionDocuments",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789764881/indian-public-school/assets/AdmissionDocuments/file_rpxr6i.jpg"
-    ],
-    "publicId": "GAL-MU7FSTOI-MY33C",
-    "updatedAt": "2026-09-29T08:48:14.671Z"
-  },
-  {
-    "_id": "6aae20ded0426cea6043a252",
-    "__v": 0,
-    "createdAt": "2026-09-19T05:42:54.629Z",
-    "deletedAt": null,
-    "directory": "/indian-public-school/assets/AdmissionDocuments",
-    "eventName": "Cute Boy.jpeg",
-    "eventType": "AdmissionDocuments",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789796574/indian-public-school/assets/AdmissionDocuments/file_nqks6v.jpg"
-    ],
-    "publicId": "GAL-MU7YO3H4-E8Z0O",
-    "updatedAt": "2026-09-19T05:42:54.629Z"
-  },
-  {
-    "_id": "6aae2299d0426cea6043a254",
-    "__v": 0,
-    "createdAt": "2026-09-19T05:50:17.212Z",
-    "deletedAt": null,
-    "directory": "/indian-public-school/assets/AdmissionDocuments",
-    "eventName": "MKD",
-    "eventType": "AdmissionDocuments",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789797016/indian-public-school/assets/AdmissionDocuments/file_zdxhre.jpg"
-    ],
-    "publicId": "GAL-MU7YXKZF-KKI21",
-    "updatedAt": "2026-09-29T11:19:39.404Z"
-  },
-  {
-    "_id": "6aae28ead0426cea6043a257",
-    "__v": 0,
-    "createdAt": "2026-09-19T06:17:14.304Z",
-    "deletedAt": null,
-    "directory": "/indian-public-school/assets/AdmissionDocuments",
-    "eventName": "Cute Girl",
-    "eventType": "AdmissionDocuments",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789798633/indian-public-school/assets/AdmissionDocuments/file_rrg08i.jpg"
-    ],
-    "publicId": "GAL-MU7ZW8QO-N2N6R",
-    "updatedAt": "2026-09-29T11:20:04.354Z"
-  },
-  {
-    "_id": "6ab0d061872e2434c5f7705f",
-    "__v": 0,
-    "createdAt": "2026-09-21T06:36:17.929Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
-    "eventName": "CBSE Affiliation",
-    "eventType": "Documents",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789972577/indian-public-school/assets/Documents/1789972576384_CBSE_AFFILIATION.pdf"
-    ],
-    "publicId": "GAL-MUAVGGI0-9R2ZY",
-    "updatedAt": "2026-09-21T06:36:23.411Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6ab0d094872e2434c5f77060",
-    "__v": 0,
-    "createdAt": "2026-09-21T06:37:08.419Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MUAVHJGJ-XI86N",
     "eventName": "Land Certificate",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789972627/indian-public-school/assets/Documents/1789972627423_CERTIFICATE_OF_LAND.pdf"
+      "/Documents/CERTIFICATE_OF_LAND.pdf"
     ],
-    "publicId": "GAL-MUAVHJGJ-XI86N",
-    "updatedAt": "2026-09-21T06:37:12.189Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6ab0d0d6872e2434c5f77061",
-    "__v": 0,
-    "createdAt": "2026-09-21T06:38:14.524Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MUAVIYGS-76S6S",
     "eventName": "Parent Teacher Association",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789972691/indian-public-school/assets/Documents/1789972690498_PARENT_TEACHERS_ASSOCIATION.pdf"
+      "/Documents/PARENT_TEACHERS_ASSOCIATION.pdf"
     ],
-    "publicId": "GAL-MUAVIYGS-76S6S",
-    "updatedAt": "2026-09-21T06:38:18.963Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6ab0d15b872e2434c5f77062",
-    "__v": 0,
-    "createdAt": "2026-09-21T06:40:27.252Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MUAVLSVO-9CCGY",
     "eventName": "Mandatory Public Disclosure",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789972826/indian-public-school/assets/Documents/1789972826387_Mandatory_Disclosure_Details.pdf"
+      "/Documents/MANDATORY_PUBLIC_DISCLOSURE.pdf"
     ],
-    "publicId": "GAL-MUAVLSVO-9CCGY",
-    "updatedAt": "2026-09-21T06:40:30.925Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6ab3412021b7929b7d0bc2a2",
-    "__v": 0,
-    "createdAt": "2026-09-23T03:01:52.458Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MUDIOERO-8BEAN",
     "eventName": "Career Counselling Guide Book",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790132512/indian-public-school/assets/General/1790132506211_CareerCounsellingGuideBook.pdf"
+      "/Documents/CAREERE_GUID.pdf"
     ],
-    "publicId": "GAL-MUDIOERO-8BEAN",
-    "updatedAt": "2026-09-29T11:20:46.640Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6ab34a188753a95225bcffd8",
-    "__v": 0,
-    "createdAt": "2026-09-23T03:40:08.363Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MUDK1MAZ-I55E9",
     "eventName": "Brochures",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790134808/indian-public-school/assets/Documents/1790134803287_Indian_Public_School_Brochure.pdf"
+      "/Documents/BROCHURE.pdf"
     ],
-    "publicId": "GAL-MUDK1MAZ-I55E9",
-    "updatedAt": "2026-09-23T03:40:12.142Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6ab3503a8753a95225bcffda",
-    "__v": 0,
-    "createdAt": "2026-09-23T04:06:18.256Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MUDKZ9N2-61MAG",
     "eventName": "Food Menu",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790136378/indian-public-school/assets/Documents/1790136374376_food_menu.pdf"
+      "/Documents/FOOD_MENU.pdf"
     ],
-    "publicId": "GAL-MUDKZ9N2-61MAG",
-    "updatedAt": "2026-09-23T04:06:21.855Z"
-  },
-  {
-    "_id": "6ab36cd9058d1ea354ede5b3",
-    "__v": 0,
-    "createdAt": "2026-09-23T06:08:25.620Z",
-    "deletedAt": null,
-    "directory": "/album/General",
-    "eventName": "CourseOffered",
-    "eventType": "General",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790143704/indian-public-school/assets/General/file_dvjgln.jpg"
-    ],
-    "publicId": "GAL-MUDPCBGY-C88WX",
-    "updatedAt": "2026-09-23T06:08:30.435Z"
-  },
-  {
-    "_id": "6ab374d7058d1ea354ede5b4",
-    "__v": 0,
-    "createdAt": "2026-09-23T06:42:31.219Z",
-    "deletedAt": null,
-    "directory": "/album/General",
-    "eventName": "Teaching Method",
-    "eventType": "General",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790145750/indian-public-school/assets/General/file_mmcgae.jpg"
-    ],
-    "publicId": "GAL-MUDQK5V5-DB4E4",
-    "updatedAt": "2026-09-29T11:21:22.283Z"
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6ab379e2058d1ea354ede5b5",
-    "__v": 0,
-    "createdAt": "2026-09-23T07:04:02.406Z",
-    "deletedAt": null,
-    "directory": "indian-public-school/assets/Documents",
+    "publicId": "GAL-MUDRBU5H-K1G1N",
     "eventName": "Registration Form",
     "eventType": "Documents",
+    "directory": "/album/documents",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790147041/indian-public-school/assets/Documents/1790147041130_AdmissionForm.pdf"
+      "/Documents/ADMISSION_FORM.pdf"
     ],
-    "publicId": "GAL-MUDRBU5H-K1G1N",
-    "updatedAt": "2026-09-23T07:04:12.183Z"
-  },
-  {
-    "_id": "6ab64031c65867599017f505",
-    "__v": 0,
-    "createdAt": "2026-09-25T09:34:41.248Z",
-    "deletedAt": null,
-    "directory": "/album/home",
-    "eventName": "Campus",
-    "eventType": "Home",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790328880/indian-public-school/assets/Home/file_zktgxe.jpg"
-    ],
-    "publicId": "GAL-MUGRL9WD-XBB3J",
-    "updatedAt": "2026-09-29T11:21:40.436Z"
-  },
-  {
-    "_id": "6ab640a3c65867599017f506",
-    "__v": 0,
-    "createdAt": "2026-09-25T09:36:35.869Z",
-    "deletedAt": null,
-    "directory": "/album/home",
-    "eventName": "IPS Student",
-    "eventType": "Home",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790328995/indian-public-school/assets/Home/file_ljuhl7.png"
-    ],
-    "publicId": "GAL-MUGRNQCD-34PE4",
-    "updatedAt": "2026-09-29T11:21:53.197Z"
-  },
-  {
-    "_id": "6ab640b3c65867599017f507",
-    "__v": 0,
-    "createdAt": "2026-09-25T09:36:51.890Z",
-    "deletedAt": null,
-    "directory": "/album/home",
-    "eventName": "IPS Student",
-    "eventType": "Home",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790329011/indian-public-school/assets/Home/file_vrefzr.png"
-    ],
-    "publicId": "GAL-MUGRO2PE-TTGAJ",
-    "updatedAt": "2026-09-29T11:22:18.494Z"
-  },
-  {
-    "_id": "6aba0b3328126e588fb06593",
-    "eventName": "LOGOSTARNDARD.png",
-    "eventType": "Home",
-    "directory": "/album/home",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790577462/indian-public-school/assets/Home/file_dz26un.png"
-    ],
-    "deletedAt": null,
-    "publicId": "GAL-MUKVL6FT-46HHJ",
-    "createdAt": "2026-09-28T06:37:39.936Z",
-    "updatedAt": "2026-09-28T06:37:39.936Z",
-    "__v": 0
-  },
-  {
-    "_id": "6aba0d790112573f9a2af275",
-    "eventName": "LOGOSTARNDARD.png",
-    "eventType": "Home",
-    "directory": "/album/home",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790578044/indian-public-school/assets/Home/file_h4wuvf.png"
-    ],
-    "deletedAt": null,
-    "publicId": "GAL-MUKVXNJ0-LN2WJ",
-    "createdAt": "2026-09-28T06:47:21.951Z",
-    "updatedAt": "2026-09-28T06:47:21.951Z",
-    "__v": 0
+    "mimeType": "application/pdf",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6aba0db70112573f9a2af276",
-    "eventName": "LOGOSTARNDARD.png",
-    "eventType": "Home",
-    "directory": "/album/home",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790578105/indian-public-school/assets/Home/file_svvcvz.png"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUKVYYQ7-QGTZS",
-    "createdAt": "2026-09-28T06:48:23.119Z",
-    "updatedAt": "2026-09-28T06:48:23.119Z",
-    "__v": 0
-  },
-  {
-    "_id": "6aba0ee27904e822b0a13510",
-    "eventName": "Banner_2.jpg",
-    "eventType": "Home",
-    "directory": "/album/home",
+    "eventName": "Logo",
+    "eventType": "Campus",
+    "directory": "/Settings/Logos",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790578405/indian-public-school/assets/Home/file_nrgjbz.jpg"
+      "/Settings/Logos/BannerLogo.png"
     ],
-    "deletedAt": null,
-    "publicId": "GAL-MUKW5DW6-93QYU",
-    "createdAt": "2026-09-28T06:53:22.712Z",
-    "updatedAt": "2026-09-28T06:53:22.712Z",
-    "__v": 0
+    "mimeType": "image/png",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abac6b75ed4b24bf5141cb0",
-    "eventName": "achievements.jpg",
-    "eventType": "Home",
-    "directory": "/album/home",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790625466/indian-public-school/assets/Home/file_lrnryt.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MULO621C-MEJIH",
-    "createdAt": "2026-09-28T19:57:43.257Z",
-    "updatedAt": "2026-09-28T19:57:43.257Z",
-    "__v": 0
+    "eventName": "IPS Academic & Sports Achievements",
+    "eventType": "General",
+    "directory": "/album/general",
+    "fileUrl": [
+      "/Album/Achievements.png"
+    ],
+    "mimeType": "image/png",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb573b069c4e2fc9cb5cef",
-    "eventName": "POP_UP_IMAGE.jpeg",
-    "eventType": "PopUpBanner",
-    "directory": "/album/popupbanner",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790662463/indian-public-school/assets/PopUpBanner/file_yq8gjw.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMA70MH-37N0K",
-    "createdAt": "2026-09-29T06:14:19.637Z",
-    "updatedAt": "2026-09-29T06:14:19.637Z",
-    "__v": 0
+    "eventName": "School Admission Announcement Banner",
+    "eventType": "Campus",
+    "directory": "/Settings/Home",
+    "fileUrl": [
+      "/Settings/Home/POP_UP_IMAGE.jpeg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb7a84c7fa511c1a50d4e4",
+    "publicId": "GAL-MUMFKM2X-GV4X0",
     "eventName": "Smay Patla Singh",
     "eventType": "Review",
-    "directory": "/album/review",
+    "directory": "/album/reviews",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453154/indian-public-school/assets/Review/SmayPatlaSingh.jpg"
+      "/Review/SmayPatlaSingh.jpg"
     ],
-    "deletedAt": null,
-    "publicId": "GAL-MUMFKM2X-GV4X0",
-    "createdAt": "2026-09-29T08:44:52.044Z",
-    "updatedAt": "2026-09-29T08:44:52.044Z",
-    "__v": 0
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb7a91c7fa511c1a50d4e5",
+    "publicId": "GAL-MUMFKWLG-B9XH1",
     "eventName": "Shreyansh Sekhar Jha",
     "eventType": "Review",
-    "directory": "/album/review",
+    "directory": "/album/reviews",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453151/indian-public-school/assets/Review/ShreyanshSekharJha.jpg"
+      "/Review/ShreyanshSekharJha.jpg"
     ],
-    "deletedAt": null,
-    "publicId": "GAL-MUMFKWLG-B9XH1",
-    "createdAt": "2026-09-29T08:45:05.668Z",
-    "updatedAt": "2026-09-29T08:45:05.668Z",
-    "__v": 0
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb7aa2c7fa511c1a50d4e6",
+    "publicId": "GAL-MUMFL9YP-8NLRI",
     "eventName": "Ansh Singh",
     "eventType": "Review",
-    "directory": "/album/review",
+    "directory": "/album/reviews",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453149/indian-public-school/assets/Review/AnshSingh.jpg"
+      "/Review/AnshSingh.jpg"
     ],
-    "deletedAt": null,
-    "publicId": "GAL-MUMFL9YP-8NLRI",
-    "createdAt": "2026-09-29T08:45:22.993Z",
-    "updatedAt": "2026-09-29T08:45:22.993Z",
-    "__v": 0
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb7ab1c7fa511c1a50d4e7",
+    "publicId": "GAL-MUMFLKSX-56QXM",
     "eventName": "Abhishek Prakash Jha",
     "eventType": "Review",
-    "directory": "/album/review",
+    "directory": "/album/reviews",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453145/indian-public-school/assets/Review/AbhishekPrakashJha.jpg"
+      "/Review/AbhishekPrakashJha.jpg"
     ],
-    "deletedAt": null,
-    "publicId": "GAL-MUMFLKSX-56QXM",
-    "createdAt": "2026-09-29T08:45:37.041Z",
-    "updatedAt": "2026-09-29T08:45:37.041Z",
-    "__v": 0
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9b28c3a20d57b82a348c",
-    "eventName": "GEN0001",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453144/indian-public-school/assets/PressRelease/17862583261000230814.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKJPSP-9NJCU",
-    "createdAt": "2026-09-29T11:04:08.293Z",
-    "updatedAt": "2026-09-29T11:04:08.293Z",
-    "__v": 0
+    "eventName": "Annual Academic Merit Announcement",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_1.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9b35c3a20d57b82a348d",
-    "eventName": "GEN0002",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453143/indian-public-school/assets/PressRelease/17757957511000058001.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKK00B-NCVM3",
-    "createdAt": "2026-09-29T11:04:21.516Z",
-    "updatedAt": "2026-09-29T11:04:21.516Z",
-    "__v": 0
+    "eventName": "CBSE Board Results Merit Feature",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_2.png"
+    ],
+    "mimeType": "image/png",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9b52c3a20d57b82a348e",
-    "eventName": "Empowerment 5",
-    "eventType": "StudentEmpowerment",
-    "directory": "/album/studentempowerment",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453090/indian-public-school/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_5.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKKMIY-N3AT6",
-    "createdAt": "2026-09-29T11:04:50.699Z",
-    "updatedAt": "2026-09-29T11:04:50.699Z",
-    "__v": 0
+    "eventName": "Student Leadership & Empowerment",
+    "eventType": "Activities",
+    "directory": "/album/empowerment",
+    "fileUrl": [
+      "/Album/Empowerment_5.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9b5dc3a20d57b82a348f",
-    "eventName": "Competition",
-    "eventType": "Competition@365Days",
-    "directory": "/album/competition-365days",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453077/indian-public-school/assets/LIFE%40IPS/Competition%40365Days/Competition_2.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKKV6S-D66VE",
-    "createdAt": "2026-09-29T11:05:01.925Z",
-    "updatedAt": "2026-09-29T11:28:20.394Z",
-    "__v": 0
+    "eventName": "Annual Inter School Competition",
+    "eventType": "Events",
+    "directory": "/album/competitions",
+    "fileUrl": [
+      "/Album/Competition_2.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9b69c3a20d57b82a3490",
-    "eventName": "GEN0003",
-    "eventType": "OurLearningPartners",
-    "directory": "/album/ourlearningpartners",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453082/indian-public-school/assets/LIFE%40IPS/OurLearningPartners/LearningPartner_1.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKL46P-K8VBW",
-    "createdAt": "2026-09-29T11:05:13.586Z",
-    "updatedAt": "2026-09-29T11:05:13.586Z",
-    "__v": 0
+    "eventName": "Our Educational Learning Partners",
+    "eventType": "Academic",
+    "directory": "/Settings/Partners",
+    "fileUrl": [
+      "/Settings/Logos/LearningPartner_2.png"
+    ],
+    "mimeType": "image/png",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9bb0c3a20d57b82a3491",
-    "eventName": "GEN0004",
-    "eventType": "Infrastructure",
-    "directory": "/album/infrastructure",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453066/indian-public-school/assets/Infrastructure/Mess_1.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKMN1E-0WSQP",
-    "createdAt": "2026-09-29T11:06:24.674Z",
-    "updatedAt": "2026-09-29T11:06:24.674Z",
-    "__v": 0
+    "eventName": "Student Dining Hall & Mess",
+    "eventType": "Campus",
+    "directory": "/album/campus",
+    "fileUrl": [
+      "/Album/Mess_1.jpg",
+      "/Album/Mess_2.jpg",
+      "/Album/Mess_3.jpg",
+      "/Album/Mess_4.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9c2ac3a20d57b82a3492",
-    "eventName": "Aakash Health Foundation",
-    "eventType": "Logos",
-    "directory": "/album/logos",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453092/indian-public-school/assets/Logos/AakashHealthFoundation.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKP905-2FONW",
-    "createdAt": "2026-09-29T11:08:26.454Z",
-    "updatedAt": "2026-09-29T11:08:26.454Z",
-    "__v": 0
+    "eventName": "Aakash Health Foundation",
+    "eventType": "Campus",
+    "directory": "/Settings/Logos",
+    "fileUrl": [
+      "/Logos/AakashHealthFoundation.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9dc9c3a20d57b82a3493",
-    "eventName": "Competition",
-    "eventType": "Competition@365Days",
-    "directory": "/album/competition-365days",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453076/indian-public-school/assets/LIFE%40IPS/Competition%40365Days/Competition_1.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKY5CW-DBS2Y",
-    "createdAt": "2026-09-29T11:15:21.633Z",
-    "updatedAt": "2026-09-29T11:15:21.633Z",
-    "__v": 0
+    "eventName": "Annual Inter School Competition",
+    "eventType": "Events",
+    "directory": "/album/competitions",
+    "fileUrl": [
+      "/Album/Competition_1.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9ddbc3a20d57b82a3494",
-    "eventName": "GEN00011",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453121/indian-public-school/assets/PressRelease/1659155286nav_bharat_1_11zon.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKYJBV-MSVHA",
-    "createdAt": "2026-09-29T11:15:39.739Z",
-    "updatedAt": "2026-09-29T11:15:39.739Z",
-    "__v": 0
+    "eventName": "Nav Bharat Press Coverage",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_3.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9decc3a20d57b82a3495",
-    "eventName": "GEN00012",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453142/indian-public-school/assets/PressRelease/17753674921000050424.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKYWAP-8QMG1",
-    "createdAt": "2026-09-29T11:15:56.546Z",
-    "updatedAt": "2026-09-29T11:15:56.546Z",
-    "__v": 0
+    "eventName": "State Level Excellence Merit Feature",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_4.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9df5c3a20d57b82a3496",
-    "eventName": "GEN00013",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453141/indian-public-school/assets/PressRelease/1715858224IMG-20240515-WA0014%282%29.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKZ35D-MFDCY",
-    "createdAt": "2026-09-29T11:16:05.425Z",
-    "updatedAt": "2026-09-29T11:16:05.425Z",
-    "__v": 0
+    "eventName": "IPS Student Achievements In Media",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_5.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9dffc3a20d57b82a3497",
-    "eventName": "GEN00014",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453125/indian-public-school/assets/PressRelease/1659155454WhatsApp_Image_2022-07-30_at_9.51.06_AM_11zon.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKZB47-7WC65",
-    "createdAt": "2026-09-29T11:16:15.752Z",
-    "updatedAt": "2026-09-29T11:16:15.752Z",
-    "__v": 0
+    "eventName": "Daily Newspaper Media Release",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_6.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9e07c3a20d57b82a3498",
-    "eventName": "GEN00015",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453140/indian-public-school/assets/PressRelease/1715858206IMG-20240514-WA0004.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKZH7I-LSHOC",
-    "createdAt": "2026-09-29T11:16:23.646Z",
-    "updatedAt": "2026-09-29T11:16:23.646Z",
-    "__v": 0
+    "eventName": "IPS Academic Recognition Release",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_7.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9e10c3a20d57b82a3499",
-    "eventName": "GEN00016",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453138/indian-public-school/assets/PressRelease/1715858187IMG-20240514-WA0001.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKZNQ3-XAQ7H",
-    "createdAt": "2026-09-29T11:16:32.091Z",
-    "updatedAt": "2026-09-29T11:16:32.091Z",
-    "__v": 0
+    "eventName": "State Education Merit Release",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_8.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9e19c3a20d57b82a349a",
-    "eventName": "GEN00017",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453137/indian-public-school/assets/PressRelease/1715858150IMG-20240514-WA0002.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMKZV06-DAWD9",
-    "createdAt": "2026-09-29T11:16:41.527Z",
-    "updatedAt": "2026-09-29T11:16:41.527Z",
-    "__v": 0
+    "eventName": "District Level Merit Feature",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_9.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9e22c3a20d57b82a349b",
-    "eventName": "GEN00018",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453138/indian-public-school/assets/PressRelease/1715858169IMG-20240514-WA0000.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUML01S8-A5QE7",
-    "createdAt": "2026-09-29T11:16:50.313Z",
-    "updatedAt": "2026-09-29T11:16:50.313Z",
-    "__v": 0
+    "eventName": "CBSE Merit Recognition Announcement",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_10.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9e2ac3a20d57b82a349c",
-    "eventName": "GEN00021",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453136/indian-public-school/assets/PressRelease/1715858130IMG-20240514-WA0003.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUML085T-JCKKI",
-    "createdAt": "2026-09-29T11:16:58.577Z",
-    "updatedAt": "2026-09-29T11:16:58.577Z",
-    "__v": 0
+    "eventName": "Academic Year Top Performers",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_11.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9e35c3a20d57b82a349d",
-    "eventName": "GEN00022",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453135/indian-public-school/assets/PressRelease/1708060020IMG-20240215-WA0022.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUML0GWE-7ZF64",
-    "createdAt": "2026-09-29T11:17:09.902Z",
-    "updatedAt": "2026-09-29T11:17:09.902Z",
-    "__v": 0
+    "eventName": "IPS Merit Board Announcement",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_12.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9fe2c3a20d57b82a349e",
-    "eventName": "GEN00001",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453134/indian-public-school/assets/PressRelease/1708059977IMG_20240216_102843.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUML9NNS-IIGV8",
-    "createdAt": "2026-09-29T11:24:18.569Z",
-    "updatedAt": "2026-09-29T11:24:18.569Z",
-    "__v": 0
+    "eventName": "Sambalpur School Merit Feature",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_13.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abb9fedc3a20d57b82a349f",
-    "eventName": "GEN00002",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453133/indian-public-school/assets/PressRelease/1684324770BEST_RESULT_OF_SAMBALPUR__page-000111.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUML9W20-88JVZ",
-    "createdAt": "2026-09-29T11:24:29.449Z",
-    "updatedAt": "2026-09-29T11:24:29.449Z",
-    "__v": 0
+    "eventName": "Nav Bharat Board Examination Feature",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_14.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abba01dc3a20d57b82a34a0",
-    "eventName": "GEN000011",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453131/indian-public-school/assets/PressRelease/1684324697BEST_RESULT_OF_SAMBALPUR__page-0001.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMLAWRE-CWF28",
-    "createdAt": "2026-09-29T11:25:17.018Z",
-    "updatedAt": "2026-09-29T11:25:17.018Z",
-    "__v": 0
+    "eventName": "Best School Result Of Sambalpur",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_15.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abba027c3a20d57b82a34a1",
-    "eventName": "GEN00002",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453130/indian-public-school/assets/PressRelease/168432457210__12_nAVBHARAT.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMLB4RD-SVFS4",
-    "createdAt": "2026-09-29T11:25:27.385Z",
-    "updatedAt": "2026-09-29T11:25:27.385Z",
-    "__v": 0
+    "eventName": "Nav Bharat Board Examination Feature",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_16.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abba037c3a20d57b82a34a2",
-    "eventName": "LifeIn Hostel",
-    "eventType": "LifeInHostel",
-    "directory": "/album/lifeinhostel",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453080/indian-public-school/assets/LIFE%40IPS/LifeInHostel/LifeInHostel_2.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMLBGZI-MOGOA",
-    "createdAt": "2026-09-29T11:25:43.231Z",
-    "updatedAt": "2026-09-29T11:25:43.231Z",
-    "__v": 0
+    "eventName": "Hostel Facilities & Student Life",
+    "eventType": "Hostel",
+    "directory": "/album/hostel",
+    "fileUrl": [
+      "/Album/LifeInHostel_2.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abba03dc3a20d57b82a34a3",
-    "eventName": "Empowerment",
-    "eventType": "StudentEmpowerment",
-    "directory": "/album/studentempowerment",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453085/indian-public-school/assets/LIFE%40IPS/StudentEmpowerment/Empowerment_1.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMLBLPN-9Z75H",
-    "createdAt": "2026-09-29T11:25:49.355Z",
-    "updatedAt": "2026-09-29T11:25:49.355Z",
-    "__v": 0
+    "eventName": "Student Leadership & Empowerment",
+    "eventType": "Activities",
+    "directory": "/album/empowerment",
+    "fileUrl": [
+      "/Album/Empowerment_1.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abba052c3a20d57b82a34a4",
-    "eventName": "Marit Board",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453129/indian-public-school/assets/PressRelease/168432451610__12.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMLC22V-KHHDH",
-    "createdAt": "2026-09-29T11:26:10.567Z",
-    "updatedAt": "2026-09-29T11:26:10.567Z",
-    "__v": 0
+    "eventName": "CBSE Board Merit Rank Holders",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_17.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abba05ec3a20d57b82a34a5",
-    "eventName": "GEN00004",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453128/indian-public-school/assets/PressRelease/168432446212.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMLCBEC-1OD87",
-    "createdAt": "2026-09-29T11:26:22.644Z",
-    "updatedAt": "2026-09-29T11:26:22.644Z",
-    "__v": 0
+    "eventName": "Class 12th Board Results Press Release",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_18.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abba083c3a20d57b82a34a6",
+    "publicId": "GAL-MUMLD45T-W7BRP",
     "eventName": "Music Dance Room",
     "eventType": "Infrastructure",
     "directory": "/album/infrastructure",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453074/indian-public-school/assets/Infrastructure/Music_Dance_Room_4.jpg"
+      "/Music_Dance_Room_4.jpg"
     ],
-    "deletedAt": null,
-    "publicId": "GAL-MUMLD45T-W7BRP",
-    "createdAt": "2026-09-29T11:26:59.921Z",
-    "updatedAt": "2026-09-29T11:26:59.921Z",
-    "__v": 0
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abba090c3a20d57b82a34a7",
-    "eventName": "Press Release",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453126/indian-public-school/assets/PressRelease/1675064263Press_Release.png"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMLDDO5-C3DJJ",
-    "createdAt": "2026-09-29T11:27:12.245Z",
-    "updatedAt": "2026-09-29T11:27:12.245Z",
-    "__v": 0
+    "eventName": "Official School Press Release",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_19.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
     "_id": "6abba0a5c3a20d57b82a34a8",
-    "eventName": "Press Release",
-    "eventType": "PressRelease",
-    "directory": "/album/pressrelease",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1789453127/indian-public-school/assets/PressRelease/168432438910.jpg"
-    ],
-    "deletedAt": null,
     "publicId": "GAL-MUMLDTX4-W52E6",
-    "createdAt": "2026-09-29T11:27:33.305Z",
-    "updatedAt": "2026-09-29T11:27:33.305Z",
-    "__v": 0
+    "eventName": "Official School Press Release",
+    "eventType": "PressRelease",
+    "directory": "/PressRelease",
+    "fileUrl": [
+      "/PressRelease/PRESS_20.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   },
   {
-    "_id": "6abbb495a8864707a6eca3b4",
-    "eventName": "Banner_6.jpg",
-    "eventType": "Home",
-    "directory": "/album/home",
+    "_id": "6ac35a3692898d35d6610627",
+    "publicId": "GAL-MUUYSOFB-XHFDL",
+    "eventName": "Students",
+    "eventType": "Students",
+    "directory": "/ips-education/assets/Student",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/v1790686360/indian-public-school/assets/Home/file_cikwc1.jpg"
+      "/Student/file_nkfsck.png"
     ],
-    "deletedAt": null,
-    "publicId": "GAL-MUMOF83A-K529M",
-    "createdAt": "2026-09-29T12:52:37.181Z",
-    "updatedAt": "2026-09-29T12:52:37.181Z",
-    "__v": 0
+    "mimeType": "image/png",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
+  },
+  {
+    "_id": "6ac360f692898d35d6610628",
+    "publicId": "GAL-MUUZTPWG-TI9CV",
+    "eventName": "Staff",
+    "eventType": "Staff",
+    "directory": "/ips-education/assets/Staff",
+    "fileUrl": [
+      "/Staff/file_b2klsn.png"
+    ],
+    "mimeType": "image/png",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
+  },
+  {
+    "_id": "6ac4cb239a1ae05f6aa479ec",
+    "publicId": "GAL-MUWJ0YZW-2RDUS",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Campus",
+    "directory": "/ips-education/assets/Album/Visual Editor Picked",
+    "fileUrl": [
+      "/Album/Visual%20Editor%20Picked/file_wfogwo.png"
+    ],
+    "mimeType": "image/png",
+    "isPublished": true,
+    "createdAt": "2026-10-06T16:57:07.814Z",
+    "updatedAt": "2026-10-06T16:57:07.814Z"
   }
 ]

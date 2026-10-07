@@ -1,5 +1,5 @@
 import { SectionHeading } from "@/components/site/Reveal";
-import { firstSection, homeData, text } from "@/lib/site-data";
+import { firstSection, homeData, imageUrl, text, DEFAULT_INTRO_VIDEO } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { UniversalMedia } from "@/components/ui/UniversalMedia";
 
@@ -8,14 +8,13 @@ export function IntroVideo() {
   const secVid = firstSection(siteHome, "section-video");
   const sec8 = firstSection(siteHome, "section-8");
 
-  const FALLBACK_SEED_VIDEO = "https://www.indianpublicschool.in/assets/img/IPS.mp4";
-  const CLOUDINARY_VIDEO = "https://res.cloudinary.com/niefrrkx/video/upload/v1789615686/IPSIntroVideo.mp4";
-  let explicitUrl = text(secVid.introFileUrl || secVid.videoUrl || sec8.introFileUrl || sec8.videoUrl);
-  if (!explicitUrl || explicitUrl === "/IPSIntroVideo.mp4" || explicitUrl.includes("v1789299171")) {
-    explicitUrl = CLOUDINARY_VIDEO;
+  let rawUrl = text(secVid.introFileUrl || secVid.videoUrl || sec8.introFileUrl || sec8.videoUrl);
+  if (!rawUrl || rawUrl === "/IPSIntroVideo.mp4" || rawUrl.includes("v1789299171")) {
+    rawUrl = DEFAULT_INTRO_VIDEO;
   }
   const isCleared = secVid.introFileUrl === "" || secVid.videoUrl === "" || sec8.introFileUrl === "";
-  const source = explicitUrl ? explicitUrl : isCleared ? "" : CLOUDINARY_VIDEO;
+  const sourcePath = rawUrl ? rawUrl : isCleared ? "" : DEFAULT_INTRO_VIDEO;
+  const source = imageUrl(sourcePath);
 
   if (!source) {
     return null;
@@ -29,7 +28,7 @@ export function IntroVideo() {
   const loop = typeof secVid.loop === "boolean" ? secVid.loop : (typeof sec8.loop === "boolean" ? sec8.loop : true);
   const muted = typeof secVid.muted === "boolean" ? secVid.muted : (typeof sec8.muted === "boolean" ? sec8.muted : true);
   const showControls = typeof secVid.controls === "boolean" ? secVid.controls : (typeof sec8.controls === "boolean" ? sec8.controls : true);
-  const poster = text(secVid.poster || sec8.poster || secVid.posterUrl || sec8.posterUrl);
+  const poster = imageUrl(secVid.poster || sec8.poster || secVid.posterUrl || sec8.posterUrl);
 
   return (
     <section className="py-20 lg:py-32">

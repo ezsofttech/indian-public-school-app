@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
-import { ArrowRight, ChevronDown, ChevronRight, ExternalLink, GraduationCap, Menu, Phone, X } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronRight, ExternalLink, GraduationCap, Menu, Phone, Sparkles, X } from "lucide-react";
 import axios from "axios";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { buildMenuHierarchy, getWhatsAppConfig, homeData, text } from "@/lib/site-data";
+import { buildMenuHierarchy, DEFAULT_LOGO, DEFAULT_SECONDARY_LOGO, getWhatsAppConfig, homeData, imageUrl, isBannerLogoUrl, text } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { openAdmissionModal } from "@/components/site/AdmissionApplicationModal";
 import {
@@ -80,50 +80,22 @@ export function ScrollProgress() {
 export function AnnouncementBar() {
   const siteData = useSiteData();
   const home = homeData(siteData);
-  const content = (home.content as Record<string, unknown>) ?? {};
   const identity = (home.identity as Record<string, unknown>) ?? {};
   const headerConfig = (identity.header as Record<string, unknown>) ?? {};
-  const waConfig = getWhatsAppConfig(siteData);
 
-  const noticeText =
-    text(headerConfig.noticeText) ||
-    text(content.session, "Admissions Open for the current academic session");
-  const phone = text(headerConfig.phone);
-  const email = text(headerConfig.email);
-  const ctaText = text(headerConfig.ctaText) || "Enquiry";
-  const ctaUrl = text(headerConfig.ctaUrl) || "/#enquiry";
-
-  const rawPhone = waConfig.phone.replace(/[^0-9]/g, "");
-  const waPhoneDigits = rawPhone.length === 10 ? `91${rawPhone}` : rawPhone;
+  const noticeText = text(headerConfig.noticeText).trim() || "Admissions Open for Session 2026-27";
 
   return (
     <div className="surface-navy relative z-40 text-navy-foreground">
       <div className="container-page flex flex-col items-center justify-between gap-2 py-2.5 text-center sm:flex-row sm:text-left">
         <div className="flex flex-wrap items-center justify-center gap-3 sm:justify-start">
-          <p className="text-xs font-medium sm:text-sm">
-            <span className="mr-2 inline-block rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold tracking-wider text-gold-foreground uppercase">
-              New
-            </span>
-            {noticeText}
-          </p>
-          {(phone || email) && (
-            <div className="hidden items-center gap-3 text-xs opacity-90 lg:flex">
-              {phone && (
-                <a href={`tel:${phone}`} className="flex items-center gap-1 hover:underline">
-                  <Phone size={12} className="text-gold" />
-                  <span>{phone}</span>
-                </a>
-              )}
-              {email && (
-                <a href={`mailto:${email}`} className="flex items-center gap-1 hover:underline">
-                  <span>{email}</span>
-                </a>
-              )}
-            </div>
-          )}
+          <span className="mr-2 inline-block rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold tracking-wider text-gold-foreground uppercase">
+            NEW
+          </span>
+          <span className="text-xs sm:text-sm font-semibold text-white/95">{noticeText}</span>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 
@@ -138,6 +110,8 @@ export function Navbar() {
   const initialMenuItems = buildMenuHierarchy(rawMenuItems as any[]) as ApiMenuItem[];
 
   const [dbMenuItems, setDbMenuItems] = useState<ApiMenuItem[]>(initialMenuItems);
+  const [logoError, setLogoError] = useState(false);
+  const [secondaryLogoError, setSecondaryLogoError] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [expandedMobile, setExpandedMobile] = useState<Record<string, boolean>>({});
@@ -298,47 +272,82 @@ export function Navbar() {
   }, [open]);
 
   const homeIdentity = (homeData(siteData).identity as Record<string, unknown>) || {};
-  const headerConfig = (homeIdentity.header as Record<string, string>) || (siteData?.header as Record<string, string>) || {};
-  const siteLogo = (homeIdentity.site_logo as Record<string, string>) || (siteData?.site_logo as Record<string, string>) || {};
-  const rawLogoUrl = headerConfig.logoUrl?.trim() || siteLogo.logoUrl?.trim() || "/assets/Logos/IPSLOGO.png";
-  const customLogoUrl = rawLogoUrl === "/assets/IPSLOGO.png" ? "/assets/Logos/IPSLOGO.png" : rawLogoUrl;
-  const logoTitle = headerConfig.logoText?.trim() || siteLogo.logoText?.trim() || "Indian Public School";
-  const logoSubtitle = headerConfig.logoSubText?.trim() || siteLogo.logoSubText?.trim() || "Learn · Lead · Inspire";
+  const siteLogo = (siteData?.site_logo as Record<string, any>) || (homeIdentity.site_logo as Record<string, any>) || {};
+  const headerConfig = (homeIdentity.header as Record<string, any>) || (siteData?.header as Record<string, any>) || {};
+  const rawLogoUrl = (siteLogo.logoUrl ? String(siteLogo.logoUrl).trim() : "") || (headerConfig.logoUrl ? String(headerConfig.logoUrl).trim() : "") || DEFAULT_LOGO;
+  const customLogoUrl = imageUrl(rawLogoUrl);
+  const isBanner = isBannerLogoUrl(rawLogoUrl);
+  const logoTitle = (siteLogo.logoText ? String(siteLogo.logoText).trim() : "") || (headerConfig.logoText ? String(headerConfig.logoText).trim() : "") || "Indian Public School";
+  const logoSubtitle = (siteLogo.logoSubText ? String(siteLogo.logoSubText).trim() : "") || (headerConfig.logoSubText ? String(headerConfig.logoSubText).trim() : "") || "Learn · Lead · Inspire";
+
+  const rawSecondaryLogoUrl = (siteLogo.secondaryLogoUrl ? String(siteLogo.secondaryLogoUrl).trim() : "") || (headerConfig.secondaryLogoUrl ? String(headerConfig.secondaryLogoUrl).trim() : "") || DEFAULT_SECONDARY_LOGO;
+  const secondaryLogoUrl = imageUrl(rawSecondaryLogoUrl);
+  const showSecondaryLogo = siteLogo.showSecondaryLogo !== false && headerConfig.showSecondaryLogo !== false;
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 transition-all duration-500",
+        "sticky top-0 z-50 transition-all duration-300",
         scrolled
-          ? "border-b border-border/70 bg-background/85 shadow-soft backdrop-blur-xl"
-          : "bg-background/40 backdrop-blur-sm",
+          ? "border-b border-slate-200/80 bg-white/95 shadow-[0_4px_25px_rgba(0,0,0,0.06)] backdrop-blur-xl py-1"
+          : "border-b border-slate-100/60 bg-white/90 shadow-soft backdrop-blur-md py-1.5"
       )}
     >
-      <nav className="container-page flex h-16 items-center justify-between gap-4 lg:h-20">
-        <Link href="/" onClick={(e) => handleNavClick("/", e)} className="group flex items-center gap-3">
-          {customLogoUrl ? (
-            <img
-              src={customLogoUrl}
-              alt={logoTitle}
-              className="h-10 max-w-[140px] sm:h-12 sm:max-w-[180px] object-contain transition-transform duration-300 group-hover:scale-105"
-            />
-          ) : (
-            <span
-              className="grid size-10 place-items-center bg-primary text-primary-foreground shadow-soft transition-transform duration-300 group-hover:scale-105"
-              style={{ borderRadius: "var(--logo-radius, 50%)" }}
-            >
-              <GraduationCap className="size-5" />
-            </span>
+      <nav className="container-page flex h-16 sm:h-20 items-center justify-between gap-4 py-2">
+        <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
+          <Link href="/" onClick={(e) => handleNavClick("/", e)} className="group flex items-center gap-3 shrink-0">
+            {customLogoUrl && !logoError ? (
+              <img
+                src={customLogoUrl}
+                alt={logoTitle || "Indian Public School"}
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.dataset.triedLocal) {
+                    target.dataset.triedLocal = "true";
+                    target.src = "/assets/Settings/Logos/IPSLogo.png";
+                  } else {
+                    setLogoError(true);
+                  }
+                }}
+                className={cn(
+                  "w-auto object-contain shrink-0 transition-transform duration-300 group-hover:scale-[1.015]",
+                  isBanner
+                    ? "h-8 sm:h-9 lg:h-10 max-w-[150px] sm:max-w-[190px] lg:max-w-[220px]"
+                    : "h-8 sm:h-9 lg:h-10 max-w-[120px] sm:max-w-[150px] lg:max-w-[180px]"
+                )}
+              />
+            ) : (
+              <span
+                className="grid size-10 place-items-center bg-primary text-primary-foreground shadow-soft transition-transform duration-300 group-hover:scale-105"
+                style={{ borderRadius: "var(--logo-radius, 50%)" }}
+              >
+                <GraduationCap className="size-5" />
+              </span>
+            )}
+          </Link>
+
+          {showSecondaryLogo && secondaryLogoUrl && !secondaryLogoError && (
+            <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+              <div className="h-6 sm:h-7 w-[1.5px] bg-slate-300/80 rounded-full shrink-0" aria-hidden="true" />
+              <Link href="/#about" onClick={(e) => handleNavClick("/#about", e)} className="group flex items-center transition-all hover:opacity-95 shrink-0" title="Aakash Educational Partner / Foundation">
+                <img
+                  src={secondaryLogoUrl}
+                  alt="Aakash Foundation"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.dataset.triedLocal) {
+                      target.dataset.triedLocal = "true";
+                      target.src = "/assets/Settings/Logos/AakashFoundationLogo.png";
+                    } else {
+                      setSecondaryLogoError(true);
+                    }
+                  }}
+                  className="h-7 sm:h-8 lg:h-9 w-auto max-w-[100px] sm:max-w-[125px] lg:max-w-[145px] object-contain shrink-0 transition-transform duration-300 group-hover:scale-[1.02] drop-shadow-xs"
+                />
+              </Link>
+            </div>
           )}
-          <span className="leading-tight">
-            <span className="block font-display text-base font-semibold tracking-tight sm:text-lg">
-              {logoTitle}
-            </span>
-            <span className="block text-[10px] font-semibold tracking-[0.2em] text-muted-foreground uppercase">
-              {logoSubtitle}
-            </span>
-          </span>
-        </Link>
+        </div>
 
         <ul className="hidden items-center gap-1 xl:flex">
           {visibleNavigation.map((item, index) => {
@@ -451,7 +460,7 @@ export function Navbar() {
             className="hidden sm:inline-flex items-center justify-center text-[var(--primary-foreground)] cursor-pointer bg-[var(--primary)] hover:bg-[var(--navy)] px-4 py-2 text-xs font-bold transition-all hover:scale-105 shadow-xs"
             style={{ borderRadius: "var(--btn-radius, 9999px)" }}
           >
-            Enquiry
+            <span>Enquiry</span>
           </button>
           <Link
             href="/contact-us"

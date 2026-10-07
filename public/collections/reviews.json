@@ -1,7 +1,7 @@
 [
   {
     "_id": "6aab628e57ac46acecbf8381",
-    "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/v1789453146/indian-public-school/assets/Review/Anonymous.png",
+    "avatar": "/Review/Anonymous.png",
     "batch": "2020-2022",
     "feedback": "Great school. All the teachers we had cares about both academic and personal growth. We have 3 kids so we didn’t just get lucky. It’s a small enough school so kids don’t get lost but big enough to have all the extra curricular activities to keep kids busy and be social. Love, love, love this school.",
     "isApproved": true,
@@ -11,7 +11,7 @@
   },
   {
     "_id": "6aab628e57ac46acecbf8382",
-    "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/v1789453145/indian-public-school/assets/Review/AbhishekPrakashJha.jpg",
+    "avatar": "/Review/AbhishekPrakashJha.jpg",
     "batch": "2020-2022",
     "feedback": "good School, good environment.",
     "isApproved": true,
@@ -21,7 +21,7 @@
   },
   {
     "_id": "6aab628f57ac46acecbf8383",
-    "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/v1789453151/indian-public-school/assets/Review/ShreyanshSekharJha.jpg",
+    "avatar": "/Review/ShreyanshSekharJha.jpg",
     "batch": "2021-2022",
     "feedback": "Satisfied with studies and overall performance of the child.",
     "isApproved": true,
@@ -31,7 +31,7 @@
   },
   {
     "_id": "6aab628f57ac46acecbf8384",
-    "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/v1789453154/indian-public-school/assets/Review/SmayPatlaSingh.jpg",
+    "avatar": "/Review/SmayPatlaSingh.jpg",
     "batch": "2021-2022",
     "feedback": "Good studies and good overall performance .Good improvement shown .",
     "isApproved": true,
@@ -41,7 +41,7 @@
   },
   {
     "_id": "6aab628f57ac46acecbf8385",
-    "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/v1789453149/indian-public-school/assets/Review/AnshSingh.jpg",
+    "avatar": "/Review/AnshSingh.jpg",
     "batch": "2021-2023",
     "feedback": "Studies are good ..... satisfied with the academics and management of the school .",
     "isApproved": true,

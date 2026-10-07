@@ -171,5 +171,25 @@
     "status": "Active",
     "studentId": "STU-MU9E3K2Y-1OYEB",
     "updatedAt": "2026-09-20T05:42:36.396Z"
+  },
+  {
+    "_id": "6ac359f892898d35d6610626",
+    "name": "Ashwin",
+    "grade": "12",
+    "section": "A",
+    "dob": "2026-10-08T00:00:00.000Z",
+    "gender": "Male",
+    "parentName": "Amar",
+    "parentPhone": "9329827778",
+    "parentEmail": "amar@gmail.com",
+    "address": "CG",
+    "status": "Active",
+    "avatar": "/image/upload/v1791187519/ips-education/assets/Student/file_nkfsck.png",
+    "enrolledAt": "2026-10-05T08:04:08.244Z",
+    "publicId": "STU-MUUYRCFO-KXCWN",
+    "studentId": "STU-MUUYRCFO-MA4DK",
+    "createdAt": "2026-10-05T08:04:08.251Z",
+    "updatedAt": "2026-10-05T08:05:11.875Z",
+    "__v": 0
   }
 ]

@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { EASE } from "@/lib/motion-presets";
-import { cn } from "@/lib/utils";
+import { cn, getAssetUrl } from "@/lib/utils";
 import { getOptionalApi, unwrapCollection } from "@/lib/api-client";
 
 function text(value: unknown, fallback = ""): string {
@@ -32,183 +32,17 @@ export interface PressReleaseImage {
   source?: "database" | "cloudinary" | "static";
 }
 
-const STATIC_PRESS_RELEASE_IMAGES: PressReleaseImage[] = [
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453144/indian-public-school/assets/PressRelease/17862583261000230814.jpg",
-    alt: "Press Release - CBSE Board Results Announcement",
-    title: "CBSE Board Examination Outstanding Results & Merit Recognition",
+const STATIC_PRESS_RELEASE_IMAGES: PressReleaseImage[] = Array.from({ length: 25 }, (_, i) => {
+  const index = i + 1;
+  const ext = index === 2 ? "png" : "jpg";
+  return {
+    src: `/PressRelease/PRESS_${index}.${ext}`,
+    alt: `Press Release Media Clipping ${index}`,
+    title: `Official Press Release Media Feature #${index}`,
     date: "2024-05-15",
     source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453143/indian-public-school/assets/PressRelease/17757957511000058001.jpg",
-    alt: "Press Release - Academic Excellence & School Awards",
-    title: "State Level Academic Excellence Award Presentation",
-    date: "2024-05-14",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453142/indian-public-school/assets/PressRelease/17753674921000050424.jpg",
-    alt: "Press Release - Campus Event Coverage",
-    title: "Annual Sports & Cultural Festival Media Feature",
-    date: "2024-05-14",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453141/indian-public-school/assets/PressRelease/1715858224IMG-20240515-WA0014%282%29.jpg",
-    alt: "Press Release - CBSE Class 10 & 12 Toppers",
-    title: "CBSE Class X & XII Toppers Felicitation Ceremony",
-    date: "2024-05-15",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453140/indian-public-school/assets/PressRelease/1715858206IMG-20240514-WA0004.jpg",
-    alt: "Press Release - School Distinction Highlights",
-    title: "Leading Public School Achievement Report in Media",
-    date: "2024-05-14",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453138/indian-public-school/assets/PressRelease/1715858187IMG-20240514-WA0001.jpg",
-    alt: "Press Release - Regional News Feature",
-    title: "Indian Public School Highlights in Regional Daily",
-    date: "2024-05-14",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453138/indian-public-school/assets/PressRelease/1715858169IMG-20240514-WA0000.jpg",
-    alt: "Press Release - Education Leadership Recognition",
-    title: "Education Leadership & Innovation Press Feature",
-    date: "2024-05-14",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453137/indian-public-school/assets/PressRelease/1715858150IMG-20240514-WA0002.jpg",
-    alt: "Press Release - Student Achievement Coverage",
-    title: "National Olympiad & Competition Winners Featured",
-    date: "2024-05-14",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453136/indian-public-school/assets/PressRelease/1715858130IMG-20240514-WA0003.jpg",
-    alt: "Press Release - IPS Media Bulletin",
-    title: "IPS Media Bulletin & Annual Academic Benchmark",
-    date: "2024-05-14",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453135/indian-public-school/assets/PressRelease/1708060020IMG-20240215-WA0022.jpg",
-    alt: "Press Release - Co-Curricular & Sports Meet",
-    title: "Annual Athletic & Cultural Meet Press Release",
-    date: "2024-02-15",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453134/indian-public-school/assets/PressRelease/1708059977IMG_20240216_102843.jpg",
-    alt: "Press Release - School Infrastructure Expansion",
-    title: "Smart Classroom & Lab Facilities Inauguration News",
-    date: "2024-02-16",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453133/indian-public-school/assets/PressRelease/1684324770BEST_RESULT_OF_SAMBALPUR__page-000111.jpg",
-    alt: "Press Release - Best Results of Sambalpur Region",
-    title: "Sambalpur Top Academic Ranking Announcement",
-    date: "2023-05-17",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453131/indian-public-school/assets/PressRelease/1684324697BEST_RESULT_OF_SAMBALPUR__page-0001.jpg",
-    alt: "Press Release - Top Academic Rankers List",
-    title: "Best Board Examination Results in Sambalpur Region",
-    date: "2023-05-17",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453130/indian-public-school/assets/PressRelease/168432457210__12_nAVBHARAT.jpg",
-    alt: "Press Release - Nav Bharat News Coverage",
-    title: "Nav Bharat Daily Newspaper Feature on IPS Toppers",
-    date: "2023-05-17",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453129/indian-public-school/assets/PressRelease/168432451610__12.jpg",
-    alt: "Press Release - Class 10 & 12 Academic Success",
-    title: "100% Success Rate in Class 10 & 12 CBSE Board Exams",
-    date: "2023-05-17",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453128/indian-public-school/assets/PressRelease/168432446212.jpg",
-    alt: "Press Release - Class 12 Science & Commerce Highlights",
-    title: "Senior Secondary (Class XII) Toppers List & Press Release",
-    date: "2023-05-17",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453127/indian-public-school/assets/PressRelease/168432438910.jpg",
-    alt: "Press Release - Class 10 High Achievers",
-    title: "Secondary (Class X) Merit Holders Felicitation",
-    date: "2023-05-17",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453126/indian-public-school/assets/PressRelease/1675064263Press_Release.png",
-    alt: "Press Release - Official IPS Document",
-    title: "Official School Media Communication & Press Statement",
-    date: "2023-01-30",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453125/indian-public-school/assets/PressRelease/1659155454WhatsApp_Image_2022-07-30_at_9.51.06_AM_11zon.jpg",
-    alt: "Press Release - Media Clipping 2022",
-    title: "State Educational Ranking & Achievement Release",
-    date: "2022-07-30",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453123/indian-public-school/assets/PressRelease/1659155404WhatsApp_Image_2022-07-30_at_9.52.24_AM_11zon.jpg",
-    alt: "Press Release - Daily News Feature 2022",
-    title: "IPS Excellence in Holistic Education Newspaper Feature",
-    date: "2022-07-30",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453122/indian-public-school/assets/PressRelease/1659155343WhatsApp_Image_2022-07-30_at_9.52.15_AM_11zon.jpg",
-    alt: "Press Release - Merit List Publication 2022",
-    title: "Publication of CBSE Board Examination Merit Achievers",
-    date: "2022-07-30",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453121/indian-public-school/assets/PressRelease/1659155286nav_bharat_1_11zon.jpg",
-    alt: "Press Release - Nav Bharat Daily Report",
-    title: "Nav Bharat Press Feature on Indian Public School",
-    date: "2022-07-30",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453119/indian-public-school/assets/PressRelease/1633588204WhatsApp_Image_2021-09-18_at_16.38.23_-_Copy.jpg",
-    alt: "Press Release - Academic Year Highlights 2021",
-    title: "Annual Academic Excellence & Merit Commendation",
-    date: "2021-09-18",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453118/indian-public-school/assets/PressRelease/1633588189WhatsApp_Image_2021-09-18_at_16.38.22_%281%29.jpg",
-    alt: "Press Release - Press Release Clipping 2021",
-    title: "School Leadership & Student Development Report",
-    date: "2021-09-18",
-    source: "static",
-  },
-  {
-    src: "https://res.cloudinary.com/niefrrkx/image/upload/v1789453117/indian-public-school/assets/PressRelease/1631531588EducationExellenceAward.jpg",
-    alt: "Press Release - Education Excellence Award",
-    title: "Prestigious Education Excellence Award Winner Announcement",
-    date: "2021-09-13",
-    source: "static",
-  },
-];
+  };
+});
 
 function cleanTitle(raw: string): string {
   if (!raw) return "Press Release Clipping";
@@ -437,7 +271,7 @@ export function PressReleaseClient() {
                 >
                   <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                     <img
-                      src={img.src}
+                      src={getAssetUrl(img.src)}
                       alt={img.alt}
                       loading="lazy"
                       className="h-full w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"
@@ -552,7 +386,7 @@ export function PressReleaseClient() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.95, opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                src={currentLightboxImage.src}
+                src={getAssetUrl(currentLightboxImage.src)}
                 alt={currentLightboxImage.alt}
                 className="max-h-[75vh] w-auto max-w-full rounded-xl object-contain shadow-2xl border border-slate-800"
               />
@@ -569,7 +403,7 @@ export function PressReleaseClient() {
 
                 <div className="pt-2 flex items-center justify-center gap-3">
                   <a
-                    href={currentLightboxImage.src}
+                    href={getAssetUrl(currentLightboxImage.src)}
                     target="_blank"
                     rel="noreferrer"
                     download
@@ -578,7 +412,7 @@ export function PressReleaseClient() {
                     <Download className="size-4" /> Download Press Clipping
                   </a>
                   <a
-                    href={currentLightboxImage.src}
+                    href={getAssetUrl(currentLightboxImage.src)}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-200 hover:bg-slate-800 transition-all"

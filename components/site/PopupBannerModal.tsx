@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { getPopupBannerConfig } from "@/lib/site-data";
 import { openAdmissionModal } from "@/components/site/AdmissionApplicationModal";
+import { getAssetUrl } from "@/lib/utils";
 
 export function PopupBannerModal() {
   const siteData = useSiteData();
@@ -12,6 +13,11 @@ export function PopupBannerModal() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [imgSrc, setImgSrc] = useState(() => getAssetUrl(config.imageUrl) || "/assets/Settings/Home/POP_UP_IMAGE.jpeg");
+
+  useEffect(() => {
+    setImgSrc(getAssetUrl(config.imageUrl) || "/assets/Settings/Home/POP_UP_IMAGE.jpeg");
+  }, [config.imageUrl]);
 
   useEffect(() => {
     if (!config.enabled || !config.imageUrl) return;
@@ -113,19 +119,26 @@ export function PopupBannerModal() {
             }}
           >
             {/* Poster Graphic Image Container (Full Poster Image Fully Visible) */}
-            <div className="relative w-full flex-1 min-h-0 bg-slate-950 flex items-center justify-center overflow-hidden">
-              <img
-                src={config.imageUrl}
-                alt={config.title || "Indian Public School Announcement"}
-                className={`w-full h-full transition-transform duration-500 group-hover:scale-[1.02] ${config.showImageZoomOnClick ? "cursor-zoom-in" : ""
-                  }`}
-                style={{
-                  objectFit: config.imageFit || "contain",
-                  objectPosition: config.imagePosition || "center",
-                }}
-                onClick={() => config.showImageZoomOnClick && setIsLightboxOpen(true)}
-              />
-            </div>
+            {Boolean(config.imageUrl?.trim()) && (
+              <div className="relative w-full flex-1 min-h-0 bg-slate-950 flex items-center justify-center overflow-hidden">
+                <img
+                  src={imgSrc}
+                  alt={config.title || "Indian Public School Announcement"}
+                  onError={() => {
+                    if (imgSrc !== "/assets/Settings/Home/POP_UP_IMAGE.jpeg") {
+                      setImgSrc("/assets/Settings/Home/POP_UP_IMAGE.jpeg");
+                    }
+                  }}
+                  className={`w-full h-full transition-transform duration-500 group-hover:scale-[1.02] ${config.showImageZoomOnClick ? "cursor-zoom-in" : ""
+                    }`}
+                  style={{
+                    objectFit: config.imageFit || "contain",
+                    objectPosition: config.imagePosition || "center",
+                  }}
+                  onClick={() => config.showImageZoomOnClick && setIsLightboxOpen(true)}
+                />
+              </div>
+            )}
 
             {/* Dedicated Bottom Footer Action Bar (Positioned below image so poster text is unobscured) */}
             <div className="shrink-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800/80 px-4 py-3 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative z-20">
@@ -186,7 +199,7 @@ export function PopupBannerModal() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              src={config.imageUrl}
+              src={imgSrc}
               alt="Full Announcement Poster"
               className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl"
             />

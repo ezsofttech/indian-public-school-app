@@ -52,6 +52,17 @@ const FACILITIES = [
   },
 ];
 
+const DEFAULT_FACILITY_MAP: Record<string, string> = {
+  "Smart Classrooms": "/assets/Album/ClassRoom.webp",
+  "Science Labs": "/assets/Album/ScienceLab.webp",
+  "Computer Lab": "/assets/Album/ComputerLab.webp",
+  "Library": "/assets/Album/Library.webp",
+  "Sports Facilities": "/assets/Album/Sports.png",
+  "Playground": "/assets/Album/KidPlaygroud_1.jpg",
+  "Hostel & Mess": "/assets/Album/Mess_1.jpg",
+  "Art & Music Rooms": "/assets/Album/LifeArts.png",
+};
+
 export function Infrastructure() {
   const section = firstSection(homeData(useSiteData()), "section-6");
   const facilities = Array.isArray(section.cardItem)
@@ -80,11 +91,13 @@ export function Infrastructure() {
           variants={{ show: { transition: { staggerChildren: 0.08 } } }}
           className="mt-14 grid auto-rows-[200px] grid-cols-1 gap-4 sm:grid-cols-4 sm:auto-rows-[190px]"
         >
+
           {facilityCards.map((f, index) => {
             const fallback = FACILITIES[index % FACILITIES.length]!;
             const title = text(f.heading, fallback.title);
             const redirectUrl = text(f.redirectUrl);
-            const facilityImage = imageUrl(f.fileUrl);
+            const rawUrl = text(f.fileUrl);
+            const facilityImage = (rawUrl ? imageUrl(rawUrl) : "") || DEFAULT_FACILITY_MAP[title] || "/assets/Album/ClassRoom.webp";
             return (
               <motion.a
                 key={`${title}-${index}`}
@@ -102,14 +115,16 @@ export function Infrastructure() {
                   fallback.span,
                 )}
               >
-                {facilityImage ? (
-                  <img
-                    src={facilityImage}
-                    alt={title}
-                    loading="lazy"
-                    className="size-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-110"
-                  />
-                ) : null}
+                <img
+                  src={facilityImage}
+                  alt={title}
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = DEFAULT_FACILITY_MAP[title] || "/assets/Album/ClassRoom.webp";
+                  }}
+                  className="size-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-110"
+                />
                 <div
                   className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/25 to-transparent"
                   aria-hidden

@@ -17,6 +17,7 @@ import { Testimonials } from "@/components/site/Testimonials";
 import { NewsEvents } from "@/components/site/NewsEvents";
 import { Gallery } from "@/components/site/Gallery";
 import { AdmissionsCTA } from "@/components/site/AdmissionsCTA";
+import { processHtmlAssetUrls } from "@/lib/site-data";
 import { EnquiryForm } from "@/components/site/EnquiryForm";
 import { Contact } from "@/components/site/Contact";
 
@@ -31,7 +32,7 @@ export function HomeClient({ textContent }: { textContent?: string | null }) {
             <div className="container-page mx-auto max-w-6xl px-4 sm:px-6">
               <div
                 className="prose max-w-none space-y-6 text-slate-800 leading-relaxed font-sans dynamic-page-content"
-                dangerouslySetInnerHTML={{ __html: textContent }}
+                dangerouslySetInnerHTML={{ __html: processHtmlAssetUrls(textContent) }}
               />
             </div>
           </section>
