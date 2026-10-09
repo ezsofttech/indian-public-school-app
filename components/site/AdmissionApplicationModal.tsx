@@ -85,7 +85,7 @@ export function AdmissionApplicationModal() {
                   Academic Session 2026–27
                 </div>
                 <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white font-[var(--font-display)]">
-                  Quick Admission Enquiry
+                  Enquiry
                 </h2>
                 <p className="text-xs text-blue-100 max-w-sm font-medium">
                   Provide the 4 quick details below and our admissions team will get back to you immediately.

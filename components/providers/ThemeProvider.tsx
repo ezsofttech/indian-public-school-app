@@ -139,6 +139,27 @@ export function applyCssVars(theme: ThemeConfig, persist: boolean = true) {
   const layout = theme.layout || DEFAULT_THEME.layout;
   const typo = theme.typography || DEFAULT_THEME.typography;
 
+  // Toggle .dark class on document root based on theme background lightness or slug
+  const bgStr = (colors.background || "").toLowerCase();
+  const themeName = (theme.name || "").toLowerCase();
+  const themeSlug = (theme.slug || "").toLowerCase();
+
+  const isDarkTheme =
+    themeSlug.includes("dark") ||
+    themeName.includes("dark") ||
+    themeSlug.includes("night") ||
+    themeSlug.includes("midnight") ||
+    bgStr.includes("oklch(0.1") ||
+    bgStr.includes("oklch(0.2") ||
+    bgStr.includes("oklch(0.3") ||
+    /^#(0|1|2|3)[0-9a-f]{5}$/i.test(bgStr);
+
+  if (isDarkTheme) {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+
   if (colors.primary) root.style.setProperty("--primary", colors.primary);
   if (colors.primaryForeground) root.style.setProperty("--primary-foreground", colors.primaryForeground);
   if (colors.secondary) root.style.setProperty("--secondary", colors.secondary);

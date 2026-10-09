@@ -92,9 +92,6 @@ export function Stats() {
                   <Counter to={value} suffix={suffix} />
                 </p>
                 <p className="mt-3 text-sm font-semibold text-center">{text(s.heading)}</p>
-                <p className="mt-1 text-xs text-muted-foreground text-center">
-                  {text(s["sub-heading"])}
-                </p>
               </motion.li>
             );
           })}

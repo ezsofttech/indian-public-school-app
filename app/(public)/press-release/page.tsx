@@ -11,7 +11,7 @@ export default function PressReleasePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50/50 py-20 text-center text-slate-600 font-sans">
+        <div className="min-h-screen bg-background py-20 text-center text-muted-foreground font-sans">
           Loading Press Releases...
         </div>
       }

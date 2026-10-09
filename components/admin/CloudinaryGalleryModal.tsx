@@ -9,6 +9,7 @@ import { ImageStudioModal } from "./ImageStudioModal";
 import { FileViewerModal } from "@/components/ui/FileViewerModal";
 import { PdfCanvasThumbnail } from "@/components/ui/PdfCanvasThumbnail";
 import { SmartFileThumbnail } from "@/components/ui/SmartFileThumbnail";
+import { FileUploadProgressLoader, FileUploadStatus } from "@/components/ui/FileUploadProgressLoader";
 import { getCloudinaryPdfThumbnailUrl, isPdfFile, isDocumentFile, isWordFile, isExcelFile, isGoogleDocUrl, isGoogleSheetUrl } from "@/lib/file-preview";
 
 interface CloudinaryGalleryModalProps {
@@ -89,6 +90,11 @@ export function CloudinaryGalleryModal({
   const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState<string>("");
+  const [uploadStatus, setUploadStatus] = useState<FileUploadStatus>({
+    isUploading: false,
+    progress: 0,
+    step: "preparing",
+  });
   const [isStudioOpen, setIsStudioOpen] = useState<boolean>(false);
   const [previewFileUrl, setPreviewFileUrl] = useState<string | null>(null);
 
@@ -159,19 +165,39 @@ export function CloudinaryGalleryModal({
     setUploading(true);
     setUploadError("");
 
+    const previewUrl = file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined;
+    const formattedSize = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+
+    setUploadStatus({
+      isUploading: true,
+      fileName: file.name,
+      fileSize: formattedSize,
+      fileType: file.type,
+      previewUrl,
+      progress: 5,
+      step: "preparing",
+      stageMessage: "Step 1/3: Reading binary buffer & initializing Cloudinary payload…",
+    });
+
     try {
       const formData = new FormData();
       formData.append("file", file);
+      const isIconsCategory = activeCategory === "Icons" || activeCategory === "Settings/Icons";
+      const isLogosCategory = activeCategory === "Logos" || activeCategory === "Settings/Logos";
       const isSettingsCategory = activeCategory && (activeCategory.toLowerCase().includes("setting") || activeCategory === "Settings");
-      formData.append("album", isSettingsCategory ? "Settings" : activeCategory === "AdmissionDocuments" ? "Admission" : "Visual Editor Picked");
+      formData.append("album", isIconsCategory || isLogosCategory || isSettingsCategory ? "Settings" : activeCategory === "AdmissionDocuments" ? "Admission" : "Visual Editor Picked");
       if (activeCategory && activeCategory !== "All") {
         formData.append(
           "folder",
-          isSettingsCategory
-            ? "Settings/Home"
-            : activeCategory === "AdmissionDocuments"
-              ? "Documents/Admission"
-              : activeCategory
+          isIconsCategory
+            ? "Settings/Icons"
+            : isLogosCategory
+              ? "Settings/Logos"
+              : isSettingsCategory
+                ? "Settings/Home"
+                : activeCategory === "AdmissionDocuments"
+                  ? "Documents/Admission"
+                  : activeCategory
         );
       }
 
@@ -190,7 +216,37 @@ export function CloudinaryGalleryModal({
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      const res = await axios.post(`${API_URL}/uploads`, formData, { headers });
+      setUploadStatus((prev) => ({
+        ...prev,
+        progress: 15,
+        step: "uploading",
+        stageMessage: "Step 2/3: Transmitting asset to server & Cloudinary CDN…",
+      }));
+
+      const res = await axios.post(`${API_URL}/uploads`, formData, {
+        headers,
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const pct = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadStatus((prev) => ({
+              ...prev,
+              progress: Math.min(pct, 95),
+              step: pct >= 95 ? "processing" : "uploading",
+              stageMessage:
+                pct >= 95
+                  ? "Step 3/3: Optimizing asset & generating Cloudinary CDN links…"
+                  : `Step 2/3: Transmitting asset to CDN server (${pct}%)…`,
+            }));
+          }
+        },
+      });
+
+      setUploadStatus((prev) => ({
+        ...prev,
+        progress: 98,
+        step: "processing",
+        stageMessage: "Step 3/3: Processing asset & generating Cloudinary response URL…",
+      }));
 
       const data = res.data?.data ?? res.data;
       const url = data?.url || data?.fileUrl || (Array.isArray(data?.fileUrl) ? data.fileUrl[0] : "");
@@ -207,11 +263,29 @@ export function CloudinaryGalleryModal({
 
       setMediaList((prev) => [newItem, ...prev]);
       setSelectedUrl(url);
+
+      setUploadStatus((prev) => ({
+        ...prev,
+        progress: 100,
+        step: "done",
+        stageMessage: "Upload complete! Asset added to gallery.",
+      }));
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (err: any) {
       console.error("Cloudinary upload failed:", err);
-      setUploadError(err?.response?.data?.message || err.message || "Failed to upload file.");
+      const errMsg = err?.response?.data?.message || err.message || "Failed to upload file.";
+      setUploadError(errMsg);
+      setUploadStatus((prev) => ({
+        ...prev,
+        step: "error",
+        errorMessage: errMsg,
+        stageMessage: "Upload encountered an error.",
+      }));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     } finally {
       setUploading(false);
+      setUploadStatus({ isUploading: false, progress: 0, step: "preparing" });
     }
   };
 
@@ -220,6 +294,8 @@ export function CloudinaryGalleryModal({
 
     categoryMap.set("all", "All");
     categoryMap.set("settings", "Settings");
+    categoryMap.set("icons", "Icons");
+    categoryMap.set("logos", "Logos");
     categoryMap.set("admissiondocuments", "AdmissionDocuments");
 
     mediaList.forEach((m) => {
@@ -331,6 +407,12 @@ export function CloudinaryGalleryModal({
             />
           </label>
         </div>
+
+        {(uploadStatus.isUploading || uploadStatus.step === "done" || uploadStatus.step === "error") && (
+          <div className="px-4 pt-3 bg-slate-50 border-b border-slate-200">
+            <FileUploadProgressLoader status={uploadStatus} />
+          </div>
+        )}
 
         {/* Category Pills */}
         <div className="flex items-center gap-2 px-6 py-3 bg-slate-50/90 border-b border-slate-200 overflow-x-auto scrollbar-none min-h-[52px]">

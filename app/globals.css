@@ -350,6 +350,13 @@
   font-weight: 600;
   color: oklch(0.86 0.025 250);
   transition: background-color 150ms ease, color 150ms ease;
+  cursor: pointer;
+
+  &:hover {
+    cursor: pointer;
+    background-color: color-mix(in oklab, white 8%, transparent);
+    color: white;
+  }
 }
 
 @utility sidebar-link-active {
@@ -365,8 +372,252 @@
 
 /* Dynamic Page Content Layout, Color Cascade & Font Family Consistency */
 .dynamic-page-content {
-  color: #1e293b;
+  color: var(--color-foreground, #1e293b);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* 0. DYNAMIC PAGE DARK THEME OVERRIDES & CSS VARIABLE SYNC */
+.dark .dynamic-page-content [class*="ips-"] {
+  --blue: #60a5fa;
+  --dark-blue: #091e3a;
+  --yellow: #f4c430;
+  --light-blue: #112240;
+  --light-yellow: #112240;
+  --border: rgba(255, 255, 255, 0.15);
+  --text: #f8fafc;
+  --muted: #cbd5e1;
+  --ips-blue: #60a5fa;
+  --ips-dark-blue: #091e3a;
+  --ips-yellow: #f4c430;
+  --ips-light-blue: #112240;
+  --ips-light-yellow: #112240;
+  --ips-light: #0b192c;
+  --ips-border: rgba(255, 255, 255, 0.15);
+  --ips-text: #f8fafc;
+  --ips-muted: #cbd5e1;
+}
+
+.dark .dynamic-page-content {
+  color: var(--color-foreground, #f8fafc) !important;
+  background-color: transparent !important;
+}
+
+/* Force dark background on ALL page root wrappers and top-level section containers */
+.dark .dynamic-page-content,
+.dark .dynamic-page-content > div,
+.dark .dynamic-page-content > div > div,
+.dark .dynamic-page-content [class*="ips-"],
+.dark .dynamic-page-content [class*="ips-"] > div,
+.dark .dynamic-page-content [class*="ips-"] > section,
+.dark .dynamic-page-content [class*="-page"],
+.dark .dynamic-page-content [class*="-section"],
+.dark .dynamic-page-content [class*="-content"],
+.dark .dynamic-page-content [class*="-intro"],
+.dark .dynamic-page-content [class*="-overview"],
+.dark .dynamic-page-content [class*="-detail"],
+.dark .dynamic-page-content [class*="-journey"],
+.dark .dynamic-page-content [class*="-services"],
+.dark .dynamic-page-content [class*="-options"],
+.dark .dynamic-page-content [class*="-guidance"],
+.dark .dynamic-page-content [class*="-partnership"],
+.dark .dynamic-page-content [class*="-final"] {
+  background: var(--color-background, #0b192c) !important;
+  background-color: var(--color-background, #0b192c) !important;
+  color: var(--color-foreground, #f8fafc) !important;
+}
+
+/* Force dark gradient on ALL hero sections, established headers, dark-cards, senior sections */
+.dark .dynamic-page-content [class*="-hero"],
+.dark .dynamic-page-content [class*="-established"],
+.dark .dynamic-page-content [class*="-dark-card"],
+.dark .dynamic-page-content [class*="-senior"] {
+  background: linear-gradient(135deg, #061224 0%, #0d264a 55%, #123363 100%) !important;
+  color: #ffffff !important;
+}
+
+/* Convert actual cards, containers, grid items to dark card style */
+.dark .dynamic-page-content div[class*="-card"],
+.dark .dynamic-page-content div[class*="-box"],
+.dark .dynamic-page-content div[class*="-profile"],
+.dark .dynamic-page-content div[class*="-stat"],
+.dark .dynamic-page-content div[class*="-feature"],
+.dark .dynamic-page-content div[class*="-field"],
+.dark .dynamic-page-content div[class*="-service"],
+.dark .dynamic-page-content div[class*="-item"],
+.dark .dynamic-page-content div[class*="-learning"],
+.dark .dynamic-page-content [class*="-grid"] > div,
+.dark .dynamic-page-content [class*="-list"] > div,
+.dark .dynamic-page-content [class*="-wrap"] > div,
+.dark .dynamic-page-content article,
+.dark .dynamic-page-content section.bg-white,
+.dark .dynamic-page-content header.bg-white,
+.dark .dynamic-page-content footer.bg-white,
+.dark .dynamic-page-content .bg-white,
+.dark .dynamic-page-content .bg-white\/90,
+.dark .dynamic-page-content .bg-white\/95,
+.dark .dynamic-page-content .bg-slate-50,
+.dark .dynamic-page-content .bg-slate-100,
+.dark .dynamic-page-content .bg-slate-200,
+.dark .dynamic-page-content .bg-gray-50,
+.dark .dynamic-page-content .bg-gray-100 {
+  background: var(--color-card, #112240) !important;
+  background-color: var(--color-card, #112240) !important;
+  color: var(--color-foreground, #f8fafc) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Ensure headings and raw text elements DO NOT get solid box background rectangles in dark mode */
+.dark .dynamic-page-content h1,
+.dark .dynamic-page-content h2,
+.dark .dynamic-page-content h3,
+.dark .dynamic-page-content h4,
+.dark .dynamic-page-content h5,
+.dark .dynamic-page-content h6,
+.dark .dynamic-page-content p:not([class*="-card"]):not([class*="-box"]):not([class*="-badge"]):not([class*="-tag"]):not([class*="-pill"]):not(blockquote),
+.dark .dynamic-page-content span:not([class*="-card"]):not([class*="-box"]):not([class*="-badge"]):not([class*="-tag"]):not([class*="-pill"]):not([class*="-icon"]):not([class*="-number"]):not([class*="-btn"]):not([class*="-button"]):not([class*="-subject"]) {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Override badges, eyebrows, tags, subjects and labels in dark mode */
+.dark .dynamic-page-content [class*="-badge"],
+.dark .dynamic-page-content [class*="-label"],
+.dark .dynamic-page-content [class*="-eyebrow"],
+.dark .dynamic-page-content [class*="-tag"],
+.dark .dynamic-page-content [class*="ips-subject"] {
+  background-color: rgba(244, 196, 48, 0.12) !important;
+  color: var(--gold, #f4c430) !important;
+  border-color: rgba(244, 196, 48, 0.35) !important;
+}
+
+/* Image card frame borders in dark mode (replaces heavy white borders) */
+.dark .dynamic-page-content [class*="-image-card"],
+.dark .dynamic-page-content [class*="-image-wrap"] img {
+  border-color: rgba(244, 196, 48, 0.35) !important;
+  background: #0f172a !important;
+}
+
+/* Dark mode border fixes: convert blue/light blue borders to dark theme / gold accents */
+.dark .dynamic-page-content div[class*="-card"],
+.dark .dynamic-page-content div[class*="-box"],
+.dark .dynamic-page-content div[class*="-item"],
+.dark .dynamic-page-content div[class*="-field"],
+.dark .dynamic-page-content div[class*="-service"],
+.dark .dynamic-page-content div[class*="-guidance-card"],
+.dark .dynamic-page-content div[class*="-journey-card"],
+.dark .dynamic-page-content div[class*="-vision-card"],
+.dark .dynamic-page-content div[class*="-mission-card"],
+.dark .dynamic-page-content div[class*="-stream-card"] {
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.dark .dynamic-page-content div[class*="-card"]:hover,
+.dark .dynamic-page-content div[class*="-box"]:hover,
+.dark .dynamic-page-content div[class*="-item"]:hover,
+.dark .dynamic-page-content div[class*="-field"]:hover,
+.dark .dynamic-page-content div[class*="-service"]:hover {
+  border-color: rgba(244, 196, 48, 0.4) !important;
+}
+
+/* Comprehensive Dark Mode Dynamic Table Styling (Fixes Pic 1) */
+.dark .dynamic-page-content table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  background: transparent !important;
+  border-radius: 1.25rem !important;
+  overflow: hidden !important;
+}
+
+.dark .dynamic-page-content table thead th {
+  background: #091e3a !important;
+  background-color: #091e3a !important;
+  color: var(--gold, #f4c430) !important;
+  font-weight: 800 !important;
+  border-bottom: 2px solid rgba(244, 196, 48, 0.3) !important;
+  padding: 1.25rem 1.5rem !important;
+}
+
+.dark .dynamic-page-content table tbody tr {
+  background-color: transparent !important;
+}
+
+.dark .dynamic-page-content table tbody tr:nth-child(odd) td {
+  background: #0d1e36 !important;
+  background-color: #0d1e36 !important;
+}
+
+.dark .dynamic-page-content table tbody tr:nth-child(even) td {
+  background: #112545 !important;
+  background-color: #112545 !important;
+}
+
+.dark .dynamic-page-content table tbody tr:hover td {
+  background: #18335c !important;
+  background-color: #18335c !important;
+}
+
+.dark .dynamic-page-content table td {
+  color: #e2e8f0 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  padding: 1.25rem 1.5rem !important;
+}
+
+.dark .dynamic-page-content table td[class*="-stream"],
+.dark .dynamic-page-content table td.ips-stream-table-stream,
+.dark .dynamic-page-content table td:first-child {
+  color: var(--gold, #f4c430) !important;
+  font-weight: 800 !important;
+}
+
+.dark .dynamic-page-content [class*="-table-wrap"],
+.dark .dynamic-page-content [class*="-table-scroll"] {
+  border: 1px solid rgba(244, 196, 48, 0.3) !important;
+  background: #0b192c !important;
+  border-radius: 1.25rem !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Ensure headings inside dark dynamic page content are bright white / gold */
+.dark .dynamic-page-content h1,
+.dark .dynamic-page-content h2,
+.dark .dynamic-page-content h3,
+.dark .dynamic-page-content h4,
+.dark .dynamic-page-content h5,
+.dark .dynamic-page-content h6,
+.dark .dynamic-page-content [class*="heading"],
+.dark .dynamic-page-content [class*="heading"] h1,
+.dark .dynamic-page-content [class*="heading"] h2,
+.dark .dynamic-page-content [class*="heading"] h3,
+.dark .dynamic-page-content [class*="section-heading"],
+.dark .dynamic-page-content [class*="features-title"],
+.dark .dynamic-page-content .text-schoolDarkBlue,
+.dark .dynamic-page-content .text-schoolBlue,
+.dark .dynamic-page-content .text-slate-900,
+.dark .dynamic-page-content .text-slate-800,
+.dark .dynamic-page-content .text-slate-700 {
+  color: #ffffff !important;
+}
+
+.dark .dynamic-page-content h1 span,
+.dark .dynamic-page-content h2 span,
+.dark .dynamic-page-content h3 span {
+  color: var(--gold, #f4c430) !important;
+}
+
+/* Ensure paragraph text, subtitles, descriptions, and list items inside dark cards are light slate */
+.dark .dynamic-page-content p,
+.dark .dynamic-page-content span:not([class*="gold"]):not([class*="yellow"]):not([class*="badge"]):not([class*="eyebrow"]):not([class*="tag"]):not([class*="label"]),
+.dark .dynamic-page-content li,
+.dark .dynamic-page-content [class*="secondary-text"],
+.dark .dynamic-page-content [class*="-subtitle"],
+.dark .dynamic-page-content [class*="-description"],
+.dark .dynamic-page-content .text-slate-600,
+.dark .dynamic-page-content .text-slate-500 {
+  color: #cbd5e1 !important;
 }
 
 /* Ensure all body elements, text, paragraphs, spans, lists, badges, and labels in DB dynamic pages inherit site sans font */

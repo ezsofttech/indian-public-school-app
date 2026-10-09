@@ -73,7 +73,8 @@ export interface PopupBannerSetting {
   imageFit?: "contain" | "cover" | "fill";
   imagePosition?: "center" | "top" | "bottom";
   aspectRatio?: "auto" | "16/9" | "16/10" | "4/3" | "1/1" | "3/2" | "2/1";
-  bannerStyle?: "card" | "full-bleed" | "side-by-side";
+  bannerStyle?: "card" | "full-bleed" | "side-by-side" | "concept1" | "concept2" | "concept3" | "concept4";
+  showInlineForm?: boolean;
   imageBorderRadius?: number;
   showImageZoomOnClick?: boolean;
 }
@@ -202,7 +203,7 @@ export async function getSiteData(): Promise<SiteData> {
     getOptionalApi<SiteLogoSetting | { value?: SiteLogoSetting }>("/school-settings/key/site_logo"),
     getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/news", { limit: 10, page: 1, sortOrder: "desc" }),
     getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/gallery", { limit: 50, page: 1, sortOrder: "desc" }),
-    getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/reviews", { limit: 12, page: 1, sortOrder: "desc" }),
+    getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/reviews", { limit: 12, page: 1, sortOrder: "desc", isApproved: "true" }),
     getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/menu-items", { publishedOnly: "true" }),
   ]);
   const siteData = siteResponse ? unwrapSetting<SiteData>(siteResponse) : fallback;
@@ -468,7 +469,8 @@ export function getPopupBannerConfig(siteData?: SiteData | null): Required<Popup
   }
   const resolvedImageUrl = imageUrl(rawImageUrl) || getAssetUrl(rawImageUrl) || "/assets/Settings/Home/POP_UP_IMAGE.jpeg";
   const showTitle = pb.showTitle !== false;
-  const title = showTitle ? (pb.title !== undefined ? text(pb.title) : "Admissions Open 2026–27") : "";
+  const rawTitle = pb.title !== undefined ? text(pb.title).trim() : "";
+  const title = showTitle ? (rawTitle !== "" && !rawTitle.includes("2026") && !rawTitle.includes("2027") && rawTitle !== "Admissions Open 2026–27" ? rawTitle : "Enquiry") : "";
   const rawSubtitle = text(pb.subtitle) || "";
   const subtitle = rawSubtitle.toLowerCase().includes("enroll your child") ? "" : rawSubtitle;
   const enquiryButtonText = text(pb.enquiryButtonText) || "Enquiry Now";
@@ -480,7 +482,11 @@ export function getPopupBannerConfig(siteData?: SiteData | null): Required<Popup
   const imageFit = (pb.imageFit === "contain" || pb.imageFit === "fill") ? pb.imageFit : "cover";
   const imagePosition = (pb.imagePosition === "top" || pb.imagePosition === "bottom") ? pb.imagePosition : "center";
   const aspectRatio = (["16/9", "16/10", "4/3", "1/1", "3/2", "2/1"].includes(pb.aspectRatio || "") ? pb.aspectRatio : "16/10") as "auto" | "16/9" | "16/10" | "4/3" | "1/1" | "3/2" | "2/1";
-  const bannerStyle = (pb.bannerStyle === "card" || pb.bannerStyle === "side-by-side") ? pb.bannerStyle : "full-bleed";
+  let rawStyle: string = pb.bannerStyle || "concept1";
+  if (rawStyle === "concept5") rawStyle = "concept3";
+  if (rawStyle === "concept6") rawStyle = "concept4";
+  const bannerStyle = (["card", "full-bleed", "side-by-side", "concept1", "concept2", "concept3", "concept4"].includes(rawStyle) ? rawStyle : "concept1") as "card" | "full-bleed" | "side-by-side" | "concept1" | "concept2" | "concept3" | "concept4";
+  const showInlineForm = pb.showInlineForm === true || bannerStyle === "concept3";
   const imageBorderRadius = typeof pb.imageBorderRadius === "number" ? pb.imageBorderRadius : (Number(pb.imageBorderRadius) || 24);
   const showImageZoomOnClick = pb.showImageZoomOnClick !== false;
 
@@ -501,6 +507,7 @@ export function getPopupBannerConfig(siteData?: SiteData | null): Required<Popup
     imagePosition,
     aspectRatio,
     bannerStyle,
+    showInlineForm,
     imageBorderRadius,
     showImageZoomOnClick,
   };

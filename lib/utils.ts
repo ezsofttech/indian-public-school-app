@@ -10,12 +10,25 @@ export function getCloudinaryRootFolder(): string {
 }
 
 
+function extractStringUrl(url: any): string | null {
+  if (!url) return null;
+  if (typeof url === 'string') return url;
+  if (typeof url === 'object' && url !== null) {
+    if (typeof url.url === 'string') return url.url;
+    if (typeof url.src === 'string') return url.src;
+    if (typeof url.path === 'string') return url.path;
+    if (typeof url.secure_url === 'string') return url.secure_url;
+  }
+  return null;
+}
+
 /**
  * Normalizes full Cloudinary or local paths into clean relative paths like /Videos/IPSIntroVideo.mp4 or /Album/ClassRoom.webp
  */
-export function toCleanRelativeAssetPath(url?: string | null): string {
-  if (!url) return '';
-  let trimmed = url.trim();
+export function toCleanRelativeAssetPath(url?: any): string {
+  const str = extractStringUrl(url);
+  if (!str) return '';
+  let trimmed = str.trim();
   if (!trimmed) return '';
 
   if (trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
@@ -41,9 +54,11 @@ export function toCleanRelativeAssetPath(url?: string | null): string {
 /**
  * Resolves absolute or relative media/file paths to full URLs dynamically.
  */
-export function getAssetUrl(url?: string | null): string {
-  if (!url) return '';
-  let trimmed = url.trim()
+export function getAssetUrl(url?: any): string {
+  const str = extractStringUrl(url);
+  if (!str) return '';
+  let trimmed = str
+    .trim()
     .replace(/(?:assets\/Videos\/)+assets\/Videos\//gi, 'assets/Videos/')
     .replace(/(?:Videos\/)+Videos\//gi, 'Videos/');
   if (!trimmed) return '';

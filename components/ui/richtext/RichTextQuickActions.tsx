@@ -15,6 +15,7 @@ import {
     Paintbrush,
     Image as ImageIcon,
     Table,
+    Sparkles,
 } from "lucide-react";
 
 export interface RichTextQuickActionsProps {
@@ -31,6 +32,7 @@ export interface RichTextQuickActionsProps {
     updateBlockBgColor: (color: string) => void;
     updatePageBgColor: (color: string) => void;
     setIsGalleryOpen: (open: boolean) => void;
+    openFrameStudio?: (url?: string) => void;
     deleteSelectedImage: () => void;
     openLinkModal: (targetAnchor?: HTMLAnchorElement | null) => void;
     removeHyperlink: () => void;
@@ -60,6 +62,7 @@ export const RichTextQuickActions: React.FC<RichTextQuickActionsProps> = ({
     updateBlockBgColor,
     updatePageBgColor,
     setIsGalleryOpen,
+    openFrameStudio,
     deleteSelectedImage,
     openLinkModal,
     removeHyperlink,
@@ -123,9 +126,9 @@ export const RichTextQuickActions: React.FC<RichTextQuickActionsProps> = ({
                 )}
 
                 {/* Quick Resizes */}
-                <span className={`text-[10px] font-extrabold uppercase ${(!selectedBlockEl && !selectedImageEl) ? "text-slate-400" : "text-blue-800"}`}>Width:</span>
+                <span className={`text-[10px] font-extrabold uppercase ${(!selectedBlockEl && !selectedImageEl && !selectedTableEl) ? "text-slate-400" : "text-blue-800"}`}>Width:</span>
                 {[25, 50, 75, 100].map((pct) => {
-                    const isDisabled = !selectedBlockEl && !selectedImageEl;
+                    const isDisabled = !selectedBlockEl && !selectedImageEl && !selectedTableEl;
                     return (
                         <button
                             key={pct}
@@ -134,19 +137,21 @@ export const RichTextQuickActions: React.FC<RichTextQuickActionsProps> = ({
                             onClick={() => {
                                 const iframe = iframeRef.current;
                                 const doc = iframe?.contentDocument || iframe?.contentWindow?.document;
-                                const target = selectedBlockEl || selectedImageEl || (doc?.querySelector(".wysiwyg-selected-block") as HTMLElement) || (doc?.querySelector("img.wysiwyg-selected-img") as HTMLElement);
+                                const target = selectedTableEl || selectedBlockEl || selectedImageEl || (doc?.querySelector(".wysiwyg-selected-block") as HTMLElement) || (doc?.querySelector("img.wysiwyg-selected-img") as HTMLElement);
                                 if (target) {
                                     target.style.width = pct === 100 ? "100%" : `${pct}%`;
                                     target.style.maxWidth = "100%";
+                                    if (target.tagName === "TABLE" && pct < 100 && target.style.marginLeft === "auto" && target.style.marginRight === "auto") {
+                                        target.style.display = "table";
+                                    }
                                     syncIframeToState();
                                 }
                             }}
-                            className={`rounded-lg border px-2 py-1 text-[11px] font-bold transition ${
-                                isDisabled
+                            className={`rounded-lg border px-2 py-1 text-[11px] font-bold transition ${isDisabled
                                     ? "border-slate-200 bg-slate-100 text-slate-400 opacity-40 cursor-not-allowed"
                                     : "border-blue-200 bg-white text-slate-700 hover:bg-blue-100 cursor-pointer"
-                            }`}
-                            title={isDisabled ? "Not Allowed / Not Applicable — Select a block box or image first" : `Quick resize width to ${pct}%`}
+                                }`}
+                            title={isDisabled ? "Not Allowed / Not Applicable — Select a block box, table, or image first" : `Quick resize width to ${pct}%`}
                         >
                             {pct}%
                         </button>
@@ -156,25 +161,24 @@ export const RichTextQuickActions: React.FC<RichTextQuickActionsProps> = ({
                 <div className="h-4 w-px bg-blue-200 mx-0.5" />
 
                 {/* Alignment */}
-                <span className={`text-[10px] font-extrabold uppercase ${!selectedImageEl ? "text-slate-400" : "text-blue-800"}`}>Align:</span>
+                <span className={`text-[10px] font-extrabold uppercase ${(!selectedImageEl && !selectedTableEl && !selectedBlockEl) ? "text-slate-400" : "text-blue-800"}`}>Align:</span>
                 {[
-                    { align: "left" as const, Icon: AlignLeft, title: "Float Left Wrap" },
-                    { align: "center" as const, Icon: AlignCenter, title: "Center Block" },
-                    { align: "right" as const, Icon: AlignRight, title: "Float Right Wrap" },
+                    { align: "left" as const, Icon: AlignLeft, title: "Left / Float Left" },
+                    { align: "center" as const, Icon: AlignCenter, title: "Center Table / Component" },
+                    { align: "right" as const, Icon: AlignRight, title: "Right / Float Right" },
                 ].map(({ align, Icon, title }) => {
-                    const isDisabled = !selectedImageEl;
+                    const isDisabled = !selectedImageEl && !selectedTableEl && !selectedBlockEl;
                     return (
                         <button
                             key={align}
                             type="button"
                             disabled={isDisabled}
                             onClick={() => applyImageAlignment(align)}
-                            title={isDisabled ? "Not Allowed / Not Applicable — Select an inserted image first" : title}
-                            className={`rounded-lg border p-1 transition ${
-                                isDisabled
+                            title={isDisabled ? "Not Allowed / Not Applicable — Select an image, table, or component block first" : title}
+                            className={`rounded-lg border p-1 transition ${isDisabled
                                     ? "border-slate-200 bg-slate-100 text-slate-400 opacity-40 cursor-not-allowed"
                                     : "border-blue-200 bg-white text-slate-700 hover:bg-blue-100 cursor-pointer"
-                            }`}
+                                }`}
                         >
                             {isDisabled ? <Ban size={13} className="text-slate-400" /> : <Icon size={13} />}
                         </button>
@@ -188,9 +192,8 @@ export const RichTextQuickActions: React.FC<RichTextQuickActionsProps> = ({
                     const isDisabled = !selectedBlockEl && !selectedImageEl;
                     return (
                         <div
-                            className={`flex items-center gap-1 border rounded-xl px-2 py-0.5 shadow-2xs transition ${
-                                isDisabled ? "bg-slate-100 border-slate-200 opacity-50" : "bg-white/90 border-blue-200"
-                            }`}
+                            className={`flex items-center gap-1 border rounded-xl px-2 py-0.5 shadow-2xs transition ${isDisabled ? "bg-slate-100 border-slate-200 opacity-50" : "bg-white/90 border-blue-200"
+                                }`}
                             title={isDisabled ? "Not Allowed / Not Applicable — Select a component box first to change background" : "Pick Custom Box Background Color"}
                         >
                             {isDisabled ? <Ban size={12} className="text-slate-400" /> : <Palette size={12} className="text-indigo-600" />}
@@ -218,9 +221,8 @@ export const RichTextQuickActions: React.FC<RichTextQuickActionsProps> = ({
                                     disabled={isDisabled}
                                     title={isDisabled ? "Not Allowed / Not Applicable — Select a component box first" : `Set Component BG to ${c.name}`}
                                     onClick={() => updateBlockBgColor(c.value)}
-                                    className={`w-4 h-4 rounded-full border border-slate-300 transition shadow-2xs flex items-center justify-center text-[8px] font-bold ${
-                                        isDisabled ? "opacity-40 cursor-not-allowed" : "hover:scale-110 cursor-pointer"
-                                    }`}
+                                    className={`w-4 h-4 rounded-full border border-slate-300 transition shadow-2xs flex items-center justify-center text-[8px] font-bold ${isDisabled ? "opacity-40 cursor-not-allowed" : "hover:scale-110 cursor-pointer"
+                                        }`}
                                     style={{ backgroundColor: c.value === "transparent" ? "#ffffff" : c.value }}
                                 >
                                     {c.value === "transparent" ? <X size={9} className="text-slate-500" /> : null}
@@ -266,7 +268,7 @@ export const RichTextQuickActions: React.FC<RichTextQuickActionsProps> = ({
 
                 <div className="h-4 w-px bg-blue-200 mx-0.5" />
 
-                {/* Gallery & Delete */}
+                {/* Gallery, Frame Studio & Delete */}
                 <button
                     type="button"
                     onClick={() => setIsGalleryOpen(true)}
@@ -276,6 +278,16 @@ export const RichTextQuickActions: React.FC<RichTextQuickActionsProps> = ({
                     <ImageIcon size={12} />
                     <span>Gallery</span>
                 </button>
+                {openFrameStudio && (
+                    <button
+                        type="button"
+                        onClick={() => openFrameStudio()}
+                        title="Open Image Frame & Card Studio (Custom templates)"
+                        className="flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2 py-1 text-[11px] font-extrabold text-amber-800 hover:bg-amber-100 transition cursor-pointer shadow-2xs"
+                    >
+                        <span>Frame Studio</span>
+                    </button>
+                )}
                 {selectedImageEl && (
                     <button
                         type="button"
@@ -312,6 +324,32 @@ export const RichTextQuickActions: React.FC<RichTextQuickActionsProps> = ({
                         <span className="text-[11px] font-extrabold text-indigo-950 flex items-center gap-1">
                             <Table size={13} className="text-indigo-600" /> Table Actions:
                         </span>
+                        <div className="flex items-center gap-1 bg-white border border-indigo-200 rounded-lg p-0.5">
+                            <button
+                                type="button"
+                                onClick={() => applyImageAlignment("left")}
+                                className="rounded px-1.5 py-0.5 text-[10px] font-bold text-indigo-700 hover:bg-indigo-100 transition cursor-pointer flex items-center gap-1"
+                                title="Align Table Left"
+                            >
+                                <AlignLeft size={12} /> Left
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => applyImageAlignment("center")}
+                                className="rounded px-1.5 py-0.5 text-[10px] font-extrabold bg-indigo-600 text-white hover:bg-indigo-700 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                                title="Center Table on Page"
+                            >
+                                <AlignCenter size={12} /> Center Table
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => applyImageAlignment("right")}
+                                className="rounded px-1.5 py-0.5 text-[10px] font-bold text-indigo-700 hover:bg-indigo-100 transition cursor-pointer flex items-center gap-1"
+                                title="Align Table Right"
+                            >
+                                <AlignRight size={12} /> Right
+                            </button>
+                        </div>
                         <button
                             type="button"
                             onClick={addTableRowAbove}

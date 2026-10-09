@@ -11,26 +11,54 @@ import {
   Trash2,
   UploadCloud,
   ImageIcon,
+  Loader2,
 } from "lucide-react";
 import fallbackSiteData from "@/public/cloud-datasource.json";
+import fallbackMenuItemsList from "@/public/collections/menuitems.json";
 import { RecordItem } from "../types/admin.types";
 import { API_URL } from "../config/admin.config";
 import { HomeHeroTab } from "./home-layout/HomeHeroTab";
+import { HomeQuickCardsTab } from "./home-layout/HomeQuickCardsTab";
+import { AnimatePresence } from "motion/react";
 import { CloudinaryGalleryModal } from "@/components/admin/CloudinaryGalleryModal";
+import { AdmissionEnquiryForm } from "@/components/site/AdmissionEnquiryForm";
+import { FileUploadProgressLoader, FileUploadStatus } from "@/components/ui/FileUploadProgressLoader";
 import { getAssetUrl } from "@/lib/utils";
+
+const EDITOR_TABS = [
+  { id: "header", label: "Header Config", icon: "bi-card-heading" },
+  { id: "footer", label: "Footer Config", icon: "bi-layout-text-window" },
+  { id: "whatsapp", label: "WhatsApp Widget", icon: "bi-whatsapp" },
+  { id: "popupBanner", label: "Pop-Up Banner", icon: "bi-window-stack" },
+  { id: "hero", label: "Hero Poster", icon: "bi-person-standing" },
+  { id: "quickCards", label: "Quick Cards", icon: "bi-grid-3x3-gap" },
+  { id: "video", label: "Intro Video Setup", icon: "bi-camera-video-fill" },
+  { id: "sec1", label: "Sec 1: About", icon: "bi-building" },
+  { id: "sec2", label: "Sec 2: Key Stats", icon: "bi-bar-chart-fill" },
+  { id: "sec3", label: "Sec 3: Why Choose", icon: "bi-star-fill" },
+  { id: "sec4", label: "Sec 4: Academics", icon: "bi-book-fill" },
+  { id: "sec6", label: "Sec 5: Campus", icon: "bi-building-fill" },
+  { id: "sec7", label: "Sec 6: Student Life", icon: "bi-people-fill" },
+  { id: "sec8", label: "Sec 7: Courses", icon: "bi-mortarboard-fill" },
+  { id: "sec9", label: "Sec 8: Director Message", icon: "bi-person-badge-fill" },
+];
 
 export function HomeLayoutEditorModal({
   token,
   record,
   saving,
+  allMenuItems = [],
+  allSectionPages = [],
   onClose,
   onSave,
 }: {
   token: string;
   record: RecordItem | null;
   saving: boolean;
+  allMenuItems?: RecordItem[];
+  allSectionPages?: RecordItem[];
   onClose: () => void;
-  onSave: (value: Record<string, unknown>) => void;
+  onSave: (value: Record<string, unknown>, options?: { keepOpen?: boolean }) => void | Promise<void>;
 }) {
   const [activeTab, setActiveTab] = useState<
     | "header"
@@ -44,18 +72,33 @@ export function HomeLayoutEditorModal({
     | "sec2"
     | "sec3"
     | "sec4"
-    | "sec5"
     | "sec6"
     | "sec7"
     | "sec8"
     | "sec9"
-    | "sec10"
-    | "rawJson"
   >("header");
   const [uploading, setUploading] = useState<boolean>(false);
+  const [uploadingCard, setUploadingCard] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string>("");
+  const [uploadStatus, setUploadStatus] = useState<FileUploadStatus>({
+    isUploading: false,
+    progress: 0,
+    step: "preparing",
+  });
   const [isGalleryOpen, setIsGalleryOpen] = useState<boolean>(false);
+  const [galleryPickerTarget, setGalleryPickerTarget] = useState<"popupBanner" | "introVideo" | "videoPoster" | null>(null);
+  const [galleryPickerCallback, setGalleryPickerCallback] = useState<((url: string) => void) | null>(null);
+  const [galleryTitle, setGalleryTitle] = useState<string>("Cloudinary Media Gallery");
+
+  const openGalleryPicker = (onSelect: (url: string) => void, customTitle?: string) => {
+    setGalleryPickerCallback(() => onSelect);
+    setGalleryTitle(customTitle || "Choose Media Asset from Gallery");
+    setIsGalleryOpen(true);
+  };
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [showLivePopUpPreview, setShowLivePopUpPreview] = useState<boolean>(false);
+  const [saveSuccess, setSaveSuccess] = useState<string>("");
+  const [isSavingLocal, setIsSavingLocal] = useState<boolean>(false);
 
   React.useEffect(() => {
     const handleFullscreenChange = () => {
@@ -132,6 +175,100 @@ export function HomeLayoutEditorModal({
     };
   }, [initialValue, record]);
 
+  const [dbMenuItems, setDbMenuItems] = useState<RecordItem[]>(allMenuItems);
+  const [dbSectionPages, setDbSectionPages] = useState<RecordItem[]>(allSectionPages);
+
+  React.useEffect(() => {
+    if (allMenuItems && allMenuItems.length > 0) {
+      setDbMenuItems(allMenuItems);
+    }
+    if (allSectionPages && allSectionPages.length > 0) {
+      setDbSectionPages(allSectionPages);
+    }
+  }, [allMenuItems, allSectionPages]);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    const fetchExtraData = async () => {
+      try {
+        if (dbMenuItems.length === 0) {
+          const res = await axios.get(`${API_URL}/menu-items?publishedOnly=true`);
+          const items = res.data?.data ?? res.data ?? [];
+          if (isMounted && Array.isArray(items) && items.length > 0) {
+            setDbMenuItems(items);
+          }
+        }
+        if (dbSectionPages.length === 0) {
+          const res = await axios.get(`${API_URL}/section-pages`);
+          const pages = res.data?.data ?? res.data ?? [];
+          if (isMounted && Array.isArray(pages) && pages.length > 0) {
+            setDbSectionPages(pages);
+          }
+        }
+      } catch (err) {
+        // quiet catch
+      }
+    };
+    fetchExtraData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const { defaultSitePages, menuOptions } = useMemo(() => {
+    const defaults = [
+      { title: "Home", url: "/" },
+      { title: "About Us (Section)", url: "/#about" },
+      { title: "About Us (Page)", url: "/about" },
+      { title: "Academics (Section)", url: "/#academics" },
+      { title: "Admissions (Page)", url: "/admission" },
+      { title: "Contact Us (Section)", url: "/#contact" },
+      { title: "Chairman's Message", url: "/about/chairman-message" },
+      { title: "Principal's Desk", url: "/about/principal-message" },
+      { title: "Campus Life", url: "/#campus-life" },
+      { title: "Gallery (Section)", url: "/#gallery" },
+      { title: "Gallery Album", url: "/gallery-album" },
+      { title: "Enquiry (Section)", url: "/#enquiry" },
+      { title: "Mandatory Disclosure", url: "/mandatory-disclosure" },
+      { title: "Parent Portal", url: "/connectivity/parent-teacher-meeting" },
+      { title: "Notice & News", url: "/news" },
+      { title: "Press Release", url: "/press-release" },
+      { title: "Brochures", url: "/brochures" },
+    ];
+
+    const rawMenu = dbMenuItems.length > 0 ? dbMenuItems : (fallbackMenuItemsList as RecordItem[]);
+    const options: { title: string; url: string }[] = [];
+    const addedUrls = new Set<string>();
+
+    defaults.forEach((d) => addedUrls.add(d.url));
+
+    rawMenu.forEach((item) => {
+      const isPublished = item.isPublished !== false && String(item.isPublished) !== "false";
+      if (!isPublished) return;
+      const url = String(item.targetUrl || item.url || item.href || (item.slug ? `/${item.slug}` : "")).trim();
+      const title = String(item.title || "").trim();
+      if (url && title && !addedUrls.has(url)) {
+        addedUrls.add(url);
+        options.push({ title, url });
+      }
+    });
+
+    dbSectionPages.forEach((p) => {
+      const isPublished = p.isPublished !== false && String(p.isPublished) !== "false";
+      if (!isPublished) return;
+      const url = String(p.targetUrl || (p.slug ? `/pages/${p.slug}` : "")).trim();
+      const title = String(p.title || "").trim();
+      if (url && title && !addedUrls.has(url)) {
+        addedUrls.add(url);
+        options.push({ title, url });
+      }
+    });
+
+    options.sort((a, b) => a.title.localeCompare(b.title));
+
+    return { defaultSitePages: defaults, menuOptions: options };
+  }, [dbMenuItems, dbSectionPages]);
+
   const currentPopupBanner = useMemo(() => {
     return {
       ...(datasource?.popupBanner || {}),
@@ -153,6 +290,21 @@ export function HomeLayoutEditorModal({
   const uploadImage = async (file: File, album = "Home", folder?: string): Promise<string> => {
     setUploading(true);
     setUploadError("");
+
+    const previewUrl = file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined;
+    const formattedSize = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+
+    setUploadStatus({
+      isUploading: true,
+      fileName: file.name,
+      fileSize: formattedSize,
+      fileType: file.type,
+      previewUrl,
+      progress: 5,
+      step: "preparing",
+      stageMessage: "Step 1/3: Reading binary buffer & initializing Cloudinary payload…",
+    });
+
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -161,35 +313,77 @@ export function HomeLayoutEditorModal({
         formData.append("folder", folder);
       }
 
+      setUploadStatus((prev) => ({
+        ...prev,
+        progress: 15,
+        step: "uploading",
+        stageMessage: "Step 2/3: Transmitting asset to server & Cloudinary CDN…",
+      }));
+
       const res = await axios.post(`${API_URL}/uploads`, formData, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
           "Content-Type": "multipart/form-data",
         },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const pct = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadStatus((prev) => ({
+              ...prev,
+              progress: Math.min(pct, 95),
+              step: pct >= 95 ? "processing" : "uploading",
+              stageMessage:
+                pct >= 95
+                  ? "Step 3/3: Optimizing asset & generating Cloudinary CDN links…"
+                  : `Step 2/3: Transmitting asset to CDN server (${pct}%)…`,
+            }));
+          }
+        },
       });
+
+      setUploadStatus((prev) => ({
+        ...prev,
+        progress: 98,
+        step: "processing",
+        stageMessage: "Step 3/3: Processing asset & generating Cloudinary response URL…",
+      }));
 
       const data = res.data?.data ?? res.data;
       const url = data?.url || (Array.isArray(data?.fileUrl) ? data.fileUrl[0] : data?.fileUrl);
       if (!url) throw new Error("No URL returned from upload");
+
+      setUploadStatus((prev) => ({
+        ...prev,
+        progress: 100,
+        step: "done",
+        stageMessage: "Upload complete! Asset added to editor.",
+      }));
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       return url;
     } catch (err) {
-      setUploadError(axios.isAxiosError(err) ? String(err.response?.data?.message || err.message) : "Upload failed.");
+      const errMsg = axios.isAxiosError(err) ? String(err.response?.data?.message || err.message) : "Upload failed.";
+      setUploadError(errMsg);
+      setUploadStatus((prev) => ({
+        ...prev,
+        step: "error",
+        errorMessage: errMsg,
+        stageMessage: "Upload encountered an error.",
+      }));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       return "";
     } finally {
       setUploading(false);
+      setUploadStatus({ isUploading: false, progress: 0, step: "preparing" });
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setIsSavingLocal(true);
+    setSaveSuccess("");
+    setUploadError("");
+
     let finalVal = datasource;
-    if (activeTab === "rawJson") {
-      try {
-        finalVal = JSON.parse(jsonText);
-      } catch {
-        setUploadError("Invalid JSON syntax in Raw JSON Editor tab");
-        return;
-      }
-    }
 
     const homeList = Array.isArray(finalVal.home) ? [...finalVal.home] : [{}];
     const firstHome = { ...(homeList[0] || {}) };
@@ -242,14 +436,28 @@ export function HomeLayoutEditorModal({
       home: homeList,
     };
 
-    onSave({
-      key: record?.key || "site_datasource",
-      category: record?.category || "Content",
-      description: record?.description || "Full home page layout configuration datasource",
-      status: "Active",
-      value: finalVal,
-      isPublic: true,
-    });
+    try {
+      await onSave(
+        {
+          key: record?.key || "site_datasource",
+          category: record?.category || "Content",
+          description: record?.description || "Full home page layout configuration datasource",
+          status: "Active",
+          value: finalVal,
+          isPublic: true,
+        },
+        { keepOpen: true }
+      );
+      setSaveSuccess("Layout saved & published successfully!");
+      setTimeout(() => {
+        setSaveSuccess("");
+      }, 5000);
+    } catch (err: any) {
+      console.error("Error saving home layout:", err);
+      setUploadError(err?.message || "Failed to save & publish layout. Please try again.");
+    } finally {
+      setIsSavingLocal(false);
+    }
   };
 
   const updateHeaderField = (field: string, val: string) => {
@@ -507,26 +715,7 @@ export function HomeLayoutEditorModal({
 
         {/* Navigation Tabs */}
         <div className="flex items-center gap-1.5 border-b border-slate-200 bg-slate-50/90 p-3 overflow-x-auto scrollbar-thin shrink-0 whitespace-nowrap">
-          {[
-            { id: "header", label: "Header Config", icon: "bi-card-heading" },
-            { id: "footer", label: "Footer Config", icon: "bi-layout-text-window" },
-            { id: "whatsapp", label: "WhatsApp Widget", icon: "bi-whatsapp" },
-            { id: "popupBanner", label: "Pop-Up Banner", icon: "bi-window-stack" },
-            { id: "hero", label: "Hero Poster", icon: "bi-person-standing" },
-            { id: "quickCards", label: "Quick Cards", icon: "bi-grid-3x3-gap" },
-            { id: "video", label: "Intro Video Setup", icon: "bi-camera-video-fill" },
-            { id: "sec1", label: "Sec 1: About", icon: "bi-building" },
-            { id: "sec2", label: "Sec 2: Key Stats", icon: "bi-bar-chart-fill" },
-            { id: "sec3", label: "Sec 3: Why Choose", icon: "bi-star-fill" },
-            { id: "sec4", label: "Sec 4: Academics", icon: "bi-book-fill" },
-            { id: "sec5", label: "Sec 5: Activities", icon: "bi-activity" },
-            { id: "sec6", label: "Sec 6: Campus", icon: "bi-building-fill" },
-            { id: "sec7", label: "Sec 7: Student Life", icon: "bi-people-fill" },
-            { id: "sec8", label: "Sec 8: Courses", icon: "bi-mortarboard-fill" },
-            { id: "sec9", label: "Sec 9: Director Message", icon: "bi-person-badge-fill" },
-            { id: "sec10", label: "Sec 10: News & Notices", icon: "bi-newspaper" },
-            { id: "rawJson", label: "Raw JSON", icon: "bi-code-slash" },
-          ].map((tab) => (
+          {EDITOR_TABS.map((tab) => (
             <button
               key={tab.id}
               type="button"
@@ -541,6 +730,12 @@ export function HomeLayoutEditorModal({
             </button>
           ))}
         </div>
+
+        {(uploadStatus.isUploading || uploadStatus.step === "done" || uploadStatus.step === "error") && (
+          <div className="shrink-0 border-b border-blue-200 bg-blue-50/90 px-6 py-3 shadow-xs animate-in fade-in duration-200">
+            <FileUploadProgressLoader status={uploadStatus} />
+          </div>
+        )}
 
         {/* Modal Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -999,52 +1194,107 @@ export function HomeLayoutEditorModal({
                             </button>
                           </div>
 
-                          <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                            {Array.isArray(col.links) && col.links.map((link: any, linkIdx: number) => (
-                              <div key={linkIdx} className="p-2 rounded-lg bg-slate-50 border border-slate-100 space-y-1.5 relative group">
-                                <div className="flex items-center justify-between">
-                                  <input
-                                    type="text"
-                                    placeholder="Link Title"
-                                    value={link.title || ""}
-                                    onChange={(e) => {
-                                      const val = e.target.value;
-                                      updateFooterColumns((cols) => {
-                                        cols[colIdx].links[linkIdx].title = val;
-                                        return cols;
-                                      });
-                                    }}
-                                    className="w-full text-xs font-semibold text-slate-800 bg-transparent border-b border-transparent focus:border-slate-300 outline-none"
-                                  />
-                                  <button
-                                    type="button"
-                                    title="Remove Link"
-                                    onClick={() => {
-                                      updateFooterColumns((cols) => {
-                                        cols[colIdx].links = cols[colIdx].links.filter((_: any, idx: number) => idx !== linkIdx);
-                                        return cols;
-                                      });
-                                    }}
-                                    className="text-slate-400 hover:text-red-500 text-xs ml-1 cursor-pointer"
-                                  >
-                                    <i className="bi bi-x-lg" />
-                                  </button>
+                          <div className="space-y-2.5 max-h-[360px] overflow-y-auto pr-1">
+                            {Array.isArray(col.links) && col.links.map((link: any, linkIdx: number) => {
+                              const isMatchedOption =
+                                defaultSitePages.some((p) => p.url === link.href) ||
+                                menuOptions.some((p) => p.url === link.href);
+
+                              return (
+                                <div key={linkIdx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2 relative group hover:border-slate-300 transition-colors shadow-2xs">
+                                  <div className="flex items-center justify-between gap-2">
+                                    <input
+                                      type="text"
+                                      placeholder="Link Title (e.g. Academics)"
+                                      value={link.title || ""}
+                                      onChange={(e) => {
+                                        const val = e.target.value;
+                                        updateFooterColumns((cols) => {
+                                          cols[colIdx].links[linkIdx].title = val;
+                                          return cols;
+                                        });
+                                      }}
+                                      className="w-full text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-lg px-2.5 py-1 outline-none focus:border-[#1a5d9c]"
+                                    />
+                                    <button
+                                      type="button"
+                                      title="Remove Link"
+                                      onClick={() => {
+                                        updateFooterColumns((cols) => {
+                                          cols[colIdx].links = cols[colIdx].links.filter((_: any, idx: number) => idx !== linkIdx);
+                                          return cols;
+                                        });
+                                      }}
+                                      className="text-slate-400 hover:text-red-500 text-xs p-1 cursor-pointer shrink-0"
+                                    >
+                                      <i className="bi bi-x-lg" />
+                                    </button>
+                                  </div>
+
+                                  <div className="space-y-1">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                                      Target URL / Menu Item
+                                    </label>
+                                    <div className="relative">
+                                      <select
+                                        value={isMatchedOption ? link.href : "__custom__"}
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          if (val !== "__custom__") {
+                                            const allItems = [...defaultSitePages, ...menuOptions];
+                                            const matched = allItems.find((p) => p.url === val);
+                                            updateFooterColumns((cols) => {
+                                              cols[colIdx].links[linkIdx].href = val;
+                                              if (matched && (!cols[colIdx].links[linkIdx].title || cols[colIdx].links[linkIdx].title === "New Link")) {
+                                                cols[colIdx].links[linkIdx].title = matched.title.replace(/\s*\((Section|Page)\)/, "");
+                                              }
+                                              return cols;
+                                            });
+                                          }
+                                        }}
+                                        className="w-full text-[11px] text-slate-700 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 pr-7 outline-none focus:border-[#1a5d9c] cursor-pointer appearance-none font-medium"
+                                      >
+                                        <option value="__custom__">Custom URL / Manual Input...</option>
+                                        
+                                        <optgroup label="Main Website Sections">
+                                          {defaultSitePages.map((page) => (
+                                            <option key={page.url} value={page.url}>
+                                              {page.title} ({page.url})
+                                            </option>
+                                          ))}
+                                        </optgroup>
+
+                                        {menuOptions.length > 0 && (
+                                          <optgroup label="Navigation Menu Items & Pages">
+                                            {menuOptions.map((page) => (
+                                              <option key={page.url} value={page.url}>
+                                                {page.title} ({page.url})
+                                              </option>
+                                            ))}
+                                          </optgroup>
+                                        )}
+                                      </select>
+                                      <i className="bi bi-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none" />
+                                    </div>
+
+                                    <input
+                                      type="text"
+                                      placeholder="Target URL (e.g. /#enquiry or /about)"
+                                      value={link.href || ""}
+                                      disabled={isMatchedOption}
+                                      onChange={(e) => {
+                                        const val = e.target.value;
+                                        updateFooterColumns((cols) => {
+                                          cols[colIdx].links[linkIdx].href = val;
+                                          return cols;
+                                        });
+                                      }}
+                                      className="w-full text-[11px] font-mono text-slate-600 bg-white border border-slate-200 rounded-lg px-2.5 py-1 outline-none focus:border-[#1a5d9c] disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
+                                    />
+                                  </div>
                                 </div>
-                                <input
-                                  type="text"
-                                  placeholder="Target URL (e.g. /#enquiry or /about)"
-                                  value={link.href || ""}
-                                  onChange={(e) => {
-                                    const val = e.target.value;
-                                    updateFooterColumns((cols) => {
-                                      cols[colIdx].links[linkIdx].href = val;
-                                      return cols;
-                                    });
-                                  }}
-                                  className="w-full text-[11px] font-mono text-slate-500 bg-white border border-slate-200 rounded-md px-2 py-1 outline-none"
-                                />
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
 
                           <button
@@ -1185,15 +1435,27 @@ export function HomeLayoutEditorModal({
                     </p>
                   </div>
 
-                  <label className="flex items-center gap-2 cursor-pointer bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs">
-                    <input
-                      type="checkbox"
-                      checked={currentPopupBanner.enabled !== false}
-                      onChange={(e) => updatePopupBannerField("enabled", e.target.checked)}
-                      className="size-4 rounded text-[#1a5d9c] focus:ring-[#1a5d9c] cursor-pointer"
-                    />
-                    <span className="text-xs font-bold text-slate-800">Enable Pop-Up Banner (ON/OFF)</span>
-                  </label>
+                  <div className="flex items-center gap-2.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setShowLivePopUpPreview(true)}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-[#1a5d9c] hover:brightness-110 text-white font-black text-xs px-4 py-2 shadow-md border border-blue-400/40 cursor-pointer active:scale-95 transition-all"
+                      title="See exactly how the popup will appear to website visitors before applying changes"
+                    >
+                      <i className="bi bi-eye-fill text-amber-300 text-sm" />
+                      <span>Live Site Popup Preview</span>
+                    </button>
+
+                    <label className="flex items-center gap-2 cursor-pointer bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs">
+                      <input
+                        type="checkbox"
+                        checked={currentPopupBanner.enabled !== false}
+                        onChange={(e) => updatePopupBannerField("enabled", e.target.checked)}
+                        className="size-4 rounded text-[#1a5d9c] focus:ring-[#1a5d9c] cursor-pointer"
+                      />
+                      <span className="text-xs font-bold text-slate-800">Enable Pop-Up Banner (ON/OFF)</span>
+                    </label>
+                  </div>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -1230,64 +1492,20 @@ export function HomeLayoutEditorModal({
                     </label>
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="text-[11px] font-bold text-slate-600">Pop-Up Modal Title Headline</label>
-                      <label className="flex items-center gap-1.5 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={currentPopupBanner.showTitle !== false}
-                          onChange={(e) => updatePopupBannerField("showTitle", e.target.checked)}
-                          className="size-3.5 rounded text-[#1a5d9c] focus:ring-[#1a5d9c] cursor-pointer"
-                        />
-                        <span className="text-[10px] font-bold text-slate-700">Display Title Overlay</span>
-                      </label>
-                    </div>
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <label className="text-[11px] font-bold text-slate-600 block">Pop-Up Modal Title Headline</label>
                     <input
                       type="text"
-                      placeholder="Leave blank to hide title, or type custom headline (e.g. Admissions Open 2026–27)"
+                      placeholder="Type custom headline (e.g. Enquiry)"
                       value={currentPopupBanner.title ?? ""}
-                      onChange={(e) => updatePopupBannerField("title", e.target.value)}
+                      onChange={(e) => {
+                        updatePopupBannerField("title", e.target.value);
+                        updatePopupBannerField("showTitle", true);
+                      }}
                       className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold outline-none focus:border-[#1a5d9c]"
                     />
                   </div>
 
-                  <div>
-                    <label className="text-[11px] font-bold text-slate-600 block mb-1">Pop-Up Subtitle / Description</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Indian Public School"
-                      value={
-                        (currentPopupBanner.subtitle ?? "").toLowerCase().includes("enroll your child")
-                          ? ""
-                          : (currentPopupBanner.subtitle ?? "")
-                      }
-                      onChange={(e) => updatePopupBannerField("subtitle", e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold outline-none focus:border-[#1a5d9c]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-[11px] font-bold text-slate-600 block mb-1">Enquiry Button Label</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Enquiry Now"
-                      value={currentPopupBanner.enquiryButtonText ?? "Enquiry Now"}
-                      onChange={(e) => updatePopupBannerField("enquiryButtonText", e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold outline-none focus:border-[#1a5d9c]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-[11px] font-bold text-slate-600 block mb-1">Close Button Label</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Close"
-                      value={currentPopupBanner.closeButtonText ?? "Close"}
-                      onChange={(e) => updatePopupBannerField("closeButtonText", e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold outline-none focus:border-[#1a5d9c]"
-                    />
-                  </div>
                 </div>
 
                 {/* Image Chooser & Gallery Modal */}
@@ -1301,6 +1519,7 @@ export function HomeLayoutEditorModal({
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <input
                       type="text"
+                      disabled
                       placeholder="https://res.cloudinary.com/... or /assets/..."
                       value={
                         (currentPopupBanner.imageUrl && !currentPopupBanner.imageUrl.includes("Banner_8") && !currentPopupBanner.imageUrl.includes("file_"))
@@ -1308,21 +1527,12 @@ export function HomeLayoutEditorModal({
                           : "/Settings/Home/POP_UP_IMAGE.jpeg"
                       }
                       onChange={(e) => updatePopupBannerField("imageUrl", e.target.value)}
-                      className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold outline-none focus:border-[#1a5d9c]"
+                      className="flex-1 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 px-3 py-2 text-xs font-semibold outline-none cursor-not-allowed select-all"
                     />
 
-                    <button
-                      type="button"
-                      onClick={() => setIsGalleryOpen(true)}
-                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-800 px-3.5 py-2 text-xs font-bold text-white hover:bg-slate-900 transition cursor-pointer shrink-0 shadow-2xs"
-                    >
-                      <ImageIcon size={14} />
-                      <span>Choose from Gallery</span>
-                    </button>
-
-                    <label className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1a5d9c] px-4 py-2 text-xs font-bold text-white hover:bg-[#102a4c] transition cursor-pointer shrink-0 shadow-2xs">
-                      <UploadCloud size={16} />
-                      <span>{uploading ? "Uploading..." : "Upload File"}</span>
+                    <label className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#1a5d9c] px-3.5 py-2 text-xs font-bold text-white hover:bg-[#102a4c] transition cursor-pointer shrink-0 shadow-2xs">
+                      {uploading ? <Loader2 size={14} className="animate-spin" /> : <UploadCloud size={14} />}
+                      <span>{uploading ? "Uploading…" : "Upload"}</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -1336,295 +1546,109 @@ export function HomeLayoutEditorModal({
                         }}
                       />
                     </label>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsGalleryOpen(true)}
+                      className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer shrink-0 shadow-2xs"
+                    >
+                      <ImageIcon size={14} className="text-amber-500" />
+                      <span>Gallery</span>
+                    </button>
                   </div>
                 </div>
 
-                {/* ADMIN INTERACTIVE IMAGE RESIZING & COVERAGE STUDIO CONTROLS */}
-                <div className="rounded-2xl border border-blue-200/80 bg-blue-50/40 p-4 space-y-4">
-                  <h4 className="text-xs font-bold text-[#082A52] flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <i className="bi bi-aspect-ratio-fill text-[#1a5d9c]" /> Admin Pop-Up Studio: Screen Area Coverage & Resizing
-                    </span>
-                    <span className="text-[10px] font-semibold text-[#1a5d9c] bg-blue-100 px-2 py-0.5 rounded-full border border-blue-200">
-                      Area Coverage Manager
-                    </span>
-                  </h4>
-
-                  {/* Coverage Size Presets */}
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-slate-600 block">Pop-Up Screen Area Coverage Presets</label>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {[
-                        { label: "Compact (450px)", width: 450, height: 320, preset: "sm" },
-                        { label: "Medium (600px)", width: 600, height: 400, preset: "md" },
-                        { label: "Large (760px)", width: 760, height: 460, preset: "lg" },
-                        { label: "Extra Wide (920px)", width: 920, height: 520, preset: "xl" },
-                        { label: "Full Hero (95%)", width: 1100, height: 600, preset: "full" },
-                      ].map((item) => (
-                        <button
-                          key={item.preset}
-                          type="button"
-                          onClick={() => {
-                            updatePopupBannerField("modalWidth", item.preset);
-                            updatePopupBannerField("imageWidth", item.width);
-                            const currentRatio = datasource?.home?.[0]?.identity?.popupBanner?.aspectRatio ?? datasource?.popupBanner?.aspectRatio ?? "16/10";
-                            const parts = currentRatio.split("/").map(Number);
-                            const calculatedHeight = (parts.length === 2 && parts[0] > 0) ? Math.round((item.width * parts[1]) / parts[0]) : item.height;
-                            updatePopupBannerField("imageMaxHeight", calculatedHeight);
-                          }}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${(datasource?.home?.[0]?.identity?.popupBanner?.modalWidth ?? datasource?.popupBanner?.modalWidth ?? "lg") === item.preset
-                            ? "bg-[#1a5d9c] text-white border-[#1a5d9c] shadow-xs"
-                            : "bg-white text-slate-700 border-slate-200 hover:bg-blue-50/70"
-                            }`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 pt-2 border-t border-blue-200/60">
-                    {/* Image Fit Mode */}
-                    <div>
-                      <label className="text-[11px] font-bold text-slate-600 block mb-1">Image Fit Mode</label>
-                      <select
-                        value={datasource?.home?.[0]?.identity?.popupBanner?.imageFit ?? datasource?.popupBanner?.imageFit ?? "cover"}
-                        onChange={(e) => updatePopupBannerField("imageFit", e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold outline-none focus:border-[#1a5d9c]"
-                      >
-                        <option value="cover">Cover (Full Bleed Poster)</option>
-                        <option value="contain">Contain (Show Entire Image)</option>
-                        <option value="fill">Fill (Stretch to Fill)</option>
-                      </select>
-                    </div>
-
-                    {/* Aspect Ratio */}
-                    <div>
-                      <label className="text-[11px] font-bold text-slate-600 block mb-1">Image Aspect Ratio</label>
-                      <select
-                        value={datasource?.home?.[0]?.identity?.popupBanner?.aspectRatio ?? datasource?.popupBanner?.aspectRatio ?? "16/10"}
-                        onChange={(e) => {
-                          const newRatio = e.target.value;
-                          const currentWidth = datasource?.home?.[0]?.identity?.popupBanner?.imageWidth ?? datasource?.popupBanner?.imageWidth ?? 600;
-                          const parts = newRatio.split("/").map(Number);
-                          if (parts.length === 2 && parts[0] > 0) {
-                            const calculatedHeight = Math.round((currentWidth * parts[1]) / parts[0]);
-                            updatePopupBannerField("imageMaxHeight", calculatedHeight);
-                          }
-                          updatePopupBannerField("aspectRatio", newRatio);
-                        }}
-                        className="w-full rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold outline-none focus:border-[#1a5d9c]"
-                      >
-                        <option value="16/10">16:10 Full Bleed Poster</option>
-                        <option value="16/9">16:9 Landscape Banner</option>
-                        <option value="4/3">4:3 Standard Card</option>
-                        <option value="1/1">1:1 Square</option>
-                        <option value="3/2">3:2 Photo</option>
-                        <option value="2/1">2:1 Wide Panorama</option>
-                      </select>
-                    </div>
-
-                    {/* Image Focus Position */}
-                    <div>
-                      <label className="text-[11px] font-bold text-slate-600 block mb-1">Image Focus Position</label>
-                      <select
-                        value={datasource?.home?.[0]?.identity?.popupBanner?.imagePosition ?? datasource?.popupBanner?.imagePosition ?? "center"}
-                        onChange={(e) => updatePopupBannerField("imagePosition", e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold outline-none focus:border-[#1a5d9c]"
-                      >
-                        <option value="center">Center</option>
-                        <option value="top">Top Focus</option>
-                        <option value="bottom">Bottom Focus</option>
-                      </select>
-                    </div>
-
-                    {/* Click to Zoom on Frontend */}
-                    <div className="flex items-center pt-5">
-                      <label className="flex items-center gap-2 cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-slate-200 w-full">
-                        <input
-                          type="checkbox"
-                          checked={(datasource?.home?.[0]?.identity?.popupBanner?.showImageZoomOnClick ?? datasource?.popupBanner?.showImageZoomOnClick) !== false}
-                          onChange={(e) => updatePopupBannerField("showImageZoomOnClick", e.target.checked)}
-                          className="size-4 rounded text-[#1a5d9c] focus:ring-[#1a5d9c] cursor-pointer"
-                        />
-                        <span className="text-[11px] font-bold text-slate-700">Allow Image Lightbox Zoom</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Sliders for Image Width (px) & Height (px) */}
-                  <div className="grid gap-4 sm:grid-cols-2 pt-2 border-t border-blue-200/60">
-                    <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <label className="text-[11px] font-bold text-slate-600 flex items-center gap-1">
-                          <i className="bi bi-arrows-expand-vertical text-[#1a5d9c] rotate-90" /> Container Width (px)
-                        </label>
-                        <span className="text-xs font-mono font-bold text-[#1a5d9c] bg-blue-100 px-2 py-0.5 rounded-md">
-                          {datasource?.home?.[0]?.identity?.popupBanner?.imageWidth ?? datasource?.popupBanner?.imageWidth ?? 600}px
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min={320}
-                        max={1100}
-                        step={10}
-                        value={datasource?.home?.[0]?.identity?.popupBanner?.imageWidth ?? datasource?.popupBanner?.imageWidth ?? 600}
-                        onChange={(e) => {
-                          const newWidth = parseInt(e.target.value);
-                          updatePopupBannerField("imageWidth", newWidth);
-                          updatePopupBannerField("modalWidth", "custom");
-                          const currentRatio = datasource?.home?.[0]?.identity?.popupBanner?.aspectRatio ?? datasource?.popupBanner?.aspectRatio ?? "16/10";
-                          const parts = currentRatio.split("/").map(Number);
-                          if (parts.length === 2 && parts[0] > 0) {
-                            const calculatedHeight = Math.round((newWidth * parts[1]) / parts[0]);
-                            updatePopupBannerField("imageMaxHeight", calculatedHeight);
-                          }
-                        }}
-                        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-ew-resize accent-[#1a5d9c]"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <label className="text-[11px] font-bold text-slate-600 flex items-center gap-1">
-                          <i className="bi bi-arrows-expand-vertical text-[#1a5d9c]" /> Container Height (px)
-                        </label>
-                        <span className="text-xs font-mono font-bold text-[#1a5d9c] bg-blue-100 px-2 py-0.5 rounded-md">
-                          {datasource?.home?.[0]?.identity?.popupBanner?.imageMaxHeight ?? datasource?.popupBanner?.imageMaxHeight ?? 400}px
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min={200}
-                        max={750}
-                        step={10}
-                        value={datasource?.home?.[0]?.identity?.popupBanner?.imageMaxHeight ?? datasource?.popupBanner?.imageMaxHeight ?? 400}
-                        onChange={(e) => updatePopupBannerField("imageMaxHeight", parseInt(e.target.value))}
-                        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-ns-resize accent-[#1a5d9c]"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* LIVE INTERACTIVE ADMIN CANVAS PREVIEW (WITH EXACT CANVAS RESIZE HANDLE MATCHING SCREENSHOT) */}
-                <div className="space-y-3 pt-2">
+                {/* POP-UP BANNER STYLE CONCEPT SELECTOR */}
+                <div className="rounded-2xl border border-blue-200/90 bg-blue-50/60 p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-[#102a4c] flex items-center gap-1.5">
-                      <i className="bi bi-eye-fill text-[#1a5d9c] text-sm" /> Admin Live Canvas Studio (Drag Blue Corner Handle to Resize)
+                    <label className="text-xs font-bold text-[#102a4c] flex items-center gap-2">
+                      <i className="bi bi-palette-fill text-[#1a5d9c] text-sm" /> Choose Pop-Up Design Style Concept
                     </label>
-                    <span className="text-[11px] font-semibold text-slate-600 font-mono bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200">
-                      Covering Area: {datasource?.home?.[0]?.identity?.popupBanner?.imageWidth ?? datasource?.popupBanner?.imageWidth ?? 600}px × {datasource?.home?.[0]?.identity?.popupBanner?.imageMaxHeight ?? datasource?.popupBanner?.imageMaxHeight ?? 400}px
+                    <span className="text-[10px] font-bold text-[#1a5d9c] bg-blue-100 px-2.5 py-0.5 rounded-full border border-blue-200">
+                      5 Design Styles Available (Default + 4 Concepts)
                     </span>
                   </div>
 
-                  <div className="relative rounded-3xl border border-slate-200 bg-slate-900/90 p-6 sm:p-8 flex flex-col items-center justify-center min-h-[380px]">
-                    {/* Blue Dashed Selection Container Frame matching screenshot */}
-                    <div className="relative p-1.5 rounded-[28px] border-2 border-dashed border-[#1a5d9c] transition-all">
-                      {/* Floating Dark Control Toolbar above matching screenshot */}
-                      <div className="absolute -top-4 left-4 z-40 flex items-center gap-2 rounded-xl bg-slate-950 px-3 py-1 text-[11px] font-bold text-white shadow-xl border border-slate-800">
-                        <span className="font-mono text-slate-400">&lt;div&gt;</span>
-                        <span className="bg-slate-800 px-2.5 py-0.5 rounded-lg text-slate-200 flex items-center gap-1">
-                          <i className="bi bi-chevron-up text-[9px]" /> Outer Box (&lt;div&gt;)
-                        </span>
-                        <span className="bg-[#1a5d9c] px-2 py-0.5 rounded-md text-white font-mono text-[10px]">
-                          {datasource?.home?.[0]?.identity?.popupBanner?.imageWidth ?? datasource?.popupBanner?.imageWidth ?? 600} × {datasource?.home?.[0]?.identity?.popupBanner?.imageMaxHeight ?? datasource?.popupBanner?.imageMaxHeight ?? 400}
-                        </span>
-                      </div>
-
-                      {/* Mockup Poster Card Container - Matching PopupBannerModal 100% */}
-                      <div
-                        className="relative w-full rounded-[24px] border border-blue-400/30 bg-slate-950 text-white shadow-2xl overflow-hidden flex flex-col justify-between group transition-all"
-                        style={{
-                          width: `${datasource?.home?.[0]?.identity?.popupBanner?.imageWidth ?? datasource?.popupBanner?.imageWidth ?? 600}px`,
-                          maxWidth: "100%",
-                          aspectRatio: (datasource?.home?.[0]?.identity?.popupBanner?.aspectRatio ?? datasource?.popupBanner?.aspectRatio ?? "16/10").replace('/', ' / '),
-                          height: `${datasource?.home?.[0]?.identity?.popupBanner?.imageMaxHeight ?? datasource?.popupBanner?.imageMaxHeight ?? 400}px`,
-                        }}
-                      >
-                        {/* Poster Graphic Image Container */}
-                        <div className="relative w-full flex-1 min-h-0 bg-slate-950 flex items-center justify-center overflow-hidden">
-                          {(() => {
-                            const rawUrl = (datasource?.home?.[0]?.identity?.popupBanner?.imageUrl || datasource?.popupBanner?.imageUrl || "").trim();
-                            const validUrl = (rawUrl && !rawUrl.includes("Banner_8") && !rawUrl.includes("file_")) ? rawUrl : "/assets/Settings/Home/POP_UP_IMAGE.jpeg";
-                            const resolvedUrl = getAssetUrl(validUrl) || "/assets/Settings/Home/POP_UP_IMAGE.jpeg";
-                            return (
-                              <img
-                                src={resolvedUrl}
-                                alt="Admin Banner Preview"
-                                onError={(e) => {
-                                  e.currentTarget.onerror = null;
-                                  e.currentTarget.src = "/assets/Settings/Home/POP_UP_IMAGE.jpeg";
-                                }}
-                                className="w-full h-full transition-transform duration-500 group-hover:scale-[1.02]"
-                                style={{
-                                  objectFit: (datasource?.home?.[0]?.identity?.popupBanner?.imageFit ?? datasource?.popupBanner?.imageFit ?? "contain") as any,
-                                  objectPosition: datasource?.home?.[0]?.identity?.popupBanner?.imagePosition ?? datasource?.popupBanner?.imagePosition ?? "center",
-                                }}
-                              />
-                            );
-                          })()}
-                        </div>
-
-                        {/* Dedicated Bottom Footer Action Bar */}
-                        <div className="shrink-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800/80 px-4 py-3 flex items-center justify-between gap-3 relative z-20">
-                          {/* Title & Subtitle */}
-                          <div className="min-w-0 flex-1 space-y-0.5">
-                            {(datasource?.home?.[0]?.identity?.popupBanner?.showTitle ?? datasource?.popupBanner?.showTitle) !== false && (datasource?.home?.[0]?.identity?.popupBanner?.title ?? datasource?.popupBanner?.title) && (
-                              <h4 className="text-xs sm:text-sm font-extrabold text-white tracking-tight leading-snug truncate">
-                                {datasource?.home?.[0]?.identity?.popupBanner?.title ?? datasource?.popupBanner?.title}
-                              </h4>
-                            )}
-                            {datasource?.home?.[0]?.identity?.popupBanner?.subtitle && !(datasource?.home?.[0]?.identity?.popupBanner?.subtitle || "").toLowerCase().includes("enroll your child") && (
-                              <p className="text-[10px] font-bold text-sky-300 uppercase tracking-wider truncate">
-                                {datasource?.home?.[0]?.identity?.popupBanner?.subtitle}
-                              </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                    {[
+                      {
+                        id: "card",
+                        title: "Default Classic",
+                        subtitle: "Standard Poster Card (80% Cover)",
+                        desc: "Classic dark poster card with bottom action bar & enquiry button.",
+                        badgeBg: "bg-slate-200 text-slate-800 border-slate-300 font-bold",
+                        icon: "bi-card-image"
+                      },
+                      {
+                        id: "concept1",
+                        title: "Concept 1",
+                        subtitle: "Neon Glassmorphic (80% Cover)",
+                        desc: "Luminous blue neon border, dark navy backdrop, 100% full poster visible.",
+                        badgeBg: "bg-blue-900 text-blue-200 border-blue-500/50",
+                        icon: "bi-bounding-box-circles"
+                      },
+                      {
+                        id: "concept2",
+                        title: "Concept 2",
+                        subtitle: "Dark Navy Side-by-Side (Picture Layout)",
+                        desc: "Dark navy card, full poster on left, centered fields & blue/red action buttons.",
+                        badgeBg: "bg-blue-900 text-blue-200 border-blue-500/50",
+                        icon: "bi-layout-split"
+                      },
+                      {
+                        id: "concept3",
+                        title: "Concept 3",
+                        subtitle: "Split Poster + Form (80% Cover)",
+                        desc: "Poster on left, embedded quick enquiry form on right, 100% full poster visible.",
+                        badgeBg: "bg-emerald-900 text-emerald-200 border-emerald-500/50",
+                        icon: "bi-card-heading"
+                      },
+                      {
+                        id: "concept4",
+                        title: "Concept 4",
+                        subtitle: "Golden Luxury Glass Showcase",
+                        desc: "Ultra-pretty luxury dark glass card, glowing golden trophy badge & gold frame.",
+                        badgeBg: "bg-amber-500/20 text-amber-800 border-amber-400 font-black",
+                        icon: "bi-trophy-fill"
+                      },
+                    ].map((styleOption) => {
+                      const currentStyle = datasource?.home?.[0]?.identity?.popupBanner?.bannerStyle ?? datasource?.popupBanner?.bannerStyle ?? "concept1";
+                      const isSelected = currentStyle === styleOption.id;
+                      return (
+                        <button
+                          key={styleOption.id}
+                          type="button"
+                          onClick={() => updatePopupBannerField("bannerStyle", styleOption.id)}
+                          className={`relative p-3.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 group ${
+                            isSelected
+                              ? "bg-white border-[#1a5d9c] ring-2 ring-[#1a5d9c]/30 shadow-md scale-[1.01]"
+                              : "bg-white/80 border-slate-200 hover:border-blue-300 hover:bg-white shadow-2xs"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-xs font-black text-[#102a4c] flex items-center gap-1.5">
+                              <i className={`bi ${styleOption.icon} text-[#1a5d9c]`} />
+                              {styleOption.title}
+                            </span>
+                            {isSelected && (
+                              <span className="size-5 rounded-full bg-[#1a5d9c] text-white flex items-center justify-center text-[10px] shrink-0 font-bold">
+                                ✓
+                              </span>
                             )}
                           </div>
-
-                          {/* Action Buttons */}
-                          <div className="flex items-center gap-2 shrink-0 ml-auto">
-                            <span className="bg-gradient-to-r from-[#1a5d9c] via-blue-700 to-[#102a4c] text-white font-extrabold text-xs px-3.5 py-1.5 rounded-full shadow-md border border-blue-400/30 flex items-center gap-1.5">
-                              <i className="bi bi-pencil-square text-xs text-sky-200" />
-                              {datasource?.home?.[0]?.identity?.popupBanner?.enquiryButtonText ?? "Enquiry Now"}
-                            </span>
-
-                            <span className="bg-slate-800 text-slate-200 font-extrabold text-xs px-3 py-1.5 rounded-full border border-slate-700 flex items-center gap-1.5">
-                              <i className="bi bi-x-lg text-[9px]" />
-                              {datasource?.home?.[0]?.identity?.popupBanner?.closeButtonText ?? "Close"}
-                            </span>
+                          <div>
+                            <span className="text-[11px] font-bold text-slate-800 block">{styleOption.subtitle}</span>
+                            <span className="text-[10px] text-slate-500 leading-snug block mt-0.5">{styleOption.desc}</span>
                           </div>
-                        </div>
-                      </div>
-
-                      {/* Solid Blue Square Drag Handle at Corner matching screenshot */}
-                      <div
-                        className="absolute -bottom-3 -right-3 size-6 bg-[#1a5d9c] border-2 border-white rounded-md shadow-xl grid place-items-center cursor-nwse-resize z-50 hover:scale-125 transition-transform"
-                        title="Drag corner handle to adjust width & height live"
-                        onMouseDown={(e) => {
-                          const startX = e.clientX;
-                          const startY = e.clientY;
-                          const startW = datasource?.home?.[0]?.identity?.popupBanner?.imageWidth ?? 600;
-                          const startH = datasource?.home?.[0]?.identity?.popupBanner?.imageMaxHeight ?? 400;
-                          const onMouseMove = (moveEv: MouseEvent) => {
-                            const deltaX = moveEv.clientX - startX;
-                            const deltaY = moveEv.clientY - startY;
-                            const newW = Math.max(320, Math.min(1100, startW + deltaX));
-                            const newH = Math.max(200, Math.min(750, startH + deltaY));
-                            updatePopupBannerField("imageWidth", newW);
-                            updatePopupBannerField("imageMaxHeight", newH);
-                            updatePopupBannerField("modalWidth", "custom");
-                          };
-                          const onMouseUp = () => {
-                            window.removeEventListener("mousemove", onMouseMove);
-                            window.removeEventListener("mouseup", onMouseUp);
-                          };
-                          window.addEventListener("mousemove", onMouseMove);
-                          window.addEventListener("mouseup", onMouseUp);
-                        }}
-                      />
-                    </div>
+                          <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-md border w-fit ${styleOption.badgeBg}`}>
+                            {styleOption.id.toUpperCase()}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
+
               </div>
 
               {/* Cloudinary Gallery Modal Integration */}
@@ -1647,77 +1671,14 @@ export function HomeLayoutEditorModal({
 
           {/* TAB: Quick Cards */}
           {activeTab === "quickCards" && (
-            <div className="space-y-5">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-[#102a4c] flex items-center gap-2">
-                    <i className="bi bi-grid-3x3-gap text-[#1a5d9c]" /> Quick Action Menu Cards ({(homeObj.menuCard || []).length})
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={() => addTopArrayItem("menuCard", { heading: "New Action Card", subHeading: "Explore options", redirectUrl: "/about" })}
-                    className="flex items-center gap-1 rounded-xl bg-[#1a5d9c] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#102a4c]"
-                  >
-                    <Plus size={14} /> Add Action Card
-                  </button>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {(Array.isArray(homeObj.menuCard) ? homeObj.menuCard : []).map((card: any, idx: number) => (
-                    <div key={idx} className="rounded-xl border border-slate-200 bg-white p-4 space-y-3 shadow-2xs">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                        <span className="text-xs font-bold text-[#1a5d9c]">Card #{idx + 1}</span>
-                        <div className="flex items-center gap-1">
-                          <button type="button" onClick={() => moveTopArrayItem("menuCard", idx, "up")} disabled={idx === 0} className="rounded p-1 text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                            <ArrowUp size={13} />
-                          </button>
-                          <button type="button" onClick={() => moveTopArrayItem("menuCard", idx, "down")} disabled={idx === homeObj.menuCard.length - 1} className="rounded p-1 text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                            <ArrowDown size={13} />
-                          </button>
-                          <button type="button" onClick={() => deleteTopArrayItem("menuCard", idx)} className="rounded p-1 text-red-500 hover:text-red-700">
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      </div>
-
-                      <input
-                        type="text"
-                        placeholder="Heading"
-                        value={card.heading || ""}
-                        onChange={(e) => {
-                          const cards = [...(homeObj.menuCard || [])];
-                          cards[idx] = { ...cards[idx], heading: e.target.value };
-                          updateHome((prev) => ({ ...prev, menuCard: cards }));
-                        }}
-                        className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold outline-none"
-                      />
-                      <input
-                        type="text"
-                        placeholder="SubHeading"
-                        value={card.subHeading || ""}
-                        onChange={(e) => {
-                          const cards = [...(homeObj.menuCard || [])];
-                          cards[idx] = { ...cards[idx], subHeading: e.target.value };
-                          updateHome((prev) => ({ ...prev, menuCard: cards }));
-                        }}
-                        className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs outline-none"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Redirect URL (e.g. /admissions)"
-                        value={card.redirectUrl || ""}
-                        onChange={(e) => {
-                          const cards = [...(homeObj.menuCard || [])];
-                          cards[idx] = { ...cards[idx], redirectUrl: e.target.value };
-                          updateHome((prev) => ({ ...prev, menuCard: cards }));
-                        }}
-                        className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-mono outline-none"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <HomeQuickCardsTab
+              homeObj={homeObj}
+              updateHome={updateHome}
+              moveTopArrayItem={moveTopArrayItem}
+              uploadImage={uploadImage}
+              menuOptions={menuOptions}
+              onOpenGallery={openGalleryPicker}
+            />
           )}
 
           {/* TAB: Section 1 */}
@@ -1793,33 +1754,16 @@ export function HomeLayoutEditorModal({
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-[11px] font-bold text-slate-500">Mission & Vision Cards</label>
-                    <button
-                      type="button"
-                      onClick={() => addItemToSection("section-1", { heading: "New Pillar", description: "Pillar details", redirectUrl: "/about" })}
-                      className="flex items-center gap-1 text-xs font-bold text-[#1a5d9c] hover:underline"
-                    >
-                      <Plus size={13} /> Add Card
-                    </button>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     {(Array.isArray(homeObj["section-1"]?.[0]?.cardItem) ? homeObj["section-1"][0].cardItem : []).map((card: any, idx: number) => (
                       <div key={idx} className="rounded-xl border border-slate-200 bg-white p-3 space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold text-slate-400">Pillar #{idx + 1}</span>
-                          <div className="flex items-center gap-1">
-                            <button type="button" onClick={() => moveItemInSection("section-1", idx, "up")} disabled={idx === 0} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                              <ArrowUp size={12} />
-                            </button>
-                            <button type="button" onClick={() => moveItemInSection("section-1", idx, "down")} disabled={idx === homeObj["section-1"][0].cardItem.length - 1} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                              <ArrowDown size={12} />
-                            </button>
-                            <button type="button" onClick={() => deleteItemFromSection("section-1", idx)} className="text-red-500 hover:text-red-700">
-                              <Trash2 size={12} />
-                            </button>
-                          </div>
+                          <span className="text-[11px] font-bold text-slate-400">{idx === 0 ? "Our Mission (Card #1)" : idx === 1 ? "Our Vision (Card #2)" : `Card #${idx + 1}`}</span>
                         </div>
                         <input
                           type="text"
+                          placeholder="Title (e.g. Our Mission)"
                           value={card.heading || ""}
                           onChange={(e) => {
                             const sec = [...(homeObj["section-1"] || [{}])];
@@ -1832,6 +1776,7 @@ export function HomeLayoutEditorModal({
                         />
                         <textarea
                           rows={2}
+                          placeholder="Description"
                           value={card.description || ""}
                           onChange={(e) => {
                             const sec = [...(homeObj["section-1"] || [{}])];
@@ -1842,40 +1787,68 @@ export function HomeLayoutEditorModal({
                           }}
                           className="w-full rounded-lg border border-slate-200 px-2.5 py-1 text-xs outline-none"
                         />
+
+                        {/* Icon / Image Upload Controls (Gallery & Cloudinary) */}
+                        <div className="flex items-center gap-1.5 pt-1">
+                          <input
+                            type="text"
+                            readOnly
+                            placeholder="Icon/Image URL (pick via Gallery or Upload)"
+                            value={card.icoUrl || card.imageUrl || card.fileUrl || card.icon || ""}
+                            className="flex-1 rounded-lg border border-slate-200 bg-slate-50/80 px-2.5 py-1 text-xs text-slate-500 outline-none cursor-not-allowed"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              openGalleryPicker((url) => {
+                                const sec = [...(homeObj["section-1"] || [{}])];
+                                const cards = [...(sec[0].cardItem || [])];
+                                cards[idx] = { ...cards[idx], icoUrl: url, imageUrl: url, fileUrl: url, icon: url };
+                                sec[0] = { ...sec[0], cardItem: cards };
+                                updateHome((prev) => ({ ...prev, "section-1": sec }));
+                              }, "Choose Icon from Gallery");
+                            }}
+                            className="flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2 py-1 text-xs font-bold text-amber-800 hover:bg-amber-100 transition shadow-2xs"
+                            title="Pick icon from Cloudinary Gallery"
+                          >
+                            <ImageIcon size={13} className="text-amber-600" />
+                            <span>Gallery</span>
+                          </button>
+                          <label className="flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition shadow-2xs">
+                            <UploadCloud size={13} className="text-[#1a5d9c]" />
+                            <span>{uploadingCard === `sec1-${idx}` ? "Uploading..." : "Upload"}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              disabled={uploadingCard === `sec1-${idx}`}
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  setUploadingCard(`sec1-${idx}`);
+                                  try {
+                                    const url = await uploadImage(file);
+                                    if (url) {
+                                      const sec = [...(homeObj["section-1"] || [{}])];
+                                      const cards = [...(sec[0].cardItem || [])];
+                                      cards[idx] = { ...cards[idx], icoUrl: url, imageUrl: url, fileUrl: url, icon: url };
+                                      sec[0] = { ...sec[0], cardItem: cards };
+                                      updateHome((prev) => ({ ...prev, "section-1": sec }));
+                                    }
+                                  } catch (err) {
+                                    console.error("Failed to upload icon:", err);
+                                  } finally {
+                                    setUploadingCard(null);
+                                    e.target.value = "";
+                                  }
+                                }
+                              }}
+                              className="hidden"
+                            />
+                          </label>
+                        </div>
                       </div>
                     ))}
                   </div>
-                </div>
-
-                {/* Campus Photo */}
-                <div className="flex items-center gap-4 pt-2">
-                  {homeObj["section-1"]?.[0]?.briefCard?.[0]?.fileUrl && (
-                    <div className="relative h-20 w-32 overflow-hidden rounded-xl border border-slate-200 bg-slate-900 shrink-0">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={homeObj["section-1"][0].briefCard[0].fileUrl} alt="Campus Aerial" className="h-full w-full object-cover" />
-                    </div>
-                  )}
-                  <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-[#1a5d9c] hover:bg-blue-50">
-                    <UploadCloud size={16} /> Upload Campus Cover Photo
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const url = await uploadImage(file);
-                          if (url) {
-                            const sec = [...(homeObj["section-1"] || [{}])];
-                            const briefCard = [...(sec[0].briefCard || [{}])];
-                            briefCard[0] = { ...briefCard[0], fileUrl: url };
-                            sec[0] = { ...sec[0], briefCard };
-                            updateHome((prev) => ({ ...prev, "section-1": sec }));
-                          }
-                        }
-                      }}
-                      className="hidden"
-                    />
-                  </label>
                 </div>
               </div>
             </div>
@@ -1948,86 +1921,216 @@ export function HomeLayoutEditorModal({
           {activeTab === "sec3" && (
             <div className="space-y-5">
               <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <h3 className="text-sm font-bold text-[#102a4c] flex items-center gap-2">
                     <i className="bi bi-star-fill text-[#1a5d9c]" /> Section 3: Why Choose IPS ({(homeObj["section-3"]?.[0]?.cardItem || []).length} Cards)
                   </h3>
                   <button
                     type="button"
-                    onClick={() => addItemToSection("section-3", { heading: "New Commitment", description: "Commitment details", icoUrl: "", redirectUrl: "/about" })}
+                    onClick={() => addItemToSection("section-3", { heading: "New Commitment", description: "Commitment details", icoUrl: "BookOpenCheck" })}
                     className="flex items-center gap-1 rounded-xl bg-[#1a5d9c] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#102a4c]"
                   >
                     <Plus size={14} /> Add Commitment Card
                   </button>
                 </div>
 
+                {/* Section Header Controls */}
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {(Array.isArray(homeObj["section-3"]?.[0]?.cardItem) ? homeObj["section-3"][0].cardItem : []).map((card: any, idx: number) => (
-                    <div key={idx} className="rounded-xl border border-slate-200 bg-white p-3 space-y-2 shadow-2xs">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-1">
-                        <span className="text-[11px] font-bold text-slate-400">Card #{idx + 1}</span>
-                        <div className="flex items-center gap-1">
-                          <button type="button" onClick={() => moveItemInSection("section-3", idx, "up")} disabled={idx === 0} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                            <ArrowUp size={12} />
-                          </button>
-                          <button type="button" onClick={() => moveItemInSection("section-3", idx, "down")} disabled={idx === homeObj["section-3"][0].cardItem.length - 1} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                            <ArrowDown size={12} />
-                          </button>
-                          <button type="button" onClick={() => deleteItemFromSection("section-3", idx)} className="text-red-500 hover:text-red-700">
-                            <Trash2 size={12} />
-                          </button>
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-500">Eyebrow / Section Title</label>
+                    <input
+                      type="text"
+                      value={homeObj["section-3"]?.[0]?.heading || ""}
+                      onChange={(e) => {
+                        const sec3 = [...(homeObj["section-3"] || [{}])];
+                        sec3[0] = { ...sec3[0], heading: e.target.value };
+                        updateHome((prev) => ({ ...prev, "section-3": sec3 }));
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-[#1a5d9c]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-500">Main Heading</label>
+                    <input
+                      type="text"
+                      value={homeObj["section-3"]?.[0]?.mainHeading || ""}
+                      onChange={(e) => {
+                        const sec3 = [...(homeObj["section-3"] || [{}])];
+                        sec3[0] = { ...sec3[0], mainHeading: e.target.value };
+                        updateHome((prev) => ({ ...prev, "section-3": sec3 }));
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold outline-none focus:border-[#1a5d9c]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {(Array.isArray(homeObj["section-3"]?.[0]?.cardItem) ? homeObj["section-3"][0].cardItem : []).map((card: any, idx: number) => {
+                    const currentIcon = card.icoUrl || card.icon || card.iconName || "";
+
+                    return (
+                      <div key={idx} className="rounded-xl border border-slate-200 bg-white p-3 space-y-2.5 shadow-2xs">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                          <span className="text-[11px] font-bold text-slate-400">Card #{idx + 1}</span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => moveItemInSection("section-3", idx, "up")}
+                              disabled={idx === 0}
+                              className="text-slate-400 hover:text-slate-700 disabled:opacity-30"
+                            >
+                              <ArrowUp size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => moveItemInSection("section-3", idx, "down")}
+                              disabled={idx === (homeObj["section-3"]?.[0]?.cardItem || []).length - 1}
+                              className="text-slate-400 hover:text-slate-700 disabled:opacity-30"
+                            >
+                              <ArrowDown size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => deleteItemFromSection("section-3", idx)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Card Heading / Feature Title</label>
+                          <input
+                            type="text"
+                            placeholder="Feature Title (e.g. CBSE Curriculum)"
+                            value={card.heading || card.title || ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const sec3 = [...(homeObj["section-3"] || [{}])];
+                              const cards = [...(sec3[0].cardItem || [])];
+                              cards[idx] = { ...cards[idx], heading: val, title: val };
+                              sec3[0] = { ...sec3[0], cardItem: cards };
+                              updateHome((prev) => ({ ...prev, "section-3": sec3 }));
+                            }}
+                            className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold outline-none focus:border-[#1a5d9c]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Card Description</label>
+                          <textarea
+                            rows={2}
+                            placeholder="Feature Description"
+                            value={card.description || ""}
+                            onChange={(e) => {
+                              const sec3 = [...(homeObj["section-3"] || [{}])];
+                              const cards = [...(sec3[0].cardItem || [])];
+                              cards[idx] = { ...cards[idx], description: e.target.value };
+                              sec3[0] = { ...sec3[0], cardItem: cards };
+                              updateHome((prev) => ({ ...prev, "section-3": sec3 }));
+                            }}
+                            className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs outline-none focus:border-[#1a5d9c]"
+                          />
+                        </div>
+
+                        {/* Card Icon (Image Upload) - Same as Quick Card */}
+                        <div className="space-y-1.5 rounded-lg border border-slate-100 bg-slate-50/70 p-2.5">
+                          <label className="text-[11px] font-bold text-slate-700 flex items-center justify-between">
+                            <span className="flex items-center gap-1.5">
+                              <ImageIcon size={13} className="text-[#1a5d9c]" /> Icon Image
+                            </span>
+                            {currentIcon ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const sec3 = [...(homeObj["section-3"] || [{}])];
+                                  const cards = [...(sec3[0].cardItem || [])];
+                                  cards[idx] = { ...cards[idx], icoUrl: "", icon: "", imageUrl: "", fileUrl: "" };
+                                  sec3[0] = { ...sec3[0], cardItem: cards };
+                                  updateHome((prev) => ({ ...prev, "section-3": sec3 }));
+                                }}
+                                className="text-[10px] text-red-500 hover:text-red-700 flex items-center gap-0.5"
+                              >
+                                <X size={11} /> Clear Icon
+                              </button>
+                            ) : null}
+                          </label>
+
+                          <div className="flex items-center gap-2">
+                            {/* Thumbnail Preview */}
+                            <div className="size-9 shrink-0 overflow-hidden rounded-lg border border-slate-700 bg-[#123B70] grid place-items-center shadow-2xs">
+                              {currentIcon ? (
+                                <img
+                                  src={getAssetUrl(currentIcon)}
+                                  alt="Icon Preview"
+                                  className="size-6 object-contain brightness-0 invert"
+                                  onError={(e) => {
+                                    (e.target as HTMLElement).style.display = "none";
+                                  }}
+                                />
+                              ) : (
+                                <ImageIcon size={16} className="text-slate-300" />
+                              )}
+                            </div>
+
+                            {/* Upload & Gallery Buttons */}
+                            <div className="flex flex-1 items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  openGalleryPicker((url) => {
+                                    const sec3 = [...(homeObj["section-3"] || [{}])];
+                                    const cards = [...(sec3[0].cardItem || [])];
+                                    cards[idx] = { ...cards[idx], icoUrl: url, icon: url, imageUrl: url, fileUrl: url };
+                                    sec3[0] = { ...sec3[0], cardItem: cards };
+                                    updateHome((prev) => ({ ...prev, "section-3": sec3 }));
+                                  }, "Choose Card Icon from Gallery");
+                                }}
+                                className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2 py-1.5 text-xs font-bold text-amber-800 hover:bg-amber-100 transition shadow-2xs cursor-pointer"
+                                title="Pick icon from Cloudinary Gallery"
+                              >
+                                <ImageIcon size={13} className="text-amber-600" />
+                                <span>Gallery</span>
+                              </button>
+
+                              <label className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:border-slate-300 transition shadow-2xs">
+                                <UploadCloud size={13} className="text-[#1a5d9c]" />
+                                <span>{uploadingCard === `sec3-${idx}` ? "Uploading..." : "Upload"}</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  disabled={uploadingCard === `sec3-${idx}`}
+                                  onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      setUploadingCard(`sec3-${idx}`);
+                                      try {
+                                        const url = await uploadImage(file);
+                                        if (url) {
+                                          const sec3 = [...(homeObj["section-3"] || [{}])];
+                                          const cards = [...(sec3[0].cardItem || [])];
+                                          cards[idx] = { ...cards[idx], icoUrl: url, icon: url, imageUrl: url, fileUrl: url };
+                                          sec3[0] = { ...sec3[0], cardItem: cards };
+                                          updateHome((prev) => ({ ...prev, "section-3": sec3 }));
+                                        }
+                                      } catch (err) {
+                                        console.error("Failed to upload icon:", err);
+                                      } finally {
+                                        setUploadingCard(null);
+                                        e.target.value = "";
+                                      }
+                                    }
+                                  }}
+                                  className="hidden"
+                                />
+                              </label>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Card Heading / Feature Title</label>
-                        <input
-                          type="text"
-                          placeholder="Feature Title (e.g. CBSE Curriculum)"
-                          value={card.heading || ""}
-                          onChange={(e) => {
-                            const sec3 = [...(homeObj["section-3"] || [{}])];
-                            const cards = [...(sec3[0].cardItem || [])];
-                            cards[idx] = { ...cards[idx], heading: e.target.value };
-                            sec3[0] = { ...sec3[0], cardItem: cards };
-                            updateHome((prev) => ({ ...prev, "section-3": sec3 }));
-                          }}
-                          className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold outline-none focus:border-[#1a5d9c]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Card Description</label>
-                        <textarea
-                          rows={2}
-                          placeholder="Feature Description"
-                          value={card.description || ""}
-                          onChange={(e) => {
-                            const sec3 = [...(homeObj["section-3"] || [{}])];
-                            const cards = [...(sec3[0].cardItem || [])];
-                            cards[idx] = { ...cards[idx], description: e.target.value };
-                            sec3[0] = { ...sec3[0], cardItem: cards };
-                            updateHome((prev) => ({ ...prev, "section-3": sec3 }));
-                          }}
-                          className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs outline-none focus:border-[#1a5d9c]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Redirect URL / Link Target (e.g. /academics, #admissions)</label>
-                        <input
-                          type="text"
-                          placeholder="Redirect URL (e.g. /about, /academics, #admissions)"
-                          value={card.redirectUrl || card.linkUrl || card.targetUrl || card.url || ""}
-                          onChange={(e) => {
-                            const sec3 = [...(homeObj["section-3"] || [{}])];
-                            const cards = [...(sec3[0].cardItem || [])];
-                            cards[idx] = { ...cards[idx], redirectUrl: e.target.value, linkUrl: e.target.value };
-                            sec3[0] = { ...sec3[0], cardItem: cards };
-                            updateHome((prev) => ({ ...prev, "section-3": sec3 }));
-                          }}
-                          className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-mono outline-none focus:border-[#1a5d9c]"
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -2037,7 +2140,7 @@ export function HomeLayoutEditorModal({
           {activeTab === "sec4" && (
             <div className="space-y-5">
               <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <h3 className="text-sm font-bold text-[#102a4c] flex items-center gap-2">
                     <i className="bi bi-book-fill text-[#1a5d9c]" /> Section 4: Academic Journey Stages ({(homeObj["section-4"]?.[0]?.cardItem || []).length} Stages)
                   </h3>
@@ -2050,131 +2153,113 @@ export function HomeLayoutEditorModal({
                   </button>
                 </div>
 
+                {/* Section Header Controls */}
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {(Array.isArray(homeObj["section-4"]?.[0]?.cardItem) ? homeObj["section-4"][0].cardItem : []).map((stage: any, idx: number) => (
-                    <div key={idx} className="rounded-xl border border-slate-200 bg-white p-3 space-y-2 shadow-2xs">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-1">
-                        <span className="text-[11px] font-bold text-slate-400">Stage #{idx + 1}</span>
-                        <div className="flex items-center gap-1">
-                          <button type="button" onClick={() => moveItemInSection("section-4", idx, "up")} disabled={idx === 0} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                            <ArrowUp size={12} />
-                          </button>
-                          <button type="button" onClick={() => moveItemInSection("section-4", idx, "down")} disabled={idx === homeObj["section-4"][0].cardItem.length - 1} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                            <ArrowDown size={12} />
-                          </button>
-                          <button type="button" onClick={() => deleteItemFromSection("section-4", idx)} className="text-red-500 hover:text-red-700">
-                            <Trash2 size={12} />
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="Grade range"
-                          value={stage.heading || ""}
-                          onChange={(e) => {
-                            const sec4 = [...(homeObj["section-4"] || [{}])];
-                            const stages = [...(sec4[0].cardItem || [])];
-                            stages[idx] = { ...stages[idx], heading: e.target.value };
-                            sec4[0] = { ...sec4[0], cardItem: stages };
-                            updateHome((prev) => ({ ...prev, "section-4": sec4 }));
-                          }}
-                          className="w-1/2 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold outline-none"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Stage title"
-                          value={stage.mainHeading || ""}
-                          onChange={(e) => {
-                            const sec4 = [...(homeObj["section-4"] || [{}])];
-                            const stages = [...(sec4[0].cardItem || [])];
-                            stages[idx] = { ...stages[idx], mainHeading: e.target.value };
-                            sec4[0] = { ...sec4[0], cardItem: stages };
-                            updateHome((prev) => ({ ...prev, "section-4": sec4 }));
-                          }}
-                          className="w-1/2 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-[#1a5d9c] outline-none"
-                        />
-                      </div>
-                      <textarea
-                        rows={2}
-                        value={stage.description || ""}
-                        onChange={(e) => {
-                          const sec4 = [...(homeObj["section-4"] || [{}])];
-                          const stages = [...(sec4[0].cardItem || [])];
-                          stages[idx] = { ...stages[idx], description: e.target.value };
-                          sec4[0] = { ...sec4[0], cardItem: stages };
-                          updateHome((prev) => ({ ...prev, "section-4": sec4 }));
-                        }}
-                        className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs outline-none"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB: Section 5 */}
-          {activeTab === "sec5" && (
-            <div className="space-y-5">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-[#102a4c] flex items-center gap-2">
-                    <i className="bi bi-activity text-[#1a5d9c]" /> Section 5: Co-Curricular Activities ({(homeObj["section-5"]?.[0]?.cardItem || []).length} Cards)
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={() => addItemToSection("section-5", { heading: "New Activity", description: "Activity details", redirectUrl: "/about" })}
-                    className="flex items-center gap-1 rounded-xl bg-[#1a5d9c] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#102a4c]"
-                  >
-                    <Plus size={14} /> Add Activity
-                  </button>
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-500">Eyebrow / Section Title</label>
+                    <input
+                      type="text"
+                      value={homeObj["section-4"]?.[0]?.heading || ""}
+                      onChange={(e) => {
+                        const sec4 = [...(homeObj["section-4"] || [{}])];
+                        sec4[0] = { ...sec4[0], heading: e.target.value };
+                        updateHome((prev) => ({ ...prev, "section-4": sec4 }));
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-[#1a5d9c]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-500">Main Heading</label>
+                    <input
+                      type="text"
+                      value={homeObj["section-4"]?.[0]?.mainHeading || ""}
+                      onChange={(e) => {
+                        const sec4 = [...(homeObj["section-4"] || [{}])];
+                        sec4[0] = { ...sec4[0], mainHeading: e.target.value };
+                        updateHome((prev) => ({ ...prev, "section-4": sec4 }));
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold outline-none focus:border-[#1a5d9c]"
+                    />
+                  </div>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {(Array.isArray(homeObj["section-5"]?.[0]?.cardItem) ? homeObj["section-5"][0].cardItem : []).map((activity: any, idx: number) => (
-                    <div key={idx} className="rounded-xl border border-slate-200 bg-white p-3 space-y-2 shadow-2xs">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-1">
-                        <span className="text-[11px] font-bold text-slate-400">Activity #{idx + 1}</span>
-                        <div className="flex items-center gap-1">
-                          <button type="button" onClick={() => moveItemInSection("section-5", idx, "up")} disabled={idx === 0} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                            <ArrowUp size={12} />
-                          </button>
-                          <button type="button" onClick={() => moveItemInSection("section-5", idx, "down")} disabled={idx === homeObj["section-5"][0].cardItem.length - 1} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                            <ArrowDown size={12} />
-                          </button>
-                          <button type="button" onClick={() => deleteItemFromSection("section-5", idx)} className="text-red-500 hover:text-red-700">
-                            <Trash2 size={12} />
-                          </button>
+                  {(Array.isArray(homeObj["section-4"]?.[0]?.cardItem) ? homeObj["section-4"][0].cardItem : []).map((stage: any, idx: number) => {
+                    return (
+                      <div key={idx} className="rounded-xl border border-slate-200 bg-white p-3 space-y-2.5 shadow-2xs">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                          <span className="text-[11px] font-bold text-slate-400">Stage #{idx + 1}</span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => moveItemInSection("section-4", idx, "up")}
+                              disabled={idx === 0}
+                              className="text-slate-400 hover:text-slate-700 disabled:opacity-30"
+                            >
+                              <ArrowUp size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => moveItemInSection("section-4", idx, "down")}
+                              disabled={idx === (homeObj["section-4"]?.[0]?.cardItem || []).length - 1}
+                              className="text-slate-400 hover:text-slate-700 disabled:opacity-30"
+                            >
+                              <ArrowDown size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => deleteItemFromSection("section-4", idx)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
                         </div>
+
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Grade range"
+                            value={stage.heading || ""}
+                            onChange={(e) => {
+                              const sec4 = [...(homeObj["section-4"] || [{}])];
+                              const stages = [...(sec4[0].cardItem || [])];
+                              stages[idx] = { ...stages[idx], heading: e.target.value };
+                              sec4[0] = { ...sec4[0], cardItem: stages };
+                              updateHome((prev) => ({ ...prev, "section-4": sec4 }));
+                            }}
+                            className="w-1/2 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold outline-none focus:border-[#1a5d9c]"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Stage title"
+                            value={stage.mainHeading || stage.title || ""}
+                            onChange={(e) => {
+                              const sec4 = [...(homeObj["section-4"] || [{}])];
+                              const stages = [...(sec4[0].cardItem || [])];
+                              stages[idx] = { ...stages[idx], mainHeading: e.target.value, title: e.target.value };
+                              sec4[0] = { ...sec4[0], cardItem: stages };
+                              updateHome((prev) => ({ ...prev, "section-4": sec4 }));
+                            }}
+                            className="w-1/2 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-[#1a5d9c] outline-none focus:border-[#1a5d9c]"
+                          />
+                        </div>
+                        <textarea
+                          rows={2}
+                          placeholder="Curriculum & stage details"
+                          value={stage.description || ""}
+                          onChange={(e) => {
+                            const sec4 = [...(homeObj["section-4"] || [{}])];
+                            const stages = [...(sec4[0].cardItem || [])];
+                            stages[idx] = { ...stages[idx], description: e.target.value };
+                            sec4[0] = { ...sec4[0], cardItem: stages };
+                            updateHome((prev) => ({ ...prev, "section-4": sec4 }));
+                          }}
+                          className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs outline-none focus:border-[#1a5d9c]"
+                        />
                       </div>
-                      <input
-                        type="text"
-                        value={activity.heading || ""}
-                        onChange={(e) => {
-                          const sec5 = [...(homeObj["section-5"] || [{}])];
-                          const cards = [...(sec5[0].cardItem || [])];
-                          cards[idx] = { ...cards[idx], heading: e.target.value };
-                          sec5[0] = { ...sec5[0], cardItem: cards };
-                          updateHome((prev) => ({ ...prev, "section-5": sec5 }));
-                        }}
-                        className="w-full rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-bold outline-none"
-                      />
-                      <textarea
-                        rows={2}
-                        value={activity.description || ""}
-                        onChange={(e) => {
-                          const sec5 = [...(homeObj["section-5"] || [{}])];
-                          const cards = [...(sec5[0].cardItem || [])];
-                          cards[idx] = { ...cards[idx], description: e.target.value };
-                          sec5[0] = { ...sec5[0], cardItem: cards };
-                          updateHome((prev) => ({ ...prev, "section-5": sec5 }));
-                        }}
-                        className="w-full rounded-lg border border-slate-200 px-2.5 py-1 text-xs outline-none"
-                      />
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -2184,83 +2269,270 @@ export function HomeLayoutEditorModal({
           {activeTab === "sec6" && (
             <div className="space-y-5">
               <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <h3 className="text-sm font-bold text-[#102a4c] flex items-center gap-2">
-                    <i className="bi bi-building-fill text-[#1a5d9c]" /> Section 6: Campus Infrastructure Cards ({(homeObj["section-6"]?.[0]?.cardItem || []).length} Cards)
+                    <i className="bi bi-building-fill text-[#1a5d9c]" /> Section 5: Campus Infrastructure Cards ({(homeObj["section-6"]?.[0]?.cardItem || []).length} Cards)
                   </h3>
                   <button
                     type="button"
-                    onClick={() => addItemToSection("section-6", { title: "New Facility", "sub-title": "Facility features", fileUrl: "" })}
+                    onClick={() => addItemToSection("section-6", { title: "New Facility", heading: "New Facility", "sub-title": "Facility features", description: "Facility features", fileUrl: "", imageUrl: "" })}
                     className="flex items-center gap-1 rounded-xl bg-[#1a5d9c] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#102a4c]"
                   >
                     <Plus size={14} /> Add Facility Card
                   </button>
                 </div>
 
+                {/* Section Header Controls */}
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {(Array.isArray(homeObj["section-6"]?.[0]?.cardItem) ? homeObj["section-6"][0].cardItem : []).map((infra: any, idx: number) => (
-                    <div key={idx} className="rounded-xl border border-slate-200 bg-white p-3 space-y-2 shadow-2xs">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-1">
-                        <span className="text-[11px] font-bold text-slate-400">Facility #{idx + 1}</span>
-                        <div className="flex items-center gap-1">
-                          <button type="button" onClick={() => moveItemInSection("section-6", idx, "up")} disabled={idx === 0} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                            <ArrowUp size={12} />
-                          </button>
-                          <button type="button" onClick={() => moveItemInSection("section-6", idx, "down")} disabled={idx === homeObj["section-6"][0].cardItem.length - 1} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                            <ArrowDown size={12} />
-                          </button>
-                          <button type="button" onClick={() => deleteItemFromSection("section-6", idx)} className="text-red-500 hover:text-red-700">
-                            <Trash2 size={12} />
-                          </button>
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-500">Eyebrow / Section Title</label>
+                    <input
+                      type="text"
+                      value={homeObj["section-6"]?.[0]?.heading || ""}
+                      onChange={(e) => {
+                        const sec6 = [...(homeObj["section-6"] || [{}])];
+                        sec6[0] = { ...sec6[0], heading: e.target.value };
+                        updateHome((prev) => ({ ...prev, "section-6": sec6 }));
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-[#1a5d9c]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-500">Main Heading</label>
+                    <input
+                      type="text"
+                      value={homeObj["section-6"]?.[0]?.mainHeading || ""}
+                      onChange={(e) => {
+                        const sec6 = [...(homeObj["section-6"] || [{}])];
+                        sec6[0] = { ...sec6[0], mainHeading: e.target.value };
+                        updateHome((prev) => ({ ...prev, "section-6": sec6 }));
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold outline-none focus:border-[#1a5d9c]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-slate-500">Section Description</label>
+                  <textarea
+                    rows={2}
+                    value={
+                      Array.isArray(homeObj["section-6"]?.[0]?.description)
+                        ? homeObj["section-6"][0].description[0] || ""
+                        : homeObj["section-6"]?.[0]?.description || ""
+                    }
+                    onChange={(e) => {
+                      const sec6 = [...(homeObj["section-6"] || [{}])];
+                      sec6[0] = { ...sec6[0], description: [e.target.value] };
+                      updateHome((prev) => ({ ...prev, "section-6": sec6 }));
+                    }}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none focus:border-[#1a5d9c]"
+                  />
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {(Array.isArray(homeObj["section-6"]?.[0]?.cardItem) ? homeObj["section-6"][0].cardItem : []).map((infra: any, idx: number) => {
+                    const cardImgUrl = infra.fileUrl || infra.imageUrl || infra.icoUrl || "";
+                    const displayImgUrl = cardImgUrl ? getAssetUrl(cardImgUrl) : "";
+                    const isCardUploading = uploadingCard === `sec6-${idx}`;
+
+                    return (
+                      <div key={idx} className="rounded-xl border border-slate-200 bg-white p-3.5 space-y-3 shadow-2xs">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
+                          <span className="text-[11px] font-bold text-slate-400">Facility #{idx + 1}</span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => moveItemInSection("section-6", idx, "up")}
+                              disabled={idx === 0}
+                              className="text-slate-400 hover:text-slate-700 disabled:opacity-30 p-1"
+                              title="Move up"
+                            >
+                              <ArrowUp size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => moveItemInSection("section-6", idx, "down")}
+                              disabled={idx === (homeObj["section-6"]?.[0]?.cardItem || []).length - 1}
+                              className="text-slate-400 hover:text-slate-700 disabled:opacity-30 p-1"
+                              title="Move down"
+                            >
+                              <ArrowDown size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => deleteItemFromSection("section-6", idx)}
+                              className="text-red-500 hover:text-red-700 p-1"
+                              title="Delete facility card"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Facility Title</label>
+                          <input
+                            type="text"
+                            value={infra.title || infra.heading || ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const sec6 = [...(homeObj["section-6"] || [{}])];
+                              const cards = [...(sec6[0].cardItem || [])];
+                              cards[idx] = { ...cards[idx], title: val, heading: val };
+                              sec6[0] = { ...sec6[0], cardItem: cards };
+                              updateHome((prev) => ({ ...prev, "section-6": sec6 }));
+                            }}
+                            className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold outline-none focus:border-[#1a5d9c]"
+                            placeholder="e.g. Science Labs"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Subtitle / Feature Description</label>
+                          <input
+                            type="text"
+                            value={infra["sub-title"] || infra.description || ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const sec6 = [...(homeObj["section-6"] || [{}])];
+                              const cards = [...(sec6[0].cardItem || [])];
+                              cards[idx] = { ...cards[idx], "sub-title": val, description: val };
+                              sec6[0] = { ...sec6[0], cardItem: cards };
+                              updateHome((prev) => ({ ...prev, "section-6": sec6 }));
+                            }}
+                            className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs outline-none focus:border-[#1a5d9c]"
+                            placeholder="e.g. Physics, chemistry and biology labs."
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Image Path / URL (Disabled)</label>
+                          <input
+                            type="text"
+                            value={cardImgUrl}
+                            disabled
+                            readOnly
+                            placeholder="No image attached"
+                            className="w-full rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] font-mono text-slate-500 cursor-not-allowed outline-none select-all"
+                          />
+                        </div>
+
+                        {/* Linked Image Preview & Actions */}
+                        <div className="space-y-2 pt-1">
+                          <label className="text-[10px] font-bold text-slate-500 block">Attached Facility Image</label>
+                          {cardImgUrl ? (
+                            <div className="relative h-36 w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-900 group shadow-2xs">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={displayImgUrl}
+                                alt={infra.title || "Campus Facility"}
+                                onError={(e) => {
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = "/assets/Album/ClassRoom.webp";
+                                }}
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                              <div className="absolute top-2 left-2 rounded-md bg-black/65 backdrop-blur-md px-2 py-0.5 text-[10px] font-bold text-white flex items-center gap-1 shadow-sm">
+                                <ImageIcon size={10} className="text-amber-400" /> Attached Image
+                              </div>
+                              <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    openGalleryPicker((url) => {
+                                      const sec6 = [...(homeObj["section-6"] || [{}])];
+                                      const cards = [...(sec6[0].cardItem || [])];
+                                      cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                      sec6[0] = { ...sec6[0], cardItem: cards };
+                                      updateHome((prev) => ({ ...prev, "section-6": sec6 }));
+                                    }, `Choose Image for ${infra.title || "Facility"}`);
+                                  }}
+                                  className="rounded-md bg-amber-600 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-amber-700 flex items-center gap-1 shadow-sm cursor-pointer"
+                                >
+                                  <ImageIcon size={11} /> Gallery
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const sec6 = [...(homeObj["section-6"] || [{}])];
+                                    const cards = [...(sec6[0].cardItem || [])];
+                                    cards[idx] = { ...cards[idx], fileUrl: "", imageUrl: "", icoUrl: "" };
+                                    sec6[0] = { ...sec6[0], cardItem: cards };
+                                    updateHome((prev) => ({ ...prev, "section-6": sec6 }));
+                                  }}
+                                  className="rounded-md bg-rose-600 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-rose-700 flex items-center gap-1 shadow-sm cursor-pointer"
+                                >
+                                  <Trash2 size={11} /> Remove
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex h-24 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 text-slate-400">
+                              <ImageIcon size={20} className="text-slate-300 mb-1" />
+                              <span className="text-[11px] font-medium">No image attached</span>
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                openGalleryPicker((url) => {
+                                  const sec6 = [...(homeObj["section-6"] || [{}])];
+                                  const cards = [...(sec6[0].cardItem || [])];
+                                  cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                  sec6[0] = { ...sec6[0], cardItem: cards };
+                                  updateHome((prev) => ({ ...prev, "section-6": sec6 }));
+                                }, `Choose Image for ${infra.title || "Facility"}`);
+                              }}
+                              className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 py-1.5 text-[11px] font-bold text-amber-800 hover:bg-amber-100 transition-colors shadow-2xs"
+                              title="Choose existing photo from Cloudinary Gallery"
+                            >
+                              <ImageIcon size={13} className="text-amber-600" /> Choose from Gallery
+                            </button>
+
+                            <label className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border border-dashed border-slate-300 bg-slate-50 py-1.5 text-[11px] font-bold text-[#1a5d9c] hover:bg-blue-50 transition-colors">
+                              {isCardUploading ? (
+                                <>
+                                  <Loader2 size={13} className="animate-spin text-[#1a5d9c]" /> Uploading...
+                                </>
+                              ) : (
+                                <>
+                                  <UploadCloud size={13} /> {cardImgUrl ? "Change Upload" : "Upload Image"}
+                                </>
+                              )}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                disabled={isCardUploading}
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    setUploadingCard(`sec6-${idx}`);
+                                    try {
+                                      const url = await uploadImage(file);
+                                      if (url) {
+                                        const sec6 = [...(homeObj["section-6"] || [{}])];
+                                        const cards = [...(sec6[0].cardItem || [])];
+                                        cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                        sec6[0] = { ...sec6[0], cardItem: cards };
+                                        updateHome((prev) => ({ ...prev, "section-6": sec6 }));
+                                      }
+                                    } finally {
+                                      setUploadingCard(null);
+                                      e.target.value = "";
+                                    }
+                                  }
+                                }}
+                                className="hidden"
+                              />
+                            </label>
+                          </div>
                         </div>
                       </div>
-                      <input
-                        type="text"
-                        value={infra.title || ""}
-                        onChange={(e) => {
-                          const sec6 = [...(homeObj["section-6"] || [{}])];
-                          const cards = [...(sec6[0].cardItem || [])];
-                          cards[idx] = { ...cards[idx], title: e.target.value };
-                          sec6[0] = { ...sec6[0], cardItem: cards };
-                          updateHome((prev) => ({ ...prev, "section-6": sec6 }));
-                        }}
-                        className="w-full rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-bold outline-none"
-                      />
-                      <input
-                        type="text"
-                        value={infra["sub-title"] || ""}
-                        onChange={(e) => {
-                          const sec6 = [...(homeObj["section-6"] || [{}])];
-                          const cards = [...(sec6[0].cardItem || [])];
-                          cards[idx] = { ...cards[idx], "sub-title": e.target.value };
-                          sec6[0] = { ...sec6[0], cardItem: cards };
-                          updateHome((prev) => ({ ...prev, "section-6": sec6 }));
-                        }}
-                        className="w-full rounded-lg border border-slate-200 px-2.5 py-1 text-xs outline-none"
-                      />
-                      <label className="flex cursor-pointer items-center justify-center gap-1 rounded-lg border border-dashed border-slate-300 bg-slate-50 py-1 text-[11px] font-bold text-[#1a5d9c] hover:bg-blue-50">
-                        <UploadCloud size={13} /> Upload Image
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const url = await uploadImage(file);
-                              if (url) {
-                                const sec6 = [...(homeObj["section-6"] || [{}])];
-                                const cards = [...(sec6[0].cardItem || [])];
-                                cards[idx] = { ...cards[idx], fileUrl: url };
-                                sec6[0] = { ...sec6[0], cardItem: cards };
-                                updateHome((prev) => ({ ...prev, "section-6": sec6 }));
-                              }
-                            }
-                          }}
-                          className="hidden"
-                        />
-                      </label>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -2283,7 +2555,7 @@ export function HomeLayoutEditorModal({
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 space-y-4">
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <h3 className="text-sm font-bold text-[#102a4c] flex items-center gap-2">
-                      <i className="bi bi-people-fill text-[#1a5d9c]" /> Section 7: Student Life Showcase
+                      <i className="bi bi-people-fill text-[#1a5d9c]" /> Section 6: Student Life Showcase
                     </h3>
                     <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-[#1a5d9c] border border-blue-100">
                       {cardsList.length} {cardsList.length === 1 ? "Image" : "Images"} configured
@@ -2345,34 +2617,53 @@ export function HomeLayoutEditorModal({
                       <p className="text-[11px] text-slate-500">Upload multiple photos to display in the Student Life section masonry grid.</p>
                     </div>
 
-                    <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#1a5d9c] px-4 py-2 text-xs font-bold text-white hover:bg-[#124272] transition-colors shadow-sm">
-                      <Plus size={16} /> Add Image(s)
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={async (e) => {
-                          const files = Array.from(e.target.files || []);
-                          if (files.length === 0) return;
-                          const currentCards = [...(homeObj["section-7"]?.[0]?.cardItem || [])];
-                          for (const file of files) {
-                            const url = await uploadImage(file);
-                            if (url) {
-                              const autoTitle = file.name
-                                .replace(/\.[^/.]+$/, "")
-                                .replace(/[-_]/g, " ")
-                                .trim();
-                              currentCards.push({ title: autoTitle, fileUrl: url });
-                            }
-                          }
-                          const sec7 = [...(homeObj["section-7"] || [{}])];
-                          sec7[0] = { ...sec7[0], cardItem: currentCards };
-                          updateHome((prev) => ({ ...prev, "section-7": sec7 }));
-                          e.target.value = "";
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          openGalleryPicker((url) => {
+                            const currentCards = [...(homeObj["section-7"]?.[0]?.cardItem || [])];
+                            const autoTitle = "Gallery Photo";
+                            currentCards.push({ title: autoTitle, fileUrl: url });
+                            const sec7 = [...(homeObj["section-7"] || [{}])];
+                            sec7[0] = { ...sec7[0], cardItem: currentCards };
+                            updateHome((prev) => ({ ...prev, "section-7": sec7 }));
+                          }, "Select Photo for Student Life from Gallery");
                         }}
-                        className="hidden"
-                      />
-                    </label>
+                        className="flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-3.5 py-2 text-xs font-bold text-amber-800 hover:bg-amber-100 transition shadow-2xs"
+                      >
+                        <ImageIcon size={15} className="text-amber-600" /> Choose from Gallery
+                      </button>
+
+                      <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#1a5d9c] px-4 py-2 text-xs font-bold text-white hover:bg-[#124272] transition-colors shadow-sm">
+                        <Plus size={16} /> Add Image(s)
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={async (e) => {
+                            const files = Array.from(e.target.files || []);
+                            if (files.length === 0) return;
+                            const currentCards = [...(homeObj["section-7"]?.[0]?.cardItem || [])];
+                            for (const file of files) {
+                              const url = await uploadImage(file);
+                              if (url) {
+                                const autoTitle = file.name
+                                  .replace(/\.[^/.]+$/, "")
+                                  .replace(/[-_]/g, " ")
+                                  .trim();
+                                currentCards.push({ title: autoTitle, fileUrl: url });
+                              }
+                            }
+                            const sec7 = [...(homeObj["section-7"] || [{}])];
+                            sec7[0] = { ...sec7[0], cardItem: currentCards };
+                            updateHome((prev) => ({ ...prev, "section-7": sec7 }));
+                            e.target.value = "";
+                          }}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
                   </div>
 
                   {cardsList.length === 0 ? (
@@ -2471,24 +2762,29 @@ export function HomeLayoutEditorModal({
           {/* TAB: Video Setup */}
           {activeTab === "video" && (
             <div className="space-y-5">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-[#102a4c] flex items-center gap-2">
-                    <i className="bi bi-camera-video-fill text-[#1a5d9c]" /> Campus Introduction Video Setup
-                  </h3>
-                  <span className="text-[11px] font-semibold text-slate-500 bg-white px-2.5 py-1 rounded-full border border-slate-200">
-                    Controls IntroVideo section &amp; site_datasource media
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 space-y-5 shadow-xs">
+                <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-100 pb-4">
+                  <div>
+                    <h3 className="text-sm font-bold text-[#102a4c] flex items-center gap-2">
+                      <i className="bi bi-camera-video-fill text-[#1a5d9c]" /> Campus Introduction Video
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Automated video setup for home section. Select or upload your intro video.
+                    </p>
+                  </div>
+                  <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+                    Automated Video Mode
                   </span>
                 </div>
 
                 {(() => {
                   const secVid = homeObj["section-video"]?.[0] || {};
                   const sec8 = homeObj["section-8"]?.[0] || {};
-                  const eyebrowVal = secVid.eyebrow || sec8.videoEyebrow || "Discover IPS";
-                  const titleVal = secVid.title || secVid.heading || sec8.videoTitle || "Experience life at Indian Public School";
-                  const descVal = secVid.description || sec8.videoDescription || "Take a look at the campus, learning spaces and student life.";
-                  const videoUrlVal = secVid.introFileUrl || secVid.videoUrl || sec8.introFileUrl || sec8.videoUrl;
-                  const folderVal = secVid.cloudinaryFolder || sec8.cloudinaryFolder || "indian-public-school";
+                  const DEFAULT_VIDEO = "/Videos/IPSIntroVideo.mp4";
+                  let videoUrlVal = secVid.introFileUrl || secVid.videoUrl || sec8.introFileUrl || sec8.videoUrl;
+                  if (!videoUrlVal || videoUrlVal === "/IPSIntroVideo.mp4") {
+                    videoUrlVal = DEFAULT_VIDEO;
+                  }
 
                   const updateVideoData = (updates: Record<string, any>) => {
                     updateHome((prev) => {
@@ -2504,200 +2800,101 @@ export function HomeLayoutEditorModal({
                     });
                   };
 
+                  const eyebrowVal = secVid.eyebrow || sec8.videoEyebrow || "Discover IPS";
+                  const titleVal = secVid.title || secVid.heading || sec8.videoTitle || "Experience life at Indian Public School";
+                  const descVal = secVid.description || sec8.videoDescription || "Take a look at the campus, learning spaces and student life.";
                   const autoPlayVal = secVid.autoPlay ?? sec8.autoPlay ?? true;
                   const loopVal = secVid.loop ?? sec8.loop ?? true;
                   const mutedVal = secVid.muted ?? sec8.muted ?? true;
                   const controlsVal = secVid.controls ?? sec8.controls ?? true;
-                  const posterVal = secVid.poster || sec8.poster || secVid.posterUrl || sec8.posterUrl || "";
 
                   return (
-                    <div className="space-y-4">
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <div className="space-y-1">
-                          <label className="text-[11px] font-bold text-slate-600">Eyebrow Tagline</label>
-                          <input
-                            type="text"
-                            placeholder="e.g. Discover IPS"
-                            value={eyebrowVal}
-                            onChange={(e) => updateVideoData({ eyebrow: e.target.value, videoEyebrow: e.target.value })}
-                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-[#1a5d9c]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[11px] font-bold text-slate-600">Main Title</label>
-                          <input
-                            type="text"
-                            placeholder="e.g. Experience life at Indian Public School"
-                            value={titleVal}
-                            onChange={(e) => updateVideoData({ title: e.target.value, heading: e.target.value, videoTitle: e.target.value })}
-                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-[#1a5d9c]"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-600">Description</label>
-                        <textarea
-                          rows={2}
-                          placeholder="e.g. Take a look at the campus, learning spaces and student life."
-                          value={descVal}
-                          onChange={(e) => updateVideoData({ description: e.target.value, videoDescription: e.target.value })}
-                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none focus:border-[#1a5d9c]"
-                        />
-                      </div>
-
-                      <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3 shadow-2xs">
-                        <label className="text-[11px] font-bold text-[#102a4c] flex items-center gap-1.5">
-                          Video Playback Controls &amp; Player Settings
+                    <div className="space-y-5">
+                      {/* Video File Selection Box */}
+                      <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                        <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                          Active Intro Video File URL
                         </label>
-                        <div className="grid gap-2.5 sm:grid-cols-2">
-                          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-100 hover:bg-slate-100 transition">
-                            <input
-                              type="checkbox"
-                              checked={autoPlayVal}
-                              onChange={(e) => updateVideoData({ autoPlay: e.target.checked })}
-                              className="rounded text-[#1a5d9c] focus:ring-[#1a5d9c]"
-                            />
-                            <span>AutoPlay Video on Load</span>
-                          </label>
 
-                          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-100 hover:bg-slate-100 transition">
-                            <input
-                              type="checkbox"
-                              checked={loopVal}
-                              onChange={(e) => updateVideoData({ loop: e.target.checked })}
-                              className="rounded text-[#1a5d9c] focus:ring-[#1a5d9c]"
-                            />
-                            <span>Loop Video Continuously</span>
-                          </label>
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                          <input
+                            type="text"
+                            disabled
+                            readOnly
+                            placeholder="e.g. https://res.cloudinary.com/.../IPSIntroVideo.mp4"
+                            value={videoUrlVal}
+                            onChange={(e) => updateVideoData({ introFileUrl: e.target.value, videoUrl: e.target.value })}
+                            className="flex-1 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 cursor-not-allowed px-3.5 py-2.5 text-xs font-mono outline-none shadow-2xs select-all"
+                          />
 
-                          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-100 hover:bg-slate-100 transition">
-                            <input
-                              type="checkbox"
-                              checked={mutedVal}
-                              onChange={(e) => updateVideoData({ muted: e.target.checked })}
-                              className="rounded text-[#1a5d9c] focus:ring-[#1a5d9c]"
-                            />
-                            <span>Mute Audio by Default</span>
-                          </label>
+                          <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                            {/* Option 1: Choose from Gallery */}
+                            <button
+                              type="button"
+                              onClick={() => setGalleryPickerTarget("introVideo")}
+                              className="flex items-center justify-center gap-1.5 rounded-xl border border-amber-300 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 text-xs font-bold transition shadow-xs cursor-pointer"
+                            >
+                              <ImageIcon size={16} /> Choose from Gallery
+                            </button>
 
-                          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-100 hover:bg-slate-100 transition">
-                            <input
-                              type="checkbox"
-                              checked={controlsVal}
-                              onChange={(e) => updateVideoData({ controls: e.target.checked })}
-                              className="rounded text-[#1a5d9c] focus:ring-[#1a5d9c]"
-                            />
-                            <span>Show Player Controls (Play/Pause, Sound)</span>
-                          </label>
-                        </div>
-
-                        <div className="space-y-1 pt-1">
-                          <label className="text-[11px] font-bold text-slate-600">Video Poster / Thumbnail Frame URL (Optional)</label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              placeholder="e.g. https://res.cloudinary.com/.../poster.jpg"
-                              value={posterVal}
-                              onChange={(e) => updateVideoData({ poster: e.target.value, posterUrl: e.target.value })}
-                              className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-mono outline-none focus:border-[#1a5d9c]"
-                            />
-                            <label className="flex cursor-pointer items-center justify-center gap-1 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-bold text-[#1a5d9c] hover:bg-blue-50 shrink-0">
-                              <UploadCloud size={14} /> Upload Thumbnail
+                            {/* Option 2: Upload from Local Device */}
+                            <label className="flex items-center justify-center gap-1.5 rounded-xl bg-[#1a5d9c] hover:bg-[#102a4c] text-white px-4 py-2.5 text-xs font-bold transition shadow-xs cursor-pointer">
+                              {uploadingCard === "video" ? <Loader2 size={16} className="animate-spin" /> : <UploadCloud size={16} />}
+                              <span>Upload from Local</span>
                               <input
                                 type="file"
-                                accept="image/*"
+                                accept="video/mp4,video/webm,video/*"
                                 onChange={async (e) => {
                                   const file = e.target.files?.[0];
                                   if (file) {
-                                    const url = await uploadImage(file, "Home", folderVal);
-                                    if (url) {
-                                      updateVideoData({ poster: url, posterUrl: url });
+                                    setUploadingCard("video");
+                                    try {
+                                      const url = await uploadImage(file, "Videos", "indian-public-school/assets/Videos");
+                                      if (url) {
+                                        updateVideoData({ introFileUrl: url, videoUrl: url });
+                                      }
+                                    } catch (err) {
+                                      console.error("Video upload failed:", err);
+                                    } finally {
+                                      setUploadingCard(null);
                                     }
                                   }
                                 }}
                                 className="hidden"
                               />
                             </label>
-                          </div>
-                        </div>
-                      </div>
 
-                      <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-3.5 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <label className="text-[11px] font-bold text-[#102a4c] flex items-center gap-1.5">
-                            Cloudinary Target Storage Location / Folder
-                          </label>
-                          <span className="text-[10px] font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md">
-                            Direct Cloudinary Upload
-                          </span>
-                        </div>
-                        <input
-                          type="text"
-                          placeholder="e.g. indian-public-school/assets/Videos"
-                          value={folderVal}
-                          onChange={(e) => updateVideoData({ cloudinaryFolder: e.target.value })}
-                          className="w-full rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-mono text-slate-800 outline-none focus:border-[#1a5d9c]"
-                        />
-                        <p className="text-[11px] text-slate-500">
-                          Videos uploaded here will be stored in your Cloudinary account at path: <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600 font-mono">{folderVal}</code>
-                        </p>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-[11px] font-bold text-slate-600">Video File URL (Cloudinary Link or MP4 Path)</label>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <input
-                            type="text"
-                            placeholder="e.g. https://res.cloudinary.com/.../IPSIntroVideo.mp4"
-                            value={videoUrlVal}
-                            onChange={(e) => updateVideoData({ introFileUrl: e.target.value, videoUrl: e.target.value })}
-                            className="flex-1 min-w-[240px] rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-mono outline-none focus:border-[#1a5d9c]"
-                          />
-                          <label className="flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-dashed border-blue-500 bg-[#1a5d9c] px-4 py-2 text-xs font-bold text-white hover:bg-[#102a4c] transition shrink-0 shadow-xs">
-                            <UploadCloud size={16} /> Upload Video to Cloudinary
-                            <input
-                              type="file"
-                              accept="video/mp4,video/webm,video/*"
-                              onChange={async (e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  const url = await uploadImage(file, "Videos", folderVal);
-                                  if (url) {
-                                    updateVideoData({ introFileUrl: url, videoUrl: url });
+                            {/* Delete Button */}
+                            {videoUrlVal && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (confirm("Are you sure you want to remove the intro video?")) {
+                                    updateVideoData({ introFileUrl: "", videoUrl: "" });
                                   }
-                                }
-                              }}
-                              className="hidden"
-                            />
-                          </label>
-                          {videoUrlVal && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (confirm("Are you sure you want to remove the video from your layout?")) {
-                                  updateVideoData({ introFileUrl: "", videoUrl: "" });
-                                }
-                              }}
-                              className="flex items-center justify-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-bold text-red-600 hover:bg-red-100 hover:text-red-700 transition shrink-0"
-                            >
-                              <Trash2 size={14} /> Delete Video
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      {videoUrlVal && (
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <label className="text-[11px] font-bold text-slate-600">Live Video Preview</label>
-                            {videoUrlVal.includes("cloudinary.com") && (
-                              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                                Hosted on Cloudinary
-                              </span>
+                                }}
+                                className="flex items-center justify-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-bold text-red-600 hover:bg-red-100 transition cursor-pointer"
+                                title="Remove Video"
+                              >
+                                <Trash2 size={15} />
+                              </button>
                             )}
                           </div>
-                          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 aspect-video max-h-64 flex items-center justify-center">
+                        </div>
+                      </div>
+
+                      {/* Live Video Preview */}
+                      {videoUrlVal && (
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                              Live Automated Video Preview
+                            </label>
+                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                              {videoUrlVal.includes("cloudinary.com") ? "Hosted on Cloudinary" : "Active Video Asset"}
+                            </span>
+                          </div>
+                          <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 aspect-video max-h-72 flex items-center justify-center shadow-md">
                             <video
                               key={videoUrlVal}
                               controls
@@ -2713,6 +2910,88 @@ export function HomeLayoutEditorModal({
                           </div>
                         </div>
                       )}
+
+                      {/* Collapsible Advanced Customizations */}
+                      <details className="group rounded-2xl border border-slate-200 bg-slate-50/50 transition">
+                        <summary className="flex items-center justify-between px-4 py-3 text-xs font-bold text-slate-600 cursor-pointer select-none">
+                          <span>Advanced Customizations (Titles, Eyebrow &amp; Player Controls)</span>
+                          <span className="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+                        <div className="px-4 pb-4 pt-1 space-y-4 border-t border-slate-200/60">
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <div className="space-y-1">
+                              <label className="text-[11px] font-bold text-slate-600">Eyebrow Tagline</label>
+                              <input
+                                type="text"
+                                value={eyebrowVal}
+                                onChange={(e) => updateVideoData({ eyebrow: e.target.value, videoEyebrow: e.target.value })}
+                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-[#1a5d9c]"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[11px] font-bold text-slate-600">Main Title</label>
+                              <input
+                                type="text"
+                                value={titleVal}
+                                onChange={(e) => updateVideoData({ title: e.target.value, heading: e.target.value, videoTitle: e.target.value })}
+                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-[#1a5d9c]"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-slate-600">Description</label>
+                            <textarea
+                              rows={2}
+                              value={descVal}
+                              onChange={(e) => updateVideoData({ description: e.target.value, videoDescription: e.target.value })}
+                              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none focus:border-[#1a5d9c]"
+                            />
+                          </div>
+
+                          <div className="grid gap-2 sm:grid-cols-2">
+                            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 bg-white p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition">
+                              <input
+                                type="checkbox"
+                                checked={autoPlayVal}
+                                onChange={(e) => updateVideoData({ autoPlay: e.target.checked })}
+                                className="rounded text-[#1a5d9c] focus:ring-[#1a5d9c]"
+                              />
+                              <span>AutoPlay Video on Load</span>
+                            </label>
+
+                            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 bg-white p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition">
+                              <input
+                                type="checkbox"
+                                checked={loopVal}
+                                onChange={(e) => updateVideoData({ loop: e.target.checked })}
+                                className="rounded text-[#1a5d9c] focus:ring-[#1a5d9c]"
+                              />
+                              <span>Loop Video Continuously</span>
+                            </label>
+
+                            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 bg-white p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition">
+                              <input
+                                type="checkbox"
+                                checked={mutedVal}
+                                onChange={(e) => updateVideoData({ muted: e.target.checked })}
+                                className="rounded text-[#1a5d9c] focus:ring-[#1a5d9c]"
+                              />
+                              <span>Mute Audio by Default</span>
+                            </label>
+
+                            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 bg-white p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition">
+                              <input
+                                type="checkbox"
+                                checked={controlsVal}
+                                onChange={(e) => updateVideoData({ controls: e.target.checked })}
+                                className="rounded text-[#1a5d9c] focus:ring-[#1a5d9c]"
+                              />
+                              <span>Show Player Controls</span>
+                            </label>
+                          </div>
+                        </div>
+                      </details>
                     </div>
                   );
                 })()}
@@ -2724,92 +3003,218 @@ export function HomeLayoutEditorModal({
           {activeTab === "sec8" && (
             <div className="space-y-5">
               <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <h3 className="text-sm font-bold text-[#102a4c] flex items-center gap-2">
-                    <i className="bi bi-mortarboard-fill text-[#1a5d9c]" /> Section 8: Our Courses ({(homeObj["section-8"]?.[0]?.cardItem || []).length} Level Cards)
+                    <i className="bi bi-mortarboard-fill text-[#1a5d9c]" /> Section 7: Our Courses ({(homeObj["section-8"]?.[0]?.cardItem || []).length} Level Cards)
                   </h3>
-                  <button
-                    type="button"
-                    onClick={() => addItemToSection("section-8", { title: "New Level", description: "Course level details", fileUrl: "" })}
-                    className="flex items-center gap-1 rounded-xl bg-[#1a5d9c] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#102a4c]"
-                  >
-                    <Plus size={14} /> Add Course Level
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        openGalleryPicker((url) => {
+                          const currentCards = [...(homeObj["section-8"]?.[0]?.cardItem || [])];
+                          currentCards.push({ title: "New Level", heading: "New Level", description: "Course level details", fileUrl: url, imageUrl: url });
+                          const sec8 = [...(homeObj["section-8"] || [{}])];
+                          sec8[0] = { ...sec8[0], cardItem: currentCards };
+                          updateHome((prev) => ({ ...prev, "section-8": sec8 }));
+                        }, "Select Photo for Course Level from Gallery");
+                      }}
+                      className="flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-3.5 py-1.5 text-xs font-bold text-amber-800 hover:bg-amber-100 transition shadow-2xs"
+                    >
+                      <ImageIcon size={14} className="text-amber-600" /> Choose from Gallery
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addItemToSection("section-8", { title: "New Level", heading: "New Level", description: "Course level details", fileUrl: "", imageUrl: "" })}
+                      className="flex items-center gap-1 rounded-xl bg-[#1a5d9c] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#102a4c]"
+                    >
+                      <Plus size={14} /> Add Course Level
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {(Array.isArray(homeObj["section-8"]?.[0]?.cardItem) ? homeObj["section-8"][0].cardItem : []).map((course: any, idx: number) => (
-                    <div key={idx} className="rounded-xl border border-slate-200 bg-white p-3 space-y-2 shadow-2xs">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-1">
-                        <span className="text-[11px] font-bold text-slate-400">Course Level #{idx + 1}</span>
-                        <div className="flex items-center gap-1">
-                          <button type="button" onClick={() => moveItemInSection("section-8", idx, "up")} disabled={idx === 0} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                            <ArrowUp size={12} />
-                          </button>
-                          <button type="button" onClick={() => moveItemInSection("section-8", idx, "down")} disabled={idx === homeObj["section-8"][0].cardItem.length - 1} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                            <ArrowDown size={12} />
-                          </button>
-                          <button type="button" onClick={() => deleteItemFromSection("section-8", idx)} className="text-red-500 hover:text-red-700">
-                            <Trash2 size={12} />
-                          </button>
+                  {(Array.isArray(homeObj["section-8"]?.[0]?.cardItem) ? homeObj["section-8"][0].cardItem : []).map((course: any, idx: number) => {
+                    const cardImgUrl = course.fileUrl || course.imageUrl || "";
+                    const isCardUploading = uploadingCard === `sec8-${idx}`;
+
+                    return (
+                      <div key={idx} className="rounded-xl border border-slate-200 bg-white p-3 space-y-2.5 shadow-2xs">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                          <span className="text-[11px] font-bold text-slate-400">Course Level #{idx + 1}</span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => moveItemInSection("section-8", idx, "up")}
+                              disabled={idx === 0}
+                              className="text-slate-400 hover:text-slate-700 disabled:opacity-30"
+                            >
+                              <ArrowUp size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => moveItemInSection("section-8", idx, "down")}
+                              disabled={idx === (homeObj["section-8"]?.[0]?.cardItem || []).length - 1}
+                              className="text-slate-400 hover:text-slate-700 disabled:opacity-30"
+                            >
+                              <ArrowDown size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => deleteItemFromSection("section-8", idx)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Course Level Title</label>
+                          <input
+                            type="text"
+                            value={course.title || course.heading || ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const sec8 = [...(homeObj["section-8"] || [{}])];
+                              const cards = [...(sec8[0].cardItem || [])];
+                              cards[idx] = { ...cards[idx], title: val, heading: val };
+                              sec8[0] = { ...sec8[0], cardItem: cards };
+                              updateHome((prev) => ({ ...prev, "section-8": sec8 }));
+                            }}
+                            className="w-full rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-bold outline-none focus:border-[#1a5d9c]"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Course Description</label>
+                          <textarea
+                            rows={2}
+                            value={course.description || ""}
+                            onChange={(e) => {
+                              const sec8 = [...(homeObj["section-8"] || [{}])];
+                              const cards = [...(sec8[0].cardItem || [])];
+                              cards[idx] = { ...cards[idx], description: e.target.value };
+                              sec8[0] = { ...sec8[0], cardItem: cards };
+                              updateHome((prev) => ({ ...prev, "section-8": sec8 }));
+                            }}
+                            className="w-full rounded-lg border border-slate-200 px-2.5 py-1 text-xs outline-none focus:border-[#1a5d9c]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Image Path / URL (Disabled)</label>
+                          <input
+                            type="text"
+                            value={cardImgUrl}
+                            disabled
+                            readOnly
+                            placeholder="No image attached"
+                            className="w-full rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] font-mono text-slate-500 cursor-not-allowed outline-none select-all"
+                          />
+                        </div>
+
+                        {/* Image Preview & Upload */}
+                        <div className="space-y-1.5 pt-1">
+                          {cardImgUrl ? (
+                            <div className="relative h-24 w-full overflow-hidden rounded-lg border border-slate-200 bg-slate-900 group">
+                              <img src={cardImgUrl} alt={course.title || "Course"} className="h-full w-full object-cover" />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    openGalleryPicker((url) => {
+                                      const sec8 = [...(homeObj["section-8"] || [{}])];
+                                      const cards = [...(sec8[0].cardItem || [])];
+                                      cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                      sec8[0] = { ...sec8[0], cardItem: cards };
+                                      updateHome((prev) => ({ ...prev, "section-8": sec8 }));
+                                    }, `Choose Image for ${course.title || "Course Level"}`);
+                                  }}
+                                  className="rounded-md bg-amber-500 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-amber-600 flex items-center gap-1 shadow-sm cursor-pointer"
+                                >
+                                  <ImageIcon size={11} /> Gallery
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const sec8 = [...(homeObj["section-8"] || [{}])];
+                                    const cards = [...(sec8[0].cardItem || [])];
+                                    cards[idx] = { ...cards[idx], fileUrl: "", imageUrl: "" };
+                                    sec8[0] = { ...sec8[0], cardItem: cards };
+                                    updateHome((prev) => ({ ...prev, "section-8": sec8 }));
+                                  }}
+                                  className="rounded-md bg-rose-600 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-rose-700 flex items-center gap-1 shadow-sm cursor-pointer"
+                                >
+                                  <Trash2 size={11} /> Remove
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex h-24 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 text-slate-400">
+                              <ImageIcon size={20} className="text-slate-300 mb-1" />
+                              <span className="text-[11px] font-medium">No image attached</span>
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                openGalleryPicker((url) => {
+                                  const sec8 = [...(homeObj["section-8"] || [{}])];
+                                  const cards = [...(sec8[0].cardItem || [])];
+                                  cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                  sec8[0] = { ...sec8[0], cardItem: cards };
+                                  updateHome((prev) => ({ ...prev, "section-8": sec8 }));
+                                }, `Choose Image for ${course.title || "Course Level"}`);
+                              }}
+                              className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 py-1.5 text-[11px] font-bold text-amber-800 hover:bg-amber-100 transition-colors shadow-2xs"
+                              title="Choose existing photo from Cloudinary Gallery"
+                            >
+                              <ImageIcon size={13} className="text-amber-600" /> Choose from Gallery
+                            </button>
+
+                            <label className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border border-dashed border-slate-300 bg-slate-50 py-1.5 text-[11px] font-bold text-[#1a5d9c] hover:bg-blue-50 transition-colors">
+                              {isCardUploading ? (
+                                <>
+                                  <Loader2 size={13} className="animate-spin text-[#1a5d9c]" /> Uploading...
+                                </>
+                              ) : (
+                                <>
+                                  <UploadCloud size={13} /> {cardImgUrl ? "Change Upload" : "Upload Image"}
+                                </>
+                              )}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                disabled={isCardUploading}
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    setUploadingCard(`sec8-${idx}`);
+                                    try {
+                                      const url = await uploadImage(file);
+                                      if (url) {
+                                        const sec8 = [...(homeObj["section-8"] || [{}])];
+                                        const cards = [...(sec8[0].cardItem || [])];
+                                        cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                        sec8[0] = { ...sec8[0], cardItem: cards };
+                                        updateHome((prev) => ({ ...prev, "section-8": sec8 }));
+                                      }
+                                    } finally {
+                                      setUploadingCard(null);
+                                      e.target.value = "";
+                                    }
+                                  }
+                                }}
+                                className="hidden"
+                              />
+                            </label>
+                          </div>
                         </div>
                       </div>
-
-                      <div className="flex items-center gap-3">
-                        {course.fileUrl && (
-                          <div className="relative h-16 w-20 overflow-hidden rounded-lg border border-slate-200 bg-slate-900 shrink-0">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={course.fileUrl} alt={course.title} className="h-full w-full object-cover" />
-                          </div>
-                        )}
-                        <input
-                          type="text"
-                          value={course.title || ""}
-                          onChange={(e) => {
-                            const sec8 = [...(homeObj["section-8"] || [{}])];
-                            const cards = [...(sec8[0].cardItem || [])];
-                            cards[idx] = { ...cards[idx], title: e.target.value };
-                            sec8[0] = { ...sec8[0], cardItem: cards };
-                            updateHome((prev) => ({ ...prev, "section-8": sec8 }));
-                          }}
-                          className="w-full rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-bold outline-none"
-                        />
-                      </div>
-                      <textarea
-                        rows={2}
-                        value={course.description || ""}
-                        onChange={(e) => {
-                          const sec8 = [...(homeObj["section-8"] || [{}])];
-                          const cards = [...(sec8[0].cardItem || [])];
-                          cards[idx] = { ...cards[idx], description: e.target.value };
-                          sec8[0] = { ...sec8[0], cardItem: cards };
-                          updateHome((prev) => ({ ...prev, "section-8": sec8 }));
-                        }}
-                        className="w-full rounded-lg border border-slate-200 px-2.5 py-1 text-xs outline-none"
-                      />
-                      <label className="flex cursor-pointer items-center justify-center gap-1 rounded-lg border border-dashed border-slate-300 bg-slate-50 py-1 text-[11px] font-bold text-[#1a5d9c] hover:bg-blue-50">
-                        <UploadCloud size={13} /> Upload Image
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const url = await uploadImage(file);
-                              if (url) {
-                                const sec8 = [...(homeObj["section-8"] || [{}])];
-                                const cards = [...(sec8[0].cardItem || [])];
-                                cards[idx] = { ...cards[idx], fileUrl: url };
-                                sec8[0] = { ...sec8[0], cardItem: cards };
-                                updateHome((prev) => ({ ...prev, "section-8": sec8 }));
-                              }
-                            }
-                          }}
-                          className="hidden"
-                        />
-                      </label>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -2820,7 +3225,7 @@ export function HomeLayoutEditorModal({
             <div className="space-y-5">
               <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 space-y-4">
                 <h3 className="text-sm font-bold text-[#102a4c] flex items-center gap-2">
-                  <i className="bi bi-person-badge-fill text-[#1a5d9c]" /> Section 9: Best CBSE School / Director Message
+                  <i className="bi bi-person-badge-fill text-[#1a5d9c]" /> Section 8: Best CBSE School / Director Message
                 </h3>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <input
@@ -2858,18 +3263,42 @@ export function HomeLayoutEditorModal({
                   className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none"
                 />
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {/* Director Photo */}
-                  <div className="rounded-xl border border-slate-200 bg-white p-3 space-y-2">
-                    <span className="text-[11px] font-bold text-slate-700 block">Director / Intro Photo</span>
-                    <div className="flex items-center gap-3">
-                      {homeObj["section-9"]?.[0]?.fileUrls?.[0] && (
-                        <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-slate-200 bg-slate-900 shrink-0">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={homeObj["section-9"][0].fileUrls[0]} alt="Director" className="h-full w-full object-cover" />
-                        </div>
-                      )}
-                      <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-xs font-bold text-[#1a5d9c] hover:bg-blue-50">
+                {/* Director Photo */}
+                <div className="rounded-xl border border-slate-200 bg-white p-3 space-y-2">
+                  <span className="text-[11px] font-bold text-slate-700 block">Director / Intro Photo</span>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Image Path / URL (Disabled)</label>
+                    <input
+                      type="text"
+                      value={homeObj["section-9"]?.[0]?.fileUrls?.[0] || ""}
+                      disabled
+                      readOnly
+                      placeholder="No image attached"
+                      className="w-full rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] font-mono text-slate-500 cursor-not-allowed outline-none select-all"
+                    />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {homeObj["section-9"]?.[0]?.fileUrls?.[0] && (
+                      <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-slate-200 bg-slate-900 shrink-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={homeObj["section-9"][0].fileUrls[0]} alt="Director" className="h-full w-full object-cover" />
+                      </div>
+                    )}
+                    <div className="flex flex-1 flex-col gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          openGalleryPicker((url) => {
+                            const sec9 = [...(homeObj["section-9"] || [{}])];
+                            sec9[0] = { ...sec9[0], fileUrls: [url] };
+                            updateHome((prev) => ({ ...prev, "section-9": sec9 }));
+                          }, "Pick Director Photo from Gallery");
+                        }}
+                        className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 py-1.5 text-xs font-bold text-amber-800 hover:bg-amber-100 transition shadow-2xs"
+                      >
+                        <ImageIcon size={13} className="text-amber-600" /> Pick from Gallery
+                      </button>
+                      <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-bold text-[#1a5d9c] hover:bg-blue-50">
                         <UploadCloud size={14} /> Upload Director Photo
                         <input
                           type="file"
@@ -2890,162 +3319,230 @@ export function HomeLayoutEditorModal({
                       </label>
                     </div>
                   </div>
-
-                  {/* Admissions Banner Background */}
-                  <div className="rounded-xl border border-slate-200 bg-white p-3 space-y-2">
-                    <span className="text-[11px] font-bold text-slate-700 block">Admissions Banner Background</span>
-                    <div className="flex items-center gap-3">
-                      {homeObj["section-9"]?.[0]?.bgImageUrl && (
-                        <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-slate-200 bg-slate-900 shrink-0">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={homeObj["section-9"][0].bgImageUrl} alt="Banner Background" className="h-full w-full object-cover" />
-                        </div>
-                      )}
-                      <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-xs font-bold text-[#1a5d9c] hover:bg-blue-50">
-                        <UploadCloud size={14} /> Upload Banner Background
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const url = await uploadImage(file);
-                              if (url) {
-                                const sec9 = [...(homeObj["section-9"] || [{}])];
-                                sec9[0] = { ...sec9[0], bgImageUrl: url };
-                                updateHome((prev) => ({ ...prev, "section-9": sec9 }));
-                              }
-                            }
-                          }}
-                          className="hidden"
-                        />
-                      </label>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* TAB: Section 10 */}
-          {activeTab === "sec10" && (
-            <div className="space-y-5">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-[#102a4c] flex items-center gap-2">
-                    <i className="bi bi-newspaper text-[#1a5d9c]" /> Section 10: News & Notice Board Items ({(homeObj["section-10"]?.[0]?.list || []).length})
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={() => addItemToSection("section-10", { title: "New School Notice / Announcement", createdAt: new Date().toISOString(), redirectUrl: "/news" })}
-                    className="flex items-center gap-1 rounded-xl bg-[#1a5d9c] px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-[#102a4c]"
-                  >
-                    <Plus size={14} /> Add Notice Item
-                  </button>
-                </div>
-
-                <div className="space-y-3">
-                  {(Array.isArray(homeObj["section-10"]?.[0]?.list) ? homeObj["section-10"][0].list : []).map((news: any, idx: number) => (
-                    <div key={idx} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-2xs">
-                      <div className="flex flex-col items-center gap-0.5 shrink-0">
-                        <button type="button" onClick={() => moveItemInSection("section-10", idx, "up")} disabled={idx === 0} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                          <ArrowUp size={12} />
-                        </button>
-                        <button type="button" onClick={() => moveItemInSection("section-10", idx, "down")} disabled={idx === homeObj["section-10"][0].list.length - 1} className="text-slate-400 hover:text-slate-700 disabled:opacity-30">
-                          <ArrowDown size={12} />
-                        </button>
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Notice / Event Title"
-                        value={news.title || ""}
-                        onChange={(e) => {
-                          const sec10 = [...(homeObj["section-10"] || [{}])];
-                          const list = [...(sec10[0].list || [])];
-                          list[idx] = { ...list[idx], title: e.target.value };
-                          sec10[0] = { ...sec10[0], list };
-                          updateHome((prev) => ({ ...prev, "section-10": sec10 }));
-                        }}
-                        className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold outline-none"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Target Link / PDF URL"
-                        value={news.redirectUrl || ""}
-                        onChange={(e) => {
-                          const sec10 = [...(homeObj["section-10"] || [{}])];
-                          const list = [...(sec10[0].list || [])];
-                          list[idx] = { ...list[idx], redirectUrl: e.target.value };
-                          sec10[0] = { ...sec10[0], list };
-                          updateHome((prev) => ({ ...prev, "section-10": sec10 }));
-                        }}
-                        className="w-1/3 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-mono outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => deleteItemFromSection("section-10", idx)}
-                        className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 hover:text-red-700 transition"
-                        title="Delete Notice Item"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB: Raw JSON */}
-          {activeTab === "rawJson" && (
-            <div className="space-y-3">
-              <p className="text-xs font-semibold text-slate-500 flex items-center gap-2">
-                <i className="bi bi-code-slash text-[#1a5d9c]" /> Advanced Raw JSON Schema Editor for all sections
-              </p>
-              <textarea
-                rows={22}
-                value={jsonText}
-                onChange={(e) => setJsonText(e.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-900 p-4 font-mono text-xs text-emerald-400 outline-none leading-relaxed"
-              />
-            </div>
-          )}
         </div>
 
         {/* Modal Footer */}
         <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/80 px-6 py-4">
-          <span className="text-xs text-slate-500 font-medium">
-            Editing <strong className="text-[#1a5d9c]">{activeTab}</strong> — edits update the live datasource instantly.
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-slate-500 font-medium">
+              Editing <strong className="text-[#1a5d9c]">{EDITOR_TABS.find((t) => t.id === activeTab)?.label || activeTab}</strong> — edits update the live datasource instantly.
+            </span>
+            {saveSuccess && (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800 animate-in fade-in duration-200">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                {saveSuccess}
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={onClose}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50"
+              onClick={handleCloseModal}
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
             >
-              Cancel
+              Close
             </button>
             <button
               type="button"
               onClick={handleSave}
-              disabled={saving || uploading}
-              className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2 text-xs font-bold text-white shadow-md hover:bg-emerald-700 disabled:opacity-50"
+              disabled={saving || isSavingLocal || uploading}
+              className={`flex items-center gap-1.5 rounded-xl px-5 py-2 text-xs font-bold text-white shadow-md transition cursor-pointer ${
+                saveSuccess
+                  ? "bg-emerald-700 hover:bg-emerald-800"
+                  : "bg-emerald-600 hover:bg-emerald-700"
+              } disabled:opacity-50`}
             >
-              {saving ? <span className="animate-spin">⏳</span> : null}
-              <span>Save & Publish Layout</span>
+              {saving || isSavingLocal ? <span className="animate-spin">⏳</span> : null}
+              <span>{saveSuccess ? "✓ Saved & Published" : "Save & Publish Layout"}</span>
             </button>
           </div>
         </div>
       </div>
 
+      {/* LIVE POPUP PREVIEW OVERLAY (shows exactly how it will appear on the live site after applying) */}
+      <AnimatePresence>
+        {showLivePopUpPreview && (
+          <div className="fixed inset-0 z-[1000] flex flex-col items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
+            {/* Top Toolbar notification */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1010] bg-slate-900 border border-blue-400/40 text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-3">
+              <span className="flex h-2.5 w-2.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              <span className="text-xs font-extrabold text-blue-100">
+                LIVE SITE PREVIEW MODE (How popup appears after apply)
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowLivePopUpPreview(false)}
+                className="bg-red-600 hover:bg-red-500 text-white font-black text-xs px-3 py-1 rounded-full border border-red-400/40 cursor-pointer shadow-md"
+              >
+                Close Preview
+              </button>
+            </div>
+
+            {/* Backdrop mock web content */}
+            <div
+              className="fixed inset-0 pointer-events-none opacity-30 bg-cover bg-center filter blur-xs"
+              style={{ backgroundImage: `url(${getAssetUrl(currentPopupBanner.imageUrl || "/assets/Settings/Home/POP_UP_IMAGE.jpeg")})` }}
+            />
+
+            {/* Live Popup Banner Preview Component using exact popup code */}
+            <div className="relative z-[1005] w-full max-w-5xl flex items-center justify-center my-auto">
+              {/* Concept 1 */}
+              {(currentPopupBanner.bannerStyle === "concept1" || !currentPopupBanner.bannerStyle) && (
+                <div className="relative w-[92vw] sm:w-[88vw] max-w-5xl h-[88vh] md:h-[80vh] max-h-[92vh] bg-[#070e24]/95 text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border-2 border-blue-400/80 shadow-[0_0_45px_rgba(59,130,246,0.5),inset_0_0_20px_rgba(59,130,246,0.25)] backdrop-blur-xl flex flex-col md:flex-row items-stretch gap-4 sm:gap-6 overflow-y-auto md:overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setShowLivePopUpPreview(false)}
+                    className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 size-8 sm:size-9 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition border border-white/20"
+                  >
+                    <i className="bi bi-x-lg text-xs" />
+                  </button>
+                  <div className="w-full md:w-1/2 h-[42vh] sm:h-[48vh] md:h-full shrink-0 rounded-xl sm:rounded-2xl overflow-hidden bg-slate-950/80 border border-blue-400/30 flex items-center justify-center p-2">
+                    <img src={getAssetUrl(currentPopupBanner.imageUrl || "/assets/Settings/Home/POP_UP_IMAGE.jpeg")} alt="Preview" className="w-full h-full object-contain drop-shadow-xl" />
+                  </div>
+                  <div className="w-full md:w-1/2 flex flex-col justify-center space-y-3 sm:space-y-4 px-1 py-1 md:py-0 overflow-y-auto md:overflow-visible shrink-0 md:shrink">
+                    <span className="text-[10px] sm:text-xs font-black tracking-[0.25em] text-blue-400">ENQUIRY</span>
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-tight font-[var(--font-display)]">{currentPopupBanner.title || "Enquiry"}</h2>
+                    <div className="w-12 sm:w-14 h-1.5 bg-amber-400 rounded-full" />
+                    <p className="text-xs sm:text-sm text-blue-200/90 font-medium">{currentPopupBanner.subtitle || "Indian Public School, Sambalpur"}</p>
+                    <button className="bg-amber-400 text-slate-950 font-black text-xs sm:text-sm px-6 py-3 rounded-full shadow-lg">{currentPopupBanner.enquiryButtonText || "Enquire Now"}</button>
+                  </div>
+                </div>
+              )}
+
+              {/* Concept 2 */}
+              {currentPopupBanner.bannerStyle === "concept2" && (
+                <div className="relative w-[92vw] sm:w-[88vw] max-w-5xl h-[88vh] md:h-[80vh] max-h-[92vh] bg-[#051326] text-white rounded-2xl sm:rounded-3xl border border-blue-400/30 shadow-2xl overflow-y-auto md:overflow-hidden flex flex-col md:flex-row items-stretch">
+                  <div className="w-full md:w-1/2 h-[42vh] sm:h-[48vh] md:h-full bg-slate-950 flex items-center justify-center p-3 shrink-0 border-b md:border-b-0 md:border-r border-blue-900/50">
+                    <img src={getAssetUrl(currentPopupBanner.imageUrl || "/assets/Settings/Home/POP_UP_IMAGE.jpeg")} alt="Preview" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="w-full md:w-1/2 p-5 sm:p-8 bg-[#07162c] flex flex-col justify-center items-center text-center space-y-4 overflow-y-auto flex-1">
+                    <div className="space-y-1 max-w-sm sm:max-w-md mx-auto">
+                      <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-tight font-[var(--font-display)]">{currentPopupBanner.title || "Enquiry"}</h2>
+                      <div className="w-12 h-1 bg-blue-500/80 rounded-full mx-auto my-1" />
+                      {currentPopupBanner.subtitle && <p className="text-xs sm:text-sm text-blue-200/90 font-medium">{currentPopupBanner.subtitle}</p>}
+                    </div>
+                    <div className="w-full max-w-sm sm:max-w-md mx-auto text-left space-y-2.5 [&_form>div:first-child]:grid-cols-1 [&_form>div:first-child]:gap-3 [&_label]:text-blue-100 [&_label]:font-bold [&_label]:text-xs [&_input]:bg-white [&_input]:border-slate-300 [&_input]:text-slate-900 [&_input]:placeholder:text-slate-400 [&_input]:rounded-lg [&_input]:font-medium [&_input]:h-10 [&_textarea]:bg-white [&_textarea]:border-slate-300 [&_textarea]:text-slate-900 [&_textarea]:rounded-lg [&_button[role=combobox]]:bg-white [&_button[role=combobox]]:text-slate-900 [&_button[role=combobox]]:h-10 [&_button[role=combobox]]:rounded-lg">
+                      <AdmissionEnquiryForm onClose={() => setShowLivePopUpPreview(false)} />
+                      <p className="text-[11px] text-blue-200/70 text-center pt-1 font-medium">* Privacy: We respect your details & data privacy.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Concept 3 */}
+              {currentPopupBanner.bannerStyle === "concept3" && (
+                <div className="relative w-[92vw] sm:w-[88vw] max-w-5xl h-[90vh] md:h-[80vh] max-h-[92vh] bg-[#06142a] text-white rounded-2xl sm:rounded-3xl border border-blue-400/40 shadow-2xl overflow-y-auto md:overflow-hidden flex flex-col md:flex-row items-stretch">
+                  <button onClick={() => setShowLivePopUpPreview(false)} className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 size-8 sm:size-9 rounded-full bg-slate-900 text-white flex items-center justify-center border border-white/20"><i className="bi bi-x-lg text-xs" /></button>
+                  <div className="w-full md:w-1/2 h-[32vh] sm:h-[40vh] md:h-full bg-slate-950 flex items-center justify-center p-2 overflow-hidden border-b md:border-b-0 md:border-r border-blue-900/50 shrink-0">
+                    <img src={getAssetUrl(currentPopupBanner.imageUrl || "/assets/Settings/Home/POP_UP_IMAGE.jpeg")} alt="Preview" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-8 bg-[#091b38] flex flex-col justify-start md:justify-center overflow-y-auto flex-1 h-auto md:h-full pb-6">
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white leading-tight">{currentPopupBanner.title || "Enquiry"}</h2>
+                    <p className="text-[11px] sm:text-xs text-blue-200/90 pb-3">{currentPopupBanner.subtitle || "Indian Public School, Sambalpur"}</p>
+                    <div className="bg-[#0b1b36] p-4 sm:p-5 rounded-2xl border border-blue-400/30 shadow-2xl text-white space-y-2.5 sm:space-y-3 [&_label]:text-amber-300 [&_label]:font-extrabold [&_label]:text-xs [&_label]:tracking-wide [&_input]:bg-[#040b1a] [&_input]:border-blue-400/40 [&_input]:text-white [&_input]:placeholder:text-blue-300/40 [&_input]:rounded-xl [&_input]:focus:border-amber-400 [&_input]:focus:ring-2 [&_input]:focus:ring-amber-400/20 [&_textarea]:bg-[#040b1a] [&_textarea]:border-blue-400/40 [&_textarea]:text-white [&_textarea]:placeholder:text-blue-300/40 [&_textarea]:rounded-xl [&_button[role=combobox]]:bg-[#040b1a] [&_button[role=combobox]]:border-blue-400/40 [&_button[role=combobox]]:text-white [&_button[type=submit]]:bg-gradient-to-r [&_button[type=submit]]:from-amber-400 [&_button[type=submit]]:via-yellow-400 [&_button[type=submit]]:to-amber-500 [&_button[type=submit]]:text-slate-950 [&_button[type=submit]]:font-black [&_button[type=submit]]:shadow-lg [&_button[type=submit]]:shadow-amber-500/25 [&_button[type=submit]]:border-0 [&_button[type=submit]]:rounded-xl">
+                      <AdmissionEnquiryForm onSuccess={() => setShowLivePopUpPreview(false)} onClose={() => setShowLivePopUpPreview(false)} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Concept 4 */}
+              {currentPopupBanner.bannerStyle === "concept4" && (
+                <div className="relative w-[92vw] sm:w-[88vw] max-w-5xl h-[88vh] md:h-[80vh] max-h-[92vh] bg-gradient-to-br from-[#060c22] via-[#091536] to-[#040817] text-white rounded-2xl sm:rounded-[32px] p-4 sm:p-6 md:p-9 border-2 border-amber-400/80 shadow-[0_0_55px_rgba(251,191,36,0.4)] backdrop-blur-2xl flex flex-col md:flex-row items-stretch gap-4 sm:gap-8 overflow-y-auto md:overflow-hidden">
+                  <button onClick={() => setShowLivePopUpPreview(false)} className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 size-9 sm:size-10 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400 flex items-center justify-center"><i className="bi bi-x-lg text-xs sm:text-sm" /></button>
+                  <div className="w-full md:w-1/2 h-[42vh] sm:h-[48vh] md:h-full rounded-xl sm:rounded-2xl border-2 border-amber-400/40 bg-slate-950 overflow-hidden flex items-center justify-center p-2 shadow-2xl shrink-0">
+                    <img src={getAssetUrl(currentPopupBanner.imageUrl || "/assets/Settings/Home/POP_UP_IMAGE.jpeg")} alt="Preview" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="w-full md:w-1/2 flex flex-col justify-center space-y-3 sm:space-y-4 px-1 py-1 md:py-0 overflow-y-auto md:overflow-visible shrink-0 md:shrink">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <i className="bi bi-trophy-fill text-amber-400 text-2xl sm:text-3xl drop-shadow-[0_0_12px_rgba(251,191,36,0.8)]" />
+                      <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.25em] text-amber-300">ENQUIRY</span>
+                    </div>
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-tight font-[var(--font-display)]">{currentPopupBanner.title || "Enquiry"}</h2>
+                    <div className="w-14 sm:w-16 h-1.5 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full" />
+                    <p className="text-xs sm:text-sm font-semibold text-amber-100/80">{currentPopupBanner.subtitle || "Build Your Child's Brighter Future"}</p>
+                    <button className="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs sm:text-sm px-6 py-3 rounded-full shadow-lg shadow-amber-500/30">{currentPopupBanner.enquiryButtonText || "Enquire Now"}</button>
+                  </div>
+                </div>
+              )}
+
+              {/* Default Classic Poster Card (card, full-bleed, side-by-side) */}
+              {(currentPopupBanner.bannerStyle === "card" || currentPopupBanner.bannerStyle === "full-bleed" || currentPopupBanner.bannerStyle === "side-by-side") && (
+                <div className="relative w-[92vw] sm:w-[88vw] max-w-5xl h-[88vh] md:h-[80vh] max-h-[90vh] bg-slate-950 text-white rounded-2xl sm:rounded-3xl border border-white/20 shadow-2xl flex flex-col justify-between overflow-hidden">
+                  <div className="w-full flex-1 min-h-0 bg-slate-950 flex items-center justify-center p-2 sm:p-3 overflow-hidden">
+                    <img src={getAssetUrl(currentPopupBanner.imageUrl || "/assets/Settings/Home/POP_UP_IMAGE.jpeg")} alt="Preview" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="shrink-0 bg-slate-900/95 border-t border-slate-800 px-3.5 py-2.5 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
+                    <div>
+                      <h2 className="text-xs sm:text-sm font-extrabold text-white">{currentPopupBanner.title || "Enquiry"}</h2>
+                      <p className="text-[10px] sm:text-[11px] font-bold text-amber-400">{currentPopupBanner.subtitle || "Indian Public School, Sambalpur"}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button className="bg-blue-600 text-white font-extrabold text-xs px-4 py-2 rounded-full">{currentPopupBanner.enquiryButtonText || "Enquire Now"}</button>
+                      <button onClick={() => setShowLivePopUpPreview(false)} className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-extrabold text-xs px-3.5 py-2 rounded-full border border-slate-700">{currentPopupBanner.closeButtonText || "Close"}</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <CloudinaryGalleryModal
-        isOpen={isGalleryOpen}
-        onClose={() => setIsGalleryOpen(false)}
-        onSelectImage={(url) => {
-          if (url) updatePopupBannerField("imageUrl", url);
+        isOpen={isGalleryOpen || Boolean(galleryPickerTarget) || Boolean(galleryPickerCallback)}
+        onClose={() => {
           setIsGalleryOpen(false);
+          setGalleryPickerTarget(null);
+          setGalleryPickerCallback(null);
         }}
-        title="Select Pop-Up Banner Image from Gallery"
+        onSelectImage={(url) => {
+          if (url) {
+            if (galleryPickerCallback) {
+              galleryPickerCallback(url);
+              setGalleryPickerCallback(null);
+            } else if (galleryPickerTarget === "introVideo") {
+              updateHome((prev: any) => {
+                const prevVid = prev["section-video"]?.[0] || {};
+                const prevSec8 = prev["section-8"]?.[0] || {};
+                return {
+                  ...prev,
+                  "section-video": [{ ...prevVid, introFileUrl: url, videoUrl: url }],
+                  "section-8": [{ ...prevSec8, introFileUrl: url, videoUrl: url }],
+                };
+              });
+            } else if (galleryPickerTarget === "videoPoster") {
+              updateHome((prev: any) => {
+                const prevVid = prev["section-video"]?.[0] || {};
+                const prevSec8 = prev["section-8"]?.[0] || {};
+                return {
+                  ...prev,
+                  "section-video": [{ ...prevVid, poster: url, posterUrl: url }],
+                  "section-8": [{ ...prevSec8, poster: url, posterUrl: url }],
+                };
+              });
+            } else {
+              updatePopupBannerField("imageUrl", url);
+            }
+          }
+          setIsGalleryOpen(false);
+          setGalleryPickerTarget(null);
+        }}
+        title={
+          galleryPickerTarget === "introVideo"
+            ? "Select Campus Intro Video from Gallery"
+            : galleryPickerTarget === "videoPoster"
+            ? "Select Video Poster Thumbnail from Gallery"
+            : galleryTitle
+        }
       />
     </div>
   );

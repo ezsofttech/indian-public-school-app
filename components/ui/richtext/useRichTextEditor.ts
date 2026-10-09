@@ -67,6 +67,10 @@ export function useRichTextEditor({
     const [pdfStudioTheme, setPdfStudioTheme] = useState<"light" | "dark" | "banner" | "badge">("light");
     const [pdfStudioMaxHeight, setPdfStudioMaxHeight] = useState(420);
 
+    // Image Frame & Card Studio Modal States
+    const [isFrameStudioOpen, setIsFrameStudioOpen] = useState(false);
+    const [frameStudioImageUrl, setFrameStudioImageUrl] = useState("");
+
     // Link Creator / Hyperlink Modal States
     const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
     const [linkText, setLinkText] = useState("");
@@ -88,6 +92,17 @@ export function useRichTextEditor({
             setPdfStudioTitle(cleanName.charAt(0).toUpperCase() + cleanName.slice(1));
         }
         setIsPdfStudioOpen(true);
+    };
+
+    const openFrameStudio = (url = "") => {
+        if (url) {
+            setFrameStudioImageUrl(url);
+        } else if (selectedImageEl?.src) {
+            setFrameStudioImageUrl(selectedImageEl.src);
+        } else {
+            setFrameStudioImageUrl("");
+        }
+        setIsFrameStudioOpen(true);
     };
 
     const openTableStudio = (tab: "builder" | "csv" = "builder") => {
@@ -389,35 +404,6 @@ export function useRichTextEditor({
             };
 
             checkEmpty();
-
-            const getCleanHtmlFromDoc = (d: Document): string => {
-                const clone = d.body.cloneNode(true) as HTMLElement;
-                clone.querySelectorAll(".wysiwyg-resize-handle, .wysiwyg-block-toolbar").forEach((el) => el.remove());
-                clone.querySelectorAll("figure.wysiwyg-img-container").forEach((fig) => {
-                    const img = fig.querySelector("img");
-                    if (img) {
-                        fig.parentNode?.insertBefore(img, fig);
-                    }
-                    fig.remove();
-                });
-                clone.querySelectorAll(".wysiwyg-selected-block").forEach((el) => el.classList.remove("wysiwyg-selected-block"));
-                clone.querySelectorAll("img.wysiwyg-selected-img").forEach((img) => img.classList.remove("wysiwyg-selected-img"));
-                clone.querySelectorAll("a.wysiwyg-selected-link").forEach((a) => a.classList.remove("wysiwyg-selected-link"));
-                const html = clone.innerHTML;
-                if (html === "<br>") return "";
-
-                const bodyBg = d.body.style.backgroundColor;
-                if (bodyBg && bodyBg !== "transparent" && bodyBg !== "rgba(0, 0, 0, 0)") {
-                    const firstChild = clone.firstElementChild;
-                    if (clone.children.length === 1 && firstChild && firstChild.classList.contains("wysiwyg-page-wrapper")) {
-                        (firstChild as HTMLElement).style.backgroundColor = bodyBg;
-                        return clone.innerHTML;
-                    } else {
-                        return `<div class="wysiwyg-page-wrapper" style="background-color: ${bodyBg}; padding: 24px; border-radius: 16px; min-height: 100%;">${html}</div>`;
-                    }
-                }
-                return html;
-            };
 
             const syncContent = () => {
                 checkEmpty();
@@ -964,26 +950,71 @@ export function useRichTextEditor({
     const applyImageAlignment = (alignment: "left" | "center" | "right" | "full") => {
         const iframe = iframeRef.current;
         const doc = iframe?.contentDocument || iframe?.contentWindow?.document;
-        const target = selectedImageEl || (doc?.querySelector("img.wysiwyg-selected-img") as HTMLImageElement);
+        const target = selectedTableEl || selectedImageEl || selectedBlockEl || (doc?.querySelector("img.wysiwyg-selected-img") as HTMLElement) || (doc?.querySelector(".wysiwyg-selected-block") as HTMLElement);
         if (!target) return;
 
+        const isTable = target.tagName === "TABLE" || !!target.querySelector("table");
+        const tableTarget = (target.tagName === "TABLE" ? target : target.querySelector("table") || target) as HTMLElement;
+
         if (alignment === "left") {
-            target.style.float = "left";
-            target.style.margin = "0 16px 16px 0";
-            target.style.display = "inline-block";
+            if (isTable) {
+                tableTarget.style.float = "left";
+                tableTarget.style.marginLeft = "0";
+                tableTarget.style.marginRight = "auto";
+                tableTarget.style.marginTop = "12px";
+                tableTarget.style.marginBottom = "12px";
+                if (!tableTarget.style.width || tableTarget.style.width === "100%") {
+                    tableTarget.style.width = "auto";
+                }
+            } else {
+                target.style.float = "left";
+                target.style.margin = "0 16px 16px 0";
+                target.style.display = "inline-block";
+            }
         } else if (alignment === "right") {
-            target.style.float = "right";
-            target.style.margin = "0 0 16px 16px";
-            target.style.display = "inline-block";
+            if (isTable) {
+                tableTarget.style.float = "right";
+                tableTarget.style.marginLeft = "auto";
+                tableTarget.style.marginRight = "0";
+                tableTarget.style.marginTop = "12px";
+                tableTarget.style.marginBottom = "12px";
+                if (!tableTarget.style.width || tableTarget.style.width === "100%") {
+                    tableTarget.style.width = "auto";
+                }
+            } else {
+                target.style.float = "right";
+                target.style.margin = "0 0 16px 16px";
+                target.style.display = "inline-block";
+            }
         } else if (alignment === "full") {
             target.style.float = "none";
             target.style.width = "100%";
             target.style.display = "block";
             target.style.margin = "16px 0";
+            target.style.marginLeft = "0";
+            target.style.marginRight = "0";
+            if (isTable) {
+                tableTarget.style.width = "100%";
+                tableTarget.style.display = "table";
+            }
         } else {
-            target.style.float = "none";
-            target.style.display = "block";
-            target.style.margin = "16px auto";
+            if (isTable) {
+                tableTarget.style.float = "none";
+                tableTarget.style.marginLeft = "auto";
+                tableTarget.style.marginRight = "auto";
+                tableTarget.style.marginTop = "16px";
+                tableTarget.style.marginBottom = "16px";
+                tableTarget.style.display = "table";
+                if (!tableTarget.style.width || tableTarget.style.width === "100%") {
+                    tableTarget.style.width = "80%";
+                }
+            } else {
+                target.style.float = "none";
+                target.style.display = "block";
+                target.style.margin = "16px auto";
+                target.style.marginLeft = "auto";
+                target.style.marginRight = "auto";
+            }
         }
         syncIframeToState();
     };
@@ -997,6 +1028,35 @@ export function useRichTextEditor({
             setSelectedImageEl(null);
             syncIframeToState();
         }
+    };
+
+    const getCleanHtmlFromDoc = (d: Document): string => {
+        const clone = d.body.cloneNode(true) as HTMLElement;
+        clone.querySelectorAll(".wysiwyg-resize-handle, .wysiwyg-block-toolbar").forEach((el) => el.remove());
+        clone.querySelectorAll("figure.wysiwyg-img-container").forEach((fig) => {
+            const img = fig.querySelector("img");
+            if (img) {
+                fig.parentNode?.insertBefore(img, fig);
+            }
+            fig.remove();
+        });
+        clone.querySelectorAll(".wysiwyg-selected-block").forEach((el) => el.classList.remove("wysiwyg-selected-block"));
+        clone.querySelectorAll("img.wysiwyg-selected-img").forEach((img) => img.classList.remove("wysiwyg-selected-img"));
+        clone.querySelectorAll("a.wysiwyg-selected-link").forEach((a) => a.classList.remove("wysiwyg-selected-link"));
+        const html = clone.innerHTML;
+        if (html === "<br>") return "";
+
+        const bodyBg = d.body.style.backgroundColor;
+        if (bodyBg && bodyBg !== "transparent" && bodyBg !== "rgba(0, 0, 0, 0)") {
+            const firstChild = clone.firstElementChild;
+            if (clone.children.length === 1 && firstChild && firstChild.classList.contains("wysiwyg-page-wrapper")) {
+                (firstChild as HTMLElement).style.backgroundColor = bodyBg;
+                return clone.innerHTML;
+            } else {
+                return `<div class="wysiwyg-page-wrapper" style="background-color: ${bodyBg}; padding: 24px; border-radius: 16px; min-height: 100%;">${html}</div>`;
+            }
+        }
+        return html;
     };
 
     const syncIframeToState = () => {
@@ -1013,9 +1073,9 @@ export function useRichTextEditor({
         const isEmpty = !hasMediaOrElements && !textContent && isHtmlEmpty;
         doc.body.setAttribute("data-empty", String(isEmpty));
 
-        const currentBodyHtml = doc.body.innerHTML;
+        const cleanHtml = getCleanHtmlFromDoc(doc);
         isInternalChangeRef.current = true;
-        onChange(currentBodyHtml === "<br>" ? "" : currentBodyHtml);
+        onChange(cleanHtml);
     };
 
     const addTableRowAbove = () => {
@@ -1139,11 +1199,26 @@ export function useRichTextEditor({
         const doc = iframe.contentDocument || iframe.contentWindow?.document;
         if (!doc) return;
 
+        if (selectedTableEl && (command === "justifyCenter" || command === "justifyLeft" || command === "justifyRight" || command === "justifyFull")) {
+            const sel = iframe.contentWindow?.getSelection() || doc.getSelection();
+            const selectedText = sel ? sel.toString().trim() : "";
+            if (!selectedText) {
+                const alignMap: Record<string, "left" | "center" | "right" | "full"> = {
+                    justifyLeft: "left",
+                    justifyCenter: "center",
+                    justifyRight: "right",
+                    justifyFull: "full",
+                };
+                if (alignMap[command]) {
+                    applyImageAlignment(alignMap[command]);
+                    return;
+                }
+            }
+        }
+
         iframe.contentWindow?.focus();
         doc.execCommand(command, false, arg);
-        const updatedHtml = doc.body.innerHTML;
-        isInternalChangeRef.current = true;
-        onChange(updatedHtml);
+        syncIframeToState();
     };
 
     const insertHTML = (htmlSnippet: string) => {
@@ -1439,6 +1514,10 @@ export function useRichTextEditor({
     };
 
     const insertComponent = (type: string) => {
+        if (type === "frameCard") {
+            openFrameStudio();
+            return;
+        }
         if (type === "hyperlink") {
             openLinkModal();
             return;
@@ -1553,6 +1632,10 @@ export function useRichTextEditor({
         setEditingAnchorEl,
         // Methods
         openPdfStudio,
+        isFrameStudioOpen,
+        setIsFrameStudioOpen,
+        openFrameStudio,
+        frameStudioImageUrl,
         openTableStudio,
         openDocStudio,
         openLinkModal,

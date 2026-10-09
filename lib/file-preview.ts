@@ -1,12 +1,24 @@
 import { getAssetUrl } from "./utils";
 
-export function isCloudinaryUrl(url?: string | null): boolean {
-  if (!url) return false;
+export function isCloudinaryUrl(url?: any): boolean {
+  if (!url || typeof url !== "string") return false;
   return url.includes("cloudinary.com") || url.includes("res.cloudinary.com");
 }
 
-export function normalizePdfUrl(url?: string | null): string {
+export function normalizePdfUrl(url?: any): string {
   if (!url) return "";
+  if (typeof url !== "string") {
+    if (typeof url === "object" && url !== null) {
+      const extracted = url.url || url.src || url.path || url.secure_url;
+      if (typeof extracted === "string") {
+        url = extracted;
+      } else {
+        return "";
+      }
+    } else {
+      return "";
+    }
+  }
   let clean = url.trim();
 
   // Convert legacy signed Cloudinary download API links to direct Cloudinary CDN URLs

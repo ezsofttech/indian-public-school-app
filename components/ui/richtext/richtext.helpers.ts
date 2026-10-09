@@ -724,8 +724,94 @@ export function getComponentHtmlSnippet(type: string): string {
             return `<span style="background-color: #1a5d9c; color: #ffffff; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; display: inline-block; margin: 0 4px;">Pill Badge</span> `;
         case "grid":
             return `<div style="display: flex; flex-wrap: wrap; gap: 16px; margin: 16px 0;"><div style="flex: 1; min-width: 240px; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px;"><h4 style="margin-top:0; color:#0f172a;">Column 1 Title</h4><p style="margin-bottom:0; color:#475569;">Column 1 details...</p></div><div style="flex: 1; min-width: 240px; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px;"><h4 style="margin-top:0; color:#0f172a;">Column 2 Title</h4><p style="margin-bottom:0; color:#475569;">Column 2 details...</p></div></div><p><br></p>`;
+        case "frameCard":
+            return generateFrameTemplateHtml({ templateStyle: "portrait-badge" });
         default:
             return "";
     }
+}
+
+export function generateFrameTemplateHtml(data: {
+  imageUrl?: string;
+  templateStyle?: "portrait-badge" | "floating-accent" | "modern-gradient" | "polaroid";
+  name?: string;
+  designation?: string;
+  subtitle?: string;
+  accentColor?: string;
+  alignment?: "left" | "center" | "right";
+  maxWidth?: string;
+}): string {
+  const imageUrl = data.imageUrl || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop";
+  const templateStyle = data.templateStyle || "portrait-badge";
+  const name = data.name !== undefined ? data.name : "Mrs. Suman Dalmia";
+  const designation = data.designation !== undefined ? data.designation : "Chairman";
+  const subtitle = data.subtitle !== undefined ? data.subtitle : "Indian Public School";
+  const accentColor = data.accentColor || "#f59e0b";
+  const alignment = data.alignment || "center";
+  const maxWidth = data.maxWidth || (templateStyle === "portrait-badge" ? "380px" : "580px");
+
+  let marginCss = "16px auto";
+  let floatCss = "none";
+  if (alignment === "left") {
+    marginCss = "16px 16px 16px 0";
+    floatCss = "left";
+  } else if (alignment === "right") {
+    marginCss = "16px 0 16px 16px";
+    floatCss = "right";
+  }
+
+  if (templateStyle === "portrait-badge") {
+    return `<div class="wysiwyg-frame-card" style="max-width: ${maxWidth}; width: 100%; margin: ${marginCss}; float: ${floatCss}; position: relative; background: #ffffff; border-radius: 28px; padding: 14px; box-shadow: 0 12px 30px -6px rgba(15, 23, 42, 0.08); border: 1px solid #f1f5f9; box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      <div style="position: absolute; top: -4px; left: -4px; width: 68px; height: 68px; border-top: 4px solid ${accentColor}; border-left: 4px solid ${accentColor}; border-top-left-radius: 28px; pointer-events: none; z-index: 1;"></div>
+      <div style="position: relative; width: 100%; border-radius: 22px; overflow: hidden; background: #f8fafc; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);">
+        <img src="${imageUrl}" alt="${name}" style="width: 100%; max-height: 380px; aspect-ratio: 3/4; object-fit: cover; object-position: top center; display: block; border-radius: 22px; margin: 0; box-shadow: none;" />
+      </div>
+      <div style="position: relative; margin-top: -42px; margin-left: 12px; margin-right: 12px; background: #0b2545; color: #ffffff; border-radius: 20px; padding: 16px 14px; text-align: center; box-shadow: 0 10px 24px -4px rgba(11, 37, 69, 0.35); z-index: 2; border: 1px solid rgba(255,255,255,0.1);">
+        ${name ? `<h4 style="font-size: 1.2rem; font-weight: 800; color: #ffffff; margin: 0; line-height: 1.25; letter-spacing: -0.01em;">${name}</h4>` : ""}
+        ${designation ? `<p style="font-size: 0.82rem; font-weight: 600; color: #93c5fd; margin: 4px 0 0 0; line-height: 1.3;">${designation}</p>` : ""}
+        ${subtitle ? `<p style="font-size: 0.75rem; font-weight: 500; color: #cbd5e1; margin: 2px 0 0 0; opacity: 0.9;">${subtitle}</p>` : ""}
+      </div>
+    </div><p><br></p>`;
+  }
+
+  if (templateStyle === "floating-accent") {
+    return `<div class="wysiwyg-frame-card" style="max-width: ${maxWidth}; width: 100%; margin: ${marginCss}; float: ${floatCss}; position: relative; padding: 18px; box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      <div style="position: absolute; top: 0px; right: 0px; width: 90px; height: 90px; border-radius: 50%; background: #e2e8f0; opacity: 0.65; pointer-events: none; z-index: 0;"></div>
+      <div style="position: absolute; bottom: 0px; left: 0px; width: 100px; height: 100px; border-radius: 32px; background: #fef3c7; opacity: 0.85; pointer-events: none; z-index: 0;"></div>
+      <div style="position: relative; z-index: 1; background: #ffffff; border-radius: 28px; padding: 14px; border: 1px solid #e2e8f0; box-shadow: 0 14px 35px -8px rgba(15, 23, 42, 0.12);">
+        <img src="${imageUrl}" alt="${name}" style="width: 100%; max-height: 380px; object-fit: cover; display: block; border-radius: 20px; margin: 0; box-shadow: none;" />
+        ${(name || designation || subtitle) ? `
+          <div style="margin-top: 14px; padding: 10px 14px; text-align: center; border-top: 1px solid #f1f5f9;">
+            ${name ? `<h4 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0;">${name}</h4>` : ""}
+            ${designation ? `<p style="font-size: 0.85rem; font-weight: 600; color: #2563eb; margin: 3px 0 0 0;">${designation}</p>` : ""}
+            ${subtitle ? `<p style="font-size: 0.75rem; color: #64748b; margin: 2px 0 0 0;">${subtitle}</p>` : ""}
+          </div>
+        ` : ""}
+      </div>
+    </div><p><br></p>`;
+  }
+
+  if (templateStyle === "modern-gradient") {
+    return `<div class="wysiwyg-frame-card" style="max-width: ${maxWidth}; width: 100%; margin: ${marginCss}; float: ${floatCss}; background: #ffffff; border-radius: 24px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08); font-family: system-ui, sans-serif;">
+      <div style="height: 6px; background: linear-gradient(90deg, #102a4c 0%, ${accentColor} 50%, #2563eb 100%);"></div>
+      <div style="padding: 16px;">
+        <img src="${imageUrl}" alt="${name}" style="width: 100%; max-height: 360px; object-fit: cover; display: block; border-radius: 16px; margin: 0;" />
+        ${(name || designation || subtitle) ? `
+          <div style="margin-top: 14px; text-align: left; padding: 4px 6px;">
+            ${name ? `<h4 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0;">${name}</h4>` : ""}
+            ${designation ? `<p style="font-size: 0.85rem; font-weight: 700; color: #1d4ed8; margin: 4px 0 0 0;">${designation}</p>` : ""}
+            ${subtitle ? `<p style="font-size: 0.78rem; color: #64748b; margin: 2px 0 0 0;">${subtitle}</p>` : ""}
+          </div>
+        ` : ""}
+      </div>
+    </div><p><br></p>`;
+  }
+
+  return `<div class="wysiwyg-frame-card" style="max-width: ${maxWidth}; width: 100%; margin: ${marginCss}; float: ${floatCss}; background: #ffffff; border-radius: 18px; border: 1px solid #cbd5e1; padding: 16px 16px 20px 16px; box-shadow: 0 12px 30px rgba(0,0,0,0.1); font-family: system-ui, sans-serif; text-align: center;">
+    <img src="${imageUrl}" alt="${name}" style="width: 100%; max-height: 360px; object-fit: cover; display: block; border-radius: 10px; margin: 0 0 14px 0; border: 1px solid #f1f5f9;" />
+    ${name ? `<h4 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0;">${name}</h4>` : ""}
+    ${designation ? `<p style="font-size: 0.82rem; font-weight: 600; color: #475569; margin: 3px 0 0 0;">${designation}</p>` : ""}
+    ${subtitle ? `<p style="font-size: 0.75rem; color: #94a3b8; margin: 2px 0 0 0;">${subtitle}</p>` : ""}
+  </div><p><br></p>`;
 }
 

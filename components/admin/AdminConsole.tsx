@@ -213,8 +213,19 @@ export function AdminConsole() {
     }
   }, [token]);
 
+  const fetchPublishedPages = useCallback(() => {
+    axios
+      .get(`${API_URL}/pages/published`)
+      .then((res) => {
+        const parsed = asPaginatedPayload(res.data);
+        setPublishedPages(parsed.items);
+      })
+      .catch(() => { });
+  }, []);
+
   const refresh = useCallback(async () => {
     setLoading(true); setError("");
+    fetchPublishedPages();
     const readable = resources.filter((resource) => (resource.key !== "users" || token) && canAccessResource(resource.key));
     const results = await Promise.allSettled(readable.map((resource) => fetchResource(resource.key)));
     const networkFailures = results.filter(
@@ -224,7 +235,7 @@ export function AdminConsole() {
       setError("Cannot connect to backend API server. Check that the API is running on http://localhost:5000.");
     }
     setLoading(false);
-  }, [fetchResource, token, canAccessResource]);
+  }, [fetchResource, token, canAccessResource, fetchPublishedPages]);
 
   // Notification Hook (SOLID Architecture & Smart Load Optimization)
   const {
@@ -252,28 +263,25 @@ export function AdminConsole() {
   const [publishedPages, setPublishedPages] = useState<RecordItem[]>([]);
 
   useEffect(() => {
-    axios
-      .get(`${API_URL}/pages/published`)
-      .then((res) => {
-        const items = Array.isArray(res.data) ? res.data : Array.isArray(res.data?.items) ? res.data.items : [];
-        if (items.length > 0) setPublishedPages(items);
-      })
-      .catch(() => { });
-  }, []);
+    fetchPublishedPages();
+  }, [fetchPublishedPages]);
 
   const combinedPages = useMemo(() => {
     const pageMap = new Map<string, RecordItem>();
     (((fallbackSiteData as any).pages as RecordItem[]) || []).forEach((p) => {
       const id = String(p.slug || p.targetUrl || p._id || p.publicId || "");
-      if (id) pageMap.set(id, p);
-    });
-    (publishedPages || []).forEach((p) => {
-      const id = String(p.slug || p.targetUrl || p._id || p.publicId || "");
-      if (id) pageMap.set(id, p);
+      if (id) pageMap.set(id, { ...p, isPublished: true });
     });
     (data.pages || []).forEach((p) => {
       const id = String(p.slug || p.targetUrl || p._id || p.publicId || "");
       if (id) pageMap.set(id, p);
+    });
+    (publishedPages || []).forEach((p) => {
+      const id = String(p.slug || p.targetUrl || p._id || p.publicId || "");
+      if (id) {
+        const existing = pageMap.get(id) || {};
+        pageMap.set(id, { ...existing, ...p, isPublished: true });
+      }
     });
     return Array.from(pageMap.values());
   }, [data.pages, publishedPages]);
@@ -306,7 +314,7 @@ export function AdminConsole() {
     return axios({ method, url: `${API_URL}/${path}`, data: body, headers: { Authorization: `Bearer ${token}` } });
   };
 
-  const save = async (values: Record<string, unknown>) => {
+  const save = async (values: Record<string, unknown>, options?: { keepOpen?: boolean }) => {
     if (!current) return;
     setSaving(true); setError("");
     try {
@@ -344,20 +352,30 @@ export function AdminConsole() {
         const path = current.key === "menu-items" && id ? `${current.key}/${id}` : editing ? `${current.key}/${id}` : current.key;
         await securedRequest(editing ? "patch" : "post", path, payload);
       }
-      setFormOpen(false); setEditing(null); await fetchResource(current.key);
+      if (!options?.keepOpen) {
+        setFormOpen(false);
+        setEditing(null);
+      }
+      await fetchResource(current.key);
+      if (current.key === "pages") {
+        fetchPublishedPages();
+      }
     } catch (reason) {
       if (axios.isAxiosError(reason)) {
         const data = reason.response?.data as { message?: string | string[] } | undefined;
         const msg = data?.message || reason.message;
         setError(Array.isArray(msg) ? msg.join(", ") : String(msg));
         if (reason.response?.status === 404) {
-          setFormOpen(false);
-          setEditing(null);
+          if (!options?.keepOpen) {
+            setFormOpen(false);
+            setEditing(null);
+          }
           void fetchResource(current.key);
         }
       } else {
         setError(reason instanceof Error ? reason.message : "Unable to save this record.");
       }
+      throw reason;
     }
     finally { setSaving(false); }
   };
@@ -374,6 +392,9 @@ export function AdminConsole() {
       const path = current.key === "users" ? `auth/users/${id}` : `${current.key}/${id}`;
       await securedRequest("delete", path);
       await fetchResource(current.key);
+      if (current.key === "pages") {
+        fetchPublishedPages();
+      }
     } catch (reason) {
       if (axios.isAxiosError(reason)) {
         const data = reason.response?.data as { message?: string | string[] } | undefined;
@@ -418,7 +439,7 @@ export function AdminConsole() {
         </div>
       </div>
       <nav className="flex-1 space-y-5 overflow-y-auto">
-        <button onClick={() => { setActive("overview"); setMobileMenu(false); }} className={`sidebar-link ${active === "overview" ? "sidebar-link-active" : ""}`}><LayoutDashboard size={18} /> Overview</button>
+        <button onClick={() => { setActive("overview"); setMobileMenu(false); }} className={`sidebar-link cursor-pointer ${active === "overview" ? "sidebar-link-active" : ""}`}><LayoutDashboard size={18} /> Overview</button>
         {sectionNames.slice(1).map((section) => {
           const sectionResources = resources.filter((resource) => resourceSections[resource.key] === section && canAccessResource(resource.key));
           if (!sectionResources.length) return null;
@@ -435,7 +456,7 @@ export function AdminConsole() {
                     <button
                       key={resource.key}
                       onClick={() => { setActive(resource.key); setMobileMenu(false); }}
-                      className={`sidebar-link ${active === resource.key ? "sidebar-link-active" : ""}`}
+                      className={`sidebar-link cursor-pointer ${active === resource.key ? "sidebar-link-active" : ""}`}
                     >
                       <Icon size={18} />
                       <span>{resource.label}</span>
@@ -470,15 +491,15 @@ export function AdminConsole() {
                 <p className="text-[10px] font-semibold text-blue-200 uppercase tracking-wider">{currentUser?.role || (isSuperAdmin ? "Super Admin" : "Sub Admin")}</p>
               </div>
             </div>
-            <button onClick={() => setChangePasswordOpen(true)} className="sidebar-link w-full text-xs">
+            <button onClick={() => setChangePasswordOpen(true)} className="sidebar-link cursor-pointer w-full text-xs">
               <KeyRound size={16} /> Change password
             </button>
-            <button onClick={signOut} className="sidebar-link w-full text-xs">
+            <button onClick={signOut} className="sidebar-link cursor-pointer w-full text-xs">
               <LogOut size={16} /> Sign out
             </button>
           </>
         ) : (
-          <button onClick={() => setLoginOpen(true)} className="sidebar-link w-full">
+          <button onClick={() => setLoginOpen(true)} className="sidebar-link cursor-pointer w-full">
             <LogIn size={18} /> Admin sign in
           </button>
         )}

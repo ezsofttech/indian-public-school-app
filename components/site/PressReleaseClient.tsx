@@ -165,7 +165,7 @@ export function PressReleaseClient() {
   }, [lightboxIndex, filteredImages]);
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-24 text-slate-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-background text-foreground pb-24 flex flex-col font-sans">
       {/* Hero Header */}
       <section
         className="relative overflow-hidden py-12 sm:py-16 text-navy-foreground border-b border-[var(--gold)]/30 shadow-2xl"
@@ -243,15 +243,15 @@ export function PressReleaseClient() {
 
         {/* Media Grid */}
         {filteredImages.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center my-12 shadow-sm">
-            <ImageIcon className="mx-auto size-12 text-slate-400 mb-3" />
-            <h3 className="text-lg font-semibold text-slate-800">No press release images found</h3>
-            <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
+          <div className="rounded-2xl border border-border bg-card text-card-foreground p-12 text-center my-12 shadow-sm">
+            <ImageIcon className="mx-auto size-12 text-muted-foreground mb-3" />
+            <h3 className="text-lg font-semibold text-foreground">No press release images found</h3>
+            <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">
               No press releases match your search query &quot;{searchQuery}&quot;. Try resetting your search filter.
             </p>
             <button
               onClick={() => setSearchQuery("")}
-              className="mt-5 rounded-lg bg-gold/20 px-4 py-2 text-xs font-bold text-amber-800 border border-gold/40 hover:bg-gold/30 transition-colors"
+              className="mt-5 rounded-lg bg-gold/20 px-4 py-2 text-xs font-bold text-amber-500 border border-gold/40 hover:bg-gold/30 transition-colors"
             >
               Clear Search
             </button>
@@ -267,9 +267,9 @@ export function PressReleaseClient() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, ease: EASE, delay: (idx % 6) * 0.05 }}
                   onClick={() => setLightboxIndex(globalIdx)}
-                  className="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-gold/60 hover:shadow-xl hover:shadow-gold/10"
+                  className="group relative cursor-pointer overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-gold/60 hover:shadow-xl hover:shadow-gold/10"
                 >
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary/50">
                     <img
                       src={getAssetUrl(img.src)}
                       alt={img.alt}
@@ -283,18 +283,18 @@ export function PressReleaseClient() {
                     </div>
                   </div>
 
-                  <div className="p-4 space-y-2 bg-white">
-                    <div className="flex items-center justify-between text-xs text-amber-700 font-semibold">
+                  <div className="p-4 space-y-2 bg-card text-card-foreground">
+                    <div className="flex items-center justify-between text-xs text-amber-500 font-semibold">
                       <span className="inline-flex items-center gap-1">
                         <Newspaper className="size-3" /> Press Release
                       </span>
                       {img.date && (
-                        <span className="inline-flex items-center gap-1 text-slate-500 font-medium">
+                        <span className="inline-flex items-center gap-1 text-muted-foreground font-medium">
                           <Calendar className="size-3" /> {img.date}
                         </span>
                       )}
                     </div>
-                    <h3 className="line-clamp-2 text-sm font-bold text-slate-900 group-hover:text-amber-700 transition-colors">
+                    <h3 className="line-clamp-2 text-sm font-bold text-foreground group-hover:text-amber-500 transition-colors">
                       {img.title}
                     </h3>
                   </div>
@@ -310,7 +310,7 @@ export function PressReleaseClient() {
             <button
               onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
               disabled={currentPage === 1}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:border-gold/50 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-gold/50 hover:bg-secondary hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="size-4" /> Previous
             </button>
@@ -324,7 +324,7 @@ export function PressReleaseClient() {
                     "size-9 rounded-xl text-sm font-semibold transition-all",
                     page === currentPage
                       ? "bg-gold text-slate-950 shadow-md shadow-gold/20"
-                      : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                      : "bg-card border border-border text-foreground hover:bg-secondary"
                   )}
                 >
                   {page}
@@ -335,7 +335,7 @@ export function PressReleaseClient() {
             <button
               onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:border-gold/50 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-gold/50 hover:bg-secondary hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Next <ChevronRight className="size-4" />
             </button>

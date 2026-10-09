@@ -26,11 +26,12 @@ import { CloudinaryGalleryModal, getFileType } from "@/components/admin/Cloudina
 import { PdfCanvasThumbnail } from "@/components/ui/PdfCanvasThumbnail";
 import { isPdfFile, getCloudinaryInlineViewerUrl } from "@/lib/file-preview";
 import { SmartFileThumbnail } from "@/components/ui/SmartFileThumbnail";
+import { FileUploadProgressLoader, FileUploadStatus } from "@/components/ui/FileUploadProgressLoader";
 import { toCleanRelativeAssetPath, getAssetUrl } from "@/lib/utils";
 import { HomeLayoutEditorModal } from "./HomeLayoutEditorModal";
 import { Resource, RecordItem } from "../types/admin.types";
 import { API_URL, resources } from "../config/admin.config";
-import { isRequiredField, isSuperAdminRole, itemId, titleCase } from "../utils/admin.helpers";
+import { asPaginatedPayload, isRequiredField, isSuperAdminRole, itemId, titleCase } from "../utils/admin.helpers";
 
 export function RecordDialog({
   token,
@@ -53,14 +54,16 @@ export function RecordDialog({
   allMenuItems?: RecordItem[];
   onClose: () => void;
   onClearError?: () => void;
-  onSave: (value: Record<string, unknown>) => void;
+  onSave: (value: Record<string, unknown>, options?: { keepOpen?: boolean }) => void | Promise<void>;
 }) {
-  if (resource.key === "school-settings" && (record?.key === "site_datasource" || !record)) {
+  if (resource.key === "school-settings") {
     return (
       <HomeLayoutEditorModal
         token={token}
         record={record}
         saving={saving}
+        allMenuItems={allMenuItems}
+        allSectionPages={allSectionPages}
         onClose={onClose}
         onSave={onSave}
       />
@@ -94,7 +97,46 @@ export function RecordDialog({
   const [values, setValues] = useState<Record<string, unknown>>(initial);
   const [uploading, setUploading] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string>("");
+  const [uploadStatus, setUploadStatus] = useState<FileUploadStatus>({
+    isUploading: false,
+    progress: 0,
+    step: "preparing",
+  });
   const [galleryPickerField, setGalleryPickerField] = useState<string | null>(null);
+
+  const [publishedPagesState, setPublishedPagesState] = useState<RecordItem[]>([]);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    axios
+      .get(`${API_URL}/pages/published`)
+      .then((res) => {
+        const parsed = asPaginatedPayload(res.data);
+        if (isMounted && Array.isArray(parsed.items) && parsed.items.length > 0) {
+          setPublishedPagesState(parsed.items);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const effectiveSectionPages = React.useMemo(() => {
+    const pageMap = new Map<string, RecordItem>();
+    (allSectionPages || []).forEach((p) => {
+      const id = String(p.slug || p.targetUrl || p._id || p.publicId || "");
+      if (id) pageMap.set(id, p);
+    });
+    (publishedPagesState || []).forEach((p) => {
+      const id = String(p.slug || p.targetUrl || p._id || p.publicId || "");
+      if (id) {
+        const existing = pageMap.get(id) || {};
+        pageMap.set(id, { ...existing, ...p, isPublished: true });
+      }
+    });
+    return Array.from(pageMap.values());
+  }, [allSectionPages, publishedPagesState]);
 
   const setValue = (field: string, value: unknown) => {
     if (onClearError && formError) onClearError();
@@ -104,6 +146,22 @@ export function RecordDialog({
   const handleFileUpload = async (field: string, file: File) => {
     setUploading(field);
     setUploadError("");
+
+    const previewUrl = file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined;
+    const formattedSize = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+
+    setUploadStatus({
+      isUploading: true,
+      field,
+      fileName: file.name,
+      fileSize: formattedSize,
+      fileType: file.type,
+      previewUrl,
+      progress: 5,
+      step: "preparing",
+      stageMessage: "Step 1/3: Reading binary buffer & initializing Cloudinary payload…",
+    });
+
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -124,12 +182,40 @@ export function RecordDialog({
         }
       }
 
+      setUploadStatus((prev) => ({
+        ...prev,
+        progress: 15,
+        step: "uploading",
+        stageMessage: "Step 2/3: Transmitting asset to server & Cloudinary CDN…",
+      }));
+
       const res = await axios.post(`${API_URL}/uploads`, formData, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
           "Content-Type": "multipart/form-data",
         },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const pct = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadStatus((prev) => ({
+              ...prev,
+              progress: Math.min(pct, 95),
+              step: pct >= 95 ? "processing" : "uploading",
+              stageMessage:
+                pct >= 95
+                  ? "Step 3/3: Optimizing asset & generating Cloudinary CDN links…"
+                  : `Step 2/3: Transmitting asset to CDN server (${pct}%)…`,
+            }));
+          }
+        },
       });
+
+      setUploadStatus((prev) => ({
+        ...prev,
+        progress: 98,
+        step: "processing",
+        stageMessage: "Step 3/3: Processing asset & generating Cloudinary response URL…",
+      }));
 
       const data = res.data?.data ?? res.data;
       const rawUrl = data?.url || (Array.isArray(data?.fileUrl) ? data.fileUrl[0] : data?.fileUrl);
@@ -153,10 +239,30 @@ export function RecordDialog({
         }
         return prev;
       });
+
+      setUploadStatus((prev) => ({
+        ...prev,
+        progress: 100,
+        step: "done",
+        stageMessage: "Upload complete! Cloudinary asset synced.",
+      }));
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (err) {
-      setUploadError(axios.isAxiosError(err) ? String(err.response?.data?.message || err.message) : "Failed to upload image to Cloudinary.");
+      const errMsg = axios.isAxiosError(err)
+        ? String(err.response?.data?.message || err.message)
+        : "Failed to upload image to Cloudinary.";
+      setUploadError(errMsg);
+      setUploadStatus((prev) => ({
+        ...prev,
+        step: "error",
+        errorMessage: errMsg,
+        stageMessage: "Upload encountered an error.",
+      }));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     } finally {
       setUploading(null);
+      setUploadStatus({ isUploading: false, progress: 0, step: "preparing" });
     }
   };
 
@@ -195,7 +301,7 @@ export function RecordDialog({
         <div className="flex items-center justify-between border-b border-slate-100 bg-white px-6 py-5 shrink-0 rounded-t-3xl z-20">
           <div>
             <h2 className="font-display text-2xl font-bold text-[#102a4c]">
-              {record ? "Edit" : resource.key === "school-settings" ? "Add / Edit" : "Add"} {resource.label.endsWith("s") ? resource.label.slice(0, -1) : resource.label}
+              {record ? "Edit" : "Add"} {resource.label.endsWith("s") ? resource.label.slice(0, -1) : resource.label}
             </h2>
             <p className="text-sm text-slate-500">Changes are sent to the school API and synced to Cloudinary.</p>
           </div>
@@ -257,6 +363,11 @@ export function RecordDialog({
                         <span>Pick from Cloudinary Gallery</span>
                       </button>
                     </div>
+
+                    {uploadStatus.field === field && (uploadStatus.isUploading || uploadStatus.step === "done" || uploadStatus.step === "error") && (
+                      <FileUploadProgressLoader status={uploadStatus} />
+                    )}
+
                     {(() => {
                       const rawVal = values[field];
                       const fileUrls: string[] = Array.isArray(rawVal)
@@ -379,7 +490,7 @@ export function RecordDialog({
                       className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 pr-9 text-sm font-semibold text-slate-800 outline-none transition hover:border-slate-300 focus:border-[#1a5d9c] focus:ring-2 focus:ring-blue-100 shadow-2xs cursor-pointer"
                     >
                       <option value="">-- None (Root Level 1 Item) --</option>
-                      {(resource.key === "menu-items" ? allMenuItems : allSectionPages)
+                      {(resource.key === "menu-items" ? allMenuItems : effectiveSectionPages)
                         .filter((item) => itemId(item) !== (record ? itemId(record) : ""))
                         .filter(
                           (item, idx, arr) =>
@@ -416,10 +527,13 @@ export function RecordDialog({
 
                     const pagesMap = new Map<string, string>();
                     defaultSitePages.forEach((p) => pagesMap.set(p.url, p.title));
-                    allSectionPages.forEach((p) => {
+                    effectiveSectionPages.forEach((p) => {
                       const isPublished = p.isPublished !== false && p.isPublished !== "false";
                       if (!isPublished) return;
-                      const pageUrl = String(p.targetUrl || (p.slug ? `/pages/${p.slug}` : "")).trim();
+                      let pageUrl = String(p.targetUrl || (p.slug ? `/pages/${p.slug}` : "")).trim();
+                      if (pageUrl && !pageUrl.startsWith("/") && !pageUrl.startsWith("http")) {
+                        pageUrl = `/${pageUrl}`;
+                      }
                       if (pageUrl) {
                         pagesMap.set(pageUrl, String(p.title || pageUrl));
                       }
@@ -463,11 +577,12 @@ export function RecordDialog({
 
                         <input
                           type="text"
-                          required={required}
+                          required={required && !isKnownPage}
+                          disabled={isKnownPage}
                           placeholder="e.g. /pages/about-us or https://external-link.com"
                           value={String(values[field] ?? "")}
                           onChange={(event) => setValue(field, event.target.value)}
-                          className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-medium text-slate-800 outline-none transition focus:border-[#1a5d9c] focus:ring-2 focus:ring-blue-100 shadow-2xs"
+                          className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-medium text-slate-800 outline-none transition focus:border-[#1a5d9c] focus:ring-2 focus:ring-blue-100 shadow-2xs disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
                         />
                         <p className="text-[11px] text-slate-400">
                           Pick a page from the dropdown list, or type a custom internal/external URL above.
@@ -630,22 +745,58 @@ export function RecordDialog({
                 ) : type === "select" ? (
                   (() => {
                     const isGalleryEventType = resource.key === "gallery" && field === "eventType";
+                    const isGalleryDirectory = resource.key === "gallery" && field === "directory";
                     const currentVal = String(values[field] ?? "");
+
+                    const getAutoEventType = (dir: string): string => {
+                      if (!dir) return "";
+                      const clean = dir.trim();
+                      if (clean === "Settings/Icons" || clean.endsWith("/Icons") || clean.toLowerCase() === "icons") return "Icons";
+                      if (clean === "Settings/Logos" || clean.endsWith("/Logos") || clean.toLowerCase() === "logos") return "Logos";
+                      if (clean === "Settings/Home" || clean.endsWith("/Home") || clean.toLowerCase() === "home") return "Home";
+                      if (clean.startsWith("Settings")) return "Settings";
+                      if (clean === "Documents/Admission") return "AdmissionDocuments";
+                      if (clean.startsWith("Documents")) return "Documents";
+                      if (clean.startsWith("Album/")) {
+                        const sub = clean.slice("Album/".length);
+                        if (sub) return sub;
+                      }
+                      if (clean === "Album") return "General";
+                      if (clean === "PressRelease") return "PressRelease";
+                      return clean;
+                    };
+
+                    const getAutoDirectory = (evt: string): string => {
+                      if (!evt) return "";
+                      if (evt === "Icons") return "Settings/Icons";
+                      if (evt === "Logos") return "Settings/Logos";
+                      if (evt === "Home") return "Settings/Home";
+                      if (evt === "Settings") return "Settings/Logos";
+                      if (evt === "Documents") return "Documents/General";
+                      if (evt === "AdmissionDocuments") return "Documents/Admission";
+                      if (evt === "News" || evt === "PressRelease") return "PressRelease";
+                      if (["Events", "Hostel", "Infrastructure", "Empowerment", "Competitions", "Partners", "Achievements", "Reviews", "Awareness", "Sports", "Activities", "Campus", "Arts"].includes(evt)) {
+                        return `Album/${evt}`;
+                      }
+                      if (evt === "General") return "Album";
+                      return evt;
+                    };
+
+                    const handleSelectDirectory = (val: string) => {
+                      setValue("directory", val);
+                      const autoEvt = getAutoEventType(val);
+                      if (autoEvt) {
+                        setValue("eventType", autoEvt);
+                      }
+                    };
 
                     const handleSelectEventType = (val: string) => {
                       setValue("eventType", val);
                       const currentDir = String(values["directory"] ?? "");
-                      if (!currentDir || currentDir === "/album/" || currentDir.startsWith("/album/") || currentDir.startsWith("indian-public-school/assets/")) {
-                        if (val === "Documents") {
-                          setValue("directory", "indian-public-school/assets/Documents");
-                        } else if (val === "News") {
-                          setValue("directory", "indian-public-school/assets/News");
-                        } else if (val === "Infrastructure") {
-                          setValue("directory", "indian-public-school/assets/Infrastructure");
-                        } else if (val === "Settings") {
-                          setValue("directory", "indian-public-school/assets/Settings");
-                        } else {
-                          setValue("directory", `/album/${val}`);
+                      if (!currentDir) {
+                        const autoDir = getAutoDirectory(val);
+                        if (autoDir) {
+                          setValue("directory", autoDir);
                         }
                       }
                     };
@@ -659,7 +810,9 @@ export function RecordDialog({
                           value={currentVal}
                           onChange={(event) => {
                             const val = event.target.value;
-                            if (isGalleryEventType) {
+                            if (isGalleryDirectory) {
+                              handleSelectDirectory(val);
+                            } else if (isGalleryEventType) {
                               handleSelectEventType(val);
                             } else {
                               setValue(field, val);
@@ -682,13 +835,53 @@ export function RecordDialog({
                   })()
                 ) : (
                   <div>
-                    <input
-                      required={required}
-                      type={type}
-                      value={String(values[field] ?? "").slice(0, type === "date" ? 10 : undefined)}
-                      onChange={(event) => setValue(field, type === "number" ? Number(event.target.value) : event.target.value)}
-                      className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm opacity-90 outline-none transition focus:border-[#1a5d9c] focus:ring-2 focus:ring-blue-100"
-                    />
+                    {type === "text" && field.toLowerCase().match(/(url|image|logo|avatar|photo|file|icon|banner|attachment|badge|poster)/i) ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <input
+                            required={required}
+                            type="text"
+                            placeholder="https://res.cloudinary.com/... or /assets/..."
+                            value={String(values[field] ?? "")}
+                            onChange={(event) => setValue(field, event.target.value)}
+                            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-medium outline-none transition focus:border-[#1a5d9c] focus:ring-2 focus:ring-blue-100 shadow-2xs"
+                          />
+                          <label className="inline-flex cursor-pointer items-center gap-1.5 shrink-0 rounded-xl bg-[#1a5d9c] px-3.5 py-2.5 text-xs font-bold text-white hover:bg-[#102a4c] transition shadow-xs">
+                            {uploading === field ? <LoaderCircle size={15} className="animate-spin" /> : <UploadCloud size={15} />}
+                            <span>{uploading === field ? "Uploading…" : "Upload"}</span>
+                            <input
+                              type="file"
+                              accept="image/*,video/*,audio/*,application/pdf,.doc,.docx,.xls,.xlsx"
+                              onChange={(event) => {
+                                const file = event.target.files?.[0];
+                                if (file) void handleFileUpload(field, file);
+                              }}
+                              className="hidden"
+                            />
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setGalleryPickerField(field)}
+                            className="inline-flex items-center gap-1.5 shrink-0 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer shadow-2xs"
+                          >
+                            <ImageIcon size={15} className="text-amber-500" />
+                            <span>Gallery</span>
+                          </button>
+                        </div>
+
+                        {uploadStatus.field === field && (uploadStatus.isUploading || uploadStatus.step === "done" || uploadStatus.step === "error") && (
+                          <FileUploadProgressLoader status={uploadStatus} />
+                        )}
+                      </div>
+                    ) : (
+                      <input
+                        required={required}
+                        type={type}
+                        value={String(values[field] ?? "").slice(0, type === "date" ? 10 : undefined)}
+                        onChange={(event) => setValue(field, type === "number" ? Number(event.target.value) : event.target.value)}
+                        className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm opacity-90 outline-none transition focus:border-[#1a5d9c] focus:ring-2 focus:ring-blue-100 shadow-2xs"
+                      />
+                    )}
                   </div>
                 )}
               </label>

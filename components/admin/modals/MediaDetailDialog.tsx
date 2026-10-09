@@ -131,11 +131,78 @@ export function StructuredDetailValue({
     );
   }
 
-  if (typeof val === "object" && val !== null) {
+  let parsedObj: Record<string, any> | null = null;
+  if (typeof val === "string" && (val.trim().startsWith("{") || val.trim().startsWith("["))) {
+    try {
+      parsedObj = JSON.parse(val);
+    } catch {}
+  } else if (typeof val === "object" && val !== null) {
+    parsedObj = val as Record<string, any>;
+  }
+
+  if (parsedObj && typeof parsedObj === "object") {
+    const entries = Object.entries(parsedObj);
     return (
-      <pre className="max-h-48 overflow-auto rounded-xl bg-slate-950 p-3 text-[11px] text-blue-300 font-mono">
-        {JSON.stringify(val, null, 2)}
-      </pre>
+      <div className="space-y-2 font-sans">
+        {entries.map(([k, v]) => {
+          const isUrlOrPath =
+            typeof v === "string" &&
+            (v.startsWith("http://") ||
+              v.startsWith("https://") ||
+              v.startsWith("/") ||
+              k.toLowerCase().endsWith("url") ||
+              k.toLowerCase().endsWith("logo") ||
+              k.toLowerCase().endsWith("path") ||
+              k.toLowerCase().endsWith("badge"));
+
+          if (isUrlOrPath && typeof v === "string" && v.trim()) {
+            const finalLink = imageUrl(v);
+            return (
+              <div key={k} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-2.5">
+                <SmartFileThumbnail
+                  url={finalLink}
+                  alt={k}
+                  className="h-10 w-10 object-contain rounded-lg border border-slate-200 bg-white p-1 shadow-2xs shrink-0"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] font-bold text-slate-700 capitalize">{titleCase(k)} Preview Link</p>
+                  <a
+                    href={finalLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1a5d9c] hover:underline truncate max-w-full"
+                  >
+                    <span className="truncate">{v}</span>
+                    <ExternalLink size={13} className="shrink-0 text-[#1a5d9c]" />
+                  </a>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div
+              key={k}
+              className="flex items-center justify-between gap-2 rounded-xl bg-slate-50 px-3 py-2 border border-slate-200/60 text-xs"
+            >
+              <span className="font-semibold text-slate-600 capitalize">{titleCase(k)}</span>
+              <span className="font-bold text-slate-800">
+                {typeof v === "boolean" ? (
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[10px] ${
+                      v ? "bg-emerald-100 text-emerald-800" : "bg-slate-200 text-slate-700"
+                    }`}
+                  >
+                    {v ? "Yes" : "No"}
+                  </span>
+                ) : (
+                  String(v ?? "—")
+                )}
+              </span>
+            </div>
+          );
+        })}
+      </div>
     );
   }
 
@@ -175,6 +242,25 @@ export function MediaDetailDialog({
       });
     }
 
+    if (item.value) {
+      let itemValue = item.value;
+      if (typeof itemValue === "string") {
+        try {
+          itemValue = JSON.parse(itemValue);
+        } catch {}
+      }
+      if (itemValue && typeof itemValue === "object") {
+        const vObj = itemValue as Record<string, any>;
+        if (typeof vObj.logoUrl === "string" && vObj.logoUrl) list.push(vObj.logoUrl);
+        if (typeof vObj.secondaryLogoUrl === "string" && vObj.secondaryLogoUrl) list.push(vObj.secondaryLogoUrl);
+        if (typeof vObj.badgeUrl === "string" && vObj.badgeUrl) list.push(vObj.badgeUrl);
+        if (typeof vObj.trustLogoUrl === "string" && vObj.trustLogoUrl) list.push(vObj.trustLogoUrl);
+        if (typeof vObj.partnerLogoUrl === "string" && vObj.partnerLogoUrl) list.push(vObj.partnerLogoUrl);
+        if (typeof vObj.fileUrl === "string" && vObj.fileUrl) list.push(vObj.fileUrl);
+        if (typeof vObj.url === "string" && vObj.url) list.push(vObj.url);
+      }
+    }
+
     if (item.message && typeof item.message === "string") {
       const matched = item.message.match(/https?:\/\/[^\s"'>\)]+/gi) || [];
       matched.forEach((url) => {
@@ -184,7 +270,7 @@ export function MediaDetailDialog({
       });
     }
 
-    return Array.from(new Set(list.filter((s) => s && s.startsWith("http"))));
+    return Array.from(new Set(list.filter((s) => s && (s.startsWith("http") || s.startsWith("/")))));
   };
 
   const urls = getMediaUrls(

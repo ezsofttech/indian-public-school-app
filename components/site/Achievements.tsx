@@ -51,7 +51,7 @@ export function Achievements() {
 
   const cards = rawCards.length
     ? rawCards
-    : CARDS.map((c) => ({ heading: c.title, description: c.text }));
+    : CARDS.map((c) => ({ heading: c.title, title: c.title, description: c.text }));
 
   const activeCard = cards[activeIndex] || cards[0];
   const activeCardRec = activeCard as Record<string, unknown>;
@@ -69,7 +69,10 @@ export function Achievements() {
     sectionImg ||
     fallbackCourseImg;
 
-  const currentTitle = text(activeCard?.heading || section.heading, "Our Courses");
+  const activeCardTitle = text(
+    (activeCardRec?.title || activeCardRec?.heading || activeCardRec?.name) as unknown
+  );
+  const currentTitle = activeCardTitle || text(section.heading, "Our Courses");
 
   return (
     <section className="surface-navy relative overflow-hidden py-20 lg:py-32">
@@ -81,16 +84,16 @@ export function Achievements() {
           tone="dark"
         />
 
-        <div className="mt-14 grid items-center gap-8 lg:grid-cols-12 lg:gap-12">
+        <div className="mt-14 grid items-stretch gap-8 lg:grid-cols-12 lg:gap-12">
           {/* Picture Section */}
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.8, ease: EASE }}
-            className="group relative overflow-hidden rounded-3xl border border-navy-foreground/15 bg-navy-foreground/5 shadow-2xl lg:col-span-5"
+            className="group relative flex h-full w-full flex-col overflow-hidden rounded-3xl border border-navy-foreground/15 bg-navy-foreground/5 shadow-2xl lg:col-span-5"
           >
-            <div className="relative aspect-[4/3] w-full overflow-hidden sm:aspect-[5/4]">
+            <div className="relative h-full min-h-[340px] w-full flex-1 overflow-hidden aspect-[4/3] lg:aspect-auto">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={currentImage}
@@ -126,11 +129,12 @@ export function Achievements() {
             whileInView="show"
             viewport={{ once: true, amount: 0.3 }}
             variants={{ show: { transition: { staggerChildren: 0.1 } } }}
-            className="space-y-3.5 lg:col-span-7"
+            className="space-y-3.5 lg:col-span-7 flex flex-col justify-between"
           >
             {cards.map((c, i) => {
               const isActive = i === activeIndex;
-              const cardTitle = text(c.heading);
+              const rec = c as Record<string, unknown>;
+              const cardTitle = text((rec.title || rec.heading || rec.name) as unknown);
               const cardDesc = text(c.description);
 
               return (
@@ -164,14 +168,16 @@ export function Achievements() {
                     </span>
 
                     <div className="flex-1">
-                      <h3
-                        className={`text-base sm:text-lg font-semibold transition-colors ${
-                          isActive ? "text-gold" : "text-navy-foreground"
-                        }`}
-                      >
-                        {cardTitle}
-                      </h3>
-                      <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-navy-foreground/75 line-clamp-2">
+                      {cardTitle ? (
+                        <h3
+                          className={`text-base sm:text-lg font-semibold transition-colors ${
+                            isActive ? "text-gold" : "text-navy-foreground"
+                          }`}
+                        >
+                          {cardTitle}
+                        </h3>
+                      ) : null}
+                      <p className={`text-xs sm:text-sm leading-relaxed text-navy-foreground/75 line-clamp-2 ${cardTitle ? "mt-1.5" : ""}`}>
                         {cardDesc}
                       </p>
                     </div>

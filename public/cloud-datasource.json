@@ -70,39 +70,7 @@
       "banner": {
         "fileUrls": []
       },
-      "section-1": [
-        {
-          "heading": "About Our School",
-          "subHeading": "Building Confident Learners for a Changing World",
-          "description": [
-            "Indian Public School is a co-educational CBSE school where academic rigour meets genuine care. Our classrooms are designed for enquiry rather than repetition, and our teachers know every child by name, strength and ambition.",
-            "From the earliest years to senior secondary, students are guided to think clearly, speak confidently, collaborate generously and act with integrity."
-          ],
-          "cardItem": [
-            {
-              "icoUrl": "",
-              "heading": "Our Mission",
-              "description": "To nurture curious, compassionate learners through excellent teaching, strong values and real opportunity for every child.",
-              "redirectUrl": "/about-us/mission-vision"
-            },
-            {
-              "icoUrl": "",
-              "heading": "Our Vision",
-              "description": "To be a school where academic excellence, character and creativity grow together — preparing students for a changing world.",
-              "redirectUrl": "/about-us/mission-vision"
-            }
-          ],
-          "btnLinkText": {
-            "text": "Discover Our Story",
-            "url": "/about-us/school-establishment"
-          },
-          "briefCard": [
-            {
-              "heading": "A green, purpose-built campus"
-            }
-          ]
-        }
-      ],
+      "section-1": [],
       "section-2": [
         {
           "count": "1000+",
@@ -2057,43 +2025,7 @@
       "updatedAt": "2026-10-06T16:57:07.814Z"
     }
   ],
-  "reviews": [
-    {
-      "name": "Pradip",
-      "batch": "2020-2022",
-      "createdAt": "2020-09-11T01:43:51.398Z",
-      "rating": 3,
-      "feedback": "Great school. All the teachers we had cares about both academic and personal growth. We have 3 kids so we didn’t just get lucky. It’s a small enough school so kids don’t get lost but big enough to have all the extra curricular activities to keep kids busy and be social. Love, love, love this school."
-    },
-    {
-      "name": "Abhishek Prakash Jha",
-      "batch": "2020-2022",
-      "createdAt": "2020-09-11T01:43:51.398Z",
-      "rating": 5,
-      "feedback": "good School, good environment."
-    },
-    {
-      "name": "Shriyansh Shekhar Lenka",
-      "batch": "2021-2022",
-      "createdAt": "2022-09-11T01:43:51.398Z",
-      "rating": 5,
-      "feedback": "Satisfied with studies and overall performance of the child."
-    },
-    {
-      "name": "Samay Palta Singh",
-      "batch": "2021-2022",
-      "createdAt": "2022-09-11T01:43:51.398Z",
-      "rating": 3,
-      "feedback": "Good studies and good overall performance .Good improvement shown ."
-    },
-    {
-      "name": "Ansh Singh",
-      "batch": "2021-2023",
-      "createdAt": "2023-11-11T01:43:51.398Z",
-      "rating": 5,
-      "feedback": "Studies are good ..... satisfied with the academics and management of the school ."
-    }
-  ],
+  "reviews": [],
   "press-release": [
     {
       "fileUrls": []

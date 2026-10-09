@@ -18,99 +18,6 @@ export interface NewsPost {
   isNew?: boolean;
 }
 
-const DEFAULT_NOTICES: NewsPost[] = [
-  {
-    id: "default-1",
-    type: "Circular",
-    date: "06 Oct 2026",
-    title: "Class X & XII CBSE Board Examination Timetable SEP 2026",
-    text: "Official date sheet, exam center guidelines, and admit card verification schedule for secondary & senior secondary students.",
-    redirectUrl: "/mandatory-disclosure",
-    isNew: true,
-  },
-  {
-    id: "default-2",
-    type: "Event",
-    date: "04 Oct 2026",
-    title: "Inter-House Athletics Meet & Annual Sports Festival 2026",
-    text: "Four houses compete across track, field and relay challenges followed by prize distribution ceremony at school stadium.",
-    redirectUrl: "/life-in-hostel",
-    isNew: true,
-  },
-  {
-    id: "default-3",
-    type: "Admission",
-    date: "01 Oct 2026",
-    title: "Admission Open for Session 2026–27 (Nursery to Class IX)",
-    text: "Online registration forms are open. Parents can also collect prospectus forms from campus administration counters.",
-    redirectUrl: "/admission",
-    isNew: true,
-  },
-  {
-    id: "default-4",
-    type: "Notice",
-    date: "28 Sep 2026",
-    title: "Parent-Teacher Meeting (PTM) for Term-I Performance Review",
-    text: "Mandatory interactive feedback session for Grade VI to XII parents with respective subject teachers and mentors.",
-    redirectUrl: "/parents-teachers-meeting",
-    isNew: false,
-  },
-  {
-    id: "default-5",
-    type: "Academic",
-    date: "25 Sep 2026",
-    title: "Annual Science & STEM Robotics Exhibition Showcase",
-    text: "Student teams present working prototypes on clean energy, water filtration, smart automation, and artificial intelligence.",
-    redirectUrl: "/academics",
-    isNew: false,
-  },
-  {
-    id: "default-6",
-    type: "Update",
-    date: "20 Sep 2026",
-    title: "Inauguration of Smart Coding & Robotics Workstation Lab",
-    text: "New maker lab setup equipped with modern computing hardware and robotics kits for Grade IV and above.",
-    redirectUrl: "/infrastructure",
-    isNew: false,
-  },
-  {
-    id: "default-7",
-    type: "Notice",
-    date: "18 Sep 2026",
-    title: "Quarter-II Tuition & Transport Fee Payment Notice",
-    text: "Parents are requested to settle Quarter-II dues online via student ERP portal or school accounts counter.",
-    redirectUrl: "/fee-structure",
-    isNew: false,
-  },
-  {
-    id: "default-8",
-    type: "Olympiad",
-    date: "15 Sep 2026",
-    title: "National Mathematics & Science Olympiad Registration",
-    text: "Enrollment drive open for students of Class III to XII interested in appearing for competitive Olympiads.",
-    redirectUrl: "/competitions-365-days",
-    isNew: false,
-  },
-  {
-    id: "default-9",
-    type: "Circular",
-    date: "10 Sep 2026",
-    title: "School Transport Route Optimization & Bus Safety Audit",
-    text: "Updated bus route timings and GPS safety features for student transit across Sambalpur regions.",
-    redirectUrl: "/bus-route",
-    isNew: false,
-  },
-  {
-    id: "default-10",
-    type: "Achievement",
-    date: "05 Sep 2026",
-    title: "IPS Recognized as Top CBSE School in Regional Academic Survey",
-    text: "School awarded top honors for scholastic performance, sports facilities, and holistic student growth.",
-    redirectUrl: "/press-release",
-    isNew: false,
-  },
-];
-
 export function NewsEvents() {
   const siteData = useSiteData();
   const sec = firstSection(homeData(siteData), "section-10");
@@ -144,25 +51,11 @@ export function NewsEvents() {
     };
   });
 
-  // Combine DB items with fallback items to guarantee at least 10 items
-  const combinedList: NewsPost[] = [...apiNewsItems];
-  if (combinedList.length < 10) {
-    DEFAULT_NOTICES.forEach((fallback) => {
-      if (
-        combinedList.length < 10 &&
-        !combinedList.some(
-          (ex) => ex.title.toLowerCase().trim() === fallback.title.toLowerCase().trim()
-        )
-      ) {
-        combinedList.push(fallback);
-      }
-    });
-  }
+  const filteredNotices = apiNewsItems;
 
-  const filteredNotices = combinedList;
-
-  // Duplicate items for continuous smooth bottom-to-top loop
-  const displayFeed = filteredNotices.length > 0 ? [...filteredNotices, ...filteredNotices] : [];
+  // Only enable continuous auto-scrolling flow if items cross the viewport window (> 3 items)
+  const shouldScroll = filteredNotices.length > 3;
+  const displayFeed = shouldScroll ? [...filteredNotices, ...filteredNotices] : filteredNotices;
 
   const handleManualScroll = (direction: "up" | "down") => {
     if (!scrollContainerRef.current) return;
@@ -206,24 +99,26 @@ export function NewsEvents() {
           <div className="flex flex-row items-center justify-between border-b border-border pb-4">
             <h3 className="text-base font-bold text-foreground">IPS News &amp; Announcements</h3>
 
-            {/* Manual Up / Down Controls */}
-            <div className="flex items-center rounded-lg border border-border bg-secondary/50 px-1 py-0.5 text-xs text-muted-foreground">
-              <button
-                onClick={() => handleManualScroll("up")}
-                className="px-2 py-0.5 hover:text-foreground transition-colors"
-                title="Scroll Up"
-              >
-                ▲ Up
-              </button>
-              <span className="text-border">|</span>
-              <button
-                onClick={() => handleManualScroll("down")}
-                className="px-2 py-0.5 hover:text-foreground transition-colors"
-                title="Scroll Down"
-              >
-                ▼ Down
-              </button>
-            </div>
+            {/* Manual Up / Down Controls (visible when scrollable) */}
+            {shouldScroll && (
+              <div className="flex items-center rounded-lg border border-border bg-secondary/50 px-1 py-0.5 text-xs text-muted-foreground">
+                <button
+                  onClick={() => handleManualScroll("up")}
+                  className="px-2 py-0.5 hover:text-foreground transition-colors"
+                  title="Scroll Up"
+                >
+                  ▲ Up
+                </button>
+                <span className="text-border">|</span>
+                <button
+                  onClick={() => handleManualScroll("down")}
+                  className="px-2 py-0.5 hover:text-foreground transition-colors"
+                  title="Scroll Down"
+                >
+                  ▼ Down
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Scrolling Feed Viewport */}
@@ -231,14 +126,16 @@ export function NewsEvents() {
             ref={scrollContainerRef}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
-            className="relative h-[480px] overflow-y-auto overflow-x-hidden p-1 pt-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+            className={`relative overflow-y-auto overflow-x-hidden p-1 pt-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent ${
+              shouldScroll ? "h-[480px]" : "max-h-[480px]"
+            }`}
           >
             {filteredNotices.length === 0 ? (
-              <div className="flex h-full flex-col items-center justify-center text-center p-8">
+              <div className="flex min-h-[160px] flex-col items-center justify-center text-center p-8">
                 <p className="text-sm font-semibold text-foreground">No news updates available</p>
               </div>
             ) : (
-              <div className={`space-y-3.5 ${isPaused ? "" : "slow-notice-flow"}`}>
+              <div className={`space-y-3.5 ${shouldScroll && !isPaused ? "slow-notice-flow" : ""}`}>
                 {displayFeed.map((p, index) => {
                   const redirectUrl = p.redirectUrl ? String(p.redirectUrl).trim() : "";
                   const hasLink = Boolean(redirectUrl);
@@ -248,9 +145,8 @@ export function NewsEvents() {
 
                   const cardItem = (
                     <div
-                      className={`group rounded-xl border border-border bg-card p-4 sm:p-5 shadow-xs transition-colors hover:border-primary/40 ${
-                        hasLink ? "cursor-pointer" : ""
-                      }`}
+                      className={`group rounded-xl border border-border bg-card p-4 sm:p-5 shadow-xs transition-colors hover:border-primary/40 ${hasLink ? "cursor-pointer" : ""
+                        }`}
                     >
                       {/* Meta Row: Type Badge + NEW Tag + Visit Symbol + Date */}
                       <div className="flex items-center justify-between gap-2 mb-2">
