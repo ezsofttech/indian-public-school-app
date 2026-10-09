@@ -377,9 +377,9 @@ export function Gallery() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.94 }}
                 transition={{ duration: 0.45, ease: EASE, delay: i * 0.03 }}
-                className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-xl text-left"
+                className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-xl text-left"
               >
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary/50">
                   <img
                     src={img.src}
                     alt={img.alt}
@@ -392,7 +392,7 @@ export function Gallery() {
                   </span>
                 </div>
                 <div className="p-3.5 flex flex-col justify-between flex-1">
-                  <h3 className="line-clamp-1 text-xs font-bold text-slate-800 group-hover:text-primary">
+                  <h3 className="line-clamp-1 text-xs font-bold text-foreground group-hover:text-primary">
                     {img.alt}
                   </h3>
                   <p className="mt-0.5 line-clamp-1 text-[11px] font-medium text-slate-500">

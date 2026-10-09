@@ -4,6 +4,7 @@ import { EASE } from "@/lib/motion-presets";
 import { homeData, text } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { openAdmissionModal } from "@/components/site/AdmissionApplicationModal";
+import { getAssetUrl } from "@/lib/utils";
 
 const ACTIONS = [
   {
@@ -59,6 +60,11 @@ export function QuickActions() {
             const label = text(action.heading, fallback.label);
             const note = text(action.subHeading, fallback.note);
             const href = text(action.redirectUrl, fallback.href);
+
+            const act = action as Record<string, any>;
+            const rawIcon = act.icoUrl || act.iconUrl || act.imageUrl || act.icon;
+            const iconUrl = typeof rawIcon === "string" && rawIcon.trim().length > 0 ? rawIcon.trim() : null;
+
             const isAdmissionAction =
               label.toLowerCase().includes("admission") ||
               label.toLowerCase().includes("enquiry") ||
@@ -91,8 +97,21 @@ export function QuickActions() {
                   transition={{ duration: 0.25, ease: EASE }}
                   className="group flex h-full flex-col gap-3 rounded-2xl bg-secondary/60 p-4 transition-colors hover:bg-accent cursor-pointer"
                 >
-                  <span className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground transition-colors group-hover:bg-gold group-hover:text-gold-foreground">
-                    <Icon className="size-5" />
+                  <span className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground transition-colors group-hover:bg-gold group-hover:text-gold-foreground overflow-hidden">
+                    {iconUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={getAssetUrl(iconUrl)}
+                        alt={label}
+                        className="size-6 object-contain brightness-0 invert group-hover:brightness-0 group-hover:invert-0 transition-all"
+                        onError={(e) => {
+                          // Hide image and fall back if broken URL
+                          (e.target as HTMLElement).style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <Icon className="size-5" />
+                    )}
                   </span>
                   <span>
                     <span className="block text-sm font-semibold">{label}</span>

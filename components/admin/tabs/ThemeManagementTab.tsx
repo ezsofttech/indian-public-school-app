@@ -479,8 +479,8 @@ export function ThemeManagementTab({ token }: ThemeManagementTabProps) {
                             title="Choose Target Portal before applying"
                           >
                             <option value="web">Web Only</option>
-                            <option value="admin">Admin Only</option>
-                            <option value="both">Web & Admin</option>
+                            {/* <option value="admin">Admin Only</option>
+                            <option value="both">Web & Admin</option> */}
                           </select>
                         </div>
 

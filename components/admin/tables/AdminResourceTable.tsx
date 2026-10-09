@@ -27,6 +27,7 @@ import {
   ShieldCheck,
   Sparkles,
   ExternalLink,
+  Image,
 } from "lucide-react";
 import { CloudinaryGalleryModal } from "@/components/admin/CloudinaryGalleryModal";
 import { DEFAULT_LOGO, DEFAULT_SECONDARY_LOGO, imageUrl, isBannerLogoUrl } from "@/lib/site-data";
@@ -34,7 +35,10 @@ import { RecordItem, Resource, PaginationMeta, QueryParamsState } from "../types
 import { API_URL } from "../config/admin.config";
 import { isSuperAdminRole, itemId, formatValue, getPreviewUrl } from "../utils/admin.helpers";
 import { MediaDetailDialog } from "../modals/MediaDetailDialog";
+import { HomePreviewModal } from "../modals/HomePreviewModal";
 import { SmartFileThumbnail } from "@/components/ui/SmartFileThumbnail";
+import { FileUploadProgressLoader, FileUploadStatus } from "@/components/ui/FileUploadProgressLoader";
+import { toCleanRelativeAssetPath } from "@/lib/utils";
 
 function Empty({ text }: { text: string }) {
   return <div className="px-5 py-12 text-center text-sm text-slate-400">{text}</div>;
@@ -236,7 +240,7 @@ export const RESOURCE_FILTERS: Record<string, { label: string; key: string; opti
     { label: "Status", key: "status", options: ["All", "New", "In Progress", "Contacted", "Resolved", "Closed"] },
   ],
   gallery: [
-    { label: "Event Type", key: "eventType", options: ["All", "General", "Settings", "AdmissionDocuments", "Documents", "News", "Campus", "Events", "Sports", "Activities", "Hostel", "Arts", "Awareness", "Celebration", "Academic", "Infrastructure"] },
+    { label: "Event Type", key: "eventType", options: ["All", "General", "Settings", "Icons", "Logos", "Home", "AdmissionDocuments", "Documents", "News", "Campus", "Events", "Sports", "Activities", "Hostel", "Arts", "Awareness", "Celebration", "Academic", "Infrastructure"] },
     {
       label: "Directory",
       key: "directory",
@@ -255,6 +259,7 @@ export const RESOURCE_FILTERS: Record<string, { label: string; key: string; opti
         "PressRelease",
         "Settings/Logos",
         "Settings/Home",
+        "Settings/Icons",
         "Documents/General",
         "Documents/Admission",
         "Student",
@@ -283,10 +288,118 @@ export function HeaderFooterSettingsCard({
   onSaveComplete: () => void;
 }) {
   const [activeTab, setActiveTab] = useState<"logo" | "certified" | "trust" | "partner">("logo");
-  const [galleryPickerField, setGalleryPickerField] = useState<"logoUrl" | "badgeUrl" | "trustLogoUrl" | "partnerLogoUrl" | null>(null);
+  const [galleryPickerField, setGalleryPickerField] = useState<"logoUrl" | "secondaryLogoUrl" | "badgeUrl" | "trustLogoUrl" | "partnerLogoUrl" | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [uploadingSetting, setUploadingSetting] = useState<string | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<FileUploadStatus>({
+    isUploading: false,
+    progress: 0,
+    step: "preparing",
+  });
+
+  const handleDirectSettingFileUpload = async (
+    targetField: "logoUrl" | "secondaryLogoUrl" | "badgeUrl" | "trustLogoUrl" | "partnerLogoUrl",
+    file: File
+  ) => {
+    setUploadingSetting(targetField);
+    setError("");
+
+    const previewUrl = file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined;
+    const formattedSize = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+
+    setUploadStatus({
+      isUploading: true,
+      field: targetField,
+      fileName: file.name,
+      fileSize: formattedSize,
+      fileType: file.type,
+      previewUrl,
+      progress: 5,
+      step: "preparing",
+      stageMessage: "Step 1/3: Reading logo binary buffer & initializing payload…",
+    });
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("album", "Settings");
+      formData.append("folder", "Settings/Logos");
+
+      setUploadStatus((prev) => ({
+        ...prev,
+        progress: 15,
+        step: "uploading",
+        stageMessage: "Step 2/3: Transmitting logo asset to server & Cloudinary CDN…",
+      }));
+
+      const res = await axios.post(`${API_URL}/uploads`, formData, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const pct = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadStatus((prev) => ({
+              ...prev,
+              progress: Math.min(pct, 95),
+              step: pct >= 95 ? "processing" : "uploading",
+              stageMessage:
+                pct >= 95
+                  ? "Step 3/3: Optimizing logo asset & generating CDN response URL…"
+                  : `Step 2/3: Transmitting logo to CDN (${pct}%)…`,
+            }));
+          }
+        },
+      });
+
+      setUploadStatus((prev) => ({
+        ...prev,
+        progress: 98,
+        step: "processing",
+        stageMessage: "Step 3/3: Processing logo & generating clean asset path…",
+      }));
+
+      const data = res.data?.data ?? res.data;
+      const rawUrl = data?.url || (Array.isArray(data?.fileUrl) ? data.fileUrl[0] : data?.fileUrl);
+      if (!rawUrl) throw new Error("No URL returned from upload response.");
+
+      const cleanUrl = toCleanRelativeAssetPath(rawUrl);
+
+      if (targetField === "logoUrl") setSiteLogo((p) => ({ ...p, logoUrl: cleanUrl }));
+      else if (targetField === "secondaryLogoUrl") setSiteLogo((p) => ({ ...p, secondaryLogoUrl: cleanUrl }));
+      else if (targetField === "badgeUrl") setCertifiedBoard((p) => ({ ...p, badgeUrl: cleanUrl }));
+      else if (targetField === "trustLogoUrl") setTrustBoard((p) => ({ ...p, logoUrl: cleanUrl }));
+      else if (targetField === "partnerLogoUrl") setAcademicPartner((p) => ({ ...p, logoUrl: cleanUrl }));
+
+      setUploadStatus((prev) => ({
+        ...prev,
+        progress: 100,
+        step: "done",
+        stageMessage: "Upload complete! Setting logo updated.",
+      }));
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (err: any) {
+      console.error("Setting logo upload failed:", err);
+      const errMsg = axios.isAxiosError(err)
+        ? String(err.response?.data?.message || err.message)
+        : "Failed to upload setting logo.";
+      setError(errMsg);
+      setUploadStatus((prev) => ({
+        ...prev,
+        step: "error",
+        errorMessage: errMsg,
+        stageMessage: "Upload encountered an error.",
+      }));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    } finally {
+      setUploadingSetting(null);
+      setUploadStatus({ isUploading: false, progress: 0, step: "preparing" });
+    }
+  };
 
   const siteDsItem = useMemo(() => items.find((i) => i.key === "site_datasource"), [items]);
   const logoItem = useMemo(() => items.find((i) => i.key === "site_logo"), [items]);
@@ -511,7 +624,7 @@ export function HeaderFooterSettingsCard({
             <h3 className="font-display text-xl font-bold text-[#102a4c]">Header & Footer Branding Settings</h3>
           </div>
           <p className="mt-1 text-xs text-slate-500">
-            Configure School Logo, Certified Board info, and Trust Board details. Applied automatically if present.
+            Configure Certified Board info, Trust Board details, and Academic Partner. Applied automatically if present.
           </p>
         </div>
         <button
@@ -547,7 +660,7 @@ export function HeaderFooterSettingsCard({
           className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${activeTab === "logo" ? "bg-[#102a4c] text-white shadow-xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
         >
-          <UploadCloud size={15} /> School Logo
+          <Image size={15} /> School Logo & Header
         </button>
         <button
           type="button"
@@ -575,50 +688,134 @@ export function HeaderFooterSettingsCard({
         </button>
       </div>
 
-      {/* Tab 1: Logo */}
+      {(uploadStatus.isUploading || uploadStatus.step === "done" || uploadStatus.step === "error") && (
+        <div className="mt-4">
+          <FileUploadProgressLoader status={uploadStatus} />
+        </div>
+      )}
+
+      {/* Tab 1: Logo & Header Branding */}
       {activeTab === "logo" && (
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <div className="mt-5 grid gap-6 sm:grid-cols-2">
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700">Logo Image URL</label>
+              <label className="block text-xs font-bold text-slate-700">Primary Logo Image (Banner / IPS Logo)</label>
               <div className="mt-1 flex items-center gap-2">
                 <input
                   type="text"
-                  placeholder="https://res.cloudinary.com/... or /assets/logo.png"
+                  readOnly
+                  placeholder="/Settings/Logos/IPSLogo.png or BannerLogo.png"
                   value={siteLogo.logoUrl}
                   onChange={(e) => setSiteLogo((p) => ({ ...p, logoUrl: e.target.value }))}
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-[#1a5d9c]"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-100/80 px-3 py-2 text-xs font-medium outline-none text-slate-500 cursor-not-allowed select-all"
                 />
+                <label className="inline-flex cursor-pointer items-center gap-1 shrink-0 rounded-xl bg-[#1a5d9c] px-3 py-2 text-xs font-bold text-white hover:bg-[#102a4c] transition shadow-xs">
+                  {uploadingSetting === "logoUrl" ? <LoaderCircle size={14} className="animate-spin" /> : <UploadCloud size={14} />}
+                  <span>{uploadingSetting === "logoUrl" ? "Uploading…" : "Upload"}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) void handleDirectSettingFileUpload("logoUrl", file);
+                    }}
+                    className="hidden"
+                  />
+                </label>
                 <button
                   type="button"
                   onClick={() => setGalleryPickerField("logoUrl")}
-                  className="inline-flex items-center gap-1 shrink-0 rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer shadow-2xs"
                 >
-                  <UploadCloud size={14} /> Gallery
+                  <Image size={14} className="text-amber-500" />
+                  <span>Gallery</span>
                 </button>
               </div>
             </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700">Secondary / Foundation Logo Image</label>
+              <div className="mt-1 flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  placeholder="/Settings/Logos/AakashFoundationLogo.png"
+                  value={siteLogo.secondaryLogoUrl}
+                  onChange={(e) => setSiteLogo((p) => ({ ...p, secondaryLogoUrl: e.target.value }))}
+                  className="w-full rounded-xl border border-slate-200 bg-slate-100/80 px-3 py-2 text-xs font-medium outline-none text-slate-500 cursor-not-allowed select-all"
+                />
+                <label className="inline-flex cursor-pointer items-center gap-1 shrink-0 rounded-xl bg-[#1a5d9c] px-3 py-2 text-xs font-bold text-white hover:bg-[#102a4c] transition shadow-xs">
+                  {uploadingSetting === "secondaryLogoUrl" ? <LoaderCircle size={14} className="animate-spin" /> : <UploadCloud size={14} />}
+                  <span>{uploadingSetting === "secondaryLogoUrl" ? "Uploading…" : "Upload"}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) void handleDirectSettingFileUpload("secondaryLogoUrl", file);
+                    }}
+                    className="hidden"
+                  />
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setGalleryPickerField("secondaryLogoUrl")}
+                  className="inline-flex items-center gap-1.5 shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer shadow-2xs"
+                >
+                  <Image size={14} className="text-amber-500" />
+                  <span>Gallery</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 pt-1">
+              <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700 select-none">
+                <input
+                  type="checkbox"
+                  checked={siteLogo.showSecondaryLogo !== false}
+                  onChange={(e) => setSiteLogo((p) => ({ ...p, showSecondaryLogo: e.target.checked }))}
+                  className="h-4 w-4 rounded-md border-slate-300 text-[#1a5d9c] focus:ring-[#1a5d9c]"
+                />
+                Show Secondary / Foundation Logo in Header
+              </label>
+            </div>
+
+
           </div>
 
-          <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 p-6 text-center">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">Live Header Preview</span>
-            <div className="flex items-center justify-center gap-3 rounded-2xl bg-white p-4 text-slate-900 shadow-sm border border-slate-200 min-w-[280px]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={imageUrl(siteLogo.logoUrl || DEFAULT_LOGO)}
-                alt="Main Logo"
-                className="h-8 md:h-10 w-auto object-contain"
-                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = imageUrl(DEFAULT_LOGO); }}
-              />
-              <div className="h-6 w-[1.5px] bg-slate-300 rounded-full" aria-hidden="true" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={imageUrl(siteLogo.secondaryLogoUrl || DEFAULT_SECONDARY_LOGO)}
-                alt="Aakash Foundation Logo"
-                className="h-7 md:h-8 w-auto object-contain"
-                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = imageUrl(DEFAULT_SECONDARY_LOGO); }}
-              />
+          <div className="flex flex-col justify-center space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-6">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Live Header Logo Branding Preview</span>
+            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs flex items-center justify-between gap-3 overflow-x-auto">
+              <div className="flex items-center gap-3 shrink-0">
+                {siteLogo.logoUrl ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={imageUrl(siteLogo.logoUrl)}
+                    alt="Primary Logo Preview"
+                    className="h-10 max-h-12 w-auto object-contain"
+                  />
+                ) : (
+                  <div className="font-bold text-sm text-[#102a4c]">
+                    {siteLogo.logoText || "Indian Public School"}
+                  </div>
+                )}
+
+                {siteLogo.showSecondaryLogo !== false && siteLogo.secondaryLogoUrl && (
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="h-7 w-[1.5px] bg-slate-200 rounded-full" />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={imageUrl(siteLogo.secondaryLogoUrl)}
+                      alt="Secondary Logo Preview"
+                      className="h-8 max-h-10 w-auto object-contain"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
+            <p className="text-[11px] text-slate-500 italic">
+              This preview shows how your site logo banner &amp; optional foundation logo will appear in the main navigation bar.
+            </p>
           </div>
         </div>
       )}
@@ -650,16 +847,31 @@ export function HeaderFooterSettingsCard({
               <div className="mt-1 flex items-center gap-2">
                 <input
                   type="text"
+                  readOnly
                   value={certifiedBoard.badgeUrl}
                   onChange={(e) => setCertifiedBoard((p) => ({ ...p, badgeUrl: e.target.value }))}
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-[#1a5d9c]"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-100/80 px-3 py-2 text-xs font-medium outline-none text-slate-500 cursor-not-allowed select-all"
                 />
+                <label className="inline-flex cursor-pointer items-center gap-1 shrink-0 rounded-xl bg-[#1a5d9c] px-3 py-2 text-xs font-bold text-white hover:bg-[#102a4c] transition shadow-xs">
+                  {uploadingSetting === "badgeUrl" ? <LoaderCircle size={14} className="animate-spin" /> : <UploadCloud size={14} />}
+                  <span>{uploadingSetting === "badgeUrl" ? "Uploading…" : "Upload"}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) void handleDirectSettingFileUpload("badgeUrl", file);
+                    }}
+                    className="hidden"
+                  />
+                </label>
                 <button
                   type="button"
                   onClick={() => setGalleryPickerField("badgeUrl")}
-                  className="inline-flex items-center gap-1 shrink-0 rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer shadow-2xs"
                 >
-                  <UploadCloud size={14} /> Gallery
+                  <Image size={14} className="text-amber-500" />
+                  <span>Gallery</span>
                 </button>
               </div>
             </div>
@@ -712,16 +924,31 @@ export function HeaderFooterSettingsCard({
               <div className="mt-1 flex items-center gap-2">
                 <input
                   type="text"
+                  readOnly
                   value={trustBoard.logoUrl}
                   onChange={(e) => setTrustBoard((p) => ({ ...p, logoUrl: e.target.value }))}
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-[#1a5d9c]"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-100/80 px-3 py-2 text-xs font-medium outline-none text-slate-500 cursor-not-allowed select-all"
                 />
+                <label className="inline-flex cursor-pointer items-center gap-1 shrink-0 rounded-xl bg-[#1a5d9c] px-3 py-2 text-xs font-bold text-white hover:bg-[#102a4c] transition shadow-xs">
+                  {uploadingSetting === "trustLogoUrl" ? <LoaderCircle size={14} className="animate-spin" /> : <UploadCloud size={14} />}
+                  <span>{uploadingSetting === "trustLogoUrl" ? "Uploading…" : "Upload"}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) void handleDirectSettingFileUpload("trustLogoUrl", file);
+                    }}
+                    className="hidden"
+                  />
+                </label>
                 <button
                   type="button"
                   onClick={() => setGalleryPickerField("trustLogoUrl")}
-                  className="inline-flex items-center gap-1 shrink-0 rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer shadow-2xs"
                 >
-                  <UploadCloud size={14} /> Gallery
+                  <Image size={14} className="text-amber-500" />
+                  <span>Gallery</span>
                 </button>
               </div>
             </div>
@@ -785,16 +1012,31 @@ export function HeaderFooterSettingsCard({
               <div className="mt-1 flex items-center gap-2">
                 <input
                   type="text"
+                  readOnly
                   value={academicPartner.logoUrl}
                   onChange={(e) => setAcademicPartner((p) => ({ ...p, logoUrl: e.target.value }))}
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-[#1a5d9c]"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-100/80 px-3 py-2 text-xs font-medium outline-none text-slate-500 cursor-not-allowed select-all"
                 />
+                <label className="inline-flex cursor-pointer items-center gap-1 shrink-0 rounded-xl bg-[#1a5d9c] px-3 py-2 text-xs font-bold text-white hover:bg-[#102a4c] transition shadow-xs">
+                  {uploadingSetting === "partnerLogoUrl" ? <LoaderCircle size={14} className="animate-spin" /> : <UploadCloud size={14} />}
+                  <span>{uploadingSetting === "partnerLogoUrl" ? "Uploading…" : "Upload"}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) void handleDirectSettingFileUpload("partnerLogoUrl", file);
+                    }}
+                    className="hidden"
+                  />
+                </label>
                 <button
                   type="button"
                   onClick={() => setGalleryPickerField("partnerLogoUrl")}
-                  className="inline-flex items-center gap-1 shrink-0 rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer shadow-2xs"
                 >
-                  <UploadCloud size={14} /> Gallery
+                  <Image size={14} className="text-amber-500" />
+                  <span>Gallery</span>
                 </button>
               </div>
             </div>
@@ -1184,7 +1426,7 @@ export function ResourceView({
                         {(canEdit || canDelete || isMediaResource || rowPreviewUrl) && (
                           <td className="whitespace-nowrap px-5 py-4">
                             <div className="flex items-center justify-end gap-1">
-                              {rowPreviewUrl && (
+                              {rowPreviewUrl && item.key !== "site_logo" && (
                                 <a
                                   href={rowPreviewUrl}
                                   target="_blank"
@@ -1195,14 +1437,16 @@ export function ResourceView({
                                   <ExternalLink size={16} />
                                 </a>
                               )}
-                              <button
-                                onClick={() => setDetailItem(item)}
-                                className="rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-[#1a5d9c]"
-                                title="View details"
-                              >
-                                <Eye size={16} />
-                              </button>
-                              {canEdit && (
+                              {item.key !== "site_logo" && (
+                                <button
+                                  onClick={() => setDetailItem(item)}
+                                  className="rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-[#1a5d9c]"
+                                  title={item.key === "site_datasource" ? "Preview complete home site layout" : "View details"}
+                                >
+                                  <Eye size={16} />
+                                </button>
+                              )}
+                              {canEdit && item.key !== "site_logo" && (
                                 <button
                                   onClick={() => onEdit(item)}
                                   className="rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-[#1a5d9c]"
@@ -1297,13 +1541,17 @@ export function ResourceView({
       </div>
 
       {detailItem && (
-        <MediaDetailDialog
-          item={detailItem}
-          resource={resource}
-          onClose={() => setDetailItem(null)}
-          onEdit={canEdit ? () => onEdit(detailItem) : undefined}
-          onDelete={canDelete && !(resource.key === "users" && isSuperAdminRole(detailItem.role)) ? () => onDelete(detailItem) : undefined}
-        />
+        detailItem.key === "site_datasource" ? (
+          <HomePreviewModal onClose={() => setDetailItem(null)} />
+        ) : (
+          <MediaDetailDialog
+            item={detailItem}
+            resource={resource}
+            onClose={() => setDetailItem(null)}
+            onEdit={canEdit ? () => onEdit(detailItem) : undefined}
+            onDelete={canDelete && !(resource.key === "users" && isSuperAdminRole(detailItem.role)) ? () => onDelete(detailItem) : undefined}
+          />
+        )
       )}
     </div>
   );

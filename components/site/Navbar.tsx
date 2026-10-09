@@ -87,15 +87,12 @@ export function AnnouncementBar() {
 
   return (
     <div className="surface-navy relative z-40 text-navy-foreground">
-      <div className="container-page flex flex-col items-center justify-between gap-2 py-2.5 text-center sm:flex-row sm:text-left">
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:justify-start">
-          <span className="mr-2 inline-block rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold tracking-wider text-gold-foreground uppercase">
-            NEW
-          </span>
+      <div className="container-page flex items-center justify-center gap-2 py-2.5 text-center">
+        <div className="flex flex-wrap items-center justify-center gap-3 text-center">
           <span className="text-xs sm:text-sm font-semibold text-white/95">{noticeText}</span>
         </div>
       </div>
-    </div >
+    </div>
   );
 }
 
@@ -289,12 +286,12 @@ export function Navbar() {
       className={cn(
         "sticky top-0 z-50 transition-all duration-300",
         scrolled
-          ? "border-b border-slate-200/80 bg-white/95 shadow-[0_4px_25px_rgba(0,0,0,0.06)] backdrop-blur-xl py-1"
-          : "border-b border-slate-100/60 bg-white/90 shadow-soft backdrop-blur-md py-1.5"
+          ? "border-b border-border/80 bg-background/95 shadow-[0_4px_25px_rgba(0,0,0,0.06)] backdrop-blur-xl py-1"
+          : "border-b border-border/60 bg-background/90 shadow-soft backdrop-blur-md py-1.5"
       )}
     >
       <nav className="container-page flex h-16 sm:h-20 items-center justify-between gap-4 py-2">
-        <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
+        <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0 transition-all duration-300 dark:bg-white/95 dark:px-3 dark:py-1.5 dark:rounded-2xl dark:border dark:border-white/20 dark:shadow-md dark:backdrop-blur-md">
           <Link href="/" onClick={(e) => handleNavClick("/", e)} className="group flex items-center gap-3 shrink-0">
             {customLogoUrl && !logoError ? (
               <img
@@ -328,7 +325,7 @@ export function Navbar() {
 
           {showSecondaryLogo && secondaryLogoUrl && !secondaryLogoError && (
             <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
-              <div className="h-6 sm:h-7 w-[1.5px] bg-slate-300/80 rounded-full shrink-0" aria-hidden="true" />
+              <div className="h-6 sm:h-7 w-[1.5px] bg-border dark:bg-slate-300/80 rounded-full shrink-0" aria-hidden="true" />
               <Link href="/#about" onClick={(e) => handleNavClick("/#about", e)} className="group flex items-center transition-all hover:opacity-95 shrink-0" title="Aakash Educational Partner / Foundation">
                 <img
                   src={secondaryLogoUrl}

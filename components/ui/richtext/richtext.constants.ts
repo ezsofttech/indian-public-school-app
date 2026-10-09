@@ -40,6 +40,13 @@ import {
 
 export const TOOLBOX_COMPONENTS = [
   {
+    id: "frameCard",
+    title: "Image Frame & Card Studio",
+    subtitle: "Portrait badge card, floating accent & polaroid templates",
+    icon: LayoutTemplate,
+    color: "bg-amber-600 text-white",
+  },
+  {
     id: "hyperlink",
     title: "Hyperlink & Action Button",
     subtitle: "Write text with link & button style",

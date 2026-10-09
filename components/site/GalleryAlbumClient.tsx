@@ -427,7 +427,7 @@ export function GalleryAlbumClient({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-24 pt-8">
+    <div className="min-h-screen bg-background text-foreground pb-24 pt-8">
       {/* Page Header Banner */}
       <section
         className="relative overflow-hidden py-16 text-navy-foreground lg:py-20"
@@ -481,10 +481,10 @@ export function GalleryAlbumClient({
       {/* Filter Controls & Content Area */}
       <section id="gallery-section" className="container-page mt-10">
         {/* Search & Categories Bar */}
-        <div className="flex flex-col gap-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-6 rounded-2xl border border-border bg-card text-card-foreground p-5 shadow-sm md:flex-row md:items-center md:justify-between">
           {/* Category Tabs */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="mr-2 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+            <span className="mr-2 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               <Filter className="size-3.5" />
               Category:
             </span>
@@ -509,11 +509,11 @@ export function GalleryAlbumClient({
                     "relative rounded-xl px-3.5 py-2 text-xs font-semibold transition-all duration-200",
                     activeCategory === cat
                       ? "bg-primary text-primary-foreground shadow-md"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900"
+                      : "bg-secondary text-foreground hover:bg-secondary/80"
                   )}
                 >
                   <span>{cat}</span>
-                  <span className={cn("ml-1.5 rounded-md px-1.5 py-0.5 text-[10px]", activeCategory === cat ? "bg-white/20 text-white" : "bg-slate-200 text-slate-600")}>
+                  <span className={cn("ml-1.5 rounded-md px-1.5 py-0.5 text-[10px]", activeCategory === cat ? "bg-white/20 text-white" : "bg-background/80 text-muted-foreground")}>
                     {count}
                   </span>
                 </button>
@@ -523,19 +523,19 @@ export function GalleryAlbumClient({
 
           {/* Search Box */}
           <div className="relative min-w-[240px]">
-            <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search albums & photos..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
+              className="w-full rounded-xl border border-border bg-secondary/50 pl-10 pr-4 py-2 text-xs text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-primary focus:bg-card focus:ring-2 focus:ring-primary/20"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <X className="size-3.5" />
               </button>
@@ -545,7 +545,7 @@ export function GalleryAlbumClient({
 
         {/* Loading Indicator */}
         {loading && (
-          <div className="mt-12 flex flex-col items-center justify-center py-12 text-slate-500">
+          <div className="mt-12 flex flex-col items-center justify-center py-12 text-muted-foreground">
             <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
             <p className="mt-3 text-xs font-medium">Loading high quality photo albums...</p>
           </div>
@@ -565,10 +565,10 @@ export function GalleryAlbumClient({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.3, ease: EASE, delay: Math.min(pageIdx * 0.02, 0.3) }}
-                    className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                    className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                   >
                     <div
-                      className="relative aspect-4/3 w-full cursor-pointer overflow-hidden bg-slate-100"
+                      className="relative aspect-4/3 w-full cursor-pointer overflow-hidden bg-secondary/50"
                       onClick={() => setLightboxIndex(globalIndex)}
                     >
                       <img
@@ -593,12 +593,12 @@ export function GalleryAlbumClient({
                     </div>
 
                     {/* Album Caption Footer */}
-                    <div className="flex flex-1 flex-col justify-between p-4">
+                    <div className="flex flex-1 flex-col justify-between p-4 bg-card text-card-foreground">
                       <div>
-                        <h3 className="line-clamp-1 text-xs font-bold text-slate-800 group-hover:text-primary">
+                        <h3 className="line-clamp-1 text-xs font-bold text-foreground group-hover:text-primary">
                           {img.alt}
                         </h3>
-                        <p className="mt-1 line-clamp-1 text-[11px] font-medium text-slate-500">
+                        <p className="mt-1 line-clamp-1 text-[11px] font-medium text-muted-foreground">
                           Album: {img.album}
                         </p>
                       </div>
@@ -612,23 +612,23 @@ export function GalleryAlbumClient({
 
         {/* Pagination Bar */}
         {!loading && totalItems > 0 && (
-          <div className="mt-12 flex flex-col items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-xs sm:flex-row sm:px-6">
-            <div className="flex items-center gap-3 text-xs text-slate-600">
+          <div className="mt-12 flex flex-col items-center justify-between gap-4 rounded-2xl border border-border bg-card text-card-foreground p-4 shadow-xs sm:flex-row sm:px-6">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
               <span>
-                Showing <strong className="font-semibold text-slate-900">{Math.min((currentPage - 1) * pageSize + 1, totalItems)}</strong> to{" "}
-                <strong className="font-semibold text-slate-900">{Math.min(currentPage * pageSize, totalItems)}</strong> of{" "}
-                <strong className="font-semibold text-slate-900">{totalItems}</strong> photos
+                Showing <strong className="font-semibold text-foreground">{Math.min((currentPage - 1) * pageSize + 1, totalItems)}</strong> to{" "}
+                <strong className="font-semibold text-foreground">{Math.min(currentPage * pageSize, totalItems)}</strong> of{" "}
+                <strong className="font-semibold text-foreground">{totalItems}</strong> photos
               </span>
-              <span className="hidden sm:inline text-slate-300">|</span>
+              <span className="hidden sm:inline text-border">|</span>
               <div className="hidden sm:flex items-center gap-1.5">
-                <span className="text-slate-500">Per page:</span>
+                <span className="text-muted-foreground">Per page:</span>
                 <select
                   value={pageSize}
                   onChange={(e) => {
                     setPageSize(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-700 outline-none focus:border-primary"
+                  className="rounded-lg border border-border bg-secondary px-2 py-1 text-xs font-semibold text-foreground outline-none focus:border-primary"
                 >
                   <option value={12}>12</option>
                   <option value={24}>24</option>
@@ -646,7 +646,7 @@ export function GalleryAlbumClient({
                   const el = document.getElementById("gallery-section");
                   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
-                className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition-all hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex items-center gap-1 rounded-xl border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground transition-all hover:bg-secondary disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="size-4" />
                 <span>Previous</span>
@@ -660,7 +660,7 @@ export function GalleryAlbumClient({
                     const showEllipsis = prev && p - prev > 1;
                     return (
                       <div key={p} className="flex items-center gap-1">
-                        {showEllipsis && <span className="px-1 text-xs text-slate-400">...</span>}
+                        {showEllipsis && <span className="px-1 text-xs text-muted-foreground">...</span>}
                         <button
                           type="button"
                           onClick={() => {
@@ -672,7 +672,7 @@ export function GalleryAlbumClient({
                             "flex size-8 items-center justify-center rounded-xl text-xs font-semibold transition-all",
                             currentPage === p
                               ? "bg-primary text-primary-foreground shadow-sm"
-                              : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                              : "border border-border bg-card text-foreground hover:bg-secondary"
                           )}
                         >
                           {p}
@@ -690,7 +690,7 @@ export function GalleryAlbumClient({
                   const el = document.getElementById("gallery-section");
                   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
-                className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition-all hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex items-center gap-1 rounded-xl border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground transition-all hover:bg-secondary disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <span>Next</span>
                 <ChevronRight className="size-4" />

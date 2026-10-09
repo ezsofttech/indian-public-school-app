@@ -26,7 +26,7 @@ import {
 
 const schema = z.object({
   fullName: z.string().min(2, "Please enter your full name"),
-  phone: z.string().regex(/^[0-9+\-\s]{8,15}$/, "Enter a valid phone number"),
+  phone: z.string().regex(/^\d{10}$/, "Contact number must be 10 digits (numbers only)"),
   inquiryType: z.string().min(1, "Select enquiry type"),
   email: z.string().email("Enter a valid email address"),
 });
@@ -117,23 +117,23 @@ export function AdmissionEnquiryForm({
           className="py-8 text-center space-y-4"
         >
           <div className="space-y-2">
-            <h3 className="text-2xl font-extrabold text-foreground font-[var(--font-display)]">
+            <h3 className="text-2xl font-extrabold text-white dark:text-white font-[var(--font-display)] drop-shadow-sm">
               Enquiry Received Successfully
             </h3>
-            <p className="mx-auto max-w-md text-sm font-medium leading-relaxed text-muted-foreground">
+            <p className="mx-auto max-w-md text-sm font-semibold leading-relaxed text-blue-100 dark:text-blue-100">
               Thank you! Your inquiry has been logged with our admissions desk. Our team will reach out to you shortly.
             </p>
           </div>
 
           {inquiryId && (
             <div
-              className="mx-auto max-w-xs border border-[var(--primary)]/20 bg-[var(--primary)]/5 p-3 space-y-0.5"
+              className="mx-auto max-w-xs border border-blue-400/40 bg-slate-900/90 p-4 space-y-1 shadow-2xl backdrop-blur-md"
               style={{ borderRadius: "var(--card-radius, 1rem)" }}
             >
-              <span className="block text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">
+              <span className="block text-[11px] font-extrabold uppercase tracking-widest text-amber-300">
                 Reference ID
               </span>
-              <span className="font-mono text-base font-bold text-foreground">
+              <span className="font-mono text-lg font-black text-white tracking-wider block">
                 {inquiryId}
               </span>
             </div>
@@ -142,7 +142,7 @@ export function AdmissionEnquiryForm({
           <div className="pt-2 flex items-center justify-center gap-3">
             <Button
               variant="outline"
-              className="border-border font-bold text-[var(--primary)] hover:bg-[var(--primary)]/10"
+              className="border-slate-300 bg-white font-extrabold text-slate-900 hover:bg-slate-100 shadow-md cursor-pointer"
               style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
               onClick={() => {
                 form.reset();
@@ -154,7 +154,7 @@ export function AdmissionEnquiryForm({
             {onClose && (
               <Button
                 onClick={onClose}
-                className="bg-[var(--primary)] px-6 font-bold text-[var(--primary-foreground)] hover:bg-[var(--navy)]"
+                className="bg-[#1a5d9c] hover:bg-blue-600 px-6 font-extrabold text-white shadow-md cursor-pointer border border-blue-400/30"
                 style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
               >
                 Done
@@ -201,11 +201,16 @@ export function AdmissionEnquiryForm({
                       <FormControl>
                         <Input
                           type="tel"
-                          inputMode="tel"
-                          placeholder="e.g. +91 9876543210"
+                          inputMode="numeric"
+                          maxLength={10}
+                          placeholder="e.g. 9876543210"
                           className="h-11 border-border bg-secondary/40 text-sm font-medium text-foreground focus:bg-card focus:border-[var(--primary)]"
                           style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                           {...field}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, "");
+                            field.onChange(val);
+                          }}
                         />
                       </FormControl>
                       <FormMessage className="text-[11px]" />
@@ -268,14 +273,37 @@ export function AdmissionEnquiryForm({
                 />
               </div>
 
-              <Button
-                type="submit"
-                disabled={submitting}
-                className="mt-2 h-12 w-full cursor-pointer bg-[var(--primary)] text-sm font-extrabold text-[var(--primary-foreground)] shadow-md transition-all hover:bg-[var(--navy)]"
-                style={{ borderRadius: "var(--btn-radius, 1rem)" }}
-              >
-                {submitting ? "Submitting..." : "Submit Admission Enquiry"}
-              </Button>
+              {onClose ? (
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <Button
+                    type="submit"
+                    disabled={submitting}
+                    className="h-12 cursor-pointer bg-[#1a5d9c] hover:bg-blue-600 text-xs sm:text-sm font-extrabold text-white shadow-lg border border-blue-400/30 transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                    style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
+                  >
+                    <i className="bi bi-pencil-square text-xs" />
+                    <span>{submitting ? "Submitting..." : "ENQUIRE NOW"}</span>
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={onClose}
+                    className="h-12 cursor-pointer bg-[#942b3b] hover:bg-rose-700 text-xs sm:text-sm font-extrabold text-white shadow-lg border border-rose-500/30 transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                    style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
+                  >
+                    <i className="bi bi-x-circle text-xs" />
+                    <span>CLOSE</span>
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  className="mt-2 h-12 w-full cursor-pointer bg-[var(--primary)] text-sm font-extrabold text-[var(--primary-foreground)] shadow-md transition-all hover:bg-[var(--navy)]"
+                  style={{ borderRadius: "var(--btn-radius, 1rem)" }}
+                >
+                  {submitting ? "Submitting..." : "Submit Admission Enquiry"}
+                </Button>
+              )}
             </form>
           </Form>
         </motion.div>

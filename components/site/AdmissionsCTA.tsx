@@ -1,13 +1,11 @@
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { Download, MessageSquare, PenLine } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { EASE } from "@/lib/motion-presets";
 import {
-  DEFAULT_HERO_IMAGE,
   firstSection,
   homeData,
-  imageUrl,
   text,
   textList,
 } from "@/lib/site-data";
@@ -16,28 +14,8 @@ import { openAdmissionModal } from "@/components/site/AdmissionApplicationModal"
 
 export function AdmissionsCTA() {
   const section = firstSection(homeData(useSiteData()), "section-9");
-  const rawBg =
-    (typeof section.bgImageUrl === "string" && section.bgImageUrl) ||
-    (typeof section.bgImage === "string" && section.bgImage) ||
-    "";
-  const backgroundImage = rawBg ? imageUrl(rawBg) : DEFAULT_HERO_IMAGE;
-  const reduced = useReducedMotion();
   return (
-    <section id="admissions" className="relative isolate overflow-hidden">
-      {backgroundImage ? (
-        <motion.img
-          src={backgroundImage}
-          alt=""
-          aria-hidden
-          loading="lazy"
-          initial={{ scale: 1.15 }}
-          whileInView={{ scale: reduced ? 1.15 : 1 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 1.6, ease: EASE }}
-          className="absolute inset-0 -z-20 size-full object-cover"
-        />
-      ) : null}
-      <div className="absolute inset-0 -z-10 bg-navy-deep/88" aria-hidden />
+    <section id="admissions" className="relative isolate overflow-hidden bg-navy-deep">
 
       <div className="container-page py-20 text-center lg:py-32">
         <motion.span

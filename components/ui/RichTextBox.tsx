@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 
 import { PdfStudioModal } from "./richtext/PdfStudioModal";
+import { FrameStudioModal } from "./richtext/FrameStudioModal";
 import { TableStudioModal } from "./richtext/TableStudioModal";
 import { DocStudioModal } from "./richtext/DocStudioModal";
 import { LinkStudioModal } from "./richtext/LinkStudioModal";
@@ -195,6 +196,7 @@ export function RichTextBox({
                             updateBlockBgColor={editor.updateBlockBgColor}
                             updatePageBgColor={editor.updatePageBgColor}
                             setIsGalleryOpen={editor.setIsGalleryOpen}
+                            openFrameStudio={editor.openFrameStudio}
                             deleteSelectedImage={editor.deleteSelectedImage}
                             openLinkModal={editor.openLinkModal}
                             removeHyperlink={editor.removeHyperlink}
@@ -303,6 +305,15 @@ export function RichTextBox({
                         editor.insertHTML(htmlSnippet);
                     }
                 }}
+            />
+
+            {/* Image Frame & Card Studio Modal */}
+            <FrameStudioModal
+                isOpen={editor.isFrameStudioOpen}
+                initialImageUrl={editor.frameStudioImageUrl}
+                onClose={() => editor.setIsFrameStudioOpen(false)}
+                onOpenGallery={() => editor.setIsGalleryOpen(true)}
+                onInsertHtml={editor.insertHTML}
             />
 
             {/* PDF Card Customizer Studio Modal */}

@@ -55,7 +55,7 @@ const API_BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000
 // Validation Schemas
 const inquirySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  contact: z.string().regex(/^[0-9+\-\s()]{8,15}$/, "Enter a valid contact phone number"),
+  contact: z.string().regex(/^\d{10}$/, "Contact number must be 10 digits (numbers only)"),
   email: z.string().email("Enter a valid email address"),
   inquiryType: z.string().min(1, "Please select an inquiry type"),
   subject: z.string().optional(),
@@ -64,11 +64,9 @@ const inquirySchema = z.object({
 
 const feedbackSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  contact: z.string().regex(/^[0-9+\-\s()]{8,15}$/, "Enter a valid contact phone number"),
-  email: z.string().email("Enter a valid email address"),
-  category: z.string().min(1, "Please select feedback category"),
+  batch: z.string().optional(),
   rating: z.number().min(1, "Please select a star rating").max(5),
-  message: z.string().min(10, "Please provide detailed feedback").max(1000, "Maximum 1000 characters"),
+  message: z.string().min(5, "Please provide detailed feedback").max(1000, "Maximum 1000 characters"),
 });
 
 type InquiryFormValues = z.infer<typeof inquirySchema>;
@@ -114,7 +112,7 @@ export function ContactUsView() {
     : configuredEmbedUrl;
 
   // Active Tab state
-  const [activeFormTab, setActiveFormTab] = useState<"inquiry" | "feedback">("inquiry");
+  const [activeFormTab, setActiveFormTab] = useState<"inquiry" | "feedback">("feedback");
 
   // Submission Status States
   const [submittedResult, setSubmittedResult] = useState<{
@@ -148,9 +146,7 @@ export function ContactUsView() {
     resolver: zodResolver(feedbackSchema),
     defaultValues: {
       name: "",
-      contact: "",
-      email: "",
-      category: "General Feedback",
+      batch: "",
       rating: 5,
       message: "",
     },
@@ -193,41 +189,27 @@ export function ContactUsView() {
   // Handle Feedback Form Submission
   const onFeedbackSubmit = async (values: FeedbackFormValues) => {
     try {
-      // 1. Save to Inquiries API under inquiryType: "Feedback"
-      const res = await axios.post(`${API_BASE_URL}/inquiries`, {
+      const res = await axios.post(`${API_BASE_URL}/reviews`, {
         name: values.name,
-        contact: values.contact,
-        email: values.email,
-        inquiryType: `Feedback (${values.category})`,
-        message: `Rating: ${values.rating}/5 Stars\nCategory: ${values.category}\nFeedback: ${values.message}`,
+        batch: values.batch || "School Community",
+        rating: Number(values.rating) || 5,
+        feedback: values.message,
+        isApproved: true,
       });
-
-      // 2. Also save to Reviews API if available
-      try {
-        await axios.post(`${API_BASE_URL}/reviews`, {
-          name: values.name,
-          email: values.email,
-          rating: values.rating,
-          review: values.message,
-          category: values.category,
-        });
-      } catch {
-        // Silently handle if reviews endpoint is disabled or missing
-      }
 
       const data = res.data?.data || res.data;
       setSubmittedResult({
-        id: data?.referenceNo || data?.inquiryId || (data?.id && data.id !== data._id ? data.id : undefined),
-        type: `Feedback - ${values.category}`,
-        email: values.email,
+        id: data?.publicId || data?.id || ("REV-REF-" + Math.floor(100000 + Math.random() * 900000)),
+        type: `Testimonial Review`,
+        email: values.name,
         timestamp: new Date().toLocaleString(),
       });
     } catch (err: any) {
       console.error("Feedback submission error:", err);
       setSubmittedResult({
-        id: "FB-REF-" + Math.floor(100000 + Math.random() * 900000),
-        type: `Feedback - ${values.category}`,
-        email: values.email,
+        id: "REV-REF-" + Math.floor(100000 + Math.random() * 900000),
+        type: `Testimonial Review`,
+        email: values.name,
         timestamp: new Date().toLocaleString(),
       });
     }
@@ -471,11 +453,11 @@ export function ContactUsView() {
                     className="w-full"
                   >
                     <TabsList className="grid w-full grid-cols-2 rounded-xl bg-muted p-1">
-                      <TabsTrigger value="inquiry" className="rounded-lg font-semibold text-xs sm:text-sm">
-                        <MessageSquare className="size-3.5 mr-1.5" /> Submit Inquiry
-                      </TabsTrigger>
                       <TabsTrigger value="feedback" className="rounded-lg font-semibold text-xs sm:text-sm">
                         <Star className="size-3.5 mr-1.5" /> Submit Feedback
+                      </TabsTrigger>
+                      <TabsTrigger value="inquiry" className="rounded-lg font-semibold text-xs sm:text-sm">
+                        <MessageSquare className="size-3.5 mr-1.5" /> Submit Inquiry
                       </TabsTrigger>
                     </TabsList>
 
@@ -504,7 +486,17 @@ export function ContactUsView() {
                                 <FormItem>
                                   <FormLabel>Contact Number *</FormLabel>
                                   <FormControl>
-                                    <Input inputMode="tel" placeholder="+91 9876543210" {...field} />
+                                    <Input
+                                      type="tel"
+                                      inputMode="numeric"
+                                      maxLength={10}
+                                      placeholder="e.g. 9876543210"
+                                      {...field}
+                                      onChange={(e) => {
+                                        const val = e.target.value.replace(/\D/g, "");
+                                        field.onChange(val);
+                                      }}
+                                    />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
@@ -625,54 +617,13 @@ export function ContactUsView() {
                             />
                             <FormField
                               control={feedbackForm.control}
-                              name="contact"
+                              name="batch"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Contact Number *</FormLabel>
+                                  <FormLabel>Batch / Role (Optional)</FormLabel>
                                   <FormControl>
-                                    <Input inputMode="tel" placeholder="+91 9123456789" {...field} />
+                                    <Input placeholder="e.g. 2021-2022 or Parent" {...field} />
                                   </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <div className="grid gap-4 sm:grid-cols-2">
-                            <FormField
-                              control={feedbackForm.control}
-                              name="email"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Email Address *</FormLabel>
-                                  <FormControl>
-                                    <Input type="email" placeholder="sunita@example.com" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={feedbackForm.control}
-                              name="category"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Feedback Category *</FormLabel>
-                                  <Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select category" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="General Feedback">General Experience</SelectItem>
-                                      <SelectItem value="Parent Experience">Parent & Guardian Review</SelectItem>
-                                      <SelectItem value="Facilities & Infrastructure">Facilities & Campus</SelectItem>
-                                      <SelectItem value="Teaching & Support">Teaching Quality</SelectItem>
-                                      <SelectItem value="Suggestion">Suggestion for Improvement</SelectItem>
-                                      <SelectItem value="Concern or Complaint">Concern / Complaint</SelectItem>
-                                    </SelectContent>
-                                  </Select>
                                   <FormMessage />
                                 </FormItem>
                               )}

@@ -24,9 +24,6 @@ async function getHomePageData() {
 }
 
 export default async function Home() {
-  const homeDoc = await getHomePageData();
-  const customText = homeDoc && homeDoc.isPublished !== false ? homeDoc.textContent : null;
-
-  return <HomeClient textContent={customText} />;
+  return <HomeClient />;
 }
 

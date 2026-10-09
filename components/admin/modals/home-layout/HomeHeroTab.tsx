@@ -383,9 +383,11 @@ export function HomeHeroTab({ homeObj, updateHome, uploadImage }: HomeHeroTabPro
               <label className="text-[11px] font-bold text-slate-600 block mb-1">Slide Banner Image URL</label>
               <input
                 type="text"
+                disabled
+                readOnly
                 value={currentSlide.bannerUrl || ""}
                 onChange={(e) => updateCurrentSlideField("bannerUrl", e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium outline-none focus:border-[#1a5d9c]"
+                className="w-full rounded-xl border border-slate-200 bg-slate-100/80 px-3 py-2 text-xs font-medium outline-none text-slate-500 cursor-not-allowed opacity-75"
               />
             </div>
 

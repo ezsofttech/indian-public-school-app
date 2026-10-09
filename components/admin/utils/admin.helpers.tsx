@@ -198,6 +198,20 @@ export function decodeHtmlEntities(str: string): string {
 
 export function getPreviewUrl(item: RecordItem): string | null {
   if (!item || typeof item !== "object") return null;
+  if (item.key === "site_logo") {
+    let logoVal = item.value;
+    if (typeof logoVal === "string") {
+      try {
+        logoVal = JSON.parse(logoVal);
+      } catch {}
+    }
+    if (logoVal && typeof logoVal === "object" && (logoVal as Record<string, any>).logoUrl) {
+      return imageUrl((logoVal as Record<string, any>).logoUrl);
+    }
+  }
+  if (item.key === "site_datasource") {
+    return "/";
+  }
   if (typeof item.slug === "string" && item.slug.trim()) {
     const s = item.slug.trim();
     if (s === "home" || s === "/") return "/";

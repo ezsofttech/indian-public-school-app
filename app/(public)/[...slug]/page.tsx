@@ -472,11 +472,11 @@ export default async function ContentPage({
       <section className="container-page py-12 lg:py-20">
         {htmlContent ? (
           <div
-            className="mx-auto max-w-4xl prose prose-slate prose-lg max-w-none space-y-6 text-slate-800 leading-relaxed font-sans dynamic-page-content"
+            className="mx-auto max-w-4xl prose dark:prose-invert prose-lg max-w-none space-y-6 text-foreground leading-relaxed font-sans dynamic-page-content"
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
         ) : (
-          <div className="mx-auto max-w-4xl space-y-5 text-base leading-relaxed text-slate-700 sm:text-lg">
+          <div className="mx-auto max-w-4xl space-y-5 text-base leading-relaxed text-foreground sm:text-lg">
             {description.map((paragraph, i) => (
               <p key={i} className="leading-relaxed">
                 {paragraph}
@@ -498,7 +498,7 @@ export default async function ContentPage({
                     <FileText className="size-6 text-[#1a5d9c]" />
                   </div>
                   <div>
-                    <h3 className="font-display text-base font-bold text-slate-900">
+                    <h3 className="font-display text-base font-bold text-foreground">
                       {title} — Official Document
                     </h3>
                     <p className="text-xs text-muted-foreground">
@@ -526,13 +526,13 @@ export default async function ContentPage({
 
         {/* Bullet point features/list */}
         {bulletItems.length > 0 && (
-          <div className="mx-auto mt-8 max-w-4xl rounded-2xl border border-border bg-card p-6 shadow-soft">
-            <h3 className="font-display text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <div className="mx-auto mt-8 max-w-4xl rounded-2xl border border-border bg-card text-card-foreground p-6 shadow-soft">
+            <h3 className="font-display text-lg font-bold text-foreground mb-4 flex items-center gap-2">
               <Award className="size-5 text-gold" /> Key Highlights & Details
             </h3>
             <ul className="grid gap-2.5 sm:grid-cols-2">
               {bulletItems.map((item, idx) => (
-                <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
+                <li key={idx} className="flex items-start gap-2 text-sm text-foreground/90">
                   <span className="mt-1 size-2 rounded-full bg-gold shrink-0" />
                   <span>{item}</span>
                 </li>
@@ -572,14 +572,14 @@ export default async function ContentPage({
               return (
                 <article
                   key={`${cardTitle}-${index}`}
-                  className="flex flex-col justify-between rounded-2xl border border-border bg-card p-6 shadow-soft transition-all duration-300 hover:border-gold/50 hover:shadow-md"
+                  className="flex flex-col justify-between rounded-2xl border border-border bg-card text-card-foreground p-6 shadow-soft transition-all duration-300 hover:border-gold/50 hover:shadow-md"
                 >
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="grid size-8 place-items-center rounded-lg bg-primary/10 text-primary font-bold text-xs">
                         {index + 1}
                       </span>
-                      <h2 className="text-lg font-bold text-slate-900">{cardTitle}</h2>
+                      <h2 className="text-lg font-bold text-foreground">{cardTitle}</h2>
                     </div>
                     {Boolean(cardSubTitle) && (
                       <p className="mt-1 text-xs font-semibold text-gold">{cardSubTitle}</p>
@@ -595,7 +595,7 @@ export default async function ContentPage({
                     {cardList.length > 0 && (
                       <ul className="mt-4 space-y-1.5 border-t border-border/50 pt-3">
                         {cardList.map((li, lIdx) => (
-                          <li key={lIdx} className="flex items-start gap-2 text-xs text-slate-700">
+                          <li key={lIdx} className="flex items-start gap-2 text-xs text-foreground/80">
                             <ChevronRight size={13} className="text-gold shrink-0 mt-0.5" />
                             <span>{li}</span>
                           </li>

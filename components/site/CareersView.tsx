@@ -21,6 +21,7 @@ import {
   Info,
 } from "lucide-react";
 import { API_URL } from "@/lib/api-client";
+import { FileUploadProgressLoader, FileUploadStatus } from "@/components/ui/FileUploadProgressLoader";
 
 export interface CustomField {
   key: string;
@@ -62,6 +63,11 @@ export function CareersView() {
   const [coverNote, setCoverNote] = useState<string>("");
   const [resumeUrl, setResumeUrl] = useState<string>("");
   const [uploadingResume, setUploadingResume] = useState<boolean>(false);
+  const [resumeUploadStatus, setResumeUploadStatus] = useState<FileUploadStatus>({
+    isUploading: false,
+    progress: 0,
+    step: "preparing",
+  });
   const [customAnswers, setCustomAnswers] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -79,10 +85,10 @@ export function CareersView() {
       const list = Array.isArray(body.data)
         ? body.data
         : Array.isArray(body.items)
-        ? body.items
-        : Array.isArray(body)
-        ? body
-        : [];
+          ? body.items
+          : Array.isArray(body)
+            ? body
+            : [];
       setPosts(list);
     } catch (err) {
       console.error("Failed to load active career openings:", err);
@@ -130,15 +136,57 @@ export function CareersView() {
     setUploadingResume(true);
     setErrorMsg("");
 
+    const previewUrl = file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined;
+    const formattedSize = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+
+    setResumeUploadStatus({
+      isUploading: true,
+      fileName: file.name,
+      fileSize: formattedSize,
+      fileType: file.type,
+      previewUrl,
+      progress: 5,
+      step: "preparing",
+      stageMessage: "Step 1/3: Reading resume payload & initializing server upload…",
+    });
+
     try {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("album", "Resumes");
       formData.append("folder", "indian-public-school/assets/Resumes");
 
+      setResumeUploadStatus((prev) => ({
+        ...prev,
+        progress: 15,
+        step: "uploading",
+        stageMessage: "Step 2/3: Transmitting resume document to Cloudinary CDN…",
+      }));
+
       const res = await axios.post(`${API_URL}/uploads/public`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const pct = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setResumeUploadStatus((prev) => ({
+              ...prev,
+              progress: Math.min(pct, 95),
+              step: pct >= 95 ? "processing" : "uploading",
+              stageMessage:
+                pct >= 95
+                  ? "Step 3/3: Processing document & generating CDN link…"
+                  : `Step 2/3: Transmitting resume (${pct}%)…`,
+            }));
+          }
+        },
       });
+
+      setResumeUploadStatus((prev) => ({
+        ...prev,
+        progress: 98,
+        step: "processing",
+        stageMessage: "Step 3/3: Generating secure document link…",
+      }));
 
       const body = res.data;
       const uploadedUrl =
@@ -149,14 +197,30 @@ export function CareersView() {
 
       if (uploadedUrl) {
         setResumeUrl(uploadedUrl);
+        setResumeUploadStatus((prev) => ({
+          ...prev,
+          progress: 100,
+          step: "done",
+          stageMessage: "Upload complete! Resume attached.",
+        }));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       } else {
         throw new Error("Upload response did not return a valid URL.");
       }
     } catch (err: any) {
       console.error("Resume upload error:", err);
-      setErrorMsg("Failed to upload resume file. You can also paste a resume document URL directly.");
+      const errMsg = "Failed to upload resume file. You can also paste a resume document URL directly.";
+      setErrorMsg(errMsg);
+      setResumeUploadStatus((prev) => ({
+        ...prev,
+        step: "error",
+        errorMessage: errMsg,
+        stageMessage: "Resume upload failed.",
+      }));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     } finally {
       setUploadingResume(false);
+      setResumeUploadStatus({ isUploading: false, progress: 0, step: "preparing" });
     }
   };
 
@@ -270,7 +334,6 @@ export function CareersView() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-[var(--navy)] dark:text-white flex items-center gap-2 font-[var(--font-display)]">
-              <Briefcase className="w-5 h-5 text-[var(--primary)]" />
               Open Positions ({filteredPosts.length})
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -614,6 +677,12 @@ export function CareersView() {
                     style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                   />
                 </div>
+
+                {(resumeUploadStatus.isUploading || resumeUploadStatus.step === "done" || resumeUploadStatus.step === "error") && (
+                  <div className="pt-2">
+                    <FileUploadProgressLoader status={resumeUploadStatus} />
+                  </div>
+                )}
 
                 {resumeUrl && (
                   <div className="flex items-center gap-2 text-[11px] text-emerald-600 font-semibold pt-1">
