@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Sparkles, X, Image as ImageIcon, Eye, Check, Palette, AlignLeft, AlignCenter, AlignRight, LayoutTemplate } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { X, Image as ImageIcon, Eye, Check, Palette, AlignLeft, AlignCenter, AlignRight, LayoutTemplate, UploadCloud, LoaderCircle } from "lucide-react";
 import { generateFrameTemplateHtml } from "./richtext.helpers";
+import { getAssetUrl } from "@/lib/utils";
+import axios from "axios";
 
 interface FrameStudioModalProps {
   isOpen: boolean;
@@ -19,37 +21,133 @@ export function FrameStudioModal({
   onOpenGallery,
   onInsertHtml,
 }: FrameStudioModalProps) {
-  const [imageUrl, setImageUrl] = useState(
-    initialImageUrl || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop"
+  const [mode, setMode] = useState<"single" | "bulk">("single");
+  const [imageUrl, setImageUrl] = useState(initialImageUrl || "");
+  const [imageUrls, setImageUrls] = useState<string[]>(
+    initialImageUrl ? [initialImageUrl] : []
   );
+  const [bulkLayout, setBulkLayout] = useState<"auto" | "grid-2" | "grid-3" | "featured-hero">("auto");
+  const [collectionTitle, setCollectionTitle] = useState("");
+  const [collectionSubtitle, setCollectionSubtitle] = useState("");
+
   const [templateStyle, setTemplateStyle] = useState<"portrait-badge" | "floating-accent" | "modern-gradient" | "polaroid">("portrait-badge");
-  const [name, setName] = useState("Mrs. Suman Dalmia");
-  const [designation, setDesignation] = useState("Chairman");
-  const [subtitle, setSubtitle] = useState("Indian Public School");
+  const [showHeading, setShowHeading] = useState(false);
+  const [name, setName] = useState("");
+  const [showSubHeading, setShowSubHeading] = useState(false);
+  const [designation, setDesignation] = useState("");
+  const [showSubtitle, setShowSubtitle] = useState(false);
+  const [subtitle, setSubtitle] = useState("");
+  const [showDescription, setShowDescription] = useState(false);
+  const [description, setDescription] = useState("");
+
   const [accentColor, setAccentColor] = useState("#f59e0b");
   const [alignment, setAlignment] = useState<"left" | "center" | "right">("center");
   const [maxWidth, setMaxWidth] = useState("380px");
 
+  const [objectPositionX, setObjectPositionX] = useState<number>(50);
+  const [objectPositionY, setObjectPositionY] = useState<number>(0);
+  const [objectFit, setObjectFit] = useState<"cover" | "contain" | "fill">("cover");
+  const [aspectRatio, setAspectRatio] = useState<string>("3/4");
+  const [maxHeight, setMaxHeight] = useState<string>("380px");
+  const [zoomScale, setZoomScale] = useState<number>(1);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
   useEffect(() => {
-    if (initialImageUrl) {
+    if (isOpen && initialImageUrl) {
       setImageUrl(initialImageUrl);
+      setImageUrls((prev) => (prev.includes(initialImageUrl) ? prev : [...prev, initialImageUrl]));
     }
-  }, [initialImageUrl]);
+  }, [isOpen, initialImageUrl]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setUploading(true);
+    try {
+      const uploadedUrls: string[] = [];
+      const token =
+        typeof window !== "undefined"
+          ? localStorage.getItem("ips_admin_token") ||
+            localStorage.getItem("admin_token") ||
+            localStorage.getItem("token") ||
+            ""
+          : "";
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
+
+      for (const file of files) {
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("album", "FrameStudio");
+
+          const res = await axios.post(`${API_URL}/uploads`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+          });
+          const rawUrl = res.data?.fileUrl || res.data?.secure_url || res.data?.url || res.data?.data?.fileUrl;
+          if (rawUrl) {
+            uploadedUrls.push(getAssetUrl(rawUrl));
+          } else {
+            uploadedUrls.push(URL.createObjectURL(file));
+          }
+        } catch {
+          uploadedUrls.push(URL.createObjectURL(file));
+        }
+      }
+
+      if (uploadedUrls.length > 0) {
+        setImageUrl(uploadedUrls[0]);
+        setImageUrls((prev) => [...prev, ...uploadedUrls]);
+      }
+    } catch (err) {
+      console.error("Direct frame image upload failed:", err);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   if (!isOpen) return null;
 
   const previewHtml = generateFrameTemplateHtml({
+    mode,
     imageUrl,
+    imageUrls,
+    bulkLayout,
+    collectionTitle,
+    collectionSubtitle,
     templateStyle,
     name,
     designation,
     subtitle,
+    description,
+    showHeading,
+    showSubHeading,
+    showSubtitle,
+    showDescription,
     accentColor,
     alignment,
     maxWidth,
+    maxHeight,
+    objectPosition: `${objectPositionX}% ${objectPositionY}%`,
+    objectFit,
+    aspectRatio,
+    zoomScale,
   });
 
   const handleInsert = () => {
+    if (mode === "single" && !imageUrl.trim()) {
+      onOpenGallery();
+      return;
+    }
+    if (mode === "bulk" && (!imageUrls || imageUrls.length === 0)) {
+      onOpenGallery();
+      return;
+    }
     onInsertHtml(previewHtml);
     onClose();
   };
@@ -86,29 +184,195 @@ export function FrameStudioModal({
           {/* Controls */}
           <div className="lg:col-span-5 flex flex-col overflow-y-auto border-r border-slate-800 bg-slate-900/60 p-5 space-y-5 scrollbar-thin">
 
-            {/* Image Selection */}
-            <div>
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                Frame Photo / Image URL
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="Paste Image URL or pick from gallery..."
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2 text-xs font-mono text-slate-200 outline-none focus:border-amber-500"
-                />
-                <button
-                  type="button"
-                  onClick={onOpenGallery}
-                  className="shrink-0 flex items-center gap-1.5 rounded-xl bg-amber-600 px-3.5 py-2 text-xs font-extrabold text-white hover:bg-amber-500 transition cursor-pointer shadow-md"
-                >
-                  <ImageIcon size={14} />
-                  <span>Gallery</span>
-                </button>
-              </div>
+            {/* Mode Selector (Single vs Bulk Collection) */}
+            <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-1.5 flex gap-1.5">
+              <button
+                type="button"
+                onClick={() => setMode("single")}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-black transition cursor-pointer ${
+                  mode === "single"
+                    ? "bg-amber-600 text-white shadow-md"
+                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                }`}
+              >
+                <ImageIcon size={14} />
+                <span>Single Photo Card</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("bulk")}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-black transition cursor-pointer ${
+                  mode === "bulk"
+                    ? "bg-amber-600 text-white shadow-md"
+                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                }`}
+              >
+                <LayoutTemplate size={14} />
+                <span>Bulk Collection ({imageUrls.length})</span>
+              </button>
             </div>
+
+            {/* Single Image Selector */}
+            {mode === "single" ? (
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                  Frame Photo / Image Source
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    disabled
+                    value={imageUrl}
+                    placeholder="No image selected — click Gallery or Upload..."
+                    className="w-full rounded-xl border border-slate-800 bg-slate-950/80 px-3.5 py-2 text-xs font-mono text-slate-400 outline-none cursor-not-allowed select-none"
+                  />
+                  {imageUrl ? (
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl("")}
+                      className="shrink-0 flex items-center gap-1 rounded-xl bg-red-600/20 border border-red-500/30 px-3 py-2 text-xs font-extrabold text-red-400 hover:bg-red-600/30 transition cursor-pointer"
+                      title="Clear selected image"
+                    >
+                      <X size={14} />
+                      <span>Clear</span>
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={onOpenGallery}
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl bg-amber-600 px-3 py-2 text-xs font-extrabold text-white hover:bg-amber-500 transition cursor-pointer shadow-md"
+                    title="Pick or upload image from Cloudinary Media Gallery"
+                  >
+                    <ImageIcon size={14} />
+                    <span>Gallery</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="shrink-0 flex items-center gap-1.5 rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-xs font-extrabold text-slate-200 hover:bg-slate-700 hover:text-white transition cursor-pointer shadow-md"
+                    title="Upload local image directly from device"
+                  >
+                    {uploading ? <LoaderCircle size={14} className="animate-spin text-amber-400" /> : <UploadCloud size={14} className="text-amber-400" />}
+                    <span>{uploading ? "Uploading..." : "Upload"}</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Bulk Collection Manager */
+              <div className="space-y-3 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-3.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black uppercase text-amber-400 tracking-wider">
+                    Bulk Image Collection ({imageUrls.length} Items)
+                  </span>
+                  <div className="flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={onOpenGallery}
+                      className="flex items-center gap-1 rounded-lg bg-amber-600 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-amber-500 transition cursor-pointer"
+                    >
+                      <ImageIcon size={12} />
+                      <span>Add from Gallery</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className="flex items-center gap-1 rounded-lg bg-slate-800 border border-slate-700 px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:bg-slate-700 transition cursor-pointer"
+                    >
+                      {uploading ? <LoaderCircle size={12} className="animate-spin text-amber-400" /> : <UploadCloud size={12} className="text-amber-400" />}
+                      <span>Upload Files</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Thumbnail Strip */}
+                {imageUrls.length > 0 ? (
+                  <div className="flex gap-2 overflow-x-auto pb-2 pt-1 scrollbar-thin">
+                    {imageUrls.map((url, idx) => (
+                      <div key={idx} className="relative shrink-0 w-16 h-16 rounded-xl border border-slate-700 overflow-hidden group bg-slate-950">
+                        <img src={url} alt={`Photo ${idx + 1}`} className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setImageUrls((prev) => prev.filter((_, i) => i !== idx))}
+                          className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-red-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer"
+                          title="Remove photo from collection"
+                        >
+                          <X size={10} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-[11px] text-amber-400 font-medium py-2.5 px-3 bg-amber-500/10 rounded-xl border border-amber-500/20 text-center">
+                    No images added yet. Click <strong>Add from Gallery</strong> or <strong>Upload Files</strong> above.
+                  </div>
+                )}
+
+                {/* Bulk Grid Layout Selector */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Bulk Collection Layout Template
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: "auto" as const, title: "Auto Responsive Grid", sub: "Adapts to 1, 3, 5, 7, odd/even items" },
+                      { id: "grid-3" as const, title: "3-Col Grid", sub: "Standard 3 Column Showcase" },
+                      { id: "grid-2" as const, title: "2-Col Grid", sub: "Large 2 Column Showcase" },
+                      { id: "featured-hero" as const, title: "Hero Banner", sub: "1 Hero + Side Cards Grid" },
+                    ].map((l) => (
+                      <button
+                        key={l.id}
+                        type="button"
+                        onClick={() => setBulkLayout(l.id)}
+                        className={`p-2 rounded-xl border text-left transition cursor-pointer ${
+                          bulkLayout === l.id
+                            ? "border-amber-500 bg-amber-600/20 text-white font-bold"
+                            : "border-slate-800 bg-slate-950 text-slate-400 hover:text-slate-200"
+                        }`}
+                      >
+                        <div className="text-[11px] font-extrabold">{l.title}</div>
+                        <div className="text-[9px] text-slate-400 leading-tight mt-0.5">{l.sub}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Collection Titles */}
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 mb-0.5">Collection Main Heading</label>
+                    <input
+                      type="text"
+                      value={collectionTitle}
+                      onChange={(e) => setCollectionTitle(e.target.value)}
+                      placeholder="e.g. Photo Gallery Showcase"
+                      className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1 text-xs text-slate-200 outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 mb-0.5">Collection Subtitle</label>
+                    <input
+                      type="text"
+                      value={collectionSubtitle}
+                      onChange={(e) => setCollectionSubtitle(e.target.value)}
+                      placeholder="e.g. Explore our campus activities"
+                      className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1 text-xs text-slate-200 outline-none focus:border-amber-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileUpload}
+              className="hidden"
+            />
 
             {/* Template Selection */}
             <div>
@@ -167,46 +431,113 @@ export function FrameStudioModal({
 
             {/* Custom Text Fields */}
             <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-3.5">
-              <span className="text-[11px] font-black uppercase text-amber-400 tracking-wider">
-                Card Text & Caption Details
-              </span>
-              <div>
-                <label className="block text-[11px] font-bold text-slate-400 mb-1">
-                  Name / Main Title
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Mrs. Suman Dalmia"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-amber-500"
-                />
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span className="text-[11px] font-black uppercase text-amber-400 tracking-wider">
+                  Card Text & Caption Details
+                </span>
+                <span className="text-[10px] text-slate-400">
+                  Toggle checkboxes to include or omit text
+                </span>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-bold text-slate-400 mb-1">
-                  Designation / Role
+              {/* Heading / Main Title */}
+              <div className="space-y-1">
+                <label className="flex items-center justify-between text-[11px] font-bold text-slate-300 cursor-pointer">
+                  <span className="flex items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      checked={showHeading}
+                      onChange={(e) => setShowHeading(e.target.checked)}
+                      className="rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-amber-500/30"
+                    />
+                    Heading (Name / Main Title)
+                  </span>
+                  <span className="text-[10px] text-amber-400 font-normal">{showHeading ? "Enabled" : "Disabled"}</span>
                 </label>
-                <input
-                  type="text"
-                  value={designation}
-                  onChange={(e) => setDesignation(e.target.value)}
-                  placeholder="e.g. Chairman"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-amber-500"
-                />
+                {showHeading && (
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="e.g. Mrs. Suman Dalmia"
+                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-amber-500"
+                  />
+                )}
               </div>
 
-              <div>
-                <label className="block text-[11px] font-bold text-slate-400 mb-1">
-                  Subtitle / Organization
+              {/* Sub Heading / Role */}
+              <div className="space-y-1">
+                <label className="flex items-center justify-between text-[11px] font-bold text-slate-300 cursor-pointer">
+                  <span className="flex items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      checked={showSubHeading}
+                      onChange={(e) => setShowSubHeading(e.target.checked)}
+                      className="rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-amber-500/30"
+                    />
+                    Sub Heading (Designation / Role)
+                  </span>
+                  <span className="text-[10px] text-amber-400 font-normal">{showSubHeading ? "Enabled" : "Disabled"}</span>
                 </label>
-                <input
-                  type="text"
-                  value={subtitle}
-                  onChange={(e) => setSubtitle(e.target.value)}
-                  placeholder="e.g. Indian Public School"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-amber-500"
-                />
+                {showSubHeading && (
+                  <input
+                    type="text"
+                    value={designation}
+                    onChange={(e) => setDesignation(e.target.value)}
+                    placeholder="e.g. Chairman"
+                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-amber-500"
+                  />
+                )}
+              </div>
+
+              {/* Subtitle / Organization */}
+              <div className="space-y-1">
+                <label className="flex items-center justify-between text-[11px] font-bold text-slate-300 cursor-pointer">
+                  <span className="flex items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      checked={showSubtitle}
+                      onChange={(e) => setShowSubtitle(e.target.checked)}
+                      className="rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-amber-500/30"
+                    />
+                    Subtitle / Organization
+                  </span>
+                  <span className="text-[10px] text-amber-400 font-normal">{showSubtitle ? "Enabled" : "Disabled"}</span>
+                </label>
+                {showSubtitle && (
+                  <input
+                    type="text"
+                    value={subtitle}
+                    onChange={(e) => setSubtitle(e.target.value)}
+                    placeholder="e.g. Indian Public School"
+                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-amber-500"
+                  />
+                )}
+              </div>
+
+              {/* Description / Caption Paragraph */}
+              <div className="space-y-1">
+                <label className="flex items-center justify-between text-[11px] font-bold text-slate-300 cursor-pointer">
+                  <span className="flex items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      checked={showDescription}
+                      onChange={(e) => setShowDescription(e.target.checked)}
+                      className="rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-amber-500/30"
+                    />
+                    Description / Extended Caption
+                  </span>
+                  <span className="text-[10px] text-amber-400 font-normal">{showDescription ? "Enabled" : "Disabled"}</span>
+                </label>
+                {showDescription && (
+                  <textarea
+                    rows={2}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="e.g. Write a brief description or caption..."
+                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-amber-500 resize-none"
+                  />
+                )}
               </div>
             </div>
 
@@ -265,7 +596,7 @@ export function FrameStudioModal({
             {/* Frame Width */}
             <div>
               <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                Card Width Constraint
+                Card Width Constraint (Horizontal Size)
               </label>
               <div className="flex items-center gap-1.5 flex-wrap">
                 {["320px", "380px", "480px", "580px", "100%"].map((w) => (
@@ -281,6 +612,162 @@ export function FrameStudioModal({
                     {w}
                   </button>
                 ))}
+              </div>
+            </div>
+
+            {/* Visible Portion, Focal Point & Resizing Controls */}
+            <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950/60 p-3.5">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span className="text-[11px] font-black uppercase text-amber-400 tracking-wider">
+                  Visible Portion & Focal Point (X / Y / Zoom)
+                </span>
+                <span className="text-[10px] text-amber-300 font-mono bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                  {objectPositionX}% X · {objectPositionY}% Y
+                </span>
+              </div>
+
+              {/* Focal Presets */}
+              <div>
+                <label className="block text-[11px] font-bold text-slate-400 mb-1.5">
+                  Quick Visible Focal Area
+                </label>
+                <div className="grid grid-cols-5 gap-1.5">
+                  {[
+                    { label: "Top (Face)", x: 50, y: 0 },
+                    { label: "Center", x: 50, y: 50 },
+                    { label: "Bottom", x: 50, y: 100 },
+                    { label: "Left Focus", x: 0, y: 50 },
+                    { label: "Right Focus", x: 100, y: 50 },
+                  ].map((p) => (
+                    <button
+                      key={p.label}
+                      type="button"
+                      onClick={() => {
+                        setObjectPositionX(p.x);
+                        setObjectPositionY(p.y);
+                      }}
+                      className={`rounded-lg border py-1.5 text-[10px] font-extrabold transition cursor-pointer text-center ${
+                        objectPositionX === p.x && objectPositionY === p.y
+                          ? "border-amber-500 bg-amber-600 text-white shadow-sm"
+                          : "border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-200 hover:border-slate-700"
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Horizontal & Vertical Focal Sliders */}
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div>
+                  <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-1">
+                    <span>Horizontal Focus (X-Axis)</span>
+                    <span className="text-amber-400 font-mono text-[10px]">{objectPositionX}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={objectPositionX}
+                    onChange={(e) => setObjectPositionX(Number(e.target.value))}
+                    className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                  />
+                </div>
+                <div>
+                  <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-1">
+                    <span>Vertical Focus (Y-Axis)</span>
+                    <span className="text-amber-400 font-mono text-[10px]">{objectPositionY}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={objectPositionY}
+                    onChange={(e) => setObjectPositionY(Number(e.target.value))}
+                    className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                  />
+                </div>
+              </div>
+
+              {/* Object Fit & Aspect Ratio */}
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1">
+                    Fit & Crop Mode
+                  </label>
+                  <div className="flex rounded-lg border border-slate-700 bg-slate-900 p-0.5">
+                    {[
+                      { id: "cover" as const, label: "Cover (Crop)" },
+                      { id: "contain" as const, label: "Contain (Whole)" },
+                    ].map((f) => (
+                      <button
+                        key={f.id}
+                        type="button"
+                        onClick={() => setObjectFit(f.id)}
+                        className={`flex-1 py-1 text-[10px] font-extrabold rounded transition cursor-pointer ${
+                          objectFit === f.id
+                            ? "bg-amber-600 text-white"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1">
+                    Aspect Ratio (Shape)
+                  </label>
+                  <select
+                    value={aspectRatio}
+                    onChange={(e) => setAspectRatio(e.target.value)}
+                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-[11px] text-slate-200 outline-none focus:border-amber-500 cursor-pointer"
+                  >
+                    <option value="3/4">3:4 Portrait</option>
+                    <option value="1/1">1:1 Square</option>
+                    <option value="4/3">4:3 Landscape</option>
+                    <option value="16/9">16:9 Widescreen</option>
+                    <option value="auto">Auto / Natural</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Max Height & Zoom Scale */}
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div>
+                  <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-1">
+                    <span>Frame Max Height</span>
+                    <span className="text-amber-400 font-mono text-[10px]">{maxHeight}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={200}
+                    max={600}
+                    step={20}
+                    value={parseInt(maxHeight) || 380}
+                    onChange={(e) => setMaxHeight(`${e.target.value}px`)}
+                    className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-1">
+                    <span>Zoom Scale</span>
+                    <span className="text-amber-400 font-mono text-[10px]">{Math.round(zoomScale * 100)}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={1}
+                    max={2}
+                    step={0.05}
+                    value={zoomScale}
+                    onChange={(e) => setZoomScale(Number(e.target.value))}
+                    className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                  />
+                </div>
               </div>
             </div>
 

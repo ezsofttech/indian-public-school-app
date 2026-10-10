@@ -732,23 +732,120 @@ export function getComponentHtmlSnippet(type: string): string {
 }
 
 export function generateFrameTemplateHtml(data: {
+  mode?: "single" | "bulk";
   imageUrl?: string;
+  imageUrls?: string[];
+  bulkLayout?: "auto" | "grid-2" | "grid-3" | "featured-hero" | "polaroid-stack";
+  collectionTitle?: string;
+  collectionSubtitle?: string;
   templateStyle?: "portrait-badge" | "floating-accent" | "modern-gradient" | "polaroid";
   name?: string;
   designation?: string;
   subtitle?: string;
+  description?: string;
+  showHeading?: boolean;
+  showSubHeading?: boolean;
+  showSubtitle?: boolean;
+  showDescription?: boolean;
   accentColor?: string;
   alignment?: "left" | "center" | "right";
   maxWidth?: string;
+  maxHeight?: string;
+  objectPosition?: string;
+  objectFit?: "cover" | "contain" | "fill" | "none";
+  aspectRatio?: string;
+  zoomScale?: number;
+  isNested?: boolean;
 }): string {
-  const imageUrl = data.imageUrl || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop";
+  const mode = data.mode || "single";
   const templateStyle = data.templateStyle || "portrait-badge";
-  const name = data.name !== undefined ? data.name : "Mrs. Suman Dalmia";
-  const designation = data.designation !== undefined ? data.designation : "Chairman";
-  const subtitle = data.subtitle !== undefined ? data.subtitle : "Indian Public School";
   const accentColor = data.accentColor || "#f59e0b";
+  const maxHeight = data.maxHeight || "380px";
+  const isNested = !!data.isNested;
+
+  // Handle Bulk Collection Mode
+  if (mode === "bulk" && Array.isArray(data.imageUrls) && data.imageUrls.length > 0) {
+    const urls = data.imageUrls;
+    const bulkLayout = data.bulkLayout || "auto";
+    const collectionTitle = data.collectionTitle !== undefined ? data.collectionTitle : "";
+    const collectionSubtitle = data.collectionSubtitle !== undefined ? data.collectionSubtitle : "";
+
+    let gridColsCss = "repeat(auto-fit, minmax(260px, 1fr))";
+    if (bulkLayout === "grid-2") gridColsCss = "repeat(auto-fit, minmax(320px, 1fr))";
+    if (bulkLayout === "grid-3") gridColsCss = "repeat(auto-fit, minmax(220px, 1fr))";
+    if (bulkLayout === "auto") gridColsCss = "repeat(auto-fit, minmax(260px, 1fr))";
+
+    const singleCardFn = (imgUrl: string, idx: number, isHero = false) => {
+      const cardMaxHeight = isHero ? "480px" : maxHeight;
+      return generateFrameTemplateHtml({
+        ...data,
+        mode: "single",
+        imageUrl: imgUrl,
+        name: data.showHeading ? (data.name || "") : "",
+        maxWidth: "100%",
+        maxHeight: cardMaxHeight,
+        alignment: "center",
+        isNested: true,
+      });
+    };
+
+    let innerContentHtml = "";
+    if (bulkLayout === "featured-hero" && urls.length > 1) {
+      const heroUrl = urls[0];
+      const sideUrls = urls.slice(1);
+      innerContentHtml = `<div class="wysiwyg-frame-bulk-collection" style="width: 100%; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif;">
+        ${(collectionTitle || collectionSubtitle) ? `
+          <div style="text-align: center; margin-bottom: 24px;">
+            ${collectionTitle ? `<h3 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0;">${collectionTitle}</h3>` : ""}
+            ${collectionSubtitle ? `<p style="font-size: 0.9rem; color: #64748b; margin: 6px 0 0 0;">${collectionSubtitle}</p>` : ""}
+            <div style="width: 50px; height: 4px; background: ${accentColor}; margin: 10px auto 0 auto; border-radius: 4px;"></div>
+          </div>
+        ` : ""}
+        <div style="margin-bottom: 24px;">
+          ${singleCardFn(heroUrl, 0, true)}
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; width: 100%; justify-content: center;">
+          ${sideUrls.map((u, i) => singleCardFn(u, i + 1, false)).join("")}
+        </div>
+      </div>`;
+    } else {
+      innerContentHtml = `<div class="wysiwyg-frame-bulk-collection" style="width: 100%; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif;">
+        ${(collectionTitle || collectionSubtitle) ? `
+          <div style="text-align: center; margin-bottom: 24px;">
+            ${collectionTitle ? `<h3 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0;">${collectionTitle}</h3>` : ""}
+            ${collectionSubtitle ? `<p style="font-size: 0.9rem; color: #64748b; margin: 6px 0 0 0;">${collectionSubtitle}</p>` : ""}
+            <div style="width: 50px; height: 4px; background: ${accentColor}; margin: 10px auto 0 auto; border-radius: 4px;"></div>
+          </div>
+        ` : ""}
+        <div style="display: grid; grid-template-columns: ${gridColsCss}; gap: 20px; width: 100%; justify-content: center;">
+          ${urls.map((u, i) => singleCardFn(u, i, false)).join("")}
+        </div>
+      </div>`;
+    }
+
+    if (isNested) return innerContentHtml;
+    return `<div class="wysiwyg-frame-wrapper" style="display: block; width: 100%; clear: both; margin: 24px 0; box-sizing: border-box;">${innerContentHtml}</div><p><br></p>`;
+  }
+
+  // Handle Single Card Mode
+  const imageUrl = data.imageUrl || "";
+  
+  const showHeading = data.showHeading !== undefined ? data.showHeading : false;
+  const showSubHeading = data.showSubHeading !== undefined ? data.showSubHeading : false;
+  const showSubtitle = data.showSubtitle !== undefined ? data.showSubtitle : false;
+  const showDescription = data.showDescription !== undefined ? data.showDescription : false;
+
+  const name = showHeading ? (data.name || "") : "";
+  const designation = showSubHeading ? (data.designation || "") : "";
+  const subtitle = showSubtitle ? (data.subtitle || "") : "";
+  const description = showDescription ? (data.description || "") : "";
+
   const alignment = data.alignment || "center";
   const maxWidth = data.maxWidth || (templateStyle === "portrait-badge" ? "380px" : "580px");
+  const objectPosition = data.objectPosition || "top center";
+  const objectFit = data.objectFit || "cover";
+  const aspectRatio = data.aspectRatio || (templateStyle === "portrait-badge" ? "3/4" : "auto");
+  const zoomScale = data.zoomScale || 1;
 
   let marginCss = "16px auto";
   let floatCss = "none";
@@ -760,58 +857,80 @@ export function generateFrameTemplateHtml(data: {
     floatCss = "right";
   }
 
+  const transformStyle = zoomScale !== 1 ? `transform: scale(${zoomScale}); transform-origin: ${objectPosition};` : "";
+  const imgStyle = `width: 100%; max-height: ${maxHeight}; ${aspectRatio !== "auto" ? `aspect-ratio: ${aspectRatio};` : ""} object-fit: ${objectFit}; object-position: ${objectPosition}; display: block; margin: 0; box-shadow: none; ${transformStyle}`;
+  const hasText = !!(name || designation || subtitle || description);
+
+  const renderImageTag = (borderRadiusCss: string) => {
+    if (imageUrl.trim()) {
+      return `<img src="${imageUrl}" alt="${name || 'Frame Photo'}" style="${imgStyle} border-radius: ${borderRadiusCss};" />`;
+    }
+    return `<div style="width: 100%; min-height: 200px; border-radius: ${borderRadiusCss}; background: #f8fafc; border: 2px dashed #cbd5e1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; font-size: 0.8rem; font-weight: 600; text-align: center; padding: 20px; box-sizing: border-box;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 6px;"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+      <span>No Frame Image Selected</span>
+      <span style="font-size: 0.72rem; font-weight: 400; color: #94a3b8; margin-top: 2px;">Click Gallery or Upload to pick image</span>
+    </div>`;
+  };
+
+  let cardHtml = "";
+
   if (templateStyle === "portrait-badge") {
-    return `<div class="wysiwyg-frame-card" style="max-width: ${maxWidth}; width: 100%; margin: ${marginCss}; float: ${floatCss}; position: relative; background: #ffffff; border-radius: 28px; padding: 14px; box-shadow: 0 12px 30px -6px rgba(15, 23, 42, 0.08); border: 1px solid #f1f5f9; box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+    cardHtml = `<div class="wysiwyg-frame-card" style="max-width: ${maxWidth}; width: 100%; margin: ${marginCss}; float: ${floatCss}; position: relative; background: #ffffff; border-radius: 28px; padding: 14px; box-shadow: 0 12px 30px -6px rgba(15, 23, 42, 0.08); border: 1px solid #f1f5f9; box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
       <div style="position: absolute; top: -4px; left: -4px; width: 68px; height: 68px; border-top: 4px solid ${accentColor}; border-left: 4px solid ${accentColor}; border-top-left-radius: 28px; pointer-events: none; z-index: 1;"></div>
       <div style="position: relative; width: 100%; border-radius: 22px; overflow: hidden; background: #f8fafc; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);">
-        <img src="${imageUrl}" alt="${name}" style="width: 100%; max-height: 380px; aspect-ratio: 3/4; object-fit: cover; object-position: top center; display: block; border-radius: 22px; margin: 0; box-shadow: none;" />
+        ${renderImageTag("22px")}
       </div>
-      <div style="position: relative; margin-top: -42px; margin-left: 12px; margin-right: 12px; background: #0b2545; color: #ffffff; border-radius: 20px; padding: 16px 14px; text-align: center; box-shadow: 0 10px 24px -4px rgba(11, 37, 69, 0.35); z-index: 2; border: 1px solid rgba(255,255,255,0.1);">
-        ${name ? `<h4 style="font-size: 1.2rem; font-weight: 800; color: #ffffff; margin: 0; line-height: 1.25; letter-spacing: -0.01em;">${name}</h4>` : ""}
-        ${designation ? `<p style="font-size: 0.82rem; font-weight: 600; color: #93c5fd; margin: 4px 0 0 0; line-height: 1.3;">${designation}</p>` : ""}
-        ${subtitle ? `<p style="font-size: 0.75rem; font-weight: 500; color: #cbd5e1; margin: 2px 0 0 0; opacity: 0.9;">${subtitle}</p>` : ""}
-      </div>
-    </div><p><br></p>`;
-  }
-
-  if (templateStyle === "floating-accent") {
-    return `<div class="wysiwyg-frame-card" style="max-width: ${maxWidth}; width: 100%; margin: ${marginCss}; float: ${floatCss}; position: relative; padding: 18px; box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      ${hasText ? `
+        <div style="position: relative; margin-top: -42px; margin-left: 12px; margin-right: 12px; background: #0b2545; color: #ffffff; border-radius: 20px; padding: 16px 14px; text-align: center; box-shadow: 0 10px 24px -4px rgba(11, 37, 69, 0.35); z-index: 2; border: 1px solid rgba(255,255,255,0.1);">
+          ${name ? `<h4 style="font-size: 1.2rem; font-weight: 800; color: #ffffff; margin: 0; line-height: 1.25; letter-spacing: -0.01em;">${name}</h4>` : ""}
+          ${designation ? `<p style="font-size: 0.82rem; font-weight: 600; color: #93c5fd; margin: 4px 0 0 0; line-height: 1.3;">${designation}</p>` : ""}
+          ${subtitle ? `<p style="font-size: 0.75rem; font-weight: 500; color: #cbd5e1; margin: 2px 0 0 0; opacity: 0.9;">${subtitle}</p>` : ""}
+          ${description ? `<p style="font-size: 0.78rem; font-weight: 400; color: #e2e8f0; margin: 8px 0 0 0; line-height: 1.45; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 6px;">${description}</p>` : ""}
+        </div>
+      ` : ""}
+    </div>`;
+  } else if (templateStyle === "floating-accent") {
+    cardHtml = `<div class="wysiwyg-frame-card" style="max-width: ${maxWidth}; width: 100%; margin: ${marginCss}; float: ${floatCss}; position: relative; padding: 18px; box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
       <div style="position: absolute; top: 0px; right: 0px; width: 90px; height: 90px; border-radius: 50%; background: #e2e8f0; opacity: 0.65; pointer-events: none; z-index: 0;"></div>
       <div style="position: absolute; bottom: 0px; left: 0px; width: 100px; height: 100px; border-radius: 32px; background: #fef3c7; opacity: 0.85; pointer-events: none; z-index: 0;"></div>
-      <div style="position: relative; z-index: 1; background: #ffffff; border-radius: 28px; padding: 14px; border: 1px solid #e2e8f0; box-shadow: 0 14px 35px -8px rgba(15, 23, 42, 0.12);">
-        <img src="${imageUrl}" alt="${name}" style="width: 100%; max-height: 380px; object-fit: cover; display: block; border-radius: 20px; margin: 0; box-shadow: none;" />
-        ${(name || designation || subtitle) ? `
+      <div style="position: relative; z-index: 1; background: #ffffff; border-radius: 28px; padding: 14px; border: 1px solid #e2e8f0; box-shadow: 0 14px 35px -8px rgba(15, 23, 42, 0.12); overflow: hidden;">
+        ${renderImageTag("20px")}
+        ${hasText ? `
           <div style="margin-top: 14px; padding: 10px 14px; text-align: center; border-top: 1px solid #f1f5f9;">
             ${name ? `<h4 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0;">${name}</h4>` : ""}
             ${designation ? `<p style="font-size: 0.85rem; font-weight: 600; color: #2563eb; margin: 3px 0 0 0;">${designation}</p>` : ""}
             ${subtitle ? `<p style="font-size: 0.75rem; color: #64748b; margin: 2px 0 0 0;">${subtitle}</p>` : ""}
+            ${description ? `<p style="font-size: 0.82rem; color: #475569; margin: 8px 0 0 0; line-height: 1.5; border-top: 1px solid #f1f5f9; padding-top: 6px;">${description}</p>` : ""}
           </div>
         ` : ""}
       </div>
-    </div><p><br></p>`;
-  }
-
-  if (templateStyle === "modern-gradient") {
-    return `<div class="wysiwyg-frame-card" style="max-width: ${maxWidth}; width: 100%; margin: ${marginCss}; float: ${floatCss}; background: #ffffff; border-radius: 24px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08); font-family: system-ui, sans-serif;">
+    </div>`;
+  } else if (templateStyle === "modern-gradient") {
+    cardHtml = `<div class="wysiwyg-frame-card" style="max-width: ${maxWidth}; width: 100%; margin: ${marginCss}; float: ${floatCss}; background: #ffffff; border-radius: 24px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08); font-family: system-ui, sans-serif;">
       <div style="height: 6px; background: linear-gradient(90deg, #102a4c 0%, ${accentColor} 50%, #2563eb 100%);"></div>
-      <div style="padding: 16px;">
-        <img src="${imageUrl}" alt="${name}" style="width: 100%; max-height: 360px; object-fit: cover; display: block; border-radius: 16px; margin: 0;" />
-        ${(name || designation || subtitle) ? `
+      <div style="padding: 16px; overflow: hidden;">
+        ${renderImageTag("16px")}
+        ${hasText ? `
           <div style="margin-top: 14px; text-align: left; padding: 4px 6px;">
             ${name ? `<h4 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0;">${name}</h4>` : ""}
             ${designation ? `<p style="font-size: 0.85rem; font-weight: 700; color: #1d4ed8; margin: 4px 0 0 0;">${designation}</p>` : ""}
             ${subtitle ? `<p style="font-size: 0.78rem; color: #64748b; margin: 2px 0 0 0;">${subtitle}</p>` : ""}
+            ${description ? `<p style="font-size: 0.82rem; color: #475569; margin: 8px 0 0 0; line-height: 1.5; border-top: 1px solid #f1f5f9; padding-top: 6px;">${description}</p>` : ""}
           </div>
         ` : ""}
       </div>
-    </div><p><br></p>`;
+    </div>`;
+  } else {
+    cardHtml = `<div class="wysiwyg-frame-card" style="max-width: ${maxWidth}; width: 100%; margin: ${marginCss}; float: ${floatCss}; background: #ffffff; border-radius: 18px; border: 1px solid #cbd5e1; padding: 16px 16px 20px 16px; box-shadow: 0 12px 30px rgba(0,0,0,0.1); font-family: system-ui, sans-serif; text-align: center; overflow: hidden;">
+      ${renderImageTag("10px")}
+      ${name ? `<h4 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0;">${name}</h4>` : ""}
+      ${designation ? `<p style="font-size: 0.82rem; font-weight: 600; color: #475569; margin: 3px 0 0 0;">${designation}</p>` : ""}
+      ${subtitle ? `<p style="font-size: 0.75rem; color: #94a3b8; margin: 2px 0 0 0;">${subtitle}</p>` : ""}
+      ${description ? `<p style="font-size: 0.82rem; color: #475569; margin: 8px 0 0 0; line-height: 1.5; border-top: 1px solid #f1f5f9; padding-top: 6px;">${description}</p>` : ""}
+    </div>`;
   }
 
-  return `<div class="wysiwyg-frame-card" style="max-width: ${maxWidth}; width: 100%; margin: ${marginCss}; float: ${floatCss}; background: #ffffff; border-radius: 18px; border: 1px solid #cbd5e1; padding: 16px 16px 20px 16px; box-shadow: 0 12px 30px rgba(0,0,0,0.1); font-family: system-ui, sans-serif; text-align: center;">
-    <img src="${imageUrl}" alt="${name}" style="width: 100%; max-height: 360px; object-fit: cover; display: block; border-radius: 10px; margin: 0 0 14px 0; border: 1px solid #f1f5f9;" />
-    ${name ? `<h4 style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0;">${name}</h4>` : ""}
-    ${designation ? `<p style="font-size: 0.82rem; font-weight: 600; color: #475569; margin: 3px 0 0 0;">${designation}</p>` : ""}
-    ${subtitle ? `<p style="font-size: 0.75rem; color: #94a3b8; margin: 2px 0 0 0;">${subtitle}</p>` : ""}
-  </div><p><br></p>`;
+  if (isNested) return cardHtml;
+  return `<div class="wysiwyg-frame-wrapper" style="display: block; width: 100%; clear: both; margin: 24px 0; box-sizing: border-box;">${cardHtml}</div><p><br></p>`;
 }
 
