@@ -15,7 +15,6 @@ import {
     Paintbrush,
     Image as ImageIcon,
     Table,
-    Sparkles,
 } from "lucide-react";
 
 export interface RichTextQuickActionsProps {
@@ -148,8 +147,8 @@ export const RichTextQuickActions: React.FC<RichTextQuickActionsProps> = ({
                                 }
                             }}
                             className={`rounded-lg border px-2 py-1 text-[11px] font-bold transition ${isDisabled
-                                    ? "border-slate-200 bg-slate-100 text-slate-400 opacity-40 cursor-not-allowed"
-                                    : "border-blue-200 bg-white text-slate-700 hover:bg-blue-100 cursor-pointer"
+                                ? "border-slate-200 bg-slate-100 text-slate-400 opacity-40 cursor-not-allowed"
+                                : "border-blue-200 bg-white text-slate-700 hover:bg-blue-100 cursor-pointer"
                                 }`}
                             title={isDisabled ? "Not Allowed / Not Applicable — Select a block box, table, or image first" : `Quick resize width to ${pct}%`}
                         >
@@ -176,8 +175,8 @@ export const RichTextQuickActions: React.FC<RichTextQuickActionsProps> = ({
                             onClick={() => applyImageAlignment(align)}
                             title={isDisabled ? "Not Allowed / Not Applicable — Select an image, table, or component block first" : title}
                             className={`rounded-lg border p-1 transition ${isDisabled
-                                    ? "border-slate-200 bg-slate-100 text-slate-400 opacity-40 cursor-not-allowed"
-                                    : "border-blue-200 bg-white text-slate-700 hover:bg-blue-100 cursor-pointer"
+                                ? "border-slate-200 bg-slate-100 text-slate-400 opacity-40 cursor-not-allowed"
+                                : "border-blue-200 bg-white text-slate-700 hover:bg-blue-100 cursor-pointer"
                                 }`}
                         >
                             {isDisabled ? <Ban size={13} className="text-slate-400" /> : <Icon size={13} />}
@@ -268,7 +267,7 @@ export const RichTextQuickActions: React.FC<RichTextQuickActionsProps> = ({
 
                 <div className="h-4 w-px bg-blue-200 mx-0.5" />
 
-                {/* Gallery, Frame Studio & Delete */}
+                {/* Gallery & Image Focal Crop */}
                 <button
                     type="button"
                     onClick={() => setIsGalleryOpen(true)}
@@ -278,25 +277,39 @@ export const RichTextQuickActions: React.FC<RichTextQuickActionsProps> = ({
                     <ImageIcon size={12} />
                     <span>Gallery</span>
                 </button>
-                {openFrameStudio && (
-                    <button
-                        type="button"
-                        onClick={() => openFrameStudio()}
-                        title="Open Image Frame & Card Studio (Custom templates)"
-                        className="flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2 py-1 text-[11px] font-extrabold text-amber-800 hover:bg-amber-100 transition cursor-pointer shadow-2xs"
-                    >
-                        <span>Frame Studio</span>
-                    </button>
-                )}
                 {selectedImageEl && (
-                    <button
-                        type="button"
-                        onClick={deleteSelectedImage}
-                        title="Delete Image"
-                        className="flex items-center gap-1 rounded-lg border border-red-200 bg-red-50 px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-100 transition cursor-pointer"
-                    >
-                        <Trash2 size={12} />
-                    </button>
+                    <>
+                        <div className="flex items-center gap-1 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-xl">
+                            <span className="text-[10px] font-black uppercase text-amber-900">Crop Focus:</span>
+                            {[
+                                { label: "Top (Head)", pos: "top center" },
+                                { label: "Center", pos: "center center" },
+                                { label: "Bottom", pos: "bottom center" },
+                            ].map((fp) => (
+                                <button
+                                    key={fp.label}
+                                    type="button"
+                                    onClick={() => {
+                                        selectedImageEl.style.objectPosition = fp.pos;
+                                        selectedImageEl.style.objectFit = "cover";
+                                        syncIframeToState();
+                                    }}
+                                    className="rounded bg-white border border-amber-300 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-900 hover:bg-amber-100 transition cursor-pointer"
+                                    title={`Set image focal point to ${fp.label}`}
+                                >
+                                    {fp.label}
+                                </button>
+                            ))}
+                        </div>
+                        <button
+                            type="button"
+                            onClick={deleteSelectedImage}
+                            title="Delete Image"
+                            className="flex items-center gap-1 rounded-lg border border-red-200 bg-red-50 px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-100 transition cursor-pointer"
+                        >
+                            <Trash2 size={12} />
+                        </button>
+                    </>
                 )}
                 {selectedAnchorEl && (
                     <div className="flex items-center gap-1.5 bg-sky-50 border border-sky-200 px-2 py-1 rounded-xl">

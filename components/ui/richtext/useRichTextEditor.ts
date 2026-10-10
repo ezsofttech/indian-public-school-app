@@ -1636,6 +1636,7 @@ export function useRichTextEditor({
         setIsFrameStudioOpen,
         openFrameStudio,
         frameStudioImageUrl,
+        setFrameStudioImageUrl,
         openTableStudio,
         openDocStudio,
         openLinkModal,

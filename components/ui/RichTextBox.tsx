@@ -253,7 +253,10 @@ export function RichTextBox({
                 isOpen={editor.isGalleryOpen}
                 onClose={() => editor.setIsGalleryOpen(false)}
                 onSelectImage={(url) => {
-                    if (editor.isPdfStudioOpen) {
+                    if (editor.isFrameStudioOpen) {
+                        editor.setFrameStudioImageUrl(url);
+                        editor.setIsGalleryOpen(false);
+                    } else if (editor.isPdfStudioOpen) {
                         editor.setPdfStudioUrl(url);
                         const rawFileName = url.split("/").pop() || "Official Document";
                         const cleanName = rawFileName.replace(/\.(pdf|jpg|jpeg|png|webp)$/i, "").replace(/[-_]/g, " ");
