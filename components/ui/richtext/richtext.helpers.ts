@@ -524,8 +524,13 @@ export function generatePdfCardHtml(data: {
         <a href="${inlineUrl}" target="_blank" rel="noopener noreferrer" style="background: #38bdf8 !important; color: #0f172a !important; padding: 8px 18px; border-radius: 10px; font-size: 0.825rem; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);">${buttonText} &rarr;</a>
       </div>
       ${subtitle ? `<div style="padding: 10px 20px; background: #020617 !important; color: #94a3b8 !important; font-size: 0.8rem; border-bottom: 1px solid #1e293b;">${subtitle}</div>` : ""}
-      <div style="padding: 20px; text-align: center; background: #020617 !important; display: flex; justify-content: center; align-items: center;">
-        <img src="${pdfPicUrl}" alt="${title}" style="max-height: ${maxHeight}px; width: auto; max-width: 100%; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 8px 24px -4px rgba(0,0,0,0.5); display: block; margin: 0 auto;" />
+      <div style="padding: 20px; text-align: center; background: #020617 !important; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <img src="${pdfPicUrl}" alt="${title}" onerror="this.onerror=null; this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';" style="max-height: ${maxHeight}px; width: auto; max-width: 100%; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 8px 24px -4px rgba(0,0,0,0.5); display: block; margin: 0 auto;" />
+        <div style="display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 36px 16px; text-align: center;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(239,68,68,0.2); color: #f87171; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;">PDF</div>
+          <div style="font-weight: 700; font-size: 14px; color: #f8fafc;">${title}</div>
+          <a href="${inlineUrl}" target="_blank" rel="noopener noreferrer" style="background: #38bdf8; color: #0f172a; padding: 8px 18px; border-radius: 10px; font-size: 13px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">${buttonText} &rarr;</a>
+        </div>
       </div>
     </div><p><br></p>`;
   }
@@ -539,8 +544,13 @@ export function generatePdfCardHtml(data: {
       <a href="${inlineUrl}" target="_blank" rel="noopener noreferrer" style="background: #1a5d9c !important; color: #ffffff !important; padding: 8px 18px; border-radius: 10px; font-size: 0.825rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(26, 93, 156, 0.25);">${buttonText} &rarr;</a>
     </div>
     ${subtitle ? `<div style="padding: 10px 20px; background: #ffffff !important; color: #64748b !important; font-size: 0.8rem; border-bottom: 1px solid #f1f5f9;">${subtitle}</div>` : ""}
-    <div style="padding: 20px; text-align: center; background: #f1f5f9 !important; display: flex; justify-content: center; align-items: center;">
-      <img src="${pdfPicUrl}" alt="${title}" style="max-height: ${maxHeight}px; width: auto; max-width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 8px 24px -4px rgba(0,0,0,0.12); display: block; margin: 0 auto;" />
+    <div style="padding: 20px; text-align: center; background: #f1f5f9 !important; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <img src="${pdfPicUrl}" alt="${title}" onerror="this.onerror=null; this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';" style="max-height: ${maxHeight}px; width: auto; max-width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 8px 24px -4px rgba(0,0,0,0.12); display: block; margin: 0 auto;" />
+      <div style="display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 36px 16px; text-align: center;">
+        <div style="width: 48px; height: 48px; border-radius: 12px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;">PDF</div>
+        <div style="font-weight: 700; font-size: 14px; color: #1e293b;">${title}</div>
+        <a href="${inlineUrl}" target="_blank" rel="noopener noreferrer" style="background: #1a5d9c; color: #ffffff; padding: 8px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">${buttonText} &rarr;</a>
+      </div>
     </div>
   </div><p><br></p>`;
 }

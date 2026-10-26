@@ -247,16 +247,9 @@ export function getAssetUrl(url?: any): string {
         .replace(/(?:ips-education\/assets\/)+/gi, `${rootFolder}/`)
         .replace(/f_auto,q_auto\/ips-education\/assets\/f_auto,q_auto\/ips-education\/assets\//gi, `f_auto,q_auto/${rootFolder}/`);
 
-      if (
-        fixedUrl.includes('/image/upload/') &&
-        (fixedUrl.includes('/Documents/') || /\.pdf($|\?|#)/i.test(fixedUrl))
-      ) {
-        fixedUrl = fixedUrl.replace('/image/upload/', '/raw/upload/');
-      }
-
       if (!fixedUrl.includes('/upload/')) {
         const isVideo = fixedUrl.includes('/Videos/') || /\.(mp4|webm|mov|avi|mkv|flv|wmv|m4v)$/i.test(fixedUrl);
-        const isRaw = /\.(doc|docx|xls|xlsx|zip|txt|csv|pdf)$/i.test(fixedUrl) || fixedUrl.includes('/Documents/');
+        const isRaw = /\.(doc|docx|xls|xlsx|zip|txt|csv)$/i.test(fixedUrl);
         const typePrefix = isVideo ? 'video/upload' : isRaw ? 'raw/upload' : 'image/upload';
         if (rootFolder && fixedUrl.includes(`/${rootFolder}/`)) {
           fixedUrl = fixedUrl.replace(`/${rootFolder}/`, `/${typePrefix}/${rootFolder}/`);
@@ -265,13 +258,16 @@ export function getAssetUrl(url?: any): string {
 
       fixedUrl = fixedUrl.replace(/\.pdf\.pdf(?=($|\?|#))/gi, '.pdf');
 
-      // Inject f_auto,q_auto for Cloudinary images to save up to 90% bandwidth
+      // Inject f_auto,q_auto for standard Cloudinary images to save bandwidth,
+      // avoiding PDFs and explicit transformation chains like pg_ (PDF page preview) or f_jpg
       if (
         fixedUrl.includes('/image/upload/') &&
         !fixedUrl.includes('/image/upload/f_auto') &&
         !fixedUrl.includes('f_auto') &&
         !fixedUrl.includes('/raw/upload/') &&
-        !/\.pdf($|\?|#)/i.test(fixedUrl)
+        !/\.pdf($|\?|#)/i.test(fixedUrl) &&
+        !fixedUrl.includes('pg_') &&
+        !fixedUrl.includes('f_jpg')
       ) {
         fixedUrl = fixedUrl.replace('/image/upload/', '/image/upload/f_auto,q_auto/');
       }
@@ -349,8 +345,7 @@ export function getAssetUrl(url?: any): string {
   ) {
     resourcePrefix = 'video/upload';
   } else if (
-    /\.(doc|docx|xls|xlsx|zip|txt|csv|pdf)$/i.test(lowerPath) ||
-    lowerPath.includes('documents/')
+    /\.(doc|docx|xls|xlsx|zip|txt|csv)$/i.test(lowerPath)
   ) {
     resourcePrefix = 'raw/upload';
   }

@@ -130,7 +130,11 @@ export function getCloudinaryPdfThumbnailUrl(url?: string | null, page = 1, widt
     if (cdnUrl.includes("/image/upload/")) {
       const parts = cdnUrl.split("/image/upload/");
       const transformation = `pg_${page},f_jpg,w_${width},q_auto,c_limit/`;
-      const rest = parts[1];
+      let rest = parts[1];
+      // Strip any previous transformation if rest already had one
+      rest = rest.replace(/^(?:pg_\d+[^/]*\/)+/i, "").replace(/^(?:f_auto,q_auto\/)+/i, "");
+      // Replace .pdf with .jpg so the URL delivers an image format for browser <img> tags
+      rest = rest.replace(/\.pdf(?=($|\?|#))/gi, ".jpg");
       return `${parts[0]}/image/upload/${transformation}${rest}`;
     }
   }
