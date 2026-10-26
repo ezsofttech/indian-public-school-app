@@ -31,31 +31,31 @@ export interface HeroSlide {
 }
 
 const TITLE_SIZE_CLASSES: Record<string, string> = {
-  sm: "text-[10px] px-2.5 py-0.5",
-  md: "text-xs px-3.5 py-1",
-  lg: "text-sm px-4 py-1.5",
-  xl: "text-base px-5 py-2",
+  sm: "text-[10px] sm:text-xs px-2.5 sm:px-3 py-0.5 sm:py-1",
+  md: "text-[11px] sm:text-xs px-3 sm:px-3.5 py-0.5 sm:py-1",
+  lg: "text-xs sm:text-sm px-3.5 sm:px-4 py-1 sm:py-1.5",
+  xl: "text-sm sm:text-base px-4 sm:px-5 py-1.5 sm:py-2",
 };
 
 const H1_SIZE_CLASSES: Record<string, string> = {
-  sm: "text-lg sm:text-2xl lg:text-3xl font-bold",
-  md: "text-xl sm:text-3xl lg:text-4xl font-extrabold",
-  lg: "text-2xl sm:text-4xl lg:text-5xl font-extrabold",
-  xl: "text-3xl sm:text-5xl lg:text-6xl font-extrabold",
+  sm: "text-base sm:text-2xl lg:text-3xl font-bold",
+  md: "text-lg sm:text-3xl lg:text-4xl font-extrabold",
+  lg: "text-xl sm:text-4xl lg:text-5xl font-extrabold",
+  xl: "text-2xl sm:text-5xl lg:text-6xl font-extrabold",
 };
 
 const H2_SIZE_CLASSES: Record<string, string> = {
-  sm: "text-lg sm:text-2xl lg:text-3xl font-bold",
-  md: "text-xl sm:text-3xl lg:text-4xl font-extrabold",
-  lg: "text-2xl sm:text-4xl lg:text-5xl font-extrabold",
-  xl: "text-3xl sm:text-5xl lg:text-6xl font-extrabold",
+  sm: "text-sm sm:text-xl lg:text-2xl font-bold",
+  md: "text-base sm:text-2xl lg:text-3xl font-extrabold",
+  lg: "text-lg sm:text-3xl lg:text-4xl font-extrabold",
+  xl: "text-xl sm:text-4xl lg:text-5xl font-extrabold",
 };
 
 const DESC_SIZE_CLASSES: Record<string, string> = {
-  sm: "text-xs sm:text-sm",
-  md: "text-sm sm:text-base lg:text-lg",
-  lg: "text-base sm:text-lg lg:text-xl",
-  xl: "text-lg sm:text-xl lg:text-2xl",
+  sm: "text-[11px] sm:text-xs",
+  md: "text-xs sm:text-sm lg:text-base",
+  lg: "text-sm sm:text-base lg:text-lg",
+  xl: "text-base sm:text-lg lg:text-xl",
 };
 
 export function Hero() {
@@ -117,14 +117,18 @@ export function Hero() {
   const h2SizeClass = H2_SIZE_CLASSES[currentSlide.fontSizeH2 || "md"] || H2_SIZE_CLASSES.md;
   const descSizeClass = DESC_SIZE_CLASSES[currentSlide.fontSizeDescription || "md"] || DESC_SIZE_CLASSES.md;
 
-  const hasTextContent = showText && (Boolean(rawTitle) || Boolean(rawH1) || Boolean(rawH2) || Boolean(rawDescription));
+  const hasTitle = Boolean(rawTitle);
+  const hasH1 = Boolean(rawH1);
+  const hasH2 = Boolean(rawH2);
+  const hasDesc = Boolean(rawDescription);
+  const hasDetailedContent = hasH1 || hasH2 || hasDesc;
+  const hasTextContent = showText && (hasTitle || hasDetailedContent);
 
-  // Determine mobile-friendly object-fit styling
+  // Determine mobile-friendly object-fit styling (default to 'cover' so banner images seamlessly fill the hero without black voids)
   const isContainDesktop = currentSlide.objectFit === "contain";
-  // Default to contain on mobile screens so people and posters are never chopped off
   const isContainMobile = currentSlide.mobileObjectFit
     ? currentSlide.mobileObjectFit === "contain"
-    : true;
+    : currentSlide.objectFit === "contain";
 
   const objectFitClass =
     isContainDesktop && isContainMobile
@@ -181,10 +185,10 @@ export function Hero() {
       ref={ref}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className={`relative isolate overflow-hidden bg-slate-950 flex items-center transition-[min-height] duration-500 ${
+      className={`relative isolate overflow-hidden bg-slate-950 flex items-end sm:items-center transition-[min-height] duration-500 select-none ${
         hasTextContent
-          ? "min-h-[46svh] max-h-[60svh] sm:max-h-none sm:min-h-[75svh] lg:min-h-[90svh]"
-          : "min-h-[36svh] max-h-[50svh] sm:max-h-none sm:min-h-[60svh] md:min-h-[75svh] lg:min-h-[90svh]"
+          ? "h-[78vw] min-h-[320px] max-h-[440px] sm:h-auto sm:max-h-none sm:min-h-[75svh] lg:min-h-[90svh]"
+          : "h-[54vw] min-h-[210px] max-h-[320px] sm:h-auto sm:max-h-none sm:min-h-[60svh] md:min-h-[75svh] lg:min-h-[90svh]"
       }`}
     >
       {/* Background Banner Image with Smooth Cross-Fade Animation */}
@@ -246,7 +250,7 @@ export function Hero() {
 
       {/* Main Banner Content (Title, H1, H2, Description) - Rendered ONLY if showText === true */}
       {hasTextContent && (
-        <div className="container-page relative z-20 py-12 sm:py-20 lg:py-28 flex flex-col justify-center px-4 sm:px-10 lg:px-20">
+        <div className="container-page relative z-20 pb-16 pt-4 sm:py-20 lg:py-28 flex flex-col items-center sm:items-start justify-end sm:justify-center px-4 sm:px-10 lg:px-20 pointer-events-none">
           <AnimatePresence mode="wait">
             <motion.div
               key={"content-" + currentIndex}
@@ -254,7 +258,11 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.5 }}
-              className={`max-w-4xl ${!enableOverlay ? "drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)] bg-black/50 p-4 sm:p-8 rounded-2xl sm:rounded-3xl backdrop-blur-xs border border-white/10" : ""}`}
+              className={`pointer-events-auto transition-all duration-300 max-w-4xl sm:mx-0 ${
+                !enableOverlay && hasDetailedContent
+                  ? "bg-slate-950/40 sm:bg-black/50 p-3.5 sm:p-8 rounded-2xl sm:rounded-3xl backdrop-blur-xs border border-white/10 sm:drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)] text-center sm:text-left"
+                  : "text-center sm:text-left"
+              }`}
             >
               {/* 1. Green Title Badge (Rendered ONLY if provided) */}
               {rawTitle && (
@@ -262,9 +270,11 @@ export function Hero() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, ease: EASE }}
-                  className={`inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-400/15 font-bold tracking-[0.16em] text-emerald-300 uppercase backdrop-blur-md shadow-md mb-3 sm:mb-4 ${titleSizeClass}`}
+                  className={`inline-flex items-center justify-center rounded-full border border-emerald-400/40 bg-slate-950/45 sm:bg-emerald-400/15 font-bold tracking-wide sm:tracking-[0.16em] text-emerald-300 uppercase backdrop-blur-md shadow-md mb-2 sm:mb-4 sm:w-fit ${titleSizeClass}`}
                 >
-                  <span>{rawTitle}</span>
+                  <span className="leading-tight sm:leading-normal text-center sm:text-left [text-wrap:balance] sm:[text-wrap:normal]">
+                    {rawTitle}
+                  </span>
                 </motion.div>
               )}
 
@@ -274,7 +284,7 @@ export function Hero() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
-                  className={`font-display font-extrabold leading-[1.12] sm:leading-[1.08] text-white drop-shadow-lg ${h1SizeClass}`}
+                  className={`font-display font-extrabold leading-tight sm:leading-[1.08] text-white drop-shadow-lg [text-wrap:balance] sm:[text-wrap:normal] break-words ${h1SizeClass}`}
                 >
                   {rawH1}
                 </motion.h1>
@@ -286,7 +296,7 @@ export function Hero() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
-                  className={`mt-1 font-display font-extrabold leading-[1.12] sm:leading-[1.08] bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent drop-shadow-md ${h2SizeClass}`}
+                  className={`mt-1 font-display font-extrabold leading-tight sm:leading-[1.08] bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent drop-shadow-md [text-wrap:balance] sm:[text-wrap:normal] break-words ${h2SizeClass}`}
                 >
                   {rawH2}
                 </motion.h2>
@@ -298,7 +308,7 @@ export function Hero() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.35, ease: EASE }}
-                  className={`mt-4 sm:mt-6 max-w-2xl leading-relaxed text-slate-100 font-normal drop-shadow-md ${descSizeClass}`}
+                  className={`mt-4 sm:mt-6 max-w-2xl leading-relaxed text-slate-100 font-normal drop-shadow-md sm:[text-wrap:normal] ${descSizeClass}`}
                 >
                   {rawDescription}
                 </motion.p>
@@ -315,34 +325,36 @@ export function Hero() {
             type="button"
             aria-label="Previous Slide"
             onClick={goToPrev}
-            className="absolute left-2 sm:left-6 lg:left-8 top-1/2 z-30 -translate-y-1/2 rounded-full bg-black/25 sm:bg-transparent backdrop-blur-2xs sm:backdrop-blur-none text-white/85 hover:text-white transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer group focus:outline-none p-1.5 sm:p-2"
+            className="absolute left-2 sm:left-6 lg:left-8 top-[30%] sm:top-1/2 z-30 -translate-y-1/2 size-8 sm:size-auto rounded-full sm:rounded-none bg-slate-950/45 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none border border-white/15 sm:border-0 shadow-lg sm:shadow-none flex items-center justify-center p-1.5 sm:p-2 text-white/85 sm:text-white/75 hover:text-white transition-all duration-300 hover:scale-105 sm:hover:scale-110 active:scale-95 cursor-pointer focus:outline-none"
           >
-            <ChevronLeft className="size-6 sm:size-9 transition-transform group-hover:-translate-x-0.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" />
+            <ChevronLeft className="size-4.5 sm:size-9 transition-transform group-hover:-translate-x-0.5 sm:drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" />
           </button>
           <button
             type="button"
             aria-label="Next Slide"
             onClick={goToNext}
-            className="absolute right-2 sm:right-6 lg:right-8 top-1/2 z-30 -translate-y-1/2 rounded-full bg-black/25 sm:bg-transparent backdrop-blur-2xs sm:backdrop-blur-none text-white/85 hover:text-white transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer group focus:outline-none p-1.5 sm:p-2"
+            className="absolute right-2 sm:right-6 lg:right-8 top-[30%] sm:top-1/2 z-30 -translate-y-1/2 size-8 sm:size-auto rounded-full sm:rounded-none bg-slate-950/45 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none border border-white/15 sm:border-0 shadow-lg sm:shadow-none flex items-center justify-center p-1.5 sm:p-2 text-white/85 sm:text-white/75 hover:text-white transition-all duration-300 hover:scale-105 sm:hover:scale-110 active:scale-95 cursor-pointer focus:outline-none"
           >
-            <ChevronRight className="size-6 sm:size-9 transition-transform group-hover:translate-x-0.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" />
+            <ChevronRight className="size-4.5 sm:size-9 transition-transform group-hover:translate-x-0.5 sm:drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" />
           </button>
 
           {/* Indicator Dots */}
-          <div className="absolute bottom-4 sm:bottom-6 inset-x-0 z-30 flex justify-center items-center gap-2">
-            {slides.map((_, idx) => (
-              <button
-                key={idx}
-                type="button"
-                aria-label={`Go to slide ${idx + 1}`}
-                onClick={() => setCurrentIndex(idx)}
-                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                  idx === currentIndex
-                    ? "w-7 sm:w-8 bg-emerald-400 shadow-xs"
-                    : "w-2 bg-white/40 hover:bg-white/70"
-                }`}
-              />
-            ))}
+          <div className="absolute bottom-11 sm:bottom-6 inset-x-0 z-30 flex justify-center items-center pointer-events-none">
+            <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-0 sm:py-0 rounded-full sm:rounded-none bg-slate-950/40 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none border border-white/10 sm:border-0 shadow-lg sm:shadow-none pointer-events-auto">
+              {slides.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  aria-label={`Go to slide ${idx + 1}`}
+                  onClick={() => setCurrentIndex(idx)}
+                  className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                    idx === currentIndex
+                      ? "w-6 sm:w-8 bg-emerald-400 sm:shadow-xs"
+                      : "w-1.5 sm:w-2 bg-white/40 hover:bg-white/70"
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </>
       )}
