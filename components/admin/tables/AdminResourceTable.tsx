@@ -651,7 +651,9 @@ export function HeaderFooterSettingsCard({
       { title: "CBSE Affiliation Details", url: "/about-us/affiliation", group: "Important Pages" },
       { title: "Student Admissions", url: "/admission", group: "Important Pages" },
       { title: "Career Opportunities", url: "/careers", group: "Important Pages" },
-      { title: "Photo & Media Gallery", url: "/gallery", group: "Important Pages" },
+      { title: "Pictures & Photo Albums", url: "/gallery/album", group: "Important Pages" },
+      { title: "Photo & Picture Gallery", url: "/gallery", group: "Important Pages" },
+      { title: "Video Gallery", url: "/gallery/videos", group: "Important Pages" },
       { title: "Contact Us", url: "/contact-us", group: "Important Pages" },
       { title: "CBSE Official Portal (cbse.gov.in)", url: "https://www.cbse.gov.in", group: "Important Pages" },
 

@@ -570,16 +570,6 @@ export function generateDisclosureHtmlTemplate(opts: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       rows: (sec.items || []).map((row: any, rIdx: number) => {
         let rawUrl = row.view?.url ? String(row.view.url).trim() : "";
-        if (rawUrl) {
-          // Cloudinary PDFs and documents are stored under raw/upload, not image/upload
-          if (
-            rawUrl.includes("cloudinary.com") &&
-            rawUrl.includes("/image/upload/") &&
-            (rawUrl.includes("/Documents/") || /\.pdf($|\?|#)/i.test(rawUrl))
-          ) {
-            rawUrl = rawUrl.replace("/image/upload/", "/raw/upload/");
-          }
-        }
         const label = row.view?.label?.trim() || "VIEW";
         const docCell = rawUrl
           ? {

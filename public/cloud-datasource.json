@@ -528,7 +528,7 @@
                 },
                 {
                   "title": "Gallery",
-                  "href": "/gallery-album"
+                  "href": "/gallery/album"
                 }
               ]
             },
@@ -2835,7 +2835,7 @@
           },
           {
             "title": "Gallery",
-            "href": "/gallery-album"
+            "href": "/gallery/album"
           }
         ]
       },
@@ -2919,7 +2919,7 @@
       "parentId": null,
       "publicId": "MENU-MU4ZMNOU-SKLH0",
       "slug": "gallery",
-      "targetUrl": "/gallery-album",
+      "targetUrl": "/gallery/album",
       "title": "Gallery",
       "updatedAt": "2026-10-15T02:57:04.290Z"
     },
@@ -3319,7 +3319,7 @@
       "parentId": "6aa902ccaf2040a7267673c7",
       "publicId": "MENU-MU4ZMPQ0-4AL85",
       "slug": "album",
-      "targetUrl": "/gallery-album",
+      "targetUrl": "/gallery/album",
       "title": "Album",
       "updatedAt": "2026-10-15T02:57:04.341Z"
     },
@@ -4657,7 +4657,7 @@
       "order": 0,
       "parentId": null,
       "publicId": "PAG-MU2P6HW7-8PMEX",
-      "targetUrl": "/gallery-album",
+      "targetUrl": "/gallery/album",
       "textContent": "",
       "title": "Gallery Album",
       "updatedAt": "2026-09-17T06:45:14.960Z"

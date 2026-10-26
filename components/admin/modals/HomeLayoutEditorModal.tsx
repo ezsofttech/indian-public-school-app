@@ -231,9 +231,9 @@ export function HomeLayoutEditorModal({
       { title: "Contact Us (Section)", url: "/#contact" },
       { title: "Chairman's Message", url: "/about/chairman-message" },
       { title: "Principal's Desk", url: "/about/principal-message" },
-      { title: "Campus Life", url: "/#campus-life" },
       { title: "Gallery (Section)", url: "/#gallery" },
-      { title: "Gallery Album", url: "/gallery-album" },
+      { title: "Gallery Album", url: "/gallery/album" },
+      { title: "Gallery Videos", url: "/gallery/videos" },
       { title: "Enquiry (Section)", url: "/#enquiry" },
       { title: "Mandatory Disclosure", url: "/mandatory-disclosure" },
       { title: "Parent Portal", url: "/connectivity/parent-teacher-meeting" },
@@ -519,6 +519,7 @@ export function HomeLayoutEditorModal({
         hero.slides = hero.slides.map((s: any) => ({
           ...s,
           bannerUrl: toCleanRelativeAssetPath(s.bannerUrl) || s.bannerUrl,
+          ...(s.mobileBannerUrl ? { mobileBannerUrl: toCleanRelativeAssetPath(s.mobileBannerUrl) || s.mobileBannerUrl } : {}),
         }));
       }
       if (hero.bannerUrl) {

@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { X, Search, Image as ImageIcon, ChevronLeft, ChevronRight, Download, ExternalLink, Filter, LayoutGrid, GraduationCap } from "lucide-react";
+import { X, Search, Image as ImageIcon, Video, ChevronLeft, ChevronRight, Download, ExternalLink, Filter, LayoutGrid, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import { EASE } from "@/lib/motion-presets";
 import { cn, getAssetUrl } from "@/lib/utils";
@@ -491,10 +491,30 @@ export function GalleryAlbumClient({
             )}
           </nav>
 
-          <div className="mt-2 space-y-2.5">
-            <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl drop-shadow-md leading-tight font-[var(--font-display)]">
-              {isAlbumMode ? "Photo Albums" : "Gallery"}
-            </h1>
+          <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between w-full">
+            <div className="space-y-2.5">
+              <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl drop-shadow-md leading-tight font-[var(--font-display)]">
+                {isAlbumMode ? "Photo Albums" : "Gallery"}
+              </h1>
+            </div>
+
+            {/* Gallery Format Switcher */}
+            <div className="flex items-center gap-2 self-start sm:self-auto rounded-xl border border-white/20 bg-black/40 p-1.5 backdrop-blur-md">
+              <Link
+                href="/gallery/album"
+                className="inline-flex items-center gap-2 rounded-lg bg-[var(--gold)] px-3.5 py-1.5 text-xs font-bold text-navy-950 shadow-sm"
+              >
+                <ImageIcon className="size-3.5" />
+                <span>Photos</span>
+              </Link>
+              <Link
+                href="/gallery/videos"
+                className="inline-flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+              >
+                <Video className="size-3.5" />
+                <span>Videos</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

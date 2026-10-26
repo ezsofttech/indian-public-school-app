@@ -638,8 +638,17 @@ export function RecordDialog({
                     const defaultSitePages = [
                       { title: "Home", url: "/" },
                       { title: "About Us", url: "/about" },
-                      { title: "Admission", url: "/admission" },
+                      { title: "Student Admissions", url: "/admission" },
+                      { title: "Pictures & Photo Albums", url: "/gallery/album" },
+                      { title: "Photo & Picture Gallery", url: "/gallery" },
+                      { title: "Video Gallery", url: "/gallery/videos" },
+                      { title: "Academics & Courses Offered", url: "/academics/courses-offered" },
+                      { title: "Mandatory Public Disclosure", url: "/mandatory-disclosure" },
+                      { title: "School Establishment & Trust", url: "/about-us/school-establishment" },
+                      { title: "CBSE Affiliation Details", url: "/about-us/affiliation" },
+                      { title: "Career Opportunities", url: "/careers" },
                       { title: "Notice & News", url: "/news" },
+                      { title: "Contact Us", url: "/contact-us" },
                       { title: "Other Link", url: "/other" },
                     ];
 

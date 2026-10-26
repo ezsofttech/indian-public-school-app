@@ -21,6 +21,11 @@ const nextConfig: NextConfig = {
         destination: "/press-release",
         permanent: true,
       },
+      {
+        source: "/gallery-album",
+        destination: "/gallery/album",
+        permanent: true,
+      },
     ];
   },
 };

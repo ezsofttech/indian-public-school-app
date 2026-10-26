@@ -27,7 +27,7 @@
     "parentId": null,
     "publicId": "MENU-MU4ZMNOU-SKLH0",
     "slug": "gallery",
-    "targetUrl": "/gallery-album",
+    "targetUrl": "/gallery/album",
     "title": "Gallery",
     "updatedAt": "2026-10-15T02:57:04.290Z"
   },
@@ -427,7 +427,7 @@
     "parentId": "6aa902ccaf2040a7267673c7",
     "publicId": "MENU-MU4ZMPQ0-4AL85",
     "slug": "album",
-    "targetUrl": "/gallery-album",
+    "targetUrl": "/gallery/album",
     "title": "Album",
     "updatedAt": "2026-10-15T02:57:04.341Z"
   },

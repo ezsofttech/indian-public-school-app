@@ -6,12 +6,14 @@ import { DEFAULT_HERO_IMAGE } from "@/lib/site-data";
 
 export interface SmartImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallbackSrc?: string;
+  mobileSrc?: string;
   skeletonClassName?: string;
   showSkeleton?: boolean;
 }
 
 export function SmartImage({
   src,
+  mobileSrc,
   alt = "",
   className,
   containerClassName,
@@ -88,19 +90,38 @@ export function SmartImage({
         />
       )}
 
-      <img
-        {...props}
-        ref={imgRef}
-        src={currentSrc}
-        alt={alt}
-        onLoad={handleLoad}
-        onError={handleError}
-        className={cn(
-          "transition-opacity duration-300 ease-out z-10",
-          isLoaded ? "opacity-100" : "opacity-90",
-          className
-        )}
-      />
+      {mobileSrc && !hasError ? (
+        <picture className="contents">
+          <source media="(max-width: 640px)" srcSet={resolveSrc(mobileSrc)} />
+          <img
+            {...props}
+            ref={imgRef}
+            src={currentSrc}
+            alt={alt}
+            onLoad={handleLoad}
+            onError={handleError}
+            className={cn(
+              "transition-opacity duration-300 ease-out z-10",
+              isLoaded ? "opacity-100" : "opacity-90",
+              className
+            )}
+          />
+        </picture>
+      ) : (
+        <img
+          {...props}
+          ref={imgRef}
+          src={currentSrc}
+          alt={alt}
+          onLoad={handleLoad}
+          onError={handleError}
+          className={cn(
+            "transition-opacity duration-300 ease-out z-10",
+            isLoaded ? "opacity-100" : "opacity-90",
+            className
+          )}
+        />
+      )}
     </div>
   );
 }

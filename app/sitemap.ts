@@ -34,7 +34,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "", priority: 1.0, changeFrequency: "daily" },
     { path: "/contact-us", priority: 0.85, changeFrequency: "monthly" },
     { path: "/careers", priority: 0.75, changeFrequency: "monthly" },
-    { path: "/gallery-album", priority: 0.75, changeFrequency: "weekly" },
+    { path: "/gallery", priority: 0.8, changeFrequency: "weekly" },
+    { path: "/gallery/album", priority: 0.8, changeFrequency: "weekly" },
+    { path: "/gallery/videos", priority: 0.8, changeFrequency: "weekly" },
     { path: "/press-release", priority: 0.75, changeFrequency: "weekly" },
   ];
 

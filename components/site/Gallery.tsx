@@ -410,7 +410,7 @@ export function Gallery() {
 
         <div className="mt-12 text-center">
           <Link
-            href={active !== "All" ? `/album/${encodeURIComponent(active.toLowerCase())}` : "/gallery-album"}
+            href={active !== "All" ? `/album/${encodeURIComponent(active.toLowerCase())}` : "/gallery/album"}
             className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lift transition-all hover:-translate-y-0.5 hover:shadow-xl"
           >
             <span>{active !== "All" ? `Explore ${active} Photo Albums` : "Explore All Photo Albums"}</span>
