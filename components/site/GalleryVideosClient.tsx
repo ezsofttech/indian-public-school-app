@@ -1,15 +1,11 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import {
-  Video,
   Play,
   X,
-  Grid,
-  Tv,
   ChevronLeft,
   ChevronRight,
   Share2,
@@ -18,11 +14,7 @@ import {
   Image as ImageIcon,
   ExternalLink,
   Film,
-  Search,
   Youtube,
-  Eye,
-  Clock,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getOptionalApi, unwrapCollection } from "@/lib/api-client";
@@ -53,18 +45,10 @@ export interface ChannelInfo {
   url: string;
   avatarUrl?: string;
   description?: string;
+  subscriberCount?: string | number;
+  videoCount?: string | number;
+  viewCount?: string | number;
 }
-
-const VIDEO_CATEGORIES = [
-  "All",
-  "Events & Celebrations",
-  "Campus & Tour",
-  "Sports & Activities",
-  "Academics & Learning",
-  "Hostel & Student Life",
-] as const;
-
-type VideoCategory = (typeof VIDEO_CATEGORIES)[number];
 
 const DEFAULT_CHANNEL: ChannelInfo = {
   channelId: "UCLnjAG02fRWXCTM3ZFM_o9A",
@@ -72,7 +56,12 @@ const DEFAULT_CHANNEL: ChannelInfo = {
   title: "Indian Public School, Sambalpur",
   url: "https://www.youtube.com/@ipssbp",
   description: "Official YouTube Channel of Indian Public School, Sambalpur",
+  subscriberCount: "755+",
+  videoCount: "91",
+  viewCount: "96.5K+",
 };
+
+const ITEMS_PER_PAGE = 12;
 
 // Fallback seed videos from official @ipssbp channel to guarantee immediate rendering
 const FALLBACK_VIDEOS: VideoItem[] = [
@@ -101,6 +90,7 @@ const FALLBACK_VIDEOS: VideoItem[] = [
     description: "A glimpse of the scenic campus, smart classrooms, and infrastructure at Indian Public School.",
     poster: "https://i.ytimg.com/vi/Czb0Gp7VZpU/hqdefault.jpg",
     date: "2026-10-05T10:00:00.000Z",
+    duration: "0:32",
     channelTitle: "Indian Public School, Sambalpur",
     source: "youtube",
   },
@@ -114,6 +104,7 @@ const FALLBACK_VIDEOS: VideoItem[] = [
     description: "Little children celebrating the agrarian festival Nuakhai with traditional fervor and joy.",
     poster: "https://i.ytimg.com/vi/NU-Jj5oJxxU/hqdefault.jpg",
     date: "2026-09-20T08:30:00.000Z",
+    duration: "0:48",
     channelTitle: "Indian Public School, Sambalpur",
     source: "youtube",
   },
@@ -127,6 +118,7 @@ const FALLBACK_VIDEOS: VideoItem[] = [
     description: "Creative arts, crafts and imaginative activities by pre-primary and primary students.",
     poster: "https://i.ytimg.com/vi/CCt99Xyna8U/hqdefault.jpg",
     date: "2026-09-12T05:45:00.000Z",
+    duration: "0:55",
     channelTitle: "Indian Public School, Sambalpur",
     source: "youtube",
   },
@@ -143,21 +135,24 @@ export function GalleryVideosClient() {
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [channel, setChannel] = useState<ChannelInfo>(DEFAULT_CHANNEL);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedCategory, setSelectedCategory] = useState<VideoCategory>("All");
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "title">("newest");
-  const [viewMode, setViewMode] = useState<"grid" | "theater">("grid");
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [activeModalVideo, setActiveModalVideo] = useState<VideoItem | null>(null);
-  const [theaterSelectedVideo, setTheaterSelectedVideo] = useState<VideoItem | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const gridTopRef = useRef<HTMLDivElement>(null);
 
   // Fetch YouTube Channel Videos from API
   useEffect(() => {
     let isMounted = true;
     const fetchVideos = async () => {
       try {
-        // 1. Try dedicated YouTube videos endpoint
-        let response = await getOptionalApi<any>("/youtube/videos?limit=100");
+        // 1. Fetch videos and channel info in parallel
+        const [videosRes, channelRes] = await Promise.all([
+          getOptionalApi<any>("/youtube/videos?limit=100"),
+          getOptionalApi<any>("/youtube/channel"),
+        ]);
+
+        let response = videosRes;
 
         // 2. Fallback to /gallery/videos if needed
         if (!response?.data) {
@@ -169,16 +164,36 @@ export function GalleryVideosClient() {
           response = await getOptionalApi<any>("/gallery?limit=500");
         }
 
+        // Extract channel info from meta, data, or dedicated endpoint
+        const channelMeta =
+          (videosRes as any)?.meta?.channel ||
+          (videosRes?.data as any)?.channel ||
+          channelRes?.data;
+
+        if (channelMeta && isMounted) {
+          setChannel((prev) => ({
+            ...prev,
+            ...channelMeta,
+            url: channelMeta.url || `https://www.youtube.com/${channelMeta.handle || "@ipssbp"}`,
+          }));
+        }
+
         const rawList = unwrapCollection<any>(response);
 
         if (Array.isArray(rawList) && rawList.length > 0) {
           const mapped: VideoItem[] = rawList
             .filter((item: any) => {
-              // Ensure we only use YouTube items or explicit video items, not Cloudinary raw video files
-              const isYt = item.isYouTube || item.id?.startsWith("yt-") || String(item.mimeType || "").includes("youtube");
+              const isYt =
+                item.isYouTube ||
+                item.id?.startsWith("yt-") ||
+                String(item.mimeType || "").includes("youtube");
               const hasYtUrl = Array.isArray(item.fileUrl)
-                ? item.fileUrl.some((u: string) => String(u).includes("youtube.com") || String(u).includes("youtu.be"))
-                : typeof item.url === "string" && (item.url.includes("youtube.com") || item.url.includes("youtu.be"));
+                ? item.fileUrl.some(
+                    (u: string) =>
+                      String(u).includes("youtube.com") || String(u).includes("youtu.be"),
+                  )
+                : typeof item.url === "string" &&
+                  (item.url.includes("youtube.com") || item.url.includes("youtu.be"));
               return isYt || hasYtUrl || item.embedUrl;
             })
             .map((item: any, idx: number) => {
@@ -214,12 +229,8 @@ export function GalleryVideosClient() {
 
           if (isMounted) {
             setVideos(mapped.length > 0 ? mapped : FALLBACK_VIDEOS);
-            if (response?.data && typeof response.data === "object" && !Array.isArray(response.data) && (response.data as any).channel) {
-              setChannel((response.data as any).channel);
-            }
           }
         } else {
-          // If no API items returned, load fallback seed videos
           if (isMounted) {
             setVideos(FALLBACK_VIDEOS);
           }
@@ -238,64 +249,59 @@ export function GalleryVideosClient() {
     };
   }, []);
 
-  // Filtered & Sorted Videos
-  const filteredVideos = useMemo(() => {
-    let result = [...videos];
-
-    // Category filter
-    if (selectedCategory !== "All") {
-      result = result.filter(
-        (v) => v.category.toLowerCase() === selectedCategory.toLowerCase()
-      );
-    }
-
-    // Search keyword filter
-    if (searchQuery.trim().length > 0) {
-      const q = searchQuery.trim().toLowerCase();
-      result = result.filter(
-        (v) =>
-          v.title.toLowerCase().includes(q) ||
-          (v.description && v.description.toLowerCase().includes(q)) ||
-          v.category.toLowerCase().includes(q)
-      );
-    }
-
-    // Sorting
-    result.sort((a, b) => {
-      if (a.isFeatured) return -1;
-      if (b.isFeatured) return 1;
-
-      if (sortBy === "title") {
-        return a.title.localeCompare(b.title);
-      }
-      if (sortBy === "oldest") {
-        return (a.date || "").localeCompare(b.date || "");
-      }
-      return (b.date || "").localeCompare(a.date || "");
+  // Sorted list: latest videos first
+  const sortedVideos = useMemo(() => {
+    const list = [...videos];
+    list.sort((a, b) => {
+      const dateA = new Date(a.date || 0).getTime();
+      const dateB = new Date(b.date || 0).getTime();
+      return dateB - dateA;
     });
+    return list;
+  }, [videos]);
 
-    return result;
-  }, [videos, selectedCategory, searchQuery, sortBy]);
+  // Pagination Calculations
+  const totalPages = Math.max(1, Math.ceil(sortedVideos.length / ITEMS_PER_PAGE));
+  const paginatedVideos = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return sortedVideos.slice(start, start + ITEMS_PER_PAGE);
+  }, [sortedVideos, currentPage]);
 
-  // Category counts
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { All: videos.length };
-    for (const cat of VIDEO_CATEGORIES) {
-      if (cat === "All") continue;
-      counts[cat] = videos.filter(
-        (v) => v.category.toLowerCase() === cat.toLowerCase()
-      ).length;
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages || newPage === currentPage) return;
+    setCurrentPage(newPage);
+    if (gridTopRef.current) {
+      gridTopRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-    return counts;
-  }, [videos]);
+  };
 
-  // Featured video selection
-  const featuredVideo = useMemo(() => {
-    return videos.find((v) => v.isFeatured) || videos[0] || null;
-  }, [videos]);
+  // Generate page numbers with ellipses
+  const pageNumbers = useMemo(() => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
 
-  // Current theater video
-  const activeTheaterVideo = theaterSelectedVideo || featuredVideo;
+    const pages: (number | string)[] = [];
+    pages.push(1);
+
+    if (currentPage > 3) {
+      pages.push("...");
+    }
+
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (currentPage < totalPages - 2) {
+      pages.push("...");
+    }
+
+    pages.push(totalPages);
+    return pages;
+  }, [totalPages, currentPage]);
 
   // Handle share / copy link
   const handleCopyLink = (video: VideoItem) => {
@@ -315,95 +321,46 @@ export function GalleryVideosClient() {
   return (
     <div className="min-h-screen bg-background pb-24 text-foreground selection:bg-[var(--gold)] selection:text-navy-950">
       {/* Hero Header Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-navy-950 via-navy-deep to-navy-950 py-16 text-white sm:py-20 lg:py-24">
-        {/* Ambient glowing background accents */}
-        <div className="pointer-events-none absolute inset-0 opacity-20">
-          <div className="absolute -top-24 left-1/4 h-96 w-96 rounded-full bg-[var(--gold)] blur-3xl" />
-          <div className="absolute -bottom-24 right-1/4 h-96 w-96 rounded-full bg-red-600 blur-3xl" />
-        </div>
-
+      <section className="relative overflow-hidden bg-navy-950 py-10 text-white sm:py-14">
         <div className="container-page relative z-10">
-          {/* Breadcrumbs & Navigation */}
+          {/* Breadcrumbs Navigation */}
           <nav
             aria-label="Breadcrumbs"
-            className="flex flex-wrap items-center gap-2 text-xs font-medium tracking-wide sm:text-sm"
+            className="flex flex-wrap items-center gap-2 text-xs font-medium tracking-wide sm:text-sm text-white/70"
           >
-            <Link
-              href="/"
-              className="transition-colors hover:text-[var(--gold)] hover:underline text-white/80"
-            >
+            <Link href="/" className="transition-colors hover:text-white">
               Home
             </Link>
-            <span className="text-[var(--gold)] font-extrabold">*</span>
-            <Link
-              href="/gallery"
-              className="transition-colors hover:text-[var(--gold)] hover:underline text-white/80"
-            >
+            <span className="text-white/30">/</span>
+            <Link href="/gallery" className="transition-colors hover:text-white">
               Gallery
             </Link>
-            <span className="text-[var(--gold)] font-extrabold">*</span>
-            <span className="font-bold text-[var(--gold)] drop-shadow-sm">
-              Videos
-            </span>
+            <span className="text-white/30">/</span>
+            <span className="font-semibold text-white">Videos</span>
           </nav>
 
+          {/* Title and Top Channel Controls */}
           <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-3xl space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-red-500/40 bg-red-500/15 px-3.5 py-1 text-xs font-bold tracking-wider text-red-400 uppercase backdrop-blur-sm">
-                <Youtube className="size-4 text-red-500" />
-                <span>YouTube Channel Spotlight</span>
+            <div className="max-w-2xl space-y-2">
+              <div className="inline-flex items-center gap-2 rounded-full border border-red-500/40 bg-red-500/15 px-3 py-0.5 text-xs font-bold tracking-wider text-red-400 uppercase">
+                <Youtube className="size-3.5 text-red-500" />
+                <span>YouTube Channel</span>
               </div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl drop-shadow-md font-[var(--font-display)]">
-                School Life in Motion
+              <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl font-[var(--font-display)]">
+                School Video Gallery
               </h1>
-              <p className="text-base text-white/80 sm:text-lg">
-                Watch school events, annual celebrations, sports tournaments, campus tour glimpses, and learning moments broadcasted directly from our official YouTube channel.
+              <p className="text-sm text-white/75 sm:text-base">
+                Watch school events, annual celebrations, sports tournaments, and learning moments broadcasted directly from our official YouTube channel.
               </p>
             </div>
 
-            {/* Quick Switcher: Photos vs Videos */}
-            <div className="flex items-center gap-2 self-start rounded-xl border border-white/15 bg-white/5 p-1.5 backdrop-blur-md">
-              <Link
-                href="/gallery/album"
-                className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold tracking-wide text-white/80 transition-all hover:bg-white/10 hover:text-white"
-              >
-                <ImageIcon className="size-4" />
-                <span>Photos</span>
-              </Link>
-              <div className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold tracking-wide text-white shadow-sm">
-                <Youtube className="size-4 fill-white" />
-                <span>YouTube Videos ({videos.length})</span>
-              </div>
-            </div>
-          </div>
-
-          {/* YouTube Channel Banner Spotlight */}
-          <div className="mt-8 flex flex-col gap-4 rounded-2xl border border-white/15 bg-white/10 p-4 sm:p-5 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between shadow-lg">
-            <div className="flex items-center gap-3.5">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-red-600 text-white shadow-md">
-                <Youtube className="size-7 fill-white" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-bold text-white sm:text-base">
-                    {channel.title}
-                  </h2>
-                  <span className="rounded-full bg-white/15 px-2 py-0.5 text-[11px] font-mono text-red-300">
-                    {channel.handle}
-                  </span>
-                </div>
-                <p className="text-xs text-white/70">
-                  {channel.description || "Official YouTube channel broadcasting all campus events and celebrations"}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2.5 self-start sm:self-auto">
+            {/* Outside Subscribe & View Channel Controls */}
+            <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-auto">
               <a
                 href={`${channel.url}?sub_confirmation=1`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-transform hover:bg-red-700 hover:scale-105 active:scale-95"
+                className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-transform hover:bg-red-700 hover:scale-105 active:scale-95"
               >
                 <Youtube className="size-4 fill-white" />
                 <span>Subscribe</span>
@@ -412,278 +369,41 @@ export function GalleryVideosClient() {
                 href={channel.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/5 px-3.5 py-2 text-xs font-semibold text-white/90 transition-colors hover:bg-white/15 hover:text-white"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-xs font-semibold text-white/90 transition-colors hover:bg-white/15 hover:text-white"
               >
-                <span>Visit Channel</span>
+                <span>View Channel</span>
                 <ExternalLink className="size-3.5" />
               </a>
+              <Link
+                href="/gallery/album"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-xs font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+              >
+                <ImageIcon className="size-3.5" />
+                <span>Photos</span>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
       {/* Main Content Area */}
-      <section className="container-page mt-8 space-y-6">
-        {/* Category Filter Pills & Search */}
-        <div className="space-y-4">
-          {/* Category Filter Bar */}
-          <div className="flex flex-wrap items-center gap-2 border-b border-border/80 pb-4">
-            {VIDEO_CATEGORIES.map((cat) => {
-              const count = categoryCounts[cat] || 0;
-              const isActive = selectedCategory === cat;
-              return (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat)}
-                  className={cn(
-                    "flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition-all cursor-pointer",
-                    isActive
-                      ? "bg-red-600 text-white shadow-md shadow-red-600/20 scale-102"
-                      : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground border border-border/60"
-                  )}
-                >
-                  <span>{cat}</span>
-                  <span
-                    className={cn(
-                      "rounded-full px-2 py-0.5 text-[10px] font-extrabold",
-                      isActive
-                        ? "bg-white/25 text-white"
-                        : "bg-background text-muted-foreground"
-                    )}
-                  >
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
+      <section ref={gridTopRef} className="container-page mt-8 space-y-6">
+        {/* Simple Header Bar: Count & Page info */}
+        <div className="flex items-center justify-between border-b border-border/70 pb-3 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-foreground">
+              All Videos
+            </span>
+            <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">
+              {sortedVideos.length}
+            </span>
           </div>
 
-          {/* Sleek Toolbar: Title, Search, Sort, and View Mode */}
-          <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-4 sm:p-5 shadow-xs sm:flex-row sm:items-center sm:justify-between text-card-foreground">
-            {/* Search Input */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search campus videos..."
-                className="w-full rounded-xl border border-input bg-background pl-10 pr-9 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="size-3.5" />
-                </button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-3 self-end sm:self-auto">
-              {/* Sort Selector */}
-              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                <span>Sort:</span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="rounded-lg border border-input bg-background px-2.5 py-1.5 text-xs text-foreground focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 cursor-pointer"
-                >
-                  <option value="newest">Newest First</option>
-                  <option value="oldest">Oldest First</option>
-                  <option value="title">Title (A-Z)</option>
-                </select>
-              </div>
-
-              {/* View Mode Switcher */}
-              <div className="flex items-center rounded-lg border border-border bg-muted/40 p-1">
-                <button
-                  type="button"
-                  onClick={() => setViewMode("grid")}
-                  className={cn(
-                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
-                    viewMode === "grid"
-                      ? "bg-card text-foreground shadow-xs font-semibold"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                  title="Grid View"
-                >
-                  <Grid className="size-3.5" />
-                  <span>Grid</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode("theater")}
-                  className={cn(
-                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
-                    viewMode === "theater"
-                      ? "bg-card text-foreground shadow-xs font-semibold"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                  title="Theater View"
-                >
-                  <Tv className="size-3.5" />
-                  <span>Theater</span>
-                </button>
-              </div>
-            </div>
+          <div className="text-xs text-muted-foreground">
+            Page <span className="font-semibold text-foreground">{currentPage}</span> of{" "}
+            <span className="font-semibold text-foreground">{totalPages}</span>
           </div>
         </div>
-
-        {/* View Mode: Theater Showcase */}
-        {viewMode === "theater" && activeTheaterVideo && (
-          <section className="rounded-3xl border border-border bg-navy-950 p-6 text-white shadow-xl">
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              {/* Main Theater Player */}
-              <div className="space-y-4 lg:col-span-2">
-                <div className="overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl">
-                  <UniversalMedia
-                    src={activeTheaterVideo.src}
-                    title={activeTheaterVideo.title}
-                    poster={activeTheaterVideo.poster}
-                    controls={true}
-                    aspectRatio="video"
-                    objectFit="contain"
-                    autoPlay={false}
-                    className="w-full"
-                    containerClassName="w-full"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      {activeTheaterVideo.category ? (
-                        <span className="rounded-full bg-red-500/20 px-3 py-1 text-xs font-bold text-red-400 border border-red-500/30">
-                          {activeTheaterVideo.category}
-                        </span>
-                      ) : null}
-                      {activeTheaterVideo.isFeatured && (
-                        <span className="rounded-full bg-[var(--gold)]/20 px-2.5 py-0.5 text-xs font-semibold text-amber-400 border border-amber-400/30">
-                          Featured
-                        </span>
-                      )}
-                      <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-white/90">
-                        <Youtube className="size-3.5 text-red-500 fill-red-500" />
-                        <span>YouTube</span>
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleCopyLink(activeTheaterVideo)}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-                        title="Copy Video Link"
-                      >
-                        {copiedId === activeTheaterVideo.id ? (
-                          <>
-                            <Check className="size-3.5 text-emerald-400" />
-                            <span>Copied!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Share2 className="size-3.5" />
-                            <span>Share</span>
-                          </>
-                        )}
-                      </button>
-                      <a
-                        href={activeTheaterVideo.src}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-red-700 shadow-xs"
-                        title="Open directly on YouTube"
-                      >
-                        <Youtube className="size-3.5 fill-white" />
-                        <span>Watch on YouTube</span>
-                      </a>
-                    </div>
-                  </div>
-
-                  <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl font-[var(--font-display)]">
-                    {activeTheaterVideo.title}
-                  </h2>
-                  {activeTheaterVideo.description && (
-                    <p className="text-sm text-white/70 leading-relaxed">
-                      {activeTheaterVideo.description}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Theater Playlist Column */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                  <h3 className="text-sm font-semibold tracking-wider text-white/90 uppercase flex items-center gap-2">
-                    <Film className="size-4 text-red-400" />
-                    <span>Playlist ({filteredVideos.length})</span>
-                  </h3>
-                  <span className="text-xs text-white/60">Click to switch</span>
-                </div>
-                <div className="max-h-[500px] space-y-2 overflow-y-auto pr-1">
-                  {filteredVideos.map((vid, idx) => {
-                    const isSelected = vid.id === activeTheaterVideo.id;
-                    return (
-                      <button
-                        key={vid.id || idx}
-                        type="button"
-                        onClick={() => setTheaterSelectedVideo(vid)}
-                        className={cn(
-                          "w-full text-left flex items-start gap-3 rounded-xl p-2.5 transition-all cursor-pointer",
-                          isSelected
-                            ? "bg-white/15 border border-red-500/50 text-white shadow-sm"
-                            : "hover:bg-white/5 text-white/70 hover:text-white"
-                        )}
-                      >
-                        <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-black border border-white/10">
-                          {vid.poster ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={vid.poster}
-                              alt={vid.title}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : null}
-                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                            <Play
-                              className={cn(
-                                "size-4 transition-transform",
-                                isSelected
-                                  ? "text-red-500 fill-red-500 scale-125"
-                                  : "text-white/80"
-                              )}
-                            />
-                          </div>
-                        </div>
-                        <div className="min-w-0 flex-1 space-y-1">
-                          {vid.category ? (
-                            <span className="inline-block rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-red-300">
-                              {vid.category}
-                            </span>
-                          ) : null}
-                          <h4 className="line-clamp-2 text-xs font-semibold leading-snug">
-                            {vid.title}
-                          </h4>
-                          {vid.date && (
-                            <span className="flex items-center gap-1 text-[10px] text-white/50">
-                              <Calendar className="size-3" />
-                              {new Date(vid.date).toLocaleDateString("en-IN", {
-                                month: "short",
-                                year: "numeric",
-                              })}
-                            </span>
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
 
         {/* Video Cards Grid */}
         {loading ? (
@@ -693,114 +413,73 @@ export function GalleryVideosClient() {
               Loading YouTube Channel Videos...
             </p>
           </div>
-        ) : filteredVideos.length === 0 ? (
+        ) : paginatedVideos.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border py-16 text-center">
             <Film className="size-12 text-muted-foreground/40 mb-3" />
             <h3 className="text-lg font-semibold text-foreground">
-              No videos found
+              No videos available
             </h3>
             <p className="mt-1 text-sm text-muted-foreground max-w-md">
-              {searchQuery
-                ? `No videos matched the query "${searchQuery}". Try a different keyword or reset filters.`
-                : "There are currently no videos available in this category."}
+              There are currently no videos available from the channel.
             </p>
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery("");
-                  setSelectedCategory("All");
-                }}
-                className="mt-4 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700"
-              >
-                Reset Search
-              </button>
-            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredVideos.map((video, index) => {
+            {paginatedVideos.map((video, index) => {
               return (
                 <motion.article
                   key={video.id || index}
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: Math.min(index * 0.04, 0.4), ease: EASE }}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-xs transition-all hover:border-red-500/40 hover:shadow-xl hover:-translate-y-1"
+                  transition={{ duration: 0.25, delay: Math.min(index * 0.03, 0.3), ease: EASE }}
+                  className="group flex flex-col overflow-hidden rounded-xl border border-border/80 bg-card text-card-foreground shadow-xs transition-all hover:border-red-500/50 hover:shadow-md"
                 >
-                  {/* Video Thumbnail / Preview Container */}
+                  {/* Clean Video Thumbnail Frame */}
                   <div
                     onClick={() => setActiveModalVideo(video)}
-                    className="relative aspect-video w-full cursor-pointer overflow-hidden bg-black flex items-center justify-center"
+                    className="relative aspect-video w-full cursor-pointer overflow-hidden bg-neutral-900"
                   >
-                    {/* YouTube Poster Image */}
                     {video.poster ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={video.poster}
                         alt={video.title}
                         loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-102"
                       />
                     ) : null}
 
-                    {/* Gradient Overlay for high-contrast readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30" />
+                    {/* Subtle Darkening Overlay on hover */}
+                    <div className="absolute inset-0 bg-black/25 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
 
-                    {/* Featured badge top left */}
-                    {video.isFeatured && (
-                      <div className="absolute top-3 left-3 z-10 rounded-full bg-[var(--gold)] px-2.5 py-0.5 text-[11px] font-bold text-navy-950 shadow-sm flex items-center gap-1">
-                        <Sparkles className="size-3" />
-                        <span>Featured</span>
+                    {/* Simple Play Icon Button */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="flex size-12 items-center justify-center rounded-full bg-red-600/90 text-white shadow-md transition-transform duration-200 group-hover:scale-110 group-hover:bg-red-600">
+                        <Play className="size-5 translate-x-0.5 fill-current" />
                       </div>
-                    )}
-
-                    {/* YouTube Logo Badge top right */}
-                    <div className="absolute top-3 right-3 z-10 flex items-center gap-1 rounded-full bg-red-600/90 px-2 py-0.5 text-[10px] font-bold text-white shadow-md backdrop-blur-xs">
-                      <Youtube className="size-3.5 fill-white" />
-                      <span>YouTube</span>
                     </div>
 
-                    {/* Center Animated Play Button */}
-                    <div className="relative z-10 flex size-14 items-center justify-center rounded-full bg-red-600 text-white shadow-2xl transition-all duration-300 group-hover:scale-115 group-hover:bg-red-700">
-                      <Play className="size-6 translate-x-0.5 fill-current" />
-                    </div>
-
-                    {/* Category pill bottom left */}
-                    {video.category ? (
-                      <div className="absolute bottom-3 left-3 z-10">
-                        <span className="rounded-md bg-black/75 px-2.5 py-0.5 text-[11px] font-semibold text-white/95 backdrop-blur-sm border border-white/10">
-                          {video.category}
-                        </span>
-                      </div>
-                    ) : null}
-
-                    {/* Duration or Views bottom right */}
-                    {(video.duration || video.views) && (
-                      <div className="absolute bottom-3 right-3 z-10">
-                        <span className="flex items-center gap-1 rounded-md bg-black/75 px-2 py-0.5 text-[10px] font-medium text-white/90 backdrop-blur-sm">
-                          {video.duration ? (
-                            <>
-                              <Clock className="size-2.5" />
-                              <span>{video.duration}</span>
-                            </>
-                          ) : (
-                            <>
-                              <Eye className="size-2.5" />
-                              <span>{video.views}</span>
-                            </>
-                          )}
+                    {/* Simple Duration Badge (bottom-right only) */}
+                    {video.duration && (
+                      <div className="absolute bottom-2 right-2 z-10">
+                        <span className="rounded bg-black/85 px-1.5 py-0.5 text-[11px] font-medium text-white tracking-wide">
+                          {video.duration}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  {/* Card Content Details */}
-                  <div className="flex flex-1 flex-col justify-between p-5 space-y-4">
-                    <div className="space-y-2">
+                  {/* Simple Card Body */}
+                  <div className="flex flex-1 flex-col justify-between p-4 space-y-3">
+                    <div className="space-y-1.5">
+                      {video.category && (
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-red-600">
+                          {video.category}
+                        </span>
+                      )}
                       <h3
                         onClick={() => setActiveModalVideo(video)}
-                        className="cursor-pointer text-base font-bold text-foreground transition-colors group-hover:text-red-600 line-clamp-2"
+                        className="cursor-pointer text-sm sm:text-base font-bold text-foreground transition-colors hover:text-red-600 line-clamp-2 leading-snug"
                         title={video.title}
                       >
                         {video.title}
@@ -812,29 +491,26 @@ export function GalleryVideosClient() {
                       )}
                     </div>
 
-                    {/* Footer Actions */}
-                    <div className="flex items-center justify-between border-t border-border/60 pt-3 text-xs">
-                      <div className="text-muted-foreground text-[11px]">
-                        {video.date ? (
-                          <span className="flex items-center gap-1">
-                            <Calendar className="size-3 text-muted-foreground/70" />
-                            {new Date(video.date).toLocaleDateString("en-IN", {
-                              month: "short",
-                              year: "numeric",
-                            })}
-                          </span>
-                        ) : (
-                          <span>Indian Public School</span>
-                        )}
-                      </div>
+                    {/* Simple Footer */}
+                    <div className="flex items-center justify-between border-t border-border/50 pt-2.5 text-xs text-muted-foreground">
+                      {video.date ? (
+                        <span className="flex items-center gap-1.5 text-[11px]">
+                          <Calendar className="size-3 text-muted-foreground/70" />
+                          {new Date(video.date).toLocaleDateString("en-IN", {
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </span>
+                      ) : (
+                        <span className="text-[11px]">Indian Public School</span>
+                      )}
 
-                      <div className="flex items-center gap-2">
-                        {/* Share Button */}
+                      <div className="flex items-center gap-1.5">
                         <button
                           type="button"
                           onClick={() => handleCopyLink(video)}
-                          className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
-                          title="Share Video Link"
+                          className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
+                          title="Share"
                         >
                           {copiedId === video.id ? (
                             <Check className="size-3.5 text-emerald-500" />
@@ -843,25 +519,23 @@ export function GalleryVideosClient() {
                           )}
                         </button>
 
-                        {/* Open on YouTube */}
                         <a
                           href={video.src}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="rounded-lg p-1.5 text-muted-foreground hover:bg-red-500/10 hover:text-red-600 transition-colors"
-                          title="Watch on YouTube"
+                          className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-red-600 transition-colors"
+                          title="Open on YouTube"
                         >
                           <ExternalLink className="size-3.5" />
                         </a>
 
-                        {/* Watch / Cast Modal button */}
                         <button
                           type="button"
                           onClick={() => setActiveModalVideo(video)}
-                          className="inline-flex items-center gap-1.5 font-bold text-red-600 hover:text-red-700 transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1 font-semibold text-red-600 hover:text-red-700 transition-colors cursor-pointer ml-1"
                         >
-                          <span>Cast / Watch</span>
-                          <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                          <span>Watch</span>
+                          <ChevronRight className="size-3" />
                         </button>
                       </div>
                     </div>
@@ -869,6 +543,94 @@ export function GalleryVideosClient() {
                 </motion.article>
               );
             })}
+          </div>
+        )}
+
+        {/* Pagination Bar */}
+        {!loading && totalPages > 1 && (
+          <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border/60 pt-6 sm:flex-row">
+            <p className="text-xs text-muted-foreground">
+              Showing{" "}
+              <span className="font-semibold text-foreground">
+                {(currentPage - 1) * ITEMS_PER_PAGE + 1}
+              </span>{" "}
+              to{" "}
+              <span className="font-semibold text-foreground">
+                {Math.min(currentPage * ITEMS_PER_PAGE, sortedVideos.length)}
+              </span>{" "}
+              of{" "}
+              <span className="font-semibold text-foreground">
+                {sortedVideos.length}
+              </span>{" "}
+              videos
+            </p>
+
+            <nav aria-label="Pagination" className="flex items-center gap-1.5">
+              {/* Previous Page Button */}
+              <button
+                type="button"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs font-medium transition-colors",
+                  currentPage === 1
+                    ? "pointer-events-none opacity-40 text-muted-foreground"
+                    : "hover:bg-muted text-foreground cursor-pointer"
+                )}
+              >
+                <ChevronLeft className="size-3.5" />
+                <span>Prev</span>
+              </button>
+
+              {/* Numbered Pages */}
+              {pageNumbers.map((page, idx) => {
+                if (page === "...") {
+                  return (
+                    <span
+                      key={`dots-${idx}`}
+                      className="px-2 text-xs text-muted-foreground select-none"
+                    >
+                      ...
+                    </span>
+                  );
+                }
+
+                const pageNum = Number(page);
+                const isActive = pageNum === currentPage;
+
+                return (
+                  <button
+                    key={`page-${pageNum}`}
+                    type="button"
+                    onClick={() => handlePageChange(pageNum)}
+                    className={cn(
+                      "flex size-8 items-center justify-center rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                      isActive
+                        ? "bg-red-600 text-white shadow-xs"
+                        : "border border-border text-foreground hover:bg-muted"
+                    )}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+
+              {/* Next Page Button */}
+              <button
+                type="button"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs font-medium transition-colors",
+                  currentPage === totalPages
+                    ? "pointer-events-none opacity-40 text-muted-foreground"
+                    : "hover:bg-muted text-foreground cursor-pointer"
+                )}
+              >
+                <span>Next</span>
+                <ChevronRight className="size-3.5" />
+              </button>
+            </nav>
           </div>
         )}
       </section>
@@ -901,7 +663,7 @@ export function GalleryVideosClient() {
                     <span className="text-white/40">•</span>
                     <span className="flex items-center gap-1 text-[10px] text-white/70">
                       <Youtube className="size-3 text-red-500 fill-red-500" />
-                      <span>YouTube Cast</span>
+                      <span>YouTube</span>
                     </span>
                   </div>
                   <h3 className="truncate text-base font-bold text-white sm:text-lg">
@@ -957,7 +719,7 @@ export function GalleryVideosClient() {
                 />
               </div>
 
-              {/* Modal Footer with navigation & metadata */}
+              {/* Modal Footer with metadata */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 px-5 py-3 text-xs text-white/70">
                 <div className="flex items-center gap-2">
                   <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-medium text-white/90">
@@ -974,48 +736,15 @@ export function GalleryVideosClient() {
                   )}
                 </div>
 
-                {/* Prev / Next video controls */}
-                <div className="flex items-center gap-2">
-                  {(() => {
-                    const currentIndex = filteredVideos.findIndex(
-                      (v) => v.id === activeModalVideo.id
-                    );
-                    const hasPrev = currentIndex > 0;
-                    const hasNext = currentIndex < filteredVideos.length - 1;
-
-                    return (
-                      <>
-                        <button
-                          type="button"
-                          disabled={!hasPrev}
-                          onClick={() => {
-                            if (hasPrev) {
-                              setActiveModalVideo(filteredVideos[currentIndex - 1]);
-                            }
-                          }}
-                          className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium text-white/80 hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
-                        >
-                          <ChevronLeft className="size-3.5" />
-                          <span>Previous</span>
-                        </button>
-                        <span className="text-white/40">|</span>
-                        <button
-                          type="button"
-                          disabled={!hasNext}
-                          onClick={() => {
-                            if (hasNext) {
-                              setActiveModalVideo(filteredVideos[currentIndex + 1]);
-                            }
-                          }}
-                          className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium text-white/80 hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
-                        >
-                          <span>Next</span>
-                          <ChevronRight className="size-3.5" />
-                        </button>
-                      </>
-                    );
-                  })()}
-                </div>
+                <a
+                  href={activeModalVideo.src}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 font-bold text-red-400 hover:text-red-300 transition-colors"
+                >
+                  <span>Open in YouTube</span>
+                  <ExternalLink className="size-3.5" />
+                </a>
               </div>
             </motion.div>
           </motion.div>
