@@ -51,8 +51,21 @@ export function normalizePdfUrl(url?: any): string {
     clean = clean.replace("/raw/upload/", "/image/upload/");
   }
 
+  // If an image URL mistakenly contains /raw/upload/, restore it to /image/upload/ (Cloudinary requirement)
+  if (
+    isImageFile(clean) &&
+    clean.includes("res.cloudinary.com") &&
+    clean.includes("/raw/upload/")
+  ) {
+    clean = clean.replace("/raw/upload/", "/image/upload/");
+  }
+
   // Non-PDF documents (.docx, .doc, .xlsx, .xls, .csv, .ppt, etc.) MUST remain in /raw/upload/
-  if (!isPdfFile(clean) && clean.includes("res.cloudinary.com") && clean.includes("/image/upload/")) {
+  if (
+    isRawDocumentFile(clean) &&
+    clean.includes("res.cloudinary.com") &&
+    clean.includes("/image/upload/")
+  ) {
     clean = clean.replace("/image/upload/", "/raw/upload/");
   }
 
@@ -65,6 +78,36 @@ export function normalizePdfUrl(url?: any): string {
 export function getCleanUrl(url?: string | null): string {
   if (!url || typeof url !== "string") return "";
   return url.trim().split("?")[0].split("#")[0];
+}
+
+export function isImageFile(url?: string | null, title?: string | null): boolean {
+  if (!url && !title) return false;
+  const lowercaseUrl = (url && typeof url === "string" ? url : "").toLowerCase();
+  const clean = lowercaseUrl.split("?")[0].split("#")[0];
+  const cleanTitle = (title && typeof title === "string" ? title : "").toLowerCase().trim();
+
+  return (
+    /\.(jpg|jpeg|png|webp|gif|svg|avif|bmp|ico|tiff)$/i.test(clean) ||
+    /\.(jpg|jpeg|png|webp|gif|svg|avif|bmp|ico|tiff)$/i.test(cleanTitle) ||
+    lowercaseUrl.includes("format=jpg") ||
+    lowercaseUrl.includes("format=jpeg") ||
+    lowercaseUrl.includes("format=png") ||
+    lowercaseUrl.includes("format=webp") ||
+    lowercaseUrl.includes("format=gif") ||
+    lowercaseUrl.includes("format=svg")
+  );
+}
+
+export function isRawDocumentFile(url?: string | null, title?: string | null): boolean {
+  if (!url && !title) return false;
+  const lowercaseUrl = (url && typeof url === "string" ? url : "").toLowerCase();
+  const clean = lowercaseUrl.split("?")[0].split("#")[0];
+  const cleanTitle = (title && typeof title === "string" ? title : "").toLowerCase().trim();
+
+  return (
+    /\.(doc|docx|xls|xlsx|ppt|pptx|txt|csv|zip|rar|7z)$/i.test(clean) ||
+    /\.(doc|docx|xls|xlsx|ppt|pptx|txt|csv|zip|rar|7z)$/i.test(cleanTitle)
+  );
 }
 
 export function isPdfFile(url?: string | null, title?: string | null): boolean {
@@ -95,17 +138,13 @@ export function isPdfFile(url?: string | null, title?: string | null): boolean {
 
 export function isDocumentFile(url?: string | null, title?: string | null): boolean {
   if (!url && !title) return false;
-  const lowercaseUrl = (url && typeof url === "string" ? url : "").toLowerCase();
-  const clean = lowercaseUrl.split("?")[0].split("#")[0];
-  const cleanTitle = (title && typeof title === "string" ? title : "").toLowerCase().trim();
+  if (isImageFile(url, title)) return false;
 
   return (
     isPdfFile(url, title) ||
     isWordFile(url, title) ||
     isExcelFile(url, title) ||
-    /\.(doc|docx|xls|xlsx|ppt|pptx|txt|csv|zip|rar|7z)$/i.test(clean) ||
-    /\.(doc|docx|xls|xlsx|ppt|pptx|txt|csv|zip|rar|7z)$/i.test(cleanTitle) ||
-    clean.includes("/raw/upload/")
+    isRawDocumentFile(url, title)
   );
 }
 
@@ -175,6 +214,14 @@ export function getCloudinaryInlineViewerUrl(url?: string | null, title?: string
   if (!url) return "";
   let clean = normalizePdfUrl(url);
 
+  // If it's an image, return direct accessible image CDN URL (guaranteeing /image/upload/)
+  if (isImageFile(clean, title)) {
+    if (clean.includes("/raw/upload/")) {
+      clean = clean.replace("/raw/upload/", "/image/upload/");
+    }
+    return clean;
+  }
+
   // For Word and Excel files, route directly to the universal document viewer
   if (isWordFile(clean, title) || isExcelFile(clean, title)) {
     return getDocumentViewerUrl(clean);
@@ -203,7 +250,12 @@ export function getCloudinaryInlineViewerUrl(url?: string | null, title?: string
       viewerUrl = viewerUrl.replace(/\.pdf\.pdf(?=($|\?|#))/gi, ".pdf");
       // Strip any image transformations (e.g. pg_1, f_jpg) so the actual full PDF is served
       viewerUrl = viewerUrl.replace(/\/image\/upload\/(?:(?:pg_\d+|f_\w+|w_\d+|c_\w+|q_\w+)[,/]*)+\//i, "/image/upload/");
-    } else {
+    } else if (isImageFile(clean, title)) {
+      // Images in Cloudinary MUST be served via /image/upload/
+      if (viewerUrl.includes("/raw/upload/")) {
+        viewerUrl = viewerUrl.replace("/raw/upload/", "/image/upload/");
+      }
+    } else if (isRawDocumentFile(clean, title)) {
       // Non-PDF documents (.docx, .doc, .xlsx, .xls, .csv, .ppt, etc.) MUST remain in /raw/upload/
       if (viewerUrl.includes("/image/upload/")) {
         viewerUrl = viewerUrl.replace("/image/upload/", "/raw/upload/");
