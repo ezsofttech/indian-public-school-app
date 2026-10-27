@@ -15,6 +15,7 @@ import {
   FileText,
   Music,
   Video,
+  Download,
 } from "lucide-react";
 import { getFileType } from "@/components/admin/CloudinaryGalleryModal";
 import {
@@ -147,6 +148,7 @@ export function StructuredDetailValue({
     }
 
     if (isDoc) {
+      const viewerUrl = getCloudinaryInlineViewerUrl(fullUrl, keyName) || fullUrl;
       return (
         <div className="flex items-center gap-3 font-sans">
           <SmartFileThumbnail
@@ -156,10 +158,11 @@ export function StructuredDetailValue({
           />
           <div className="min-w-0 flex-1">
             <a
-              href={fullUrl}
+              href={viewerUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="truncate text-xs font-bold text-[#1a5d9c] hover:underline block"
+              title="Open document viewer in new tab"
             >
               {val}
             </a>
@@ -169,12 +172,16 @@ export function StructuredDetailValue({
       );
     }
 
+    const isDocUrl = isDocumentFile(fullUrl, keyName);
+    const linkTarget = isDocUrl ? (getCloudinaryInlineViewerUrl(fullUrl, keyName) || fullUrl) : fullUrl;
+
     return (
       <a
-        href={fullUrl}
+        href={linkTarget}
         target="_blank"
         rel="noopener noreferrer"
         className="break-all text-xs font-bold text-[#1a5d9c] hover:underline font-sans"
+        title={isDocUrl ? "Open document viewer in new tab" : undefined}
       >
         {val}
       </a>
@@ -190,7 +197,7 @@ export function StructuredDetailValue({
           (itemVal.startsWith("http://") ||
             itemVal.startsWith("https://") ||
             itemVal.startsWith("/") ||
-            /\.(jpg|jpeg|png|webp|gif|svg|pdf|doc|docx)$/i.test(itemVal))
+            /\.(jpg|jpeg|png|webp|gif|svg|pdf|doc|docx|xls|xlsx|csv)$/i.test(itemVal))
       );
 
     if (isUrlArray) {
@@ -199,6 +206,8 @@ export function StructuredDetailValue({
           {val.map((itemVal, i) => {
             const strVal = String(itemVal);
             const fullUrl = imageUrl(strVal);
+            const isDocItem = isDocumentFile(fullUrl, `${keyName}-${i}`);
+            const itemViewerUrl = isDocItem ? (getCloudinaryInlineViewerUrl(fullUrl, strVal) || fullUrl) : fullUrl;
             return (
               <div key={i} className="flex items-center gap-3 p-1.5 rounded-xl border border-slate-100 bg-slate-50/60">
                 <SmartFileThumbnail
@@ -208,10 +217,11 @@ export function StructuredDetailValue({
                 />
                 <div className="min-w-0 flex-1">
                   <a
-                    href={fullUrl}
+                    href={itemViewerUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="truncate text-xs font-bold text-[#1a5d9c] hover:underline block"
+                    title={isDocItem ? "Open document in new tab" : undefined}
                   >
                     {strVal}
                   </a>
@@ -394,10 +404,10 @@ export function MediaDetailDialog({
       item.photo
   );
   const primaryUrl = urls[activeUrlIndex] || urls[0] || "";
-  const resolvedUrl = getCloudinaryInlineViewerUrl(primaryUrl) || (primaryUrl ? imageUrl(primaryUrl) : "");
   const title = String(
     item.eventName || item.title || item.name || item.originalname || item.album || item.key || "Record Item"
   );
+  const resolvedUrl = getCloudinaryInlineViewerUrl(primaryUrl, title) || (primaryUrl ? imageUrl(primaryUrl) : "");
   const album = String(item.eventType || item.album || item.category || "General");
   const fileType = getFileType(primaryUrl, title);
   const isPdf = isPdfFile(primaryUrl, title);
@@ -549,22 +559,34 @@ export function MediaDetailDialog({
               {/* Preview Toolbar */}
               <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 bg-slate-50 p-3 text-xs">
                 <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <span className="font-mono text-[11px] text-slate-500 truncate max-w-sm">{resolvedUrl || primaryUrl}</span>
+                  <span className="font-mono text-[11px] text-slate-500 truncate max-w-sm" title={primaryUrl}>
+                    {primaryUrl}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     type="button"
                     onClick={copyUrl}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-700 shadow-2xs hover:bg-slate-100 transition"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-700 shadow-2xs hover:bg-slate-100 transition cursor-pointer"
                   >
                     {copied ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
                     <span>{copied ? "Copied!" : "Copy Link"}</span>
                   </button>
                   <a
+                    href={imageUrl(primaryUrl)}
+                    download
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-700 shadow-2xs hover:bg-slate-100 transition cursor-pointer"
+                    title="Download original file directly"
+                  >
+                    <Download size={14} className="text-slate-600" />
+                    <span>Download</span>
+                  </a>
+                  <a
                     href={resolvedUrl || primaryUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-[#1a5d9c] px-3 py-1.5 font-bold text-white shadow-2xs hover:bg-[#102a4c] transition"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-[#1a5d9c] px-3 py-1.5 font-bold text-white shadow-2xs hover:bg-[#102a4c] transition cursor-pointer"
+                    title="Open in online viewer / new tab"
                   >
                     <ExternalLink size={14} />
                     <span>Open Link</span>

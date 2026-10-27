@@ -171,9 +171,14 @@ export function getCloudinaryPdfThumbnailUrl(url?: string | null, page = 1, widt
  * Returns a robust viewer URL that guarantees inline browser rendering without 404s.
  * Direct Cloudinary URLs use the /image/upload/ pipeline which renders PDFs inline natively in browsers.
  */
-export function getCloudinaryInlineViewerUrl(url?: string | null): string {
+export function getCloudinaryInlineViewerUrl(url?: string | null, title?: string | null): string {
   if (!url) return "";
   let clean = normalizePdfUrl(url);
+
+  // For Word and Excel files, route directly to the universal document viewer
+  if (isWordFile(clean, title) || isExcelFile(clean, title)) {
+    return getDocumentViewerUrl(clean);
+  }
 
   // If clean is a relative asset path (e.g. /PressRelease/..., /album/..., /Student/...),
   // resolve it to the accessible Cloudinary CDN or absolute asset URL first so it never 404s
@@ -190,7 +195,7 @@ export function getCloudinaryInlineViewerUrl(url?: string | null): string {
     let viewerUrl = clean;
 
     // ONLY PDFs support Cloudinary's /image/upload/ pipeline for inline browser viewing
-    if (isPdfFile(clean)) {
+    if (isPdfFile(clean, title)) {
       if (viewerUrl.includes("/raw/upload/")) {
         viewerUrl = viewerUrl.replace("/raw/upload/", "/image/upload/");
       }
@@ -208,7 +213,7 @@ export function getCloudinaryInlineViewerUrl(url?: string | null): string {
   }
 
   // Non-Cloudinary or internal PDFs route through Next.js pdf-proxy
-  if (isPdfFile(clean)) {
+  if (isPdfFile(clean, title)) {
     return getPdfProxyUrl(clean);
   }
   return clean;
@@ -216,7 +221,15 @@ export function getCloudinaryInlineViewerUrl(url?: string | null): string {
 
 export function getAbsoluteFileUrl(url?: string | null): string {
   if (!url) return "";
-  const clean = getCloudinaryInlineViewerUrl(url);
+  let clean = normalizePdfUrl(url);
+  if (
+    !clean.startsWith("http://") &&
+    !clean.startsWith("https://") &&
+    !clean.startsWith("data:") &&
+    !clean.startsWith("blob:")
+  ) {
+    clean = getAssetUrl(clean);
+  }
   if (clean.startsWith("http://") || clean.startsWith("https://")) {
     return clean;
   }
