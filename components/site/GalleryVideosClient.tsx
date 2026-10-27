@@ -51,80 +51,16 @@ export interface ChannelInfo {
 }
 
 const DEFAULT_CHANNEL: ChannelInfo = {
-  channelId: "UCLnjAG02fRWXCTM3ZFM_o9A",
-  handle: "@ipssbp",
-  title: "Indian Public School, Sambalpur",
-  url: "https://www.youtube.com/@ipssbp",
-  description: "Official YouTube Channel of Indian Public School, Sambalpur",
-  subscriberCount: "755+",
-  videoCount: "91",
-  viewCount: "96.5K+",
+  channelId: "",
+  handle: "",
+  title: "",
+  url: "",
+  description: "",
 };
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 9;
 
-// Fallback seed videos from official @ipssbp channel to guarantee immediate rendering
-const FALLBACK_VIDEOS: VideoItem[] = [
-  {
-    id: "z-AJiDOVNvU",
-    src: "https://www.youtube.com/watch?v=z-AJiDOVNvU",
-    embedUrl: "https://www.youtube.com/embed/z-AJiDOVNvU",
-    title: "✨🌺 Glimpses of Navratri Celebrations at Indian Public School, Sambalpur! 🌺✨",
-    category: "Events & Celebrations",
-    directory: "/album/videos",
-    description: "Joyful highlights and vibrant cultural performances by our students during Navratri celebrations.",
-    poster: "https://i.ytimg.com/vi/z-AJiDOVNvU/hqdefault.jpg",
-    date: "2026-10-16T06:15:58.000Z",
-    duration: "1:27",
-    channelTitle: "Indian Public School, Sambalpur",
-    source: "youtube",
-    isFeatured: true,
-  },
-  {
-    id: "Czb0Gp7VZpU",
-    src: "https://www.youtube.com/watch?v=Czb0Gp7VZpU",
-    embedUrl: "https://www.youtube.com/embed/Czb0Gp7VZpU",
-    title: "Indian Public School, Sambalpur - Campus Highlights",
-    category: "Campus & Tour",
-    directory: "/album/videos",
-    description: "A glimpse of the scenic campus, smart classrooms, and infrastructure at Indian Public School.",
-    poster: "https://i.ytimg.com/vi/Czb0Gp7VZpU/hqdefault.jpg",
-    date: "2026-10-05T10:00:00.000Z",
-    duration: "0:32",
-    channelTitle: "Indian Public School, Sambalpur",
-    source: "youtube",
-  },
-  {
-    id: "NU-Jj5oJxxU",
-    src: "https://www.youtube.com/watch?v=NU-Jj5oJxxU",
-    embedUrl: "https://www.youtube.com/embed/NU-Jj5oJxxU",
-    title: "🌾 NUAKHAI CELEBRATION BY OUR LITTLE ONES 🌾",
-    category: "Events & Celebrations",
-    directory: "/album/videos",
-    description: "Little children celebrating the agrarian festival Nuakhai with traditional fervor and joy.",
-    poster: "https://i.ytimg.com/vi/NU-Jj5oJxxU/hqdefault.jpg",
-    date: "2026-09-20T08:30:00.000Z",
-    duration: "0:48",
-    channelTitle: "Indian Public School, Sambalpur",
-    source: "youtube",
-  },
-  {
-    id: "CCt99Xyna8U",
-    src: "https://www.youtube.com/watch?v=CCt99Xyna8U",
-    embedUrl: "https://www.youtube.com/embed/CCt99Xyna8U",
-    title: "🎨✨ LITTLE HANDS, BIG IMAGINATIONS! 👐🌈",
-    category: "Sports & Activities",
-    directory: "/album/videos",
-    description: "Creative arts, crafts and imaginative activities by pre-primary and primary students.",
-    poster: "https://i.ytimg.com/vi/CCt99Xyna8U/hqdefault.jpg",
-    date: "2026-09-12T05:45:00.000Z",
-    duration: "0:55",
-    channelTitle: "Indian Public School, Sambalpur",
-    source: "youtube",
-  },
-];
-
-function cleanVideoTitle(rawName?: string, fallback = "Campus Video"): string {
+function cleanVideoTitle(rawName?: string, fallback = "Video"): string {
   if (!rawName) return fallback;
   let str = String(rawName).trim();
   str = str.replace(/\.(mp4|webm|mov|mkv|avi)$/i, "");
@@ -136,46 +72,73 @@ export function GalleryVideosClient() {
   const [channel, setChannel] = useState<ChannelInfo>(DEFAULT_CHANNEL);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalVideos, setTotalVideos] = useState<number>(0);
   const [activeModalVideo, setActiveModalVideo] = useState<VideoItem | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const gridTopRef = useRef<HTMLDivElement>(null);
 
-  // Fetch YouTube Channel Videos from API
+  // 1. Fetch official YouTube Channel metadata once on mount
   useEffect(() => {
     let isMounted = true;
-    const fetchVideos = async () => {
+    const fetchChannel = async () => {
       try {
-        // 1. Fetch videos and channel info in parallel
-        const [videosRes, channelRes] = await Promise.all([
-          getOptionalApi<any>("/youtube/videos?limit=100"),
-          getOptionalApi<any>("/youtube/channel"),
-        ]);
-
-        let response = videosRes;
-
-        // 2. Fallback to /gallery/videos if needed
-        if (!response?.data) {
-          response = await getOptionalApi<any>("/gallery/videos?limit=100");
-        }
-
-        // 3. Fallback to general gallery if needed
-        if (!response?.data) {
-          response = await getOptionalApi<any>("/gallery?limit=500");
-        }
-
-        // Extract channel info from meta, data, or dedicated endpoint
-        const channelMeta =
-          (videosRes as any)?.meta?.channel ||
-          (videosRes?.data as any)?.channel ||
-          channelRes?.data;
-
+        const channelRes = await getOptionalApi<any>("/youtube/channel");
+        const channelMeta = channelRes?.data;
         if (channelMeta && isMounted) {
           setChannel((prev) => ({
             ...prev,
             ...channelMeta,
-            url: channelMeta.url || `https://www.youtube.com/${channelMeta.handle || "@ipssbp"}`,
+            url:
+              channelMeta.url ||
+              (channelMeta.handle
+                ? `https://www.youtube.com/${channelMeta.handle.startsWith("@") ? channelMeta.handle : "@" + channelMeta.handle}`
+                : prev.url),
           }));
+        }
+      } catch {
+        // ignore
+      }
+    };
+    fetchChannel();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // 2. Fetch paginated videos (only 9 per request) from backend on page change
+  useEffect(() => {
+    let isMounted = true;
+    const fetchVideos = async () => {
+      setLoading(true);
+      try {
+        const videosRes = await getOptionalApi<any>(
+          `/youtube/videos?page=${currentPage}&limit=${ITEMS_PER_PAGE}`,
+        );
+
+        let response = videosRes;
+        if (!response?.data) {
+          response = await getOptionalApi<any>(
+            `/gallery/videos?page=${currentPage}&limit=${ITEMS_PER_PAGE}`,
+          );
+        }
+
+        const meta = (videosRes as any)?.meta;
+        if (meta && isMounted) {
+          if (typeof meta.totalPages === "number") setTotalPages(meta.totalPages);
+          if (typeof meta.total === "number") setTotalVideos(meta.total);
+          if (meta.channel) {
+            setChannel((prev) => ({
+              ...prev,
+              ...meta.channel,
+              url:
+                meta.channel.url ||
+                (meta.channel.handle
+                  ? `https://www.youtube.com/${meta.channel.handle.startsWith("@") ? meta.channel.handle : "@" + meta.channel.handle}`
+                  : prev.url),
+            }));
+          }
         }
 
         const rawList = unwrapCollection<any>(response);
@@ -213,7 +176,7 @@ export function GalleryVideosClient() {
                 id: rawId,
                 src: videoUrl,
                 embedUrl: item.embedUrl || `https://www.youtube.com/embed/${rawId}`,
-                title: cleanVideoTitle(item.eventName || item.title, "Campus Video"),
+                title: cleanVideoTitle(item.eventName || item.title, "Video"),
                 category: item.eventType || item.category || "Events & Celebrations",
                 directory: item.directory || "/album/videos",
                 description: item.description || "",
@@ -221,23 +184,33 @@ export function GalleryVideosClient() {
                 date: item.publishedAt || item.createdAt || item.updatedAt,
                 views: item.views,
                 duration: item.duration,
-                channelTitle: item.channelTitle || DEFAULT_CHANNEL.title,
+                channelTitle: item.channelTitle || channel.title || "",
                 source: "youtube" as const,
                 isFeatured: Boolean(item.isFeatured || idx === 0),
               };
             });
 
           if (isMounted) {
-            setVideos(mapped.length > 0 ? mapped : FALLBACK_VIDEOS);
+            setVideos(mapped);
+            if (!meta?.total) {
+              setTotalVideos(mapped.length);
+              setTotalPages(Math.max(1, Math.ceil(mapped.length / ITEMS_PER_PAGE)));
+            }
           }
         } else {
           if (isMounted) {
-            setVideos(FALLBACK_VIDEOS);
+            setVideos([]);
+            setTotalVideos(0);
+            setTotalPages(1);
           }
         }
       } catch (err) {
         console.error("Failed to load YouTube videos:", err);
-        if (isMounted) setVideos(FALLBACK_VIDEOS);
+        if (isMounted) {
+          setVideos([]);
+          setTotalVideos(0);
+          setTotalPages(1);
+        }
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -247,25 +220,7 @@ export function GalleryVideosClient() {
     return () => {
       isMounted = false;
     };
-  }, []);
-
-  // Sorted list: latest videos first
-  const sortedVideos = useMemo(() => {
-    const list = [...videos];
-    list.sort((a, b) => {
-      const dateA = new Date(a.date || 0).getTime();
-      const dateB = new Date(b.date || 0).getTime();
-      return dateB - dateA;
-    });
-    return list;
-  }, [videos]);
-
-  // Pagination Calculations
-  const totalPages = Math.max(1, Math.ceil(sortedVideos.length / ITEMS_PER_PAGE));
-  const paginatedVideos = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return sortedVideos.slice(start, start + ITEMS_PER_PAGE);
-  }, [sortedVideos, currentPage]);
+  }, [currentPage]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages || newPage === currentPage) return;
@@ -356,24 +311,28 @@ export function GalleryVideosClient() {
 
             {/* Outside Subscribe & View Channel Controls */}
             <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-auto">
-              <a
-                href={`${channel.url}?sub_confirmation=1`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-transform hover:bg-red-700 hover:scale-105 active:scale-95"
-              >
-                <Youtube className="size-4 fill-white" />
-                <span>Subscribe</span>
-              </a>
-              <a
-                href={channel.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-xs font-semibold text-white/90 transition-colors hover:bg-white/15 hover:text-white"
-              >
-                <span>View Channel</span>
-                <ExternalLink className="size-3.5" />
-              </a>
+              {channel.url && (
+                <>
+                  <a
+                    href={`${channel.url}?sub_confirmation=1`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-transform hover:bg-red-700 hover:scale-105 active:scale-95"
+                  >
+                    <Youtube className="size-4 fill-white" />
+                    <span>Subscribe</span>
+                  </a>
+                  <a
+                    href={channel.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-xs font-semibold text-white/90 transition-colors hover:bg-white/15 hover:text-white"
+                  >
+                    <span>View Channel</span>
+                    <ExternalLink className="size-3.5" />
+                  </a>
+                </>
+              )}
               <Link
                 href="/gallery/album"
                 className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-xs font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
@@ -395,7 +354,7 @@ export function GalleryVideosClient() {
               All Videos
             </span>
             <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">
-              {sortedVideos.length}
+              {totalVideos}
             </span>
           </div>
 
@@ -413,7 +372,7 @@ export function GalleryVideosClient() {
               Loading YouTube Channel Videos...
             </p>
           </div>
-        ) : paginatedVideos.length === 0 ? (
+        ) : videos.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border py-16 text-center">
             <Film className="size-12 text-muted-foreground/40 mb-3" />
             <h3 className="text-lg font-semibold text-foreground">
@@ -425,7 +384,7 @@ export function GalleryVideosClient() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {paginatedVideos.map((video, index) => {
+            {videos.map((video, index) => {
               return (
                 <motion.article
                   key={video.id || index}
@@ -556,11 +515,11 @@ export function GalleryVideosClient() {
               </span>{" "}
               to{" "}
               <span className="font-semibold text-foreground">
-                {Math.min(currentPage * ITEMS_PER_PAGE, sortedVideos.length)}
+                {Math.min(currentPage * ITEMS_PER_PAGE, totalVideos)}
               </span>{" "}
               of{" "}
               <span className="font-semibold text-foreground">
-                {sortedVideos.length}
+                {totalVideos}
               </span>{" "}
               videos
             </p>
