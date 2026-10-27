@@ -68,15 +68,16 @@ export function getCleanUrl(url?: string | null): string {
 }
 
 export function isPdfFile(url?: string | null, title?: string | null): boolean {
-  if (!url || typeof url !== "string") return false;
-  const lowercaseUrl = url.toLowerCase();
-  const cleanTitle = (title || "").toLowerCase();
+  if (!url && !title) return false;
+  const lowercaseUrl = (url && typeof url === "string" ? url : "").toLowerCase();
+  const cleanTitle = (title && typeof title === "string" ? title : "").toLowerCase().trim();
 
   if (
     lowercaseUrl.startsWith("blob:") ||
     lowercaseUrl.startsWith("data:application/pdf") ||
     lowercaseUrl.includes("application/pdf") ||
-    cleanTitle.endsWith(".pdf")
+    cleanTitle.endsWith(".pdf") ||
+    cleanTitle.includes(".pdf")
   ) {
     return true;
   }
@@ -93,17 +94,17 @@ export function isPdfFile(url?: string | null, title?: string | null): boolean {
 }
 
 export function isDocumentFile(url?: string | null, title?: string | null): boolean {
-  if (!url || typeof url !== "string") return false;
-  const lowercaseUrl = url.toLowerCase();
+  if (!url && !title) return false;
+  const lowercaseUrl = (url && typeof url === "string" ? url : "").toLowerCase();
   const clean = lowercaseUrl.split("?")[0].split("#")[0];
+  const cleanTitle = (title && typeof title === "string" ? title : "").toLowerCase().trim();
 
   return (
     isPdfFile(url, title) ||
+    isWordFile(url, title) ||
+    isExcelFile(url, title) ||
     /\.(doc|docx|xls|xlsx|ppt|pptx|txt|csv|zip|rar|7z)$/i.test(clean) ||
-    lowercaseUrl.includes(".doc") ||
-    lowercaseUrl.includes(".docx") ||
-    lowercaseUrl.includes(".xls") ||
-    lowercaseUrl.includes(".xlsx") ||
+    /\.(doc|docx|xls|xlsx|ppt|pptx|txt|csv|zip|rar|7z)$/i.test(cleanTitle) ||
     clean.includes("/raw/upload/")
   );
 }
@@ -172,7 +173,18 @@ export function getCloudinaryPdfThumbnailUrl(url?: string | null, page = 1, widt
  */
 export function getCloudinaryInlineViewerUrl(url?: string | null): string {
   if (!url) return "";
-  const clean = normalizePdfUrl(url);
+  let clean = normalizePdfUrl(url);
+
+  // If clean is a relative asset path (e.g. /PressRelease/..., /album/..., /Student/...),
+  // resolve it to the accessible Cloudinary CDN or absolute asset URL first so it never 404s
+  if (
+    !clean.startsWith("http://") &&
+    !clean.startsWith("https://") &&
+    !clean.startsWith("data:") &&
+    !clean.startsWith("blob:")
+  ) {
+    clean = getAssetUrl(clean);
+  }
 
   if (isCloudinaryUrl(clean)) {
     let viewerUrl = clean;
@@ -221,35 +233,50 @@ export function getAbsoluteFileUrl(url?: string | null): string {
 export function getGoogleDocsViewerUrl(url?: string | null): string {
   if (!url) return "";
   const fullUrl = getAbsoluteFileUrl(url);
-  return `https://docs.google.com/viewer?url=${encodeURIComponent(fullUrl)}&embedded=true`;
+  const sanitized = fullUrl.trim().replace(/ /g, "%20");
+  return `https://docs.google.com/viewer?url=${encodeURIComponent(sanitized)}&embedded=true`;
 }
 
-export function isWordFile(url?: string | null): boolean {
-  if (!url || typeof url !== "string") return false;
-  const lowercaseUrl = url.toLowerCase();
+export function isWordFile(url?: string | null, title?: string | null): boolean {
+  if (!url && !title) return false;
+  const lowercaseUrl = (url && typeof url === "string" ? url : "").toLowerCase();
   const clean = lowercaseUrl.split("?")[0].split("#")[0];
+  const cleanTitle = (title && typeof title === "string" ? title : "").toLowerCase().trim();
+
   return (
     clean.endsWith(".doc") ||
     clean.endsWith(".docx") ||
+    cleanTitle.endsWith(".doc") ||
+    cleanTitle.endsWith(".docx") ||
     lowercaseUrl.includes(".doc") ||
     lowercaseUrl.includes(".docx") ||
+    cleanTitle.includes(".doc") ||
+    cleanTitle.includes(".docx") ||
     lowercaseUrl.includes("format=doc") ||
     lowercaseUrl.includes("format=docx") ||
     lowercaseUrl.includes("docs.google.com/document")
   );
 }
 
-export function isExcelFile(url?: string | null): boolean {
-  if (!url || typeof url !== "string") return false;
-  const lowercaseUrl = url.toLowerCase();
+export function isExcelFile(url?: string | null, title?: string | null): boolean {
+  if (!url && !title) return false;
+  const lowercaseUrl = (url && typeof url === "string" ? url : "").toLowerCase();
   const clean = lowercaseUrl.split("?")[0].split("#")[0];
+  const cleanTitle = (title && typeof title === "string" ? title : "").toLowerCase().trim();
+
   return (
     clean.endsWith(".xls") ||
     clean.endsWith(".xlsx") ||
     clean.endsWith(".csv") ||
+    cleanTitle.endsWith(".xls") ||
+    cleanTitle.endsWith(".xlsx") ||
+    cleanTitle.endsWith(".csv") ||
     lowercaseUrl.includes(".xls") ||
     lowercaseUrl.includes(".xlsx") ||
     lowercaseUrl.includes(".csv") ||
+    cleanTitle.includes(".xls") ||
+    cleanTitle.includes(".xlsx") ||
+    cleanTitle.includes(".csv") ||
     lowercaseUrl.includes("format=xls") ||
     lowercaseUrl.includes("format=xlsx") ||
     lowercaseUrl.includes("format=csv") ||
@@ -294,17 +321,19 @@ export function getGoogleSheetEmbedUrl(url?: string | null): string {
 export function getOfficeViewerUrl(url?: string | null): string {
   if (!url) return "";
   const fullUrl = getAbsoluteFileUrl(url);
-  return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fullUrl)}`;
+  const sanitized = fullUrl.trim().replace(/ /g, "%20");
+  return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(sanitized)}`;
 }
+
 
 export function getDocumentViewerUrl(url?: string | null): string {
   if (!url) return "";
   if (isGoogleDocUrl(url)) return getGoogleDocEmbedUrl(url);
   if (isGoogleSheetUrl(url)) return getGoogleSheetEmbedUrl(url);
-  // Google Docs Viewer reliably previews Word (.docx, .doc), Excel (.xlsx, .xls, .csv), and PPT
-  // without Microsoft Office Online's strict "File not found" authentication blocks
+  // Microsoft Office Online Viewer works reliably in Chrome, Edge, and other browsers
+  // without Google Docs Viewer's third-party cookie blocking
   if (isWordFile(url) || isExcelFile(url)) {
-    return getGoogleDocsViewerUrl(url);
+    return getOfficeViewerUrl(url);
   }
   return getGoogleDocsViewerUrl(url);
 }

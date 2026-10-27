@@ -67,77 +67,97 @@ export function SmartFileThumbnail({
   }
 
   // PDF Document
-  if (isPdfFile(cleanUrl)) {
+  if (isPdfFile(cleanUrl, alt)) {
     return (
       <div
         className={cn(
-          "flex flex-col items-center justify-center bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded-lg border border-rose-200 dark:border-rose-900/50 p-1.5 shadow-xs shrink-0 font-sans select-none",
+          "flex flex-col items-center justify-center bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded-lg border border-rose-200 dark:border-rose-900/50 p-2 shadow-xs shrink-0 font-sans select-none overflow-hidden",
           className
         )}
         style={style}
         title={alt || "PDF Document"}
       >
-        <FileText className="h-5 w-5 text-rose-500 shrink-0" />
-        <span className="mt-0.5 text-[9px] font-extrabold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+        <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-rose-500 shrink-0" />
+        <span className="mt-1 text-[10px] font-extrabold uppercase tracking-wider text-rose-600 dark:text-rose-400">
           PDF
         </span>
+        {alt && alt.toLowerCase().endsWith(".pdf") && (
+          <span className="text-[10px] text-slate-500 font-medium truncate max-w-full px-2 mt-0.5 hidden sm:block">
+            {alt}
+          </span>
+        )}
       </div>
     );
   }
 
   // Word Document
-  if (isWordFile(cleanUrl)) {
+  if (isWordFile(cleanUrl, alt)) {
     return (
       <div
         className={cn(
-          "flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-lg border border-blue-200 dark:border-blue-900/50 p-1.5 shadow-xs shrink-0 font-sans select-none",
+          "flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-lg border border-blue-200 dark:border-blue-900/50 p-2 shadow-xs shrink-0 font-sans select-none overflow-hidden",
           className
         )}
         style={style}
         title={alt || "Word Document"}
       >
-        <FileText className="h-5 w-5 text-blue-500 shrink-0" />
-        <span className="mt-0.5 text-[9px] font-extrabold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-          DOC
+        <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500 shrink-0" />
+        <span className="mt-1 text-[10px] font-extrabold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+          DOCX
         </span>
+        {alt && (
+          <span className="text-[10px] text-slate-500 font-medium truncate max-w-full px-2 mt-0.5 hidden sm:block">
+            {alt}
+          </span>
+        )}
       </div>
     );
   }
 
   // Excel / Spreadsheet / CSV
-  if (isExcelFile(cleanUrl)) {
+  if (isExcelFile(cleanUrl, alt)) {
     return (
       <div
         className={cn(
-          "flex flex-col items-center justify-center bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-lg border border-emerald-200 dark:border-emerald-900/50 p-1.5 shadow-xs shrink-0 font-sans select-none",
+          "flex flex-col items-center justify-center bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-lg border border-emerald-200 dark:border-emerald-900/50 p-2 shadow-xs shrink-0 font-sans select-none overflow-hidden",
           className
         )}
         style={style}
         title={alt || "Spreadsheet Document"}
       >
-        <FileSpreadsheet className="h-5 w-5 text-emerald-500 shrink-0" />
-        <span className="mt-0.5 text-[9px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+        <FileSpreadsheet className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-500 shrink-0" />
+        <span className="mt-1 text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
           SHEET
         </span>
+        {alt && (
+          <span className="text-[10px] text-slate-500 font-medium truncate max-w-full px-2 mt-0.5 hidden sm:block">
+            {alt}
+          </span>
+        )}
       </div>
     );
   }
 
   // Generic Document
-  if (isDocumentFile(cleanUrl)) {
+  if (isDocumentFile(cleanUrl, alt)) {
     return (
       <div
         className={cn(
-          "flex flex-col items-center justify-center bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-lg border border-amber-200 dark:border-amber-900/50 p-1.5 shadow-xs shrink-0 font-sans select-none",
+          "flex flex-col items-center justify-center bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-lg border border-amber-200 dark:border-amber-900/50 p-2 shadow-xs shrink-0 font-sans select-none overflow-hidden",
           className
         )}
         style={style}
         title={alt || "Document File"}
       >
-        <File className="h-5 w-5 text-amber-500 shrink-0" />
-        <span className="mt-0.5 text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+        <File className="h-6 w-6 sm:h-8 sm:w-8 text-amber-500 shrink-0" />
+        <span className="mt-1 text-[10px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400">
           FILE
         </span>
+        {alt && (
+          <span className="text-[10px] text-slate-500 font-medium truncate max-w-full px-2 mt-0.5 hidden sm:block">
+            {alt}
+          </span>
+        )}
       </div>
     );
   }

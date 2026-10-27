@@ -20,11 +20,12 @@ import {
   Video,
   X,
   Crown,
+  FileSpreadsheet,
 } from "lucide-react";
 import { RichTextBox } from "@/components/ui/RichTextBox";
 import { CloudinaryGalleryModal, getFileType } from "@/components/admin/CloudinaryGalleryModal";
 import { PdfCanvasThumbnail } from "@/components/ui/PdfCanvasThumbnail";
-import { isPdfFile, getCloudinaryInlineViewerUrl } from "@/lib/file-preview";
+import { isPdfFile, isWordFile, isExcelFile, getCloudinaryInlineViewerUrl } from "@/lib/file-preview";
 import { SmartFileThumbnail } from "@/components/ui/SmartFileThumbnail";
 import { FileUploadProgressLoader, FileUploadStatus } from "@/components/ui/FileUploadProgressLoader";
 import { toCleanRelativeAssetPath, getAssetUrl, formatHref } from "@/lib/utils";
@@ -480,8 +481,11 @@ export function RecordDialog({
                         {fileUrls.length > 0 && (
                           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-2">
                             {fileUrls.map((url, idx) => {
-                              const fType = getFileType(url);
                               const filename = url.split("/").pop() || "Media Asset";
+                              const fType = getFileType(url, filename);
+                              const isPdf = isPdfFile(url, filename);
+                              const isWord = isWordFile(url, filename);
+                              const isExcel = isExcelFile(url, filename);
                               return (
                                 <div
                                   key={`${url}-${idx}`}
@@ -498,11 +502,27 @@ export function RecordDialog({
                                         <Music size={32} className="text-purple-300 mb-1 animate-pulse" />
                                         <span className="text-[11px] font-bold text-purple-200 truncate w-full px-2">{filename}</span>
                                       </div>
-                                    ) : isPdfFile(url) ? (
+                                    ) : isPdf ? (
                                       <div className="relative h-full w-full bg-slate-950 flex items-center justify-center overflow-hidden">
                                         <PdfCanvasThumbnail url={url} alt={filename} className="h-full w-full" />
                                         <span className="absolute bottom-1 right-1.5 rounded-md bg-red-950/90 border border-red-700/50 px-1.5 py-0.5 text-[9px] font-bold uppercase text-red-200 shadow-md pointer-events-none">
                                           PDF
+                                        </span>
+                                      </div>
+                                    ) : isWord ? (
+                                      <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-blue-950 via-slate-900 to-slate-950 p-3 text-white text-center">
+                                        <FileText size={32} className="text-blue-400 mb-1" />
+                                        <span className="text-[11px] font-bold text-slate-200 truncate w-full px-2">{filename}</span>
+                                        <span className="mt-1 rounded-md bg-blue-500/20 border border-blue-500/40 px-2 py-0.5 text-[9px] font-extrabold uppercase text-blue-300">
+                                          WORD (.DOCX)
+                                        </span>
+                                      </div>
+                                    ) : isExcel ? (
+                                      <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 p-3 text-white text-center">
+                                        <FileSpreadsheet size={32} className="text-emerald-400 mb-1" />
+                                        <span className="text-[11px] font-bold text-slate-200 truncate w-full px-2">{filename}</span>
+                                        <span className="mt-1 rounded-md bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[9px] font-extrabold uppercase text-emerald-300">
+                                          EXCEL (.XLSX)
                                         </span>
                                       </div>
                                     ) : fType === "document" ? (
