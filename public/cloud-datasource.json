@@ -561,10 +561,13 @@
           "enabled": false
         },
         "popupBanner": {
-          "bannerStyle": "concept1",
-          "title": "2026-2027",
+          "bannerStyle": "concept2",
+          "title": "ADMISSIONS OPEN FOR THE SESSION 2027-28",
           "showTitle": true,
-          "enabled": false
+          "enabled": true,
+          "imageUrl": "https://res.cloudinary.com/dnw7mgysa/image/upload/f_auto,q_auto/ips-education/assets/Album/PopUpBanner/file_hsswdt.jpg",
+          "delaySeconds": 3,
+          "onlyOncePerSession": false
         },
         "site_logo": {},
         "certified_board": {},
@@ -2868,10 +2871,13 @@
     "enabled": false
   },
   "popupBanner": {
-    "bannerStyle": "concept1",
-    "title": "2026-2027",
+    "bannerStyle": "concept2",
+    "title": "ADMISSIONS OPEN FOR THE SESSION 2027-28",
     "showTitle": true,
-    "enabled": false
+    "enabled": true,
+    "imageUrl": "https://res.cloudinary.com/dnw7mgysa/image/upload/f_auto,q_auto/ips-education/assets/Album/PopUpBanner/file_hsswdt.jpg",
+    "delaySeconds": 3,
+    "onlyOncePerSession": false
   },
   "site_logo": {
     "logoUrl": "https://res.cloudinary.com/dnw7mgysa/image/upload/ips-education/assets/Settings/Logos/IPSLogo.png",

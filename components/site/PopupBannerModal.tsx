@@ -12,12 +12,13 @@ export function PopupBannerModal() {
   const siteData = useSiteData();
   const config = getPopupBannerConfig(siteData);
 
+  const DEFAULT_POPUP_IMAGE = "/assets/Settings/Home/Banner_1.jpg";
   const [isOpen, setIsOpen] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [imgSrc, setImgSrc] = useState(() => getAssetUrl(config.imageUrl) || "/assets/Settings/Home/POP_UP_IMAGE.jpeg");
+  const [imgSrc, setImgSrc] = useState(() => getAssetUrl(config.imageUrl) || DEFAULT_POPUP_IMAGE);
 
   useEffect(() => {
-    setImgSrc(getAssetUrl(config.imageUrl) || "/assets/Settings/Home/POP_UP_IMAGE.jpeg");
+    setImgSrc(getAssetUrl(config.imageUrl) || DEFAULT_POPUP_IMAGE);
   }, [config.imageUrl]);
 
   useEffect(() => {
@@ -133,8 +134,8 @@ export function PopupBannerModal() {
                     src={imgSrc}
                     alt={config.title || "Announcement"}
                     onError={() => {
-                      if (imgSrc !== "/assets/Settings/Home/POP_UP_IMAGE.jpeg") {
-                        setImgSrc("/assets/Settings/Home/POP_UP_IMAGE.jpeg");
+                      if (imgSrc !== DEFAULT_POPUP_IMAGE) {
+                        setImgSrc(DEFAULT_POPUP_IMAGE);
                       }
                     }}
                     className={`w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.03] ${config.showImageZoomOnClick ? "cursor-zoom-in" : ""}`}
@@ -187,6 +188,16 @@ export function PopupBannerModal() {
                 borderRadius: `${config.imageBorderRadius || 24}px`,
               }}
             >
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={handleClose}
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 size-8 sm:size-9 rounded-full bg-slate-900/90 hover:bg-slate-800 text-white flex items-center justify-center transition border border-white/20 cursor-pointer shadow-xl"
+                title={config.closeButtonText || "Close"}
+              >
+                <i className="bi bi-x-lg text-xs" />
+              </button>
+
               {/* Left Column: Poster Graphic (100% Fully Visible) */}
               {Boolean(config.imageUrl?.trim()) && (
                 <div className="w-full md:w-1/2 h-[42vh] sm:h-[48vh] md:h-full bg-slate-950 flex items-center justify-center p-3 shrink-0 border-b md:border-b-0 md:border-r border-blue-900/50">
@@ -194,8 +205,8 @@ export function PopupBannerModal() {
                     src={imgSrc}
                     alt={config.title || "Announcement"}
                     onError={() => {
-                      if (imgSrc !== "/assets/Settings/Home/POP_UP_IMAGE.jpeg") {
-                        setImgSrc("/assets/Settings/Home/POP_UP_IMAGE.jpeg");
+                      if (imgSrc !== DEFAULT_POPUP_IMAGE) {
+                        setImgSrc(DEFAULT_POPUP_IMAGE);
                       }
                     }}
                     className={`w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.03] ${config.showImageZoomOnClick ? "cursor-zoom-in" : ""}`}
@@ -258,8 +269,8 @@ export function PopupBannerModal() {
                     src={imgSrc}
                     alt={config.title || "Announcement"}
                     onError={() => {
-                      if (imgSrc !== "/assets/Settings/Home/POP_UP_IMAGE.jpeg") {
-                        setImgSrc("/assets/Settings/Home/POP_UP_IMAGE.jpeg");
+                      if (imgSrc !== DEFAULT_POPUP_IMAGE) {
+                        setImgSrc(DEFAULT_POPUP_IMAGE);
                       }
                     }}
                     className={`w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.02] ${config.showImageZoomOnClick ? "cursor-zoom-in" : ""}`}
@@ -271,7 +282,7 @@ export function PopupBannerModal() {
               <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-8 bg-[#091b38] flex flex-col justify-start md:justify-center overflow-y-auto flex-1 h-auto md:h-full pb-6">
                 <div className="mb-3 sm:mb-4 space-y-1 pr-6">
                   <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white leading-tight font-[var(--font-display)]">
-                    {config.title && config.title !== "Admissions Open 2026–27" && config.title !== "ADMISSIONS OPEN 2026–27" ? config.title : "Enquiry"}
+                    {config.title || "Enquiry"}
                   </h2>
                   {config.subtitle && (
                     <p className="text-[11px] sm:text-xs text-blue-200/90 font-medium">
@@ -317,8 +328,8 @@ export function PopupBannerModal() {
                     src={imgSrc}
                     alt={config.title || "Announcement"}
                     onError={() => {
-                      if (imgSrc !== "/assets/Settings/Home/POP_UP_IMAGE.jpeg") {
-                        setImgSrc("/assets/Settings/Home/POP_UP_IMAGE.jpeg");
+                      if (imgSrc !== DEFAULT_POPUP_IMAGE) {
+                        setImgSrc(DEFAULT_POPUP_IMAGE);
                       }
                     }}
                     className={`w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.03] ${config.showImageZoomOnClick ? "cursor-zoom-in" : ""}`}
@@ -380,8 +391,8 @@ export function PopupBannerModal() {
                     src={imgSrc}
                     alt={config.title || "Announcement"}
                     onError={() => {
-                      if (imgSrc !== "/assets/Settings/Home/POP_UP_IMAGE.jpeg") {
-                        setImgSrc("/assets/Settings/Home/POP_UP_IMAGE.jpeg");
+                      if (imgSrc !== DEFAULT_POPUP_IMAGE) {
+                        setImgSrc(DEFAULT_POPUP_IMAGE);
                       }
                     }}
                     className={`w-full h-full transition-transform duration-500 group-hover:scale-[1.02] ${config.showImageZoomOnClick ? "cursor-zoom-in" : ""}`}
