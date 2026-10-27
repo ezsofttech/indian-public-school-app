@@ -25,6 +25,9 @@ import {
 import {
   isPdfFile,
   isDocumentFile,
+  isWordFile,
+  isExcelFile,
+  getDocumentViewerUrl,
   getCloudinaryPdfThumbnailUrl,
   getCloudinaryInlineViewerUrl,
   getGoogleDocsViewerUrl,
@@ -308,12 +311,20 @@ export function FileViewerModal({
   if (!isOpen || (!url && !htmlContent)) return null;
 
   const fileType = isHtml ? "document" : getFileType(url || "");
-  const isPdf = !isHtml && (isPdfDetected || isPdfFile(url || ""));
-  const isDoc = !isHtml && isDocumentFile(url || "");
+  const isPdf = !isHtml && (isPdfDetected || isPdfFile(url || "", title));
+  const isWord = !isHtml && isWordFile(url || "", title);
+  const isExcel = !isHtml && isExcelFile(url || "", title);
+  const isDoc = !isHtml && (isDocumentFile(url || "", title) || isWord || isExcel);
   const displayName = title || (url ? url.split("/").pop() : "Document Print Preview") || "Document Print Preview";
   const pdfProxyStreamUrl = getPdfProxyUrl(url || "");
-  const inlineUrl = getCloudinaryInlineViewerUrl(url || "");
+  const inlineUrl = getCloudinaryInlineViewerUrl(url || "", title);
   const googleViewerUrl = getGoogleDocsViewerUrl(url || "");
+  const documentViewerUrl = getDocumentViewerUrl(url || "");
+  const openUrl = (isWord || isExcel)
+    ? documentViewerUrl
+    : isPdf
+    ? (isBlobOrData ? (url ?? "") : pdfProxyStreamUrl)
+    : (inlineUrl || url || "");
 
   const handleCopyLink = () => {
     if (url) {
@@ -470,7 +481,7 @@ export function FileViewerModal({
                 {/* Download Action */}
                 <a
                   href={url ?? ""}
-                  download={displayName.toLowerCase().endsWith(".pdf") ? displayName : `${displayName}.pdf`}
+                  download
                   className="flex items-center gap-1.5 rounded-xl border border-emerald-600/40 bg-emerald-600/20 px-3 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-600/30 transition cursor-pointer"
                   title="Download File"
                 >
@@ -479,11 +490,11 @@ export function FileViewerModal({
                 </a>
 
                 <a
-                  href={isBlobOrData ? (url ?? "") : pdfProxyStreamUrl}
+                  href={openUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 rounded-xl border border-blue-600/40 bg-blue-600/20 px-3 py-1.5 text-xs font-bold text-blue-300 hover:bg-blue-600/30 transition"
-                  title="Open stream in new browser page/tab"
+                  title="Open in new browser page/tab"
                 >
                   <ExternalLink size={14} />
                   <span>Open in New Page</span>
@@ -689,7 +700,16 @@ export function FileViewerModal({
             </div>
           )}
 
-
+          {/* Word / Excel / Office Document Embedded Viewer */}
+          {!isHtml && !isPdf && isDoc && url && (
+            <div className="relative h-full w-full flex items-center justify-center p-1 sm:p-2">
+              <iframe
+                src={documentViewerUrl}
+                className="h-full w-full rounded-2xl bg-white border-0 shadow-2xl"
+                title={displayName}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

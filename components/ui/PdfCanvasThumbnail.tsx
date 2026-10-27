@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { FileText, LoaderCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { getCloudinaryPdfThumbnailUrl, getPdfProxyUrl } from "@/lib/file-preview";
 
 interface PdfCanvasThumbnailProps {
@@ -138,24 +139,24 @@ export function PdfCanvasThumbnail({ url, className = "", alt = "PDF Page Previe
 
   if (useCanvas) {
     return (
-      <div className={`relative flex items-center justify-center bg-slate-950 overflow-hidden ${className}`}>
+      <div className={cn("relative flex items-center justify-center bg-slate-950 overflow-hidden", className)}>
         {loading && (
           <div className="absolute inset-0 grid place-items-center bg-slate-950 text-slate-400">
             <LoaderCircle size={18} className="animate-spin text-blue-400" />
           </div>
         )}
-        <canvas ref={canvasRef} className="h-full w-full object-cover" />
+        <canvas ref={canvasRef} className="max-h-full max-w-full object-contain" />
       </div>
     );
   }
 
   return (
-    <div className={`relative h-full w-full bg-slate-950 overflow-hidden ${className}`}>
+    <div className={cn("relative flex items-center justify-center bg-slate-950 overflow-hidden", className)}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={initialImgUrl}
         alt={alt}
-        className="h-full w-full object-cover"
+        className="max-h-full max-w-full object-contain"
         onError={() => {
           setTimeout(() => setUseCanvas(true), 0);
         }}

@@ -65,13 +65,15 @@ export interface MediaItem {
   displayCategory: string;
 }
 
-export function getFileType(url: string): "image" | "video" | "audio" | "document" {
-  if (!url || typeof url !== "string") return "image";
-  const lowercaseUrl = url.toLowerCase();
+export function getFileType(url?: string | null, title?: string | null): "image" | "video" | "audio" | "document" {
+  if (!url && !title) return "image";
+  const lowercaseUrl = (url && typeof url === "string" ? url : "").toLowerCase();
   const cleanUrl = lowercaseUrl.split("?")[0].split("#")[0];
+  const cleanTitle = (title && typeof title === "string" ? title : "").toLowerCase().trim();
 
   if (
     cleanUrl.match(/\.(mp4|webm|mov|mkv|avi|ogv)$/) ||
+    cleanTitle.match(/\.(mp4|webm|mov|mkv|avi|ogv)$/) ||
     lowercaseUrl.includes("/video/upload/") ||
     lowercaseUrl.includes("resource_type=video")
   ) {
@@ -79,15 +81,19 @@ export function getFileType(url: string): "image" | "video" | "audio" | "documen
   }
   if (
     cleanUrl.match(/\.(mp3|wav|ogg|m4a|aac|flac)$/) ||
+    cleanTitle.match(/\.(mp3|wav|ogg|m4a|aac|flac)$/) ||
     lowercaseUrl.includes("/audio/upload/") ||
     lowercaseUrl.includes("resource_type=audio")
   ) {
     return "audio";
   }
   if (
-    isDocumentFile(url) ||
-    isPdfFile(url) ||
+    isDocumentFile(url, title) ||
+    isPdfFile(url, title) ||
+    isWordFile(url, title) ||
+    isExcelFile(url, title) ||
     cleanUrl.match(/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|txt|csv|zip|rar|7z)$/) ||
+    cleanTitle.match(/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|txt|csv|zip|rar|7z)$/) ||
     lowercaseUrl.includes("/raw/upload/")
   ) {
     return "document";
@@ -122,10 +128,10 @@ export function createMediaItem(raw: {
   directory?: string;
   source: "database" | "cloudinary";
 }): MediaItem {
-  const fileType = getFileType(raw.url);
-  const isPdf = isPdfFile(raw.url);
-  const isExcel = isExcelFile(raw.url);
-  const isWord = isWordFile(raw.url);
+  const fileType = getFileType(raw.url, raw.title);
+  const isPdf = isPdfFile(raw.url, raw.title);
+  const isExcel = isExcelFile(raw.url, raw.title);
+  const isWord = isWordFile(raw.url, raw.title);
   const isGoogleSheet = isGoogleSheetUrl(raw.url);
   const isGoogleDoc = isGoogleDocUrl(raw.url);
   const normalizedCategory = normalizeCategoryKey(raw.category);

@@ -522,16 +522,15 @@ export function getPopupBannerConfig(siteData?: SiteData | null): Required<Popup
 
   const enabled = pb.enabled !== false;
   const delaySeconds = typeof pb.delaySeconds === "number" ? pb.delaySeconds : (Number(pb.delaySeconds) || 1);
-  let rawImageUrl = pb.imageUrl !== undefined && text(pb.imageUrl).trim() !== "" ? text(pb.imageUrl) : "/assets/Settings/Home/POP_UP_IMAGE.jpeg";
-  if (rawImageUrl.includes("Banner_8") || rawImageUrl.includes("file_") || !rawImageUrl.trim()) {
-    rawImageUrl = "/assets/Settings/Home/POP_UP_IMAGE.jpeg";
+  let rawImageUrl = pb.imageUrl !== undefined && text(pb.imageUrl).trim() !== "" ? text(pb.imageUrl).trim() : "/assets/Settings/Home/Banner_1.jpg";
+  if (rawImageUrl.includes("Banner_8") || !rawImageUrl.trim()) {
+    rawImageUrl = "/assets/Settings/Home/Banner_1.jpg";
   }
-  const resolvedImageUrl = imageUrl(rawImageUrl) || getAssetUrl(rawImageUrl) || "/assets/Settings/Home/POP_UP_IMAGE.jpeg";
+  const resolvedImageUrl = imageUrl(rawImageUrl) || getAssetUrl(rawImageUrl) || rawImageUrl || "/assets/Settings/Home/Banner_1.jpg";
   const showTitle = pb.showTitle !== false;
   const rawTitle = pb.title !== undefined ? text(pb.title).trim() : "";
-  const title = showTitle ? (rawTitle !== "" && !rawTitle.includes("2026") && !rawTitle.includes("2027") && rawTitle !== "Admissions Open 2026–27" ? rawTitle : "Enquiry") : "";
-  const rawSubtitle = text(pb.subtitle) || "";
-  const subtitle = rawSubtitle.toLowerCase().includes("enroll your child") ? "" : rawSubtitle;
+  const title = showTitle ? (rawTitle !== "" ? rawTitle : "Enquiry") : "";
+  const subtitle = text(pb.subtitle).trim();
   const enquiryButtonText = text(pb.enquiryButtonText) || "Enquiry Now";
   const closeButtonText = text(pb.closeButtonText) || "Close";
   const onlyOncePerSession = pb.onlyOncePerSession === true;

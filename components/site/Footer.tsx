@@ -179,7 +179,7 @@ export function Footer() {
   const socialLinks = [
     { icon: Facebook, label: "Facebook", href: ensureExternalUrl(text(footerConfig.facebook) || text(socialsObj.facebook), "https://facebook.com") },
     { icon: Instagram, label: "Instagram", href: ensureExternalUrl(text(footerConfig.instagram) || text(socialsObj.instagram), "https://instagram.com") },
-    { icon: Youtube, label: "YouTube", href: ensureExternalUrl(text(footerConfig.youtube) || text(socialsObj.youtube), "https://youtube.com") },
+    { icon: Youtube, label: "YouTube", href: ensureExternalUrl(text(footerConfig.youtube) || text(socialsObj.youtube), "https://youtube.com/@ipssbp") },
     { icon: Linkedin, label: "LinkedIn", href: ensureExternalUrl(text(footerConfig.linkedin) || text(socialsObj.linkedin) || text(socialsObj.linkdin), "https://linkedin.com") },
   ];
 

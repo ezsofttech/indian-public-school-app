@@ -6,19 +6,23 @@ import {
   Check,
   Copy,
   ExternalLink,
-  Eye,
   Pencil,
   Trash2,
   X,
   SlidersHorizontal,
   LoaderCircle,
+  FileSpreadsheet,
+  FileText,
+  Music,
+  Video,
+  Download,
 } from "lucide-react";
 import { getFileType } from "@/components/admin/CloudinaryGalleryModal";
-import { FileViewerModal } from "@/components/ui/FileViewerModal";
-import { PdfCanvasThumbnail } from "@/components/ui/PdfCanvasThumbnail";
 import {
   getCloudinaryPdfThumbnailUrl,
   isPdfFile,
+  isWordFile,
+  isExcelFile,
   isDocumentFile,
   getCloudinaryInlineViewerUrl,
 } from "@/lib/file-preview";
@@ -144,6 +148,7 @@ export function StructuredDetailValue({
     }
 
     if (isDoc) {
+      const viewerUrl = getCloudinaryInlineViewerUrl(fullUrl, keyName) || fullUrl;
       return (
         <div className="flex items-center gap-3 font-sans">
           <SmartFileThumbnail
@@ -153,10 +158,11 @@ export function StructuredDetailValue({
           />
           <div className="min-w-0 flex-1">
             <a
-              href={fullUrl}
+              href={viewerUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="truncate text-xs font-bold text-[#1a5d9c] hover:underline block"
+              title="Open document viewer in new tab"
             >
               {val}
             </a>
@@ -166,12 +172,16 @@ export function StructuredDetailValue({
       );
     }
 
+    const isDocUrl = isDocumentFile(fullUrl, keyName);
+    const linkTarget = isDocUrl ? (getCloudinaryInlineViewerUrl(fullUrl, keyName) || fullUrl) : fullUrl;
+
     return (
       <a
-        href={fullUrl}
+        href={linkTarget}
         target="_blank"
         rel="noopener noreferrer"
         className="break-all text-xs font-bold text-[#1a5d9c] hover:underline font-sans"
+        title={isDocUrl ? "Open document viewer in new tab" : undefined}
       >
         {val}
       </a>
@@ -187,7 +197,7 @@ export function StructuredDetailValue({
           (itemVal.startsWith("http://") ||
             itemVal.startsWith("https://") ||
             itemVal.startsWith("/") ||
-            /\.(jpg|jpeg|png|webp|gif|svg|pdf|doc|docx)$/i.test(itemVal))
+            /\.(jpg|jpeg|png|webp|gif|svg|pdf|doc|docx|xls|xlsx|csv)$/i.test(itemVal))
       );
 
     if (isUrlArray) {
@@ -196,6 +206,8 @@ export function StructuredDetailValue({
           {val.map((itemVal, i) => {
             const strVal = String(itemVal);
             const fullUrl = imageUrl(strVal);
+            const isDocItem = isDocumentFile(fullUrl, `${keyName}-${i}`);
+            const itemViewerUrl = isDocItem ? (getCloudinaryInlineViewerUrl(fullUrl, strVal) || fullUrl) : fullUrl;
             return (
               <div key={i} className="flex items-center gap-3 p-1.5 rounded-xl border border-slate-100 bg-slate-50/60">
                 <SmartFileThumbnail
@@ -205,10 +217,11 @@ export function StructuredDetailValue({
                 />
                 <div className="min-w-0 flex-1">
                   <a
-                    href={fullUrl}
+                    href={itemViewerUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="truncate text-xs font-bold text-[#1a5d9c] hover:underline block"
+                    title={isDocItem ? "Open document in new tab" : undefined}
                   >
                     {strVal}
                   </a>
@@ -332,7 +345,6 @@ export function MediaDetailDialog({
 }) {
   const [copied, setCopied] = useState(false);
   const [activeUrlIndex, setActiveUrlIndex] = useState(0);
-  const [isViewerOpen, setIsViewerOpen] = useState(false);
 
   const getMediaUrls = (val: unknown): string[] => {
     const list: string[] = [];
@@ -395,14 +407,20 @@ export function MediaDetailDialog({
   const title = String(
     item.eventName || item.title || item.name || item.originalname || item.album || item.key || "Record Item"
   );
+  const resolvedUrl = getCloudinaryInlineViewerUrl(primaryUrl, title) || (primaryUrl ? imageUrl(primaryUrl) : "");
   const album = String(item.eventType || item.album || item.category || "General");
-  const fileType = getFileType(primaryUrl);
-  const isPdf = isPdfFile(primaryUrl);
+  const fileType = getFileType(primaryUrl, title);
+  const isPdf = isPdfFile(primaryUrl, title);
+  const isWord = isWordFile(primaryUrl, title);
+  const isExcel = isExcelFile(primaryUrl, title);
+  const isDoc = isDocumentFile(primaryUrl, title) || fileType === "document";
+  const isImage = fileType === "image" && !isPdf && !isWord && !isExcel && !isDoc;
   const pagePreviewUrl = getPreviewUrl(item);
 
   const copyUrl = () => {
-    if (!primaryUrl) return;
-    navigator.clipboard.writeText(primaryUrl);
+    const urlToCopy = resolvedUrl || primaryUrl;
+    if (!urlToCopy) return;
+    navigator.clipboard.writeText(urlToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -445,42 +463,73 @@ export function MediaDetailDialog({
           {/* Main Media Preview Box */}
           {primaryUrl && (
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-950/5 relative group">
-              <div className="relative flex min-h-[220px] max-h-[380px] w-full items-center justify-center bg-slate-900 p-2">
-                {fileType === "image" ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={imageUrl(primaryUrl)}
-                    alt={title}
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = "/assets/Settings/Home/hero-campus.png";
-                    }}
-                    className="max-h-[360px] w-auto rounded-lg object-contain shadow-lg"
-                  />
-                ) : isPdf ? (
-                  <div className="flex flex-col items-center justify-center p-6 text-center text-white">
-                    <PdfCanvasThumbnail
-                      url={getCloudinaryPdfThumbnailUrl(primaryUrl)}
-                      className="h-44 w-auto rounded-lg shadow-md border border-slate-700 object-contain mb-3"
+              <div className="relative flex min-h-[220px] max-h-[380px] w-full items-center justify-center bg-slate-900 p-4 overflow-hidden">
+                {isImage ? (
+                  <div className="relative flex h-full max-h-[350px] w-full items-center justify-center overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={imageUrl(primaryUrl)}
+                      alt={title}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "/assets/Settings/Home/hero-campus.png";
+                      }}
+                      className="max-h-[350px] max-w-full w-auto rounded-xl object-contain shadow-2xl"
                     />
-                    <p className="text-xs text-slate-300 font-medium max-w-md truncate">{primaryUrl}</p>
-                    <button
-                      type="button"
-                      onClick={() => setIsViewerOpen(true)}
-                      className="mt-3 inline-flex items-center gap-2 rounded-xl bg-[#1a5d9c] px-4 py-2 text-xs font-bold text-white shadow-md hover:bg-[#102a4c] transition"
-                    >
-                      <Eye size={14} /> Open Full Screen PDF Viewer
-                    </button>
+                  </div>
+                ) : isPdf ? (
+                  <div className="flex flex-col items-center justify-center p-6 text-center max-w-md w-full">
+                    <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-rose-500/20 via-red-500/10 to-rose-950/40 border border-rose-500/30 text-rose-400 shadow-xl mb-3">
+                      <FileText size={44} className="text-rose-500 drop-shadow-md" />
+                      <span className="absolute -bottom-2 rounded-full bg-rose-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-md">
+                        PDF
+                      </span>
+                    </div>
+                    <h3 className="text-sm sm:text-base font-bold text-white line-clamp-1 max-w-sm mb-1">{title}</h3>
+                    <p className="text-[11px] font-mono text-slate-400 truncate max-w-xs">{primaryUrl}</p>
+                  </div>
+                ) : isWord ? (
+                  <div className="flex flex-col items-center justify-center p-6 text-center max-w-md w-full">
+                    <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500/20 via-sky-500/10 to-blue-950/40 border border-blue-500/30 text-blue-400 shadow-xl mb-3">
+                      <FileText size={44} className="text-blue-400 drop-shadow-md" />
+                      <span className="absolute -bottom-2 rounded-full bg-blue-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-md">
+                        DOCX
+                      </span>
+                    </div>
+                    <h3 className="text-sm sm:text-base font-bold text-white line-clamp-1 max-w-sm mb-1">{title}</h3>
+                    <p className="text-[11px] font-mono text-slate-400 truncate max-w-xs">{primaryUrl}</p>
+                  </div>
+                ) : isExcel ? (
+                  <div className="flex flex-col items-center justify-center p-6 text-center max-w-md w-full">
+                    <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-500/20 via-green-500/10 to-emerald-950/40 border border-emerald-500/30 text-emerald-400 shadow-xl mb-3">
+                      <FileSpreadsheet size={44} className="text-emerald-400 drop-shadow-md" />
+                      <span className="absolute -bottom-2 rounded-full bg-emerald-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-md">
+                        SHEET
+                      </span>
+                    </div>
+                    <h3 className="text-sm sm:text-base font-bold text-white line-clamp-1 max-w-sm mb-1">{title}</h3>
+                    <p className="text-[11px] font-mono text-slate-400 truncate max-w-xs">{primaryUrl}</p>
                   </div>
                 ) : fileType === "video" ? (
-                  <video src={primaryUrl} controls className="max-h-[360px] w-full rounded-lg" />
+                  <video src={resolvedUrl || primaryUrl} controls className="max-h-[350px] max-w-full rounded-xl shadow-lg" />
                 ) : fileType === "audio" ? (
-                  <div className="p-8 w-full max-w-md">
-                    <audio src={primaryUrl} controls className="w-full" />
+                  <div className="flex flex-col items-center justify-center p-6 text-center max-w-md w-full">
+                    <div className="relative flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-purple-500/20 to-indigo-950/40 border border-purple-500/30 text-purple-400 shadow-xl mb-3">
+                      <Music size={36} className="text-purple-400 animate-pulse" />
+                    </div>
+                    <h3 className="text-sm font-bold text-white line-clamp-1 max-w-sm mb-3">{title}</h3>
+                    <audio src={resolvedUrl || primaryUrl} controls className="w-full max-w-sm" />
                   </div>
                 ) : (
-                  <div className="p-8 text-center text-slate-400 font-medium text-xs">
-                    File preview not available directly in browser frame.
+                  <div className="flex flex-col items-center justify-center p-6 text-center max-w-md w-full">
+                    <div className="relative flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-800 border border-slate-700 text-slate-400 shadow-xl mb-3">
+                      <FileText size={36} className="text-slate-400" />
+                      <span className="absolute -bottom-2 rounded-full bg-slate-700 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-slate-200 shadow-md">
+                        FILE
+                      </span>
+                    </div>
+                    <h3 className="text-sm font-bold text-white line-clamp-1 max-w-sm mb-1">{title}</h3>
+                    <p className="text-[11px] font-mono text-slate-400 truncate max-w-xs">{primaryUrl}</p>
                   </div>
                 )}
               </div>
@@ -497,14 +546,9 @@ export function MediaDetailDialog({
                         activeUrlIndex === idx ? "border-[#1a5d9c] ring-2 ring-[#1a5d9c]/20" : "border-slate-300 opacity-60 hover:opacity-100"
                       }`}
                     >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={imageUrl(u)}
-                        alt=""
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = "/assets/Settings/Home/hero-campus.png";
-                        }}
+                      <SmartFileThumbnail
+                        url={u}
+                        alt={`${title}-${idx}`}
                         className="h-full w-full object-cover"
                       />
                     </button>
@@ -515,22 +559,34 @@ export function MediaDetailDialog({
               {/* Preview Toolbar */}
               <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 bg-slate-50 p-3 text-xs">
                 <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <span className="font-mono text-[11px] text-slate-500 truncate max-w-sm">{primaryUrl}</span>
+                  <span className="font-mono text-[11px] text-slate-500 truncate max-w-sm" title={primaryUrl}>
+                    {primaryUrl}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     type="button"
                     onClick={copyUrl}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-700 shadow-2xs hover:bg-slate-100 transition"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-700 shadow-2xs hover:bg-slate-100 transition cursor-pointer"
                   >
                     {copied ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
                     <span>{copied ? "Copied!" : "Copy Link"}</span>
                   </button>
                   <a
-                    href={getCloudinaryInlineViewerUrl(primaryUrl)}
+                    href={imageUrl(primaryUrl)}
+                    download
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-700 shadow-2xs hover:bg-slate-100 transition cursor-pointer"
+                    title="Download original file directly"
+                  >
+                    <Download size={14} className="text-slate-600" />
+                    <span>Download</span>
+                  </a>
+                  <a
+                    href={resolvedUrl || primaryUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-[#1a5d9c] px-3 py-1.5 font-bold text-white shadow-2xs hover:bg-[#102a4c] transition"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-[#1a5d9c] px-3 py-1.5 font-bold text-white shadow-2xs hover:bg-[#102a4c] transition cursor-pointer"
+                    title="Open in online viewer / new tab"
                   >
                     <ExternalLink size={14} />
                     <span>Open Link</span>
@@ -618,12 +674,6 @@ export function MediaDetailDialog({
           </div>
         </div>
       </div>
-      <FileViewerModal
-        isOpen={isViewerOpen}
-        onClose={() => setIsViewerOpen(false)}
-        url={primaryUrl}
-        title={title}
-      />
     </div>
   );
 }
