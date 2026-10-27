@@ -188,16 +188,6 @@ export function PopupBannerModal() {
                 borderRadius: `${config.imageBorderRadius || 24}px`,
               }}
             >
-              {/* Close Button */}
-              <button
-                type="button"
-                onClick={handleClose}
-                className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 size-8 sm:size-9 rounded-full bg-slate-900/90 hover:bg-slate-800 text-white flex items-center justify-center transition border border-white/20 cursor-pointer shadow-xl"
-                title={config.closeButtonText || "Close"}
-              >
-                <i className="bi bi-x-lg text-xs" />
-              </button>
-
               {/* Left Column: Poster Graphic (100% Fully Visible) */}
               {Boolean(config.imageUrl?.trim()) && (
                 <div className="w-full md:w-1/2 h-[42vh] sm:h-[48vh] md:h-full bg-slate-950 flex items-center justify-center p-3 shrink-0 border-b md:border-b-0 md:border-r border-blue-900/50">
