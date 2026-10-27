@@ -28,11 +28,27 @@ export async function GET(request: NextRequest) {
       : targetUrl.replace("/image/upload/", "/raw/upload/");
     candidatesSet.add(rawToImage);
 
+    // Support migration from old niefrrkx cloud to active dnw7mgysa cloud
+    if (targetUrl.includes("niefrrkx")) {
+      const dnwVariant = targetUrl.replace(/niefrrkx/g, "dnw7mgysa");
+      candidatesSet.add(dnwVariant);
+      candidatesSet.add(
+        dnwVariant.includes("/raw/upload/")
+          ? dnwVariant.replace("/raw/upload/", "/image/upload/")
+          : dnwVariant.replace("/image/upload/", "/raw/upload/")
+      );
+    }
+
     // Handle double-extension or missing extension variants
     if (targetUrl.includes(".pdf.pdf")) {
       const single = targetUrl.replace(/\.pdf\.pdf/g, ".pdf");
       candidatesSet.add(single);
       candidatesSet.add(single.includes("/raw/upload/") ? single.replace("/raw/upload/", "/image/upload/") : single.replace("/image/upload/", "/raw/upload/"));
+      if (single.includes("niefrrkx")) {
+        const dnwSingle = single.replace(/niefrrkx/g, "dnw7mgysa");
+        candidatesSet.add(dnwSingle);
+        candidatesSet.add(dnwSingle.includes("/raw/upload/") ? dnwSingle.replace("/raw/upload/", "/image/upload/") : dnwSingle.replace("/image/upload/", "/raw/upload/"));
+      }
     } else if (/\.pdf($|\?|#)/i.test(targetUrl)) {
       const double = targetUrl.replace(/\.pdf(?=($|\?|#))/i, ".pdf.pdf");
       candidatesSet.add(double);

@@ -543,6 +543,7 @@ export default async function ContentPage({
           <div
             className="mx-auto max-w-4xl prose dark:prose-invert prose-lg max-w-none space-y-6 text-foreground leading-relaxed font-sans dynamic-page-content"
             dangerouslySetInnerHTML={{ __html: htmlContent }}
+            suppressHydrationWarning
           />
         ) : (
           <div className="mx-auto max-w-4xl space-y-5 text-base leading-relaxed text-foreground sm:text-lg">

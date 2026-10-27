@@ -385,7 +385,9 @@ export function processHtmlAssetUrls(html?: string | null): string {
         cleanPath.startsWith("https://") ||
         cleanPath.startsWith("data:") ||
         cleanPath.startsWith("blob:") ||
-        cleanPath.startsWith("javascript:")
+        cleanPath.startsWith("javascript:") ||
+        cleanPath.startsWith("/api/") ||
+        cleanPath.startsWith("api/")
       ) {
         return match;
       }
@@ -411,7 +413,9 @@ export function processHtmlAssetUrls(html?: string | null): string {
         cleanPath.startsWith("#") ||
         cleanPath.startsWith("mailto:") ||
         cleanPath.startsWith("tel:") ||
-        cleanPath.startsWith("javascript:")
+        cleanPath.startsWith("javascript:") ||
+        cleanPath.startsWith("/api/") ||
+        cleanPath.startsWith("api/")
       ) {
         return match;
       }
