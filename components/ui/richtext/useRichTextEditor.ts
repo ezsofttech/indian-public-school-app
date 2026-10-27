@@ -435,7 +435,19 @@ export function useRichTextEditor({
               table { width: 100%; border-collapse: collapse; margin: 1rem 0; border: 1px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
               th, td { border: 1px solid #cbd5e1; padding: 10px 14px; text-align: left; }
               th { background-color: #f1f5f9; font-weight: 700; color: #0f172a; }
+              img[src=""], img:not([src]) { display: none !important; }
             </style>
+            <script>
+              window.addEventListener('error', function(e) {
+                if (e.target && e.target.tagName === 'IMG') {
+                  var img = e.target;
+                  img.style.display = 'none';
+                  if (img.nextElementSibling && img.nextElementSibling.style) {
+                    img.nextElementSibling.style.display = 'flex';
+                  }
+                }
+              }, true);
+            </script>
           </head>
           <body>${valueOnTabSwitchRef.current || ""}</body>
         </html>

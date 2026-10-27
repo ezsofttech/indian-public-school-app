@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { FileText, X, Image as ImageIcon, Eye, Check } from "lucide-react";
 import { generatePdfCardHtml } from "./richtext.helpers";
+import { PdfCanvasThumbnail } from "@/components/ui/PdfCanvasThumbnail";
+import { getCloudinaryInlineViewerUrl, normalizePdfUrl } from "@/lib/file-preview";
 
 interface PdfStudioModalProps {
   isOpen: boolean;
@@ -19,7 +21,7 @@ export function PdfStudioModal({
   onOpenGallery,
   onInsertHtml,
 }: PdfStudioModalProps) {
-  const [pdfStudioUrl, setPdfStudioUrl] = useState(initialPdfUrl);
+  const [pdfStudioUrl, setPdfStudioUrl] = useState(normalizePdfUrl(initialPdfUrl));
   const [pdfStudioTheme, setPdfStudioTheme] = useState<"light" | "dark" | "banner" | "badge">("light");
   const [pdfStudioTitle, setPdfStudioTitle] = useState("Official PDF Document");
   const [pdfStudioSubtitle, setPdfStudioSubtitle] = useState("");
@@ -28,8 +30,9 @@ export function PdfStudioModal({
 
   useEffect(() => {
     if (initialPdfUrl) {
-      setPdfStudioUrl(initialPdfUrl);
-      const rawFileName = initialPdfUrl.split("/").pop() || "Official Document";
+      const normalized = normalizePdfUrl(initialPdfUrl);
+      setPdfStudioUrl(normalized);
+      const rawFileName = normalized.split("/").pop() || "Official Document";
       const cleanName = rawFileName.replace(/\.(pdf|jpg|jpeg|png|webp)$/i, "").replace(/[-_]/g, " ");
       if (cleanName) {
         setPdfStudioTitle(cleanName.charAt(0).toUpperCase() + cleanName.slice(1));
@@ -207,19 +210,110 @@ export function PdfStudioModal({
                   <FileText size={48} className="text-slate-700" />
                   <p className="text-xs font-medium">Select a PDF file or paste URL to preview custom card</p>
                 </div>
+              ) : pdfStudioTheme === "badge" ? (
+                <div className="flex items-center justify-center p-8 bg-slate-950 rounded-2xl border border-slate-800">
+                  <a
+                    href={getCloudinaryInlineViewerUrl(pdfStudioUrl)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-rose-500/30 bg-rose-500/20 px-5 py-2.5 text-sm font-bold text-rose-300 shadow-md hover:bg-rose-500/30 transition"
+                  >
+                    <span>{pdfStudioTitle || "Official Document"}</span>
+                    <span>&rarr;</span>
+                  </a>
+                </div>
+              ) : pdfStudioTheme === "banner" ? (
+                <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm text-slate-900">
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-100 font-bold text-xs text-rose-600">
+                      PDF
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-extrabold text-sm text-slate-900 truncate">
+                        {pdfStudioTitle || "Official Document"}
+                      </div>
+                      <div className="text-xs text-slate-500 mt-0.5 truncate">
+                        {pdfStudioSubtitle || "PDF Document • Click to View / Download"}
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    href={getCloudinaryInlineViewerUrl(pdfStudioUrl)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-[#1a5d9c] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#102a4c] transition shrink-0"
+                  >
+                    {pdfStudioButtonText || "Open Document"} &rarr;
+                  </a>
+                </div>
+              ) : pdfStudioTheme === "dark" ? (
+                <div className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 text-slate-100 shadow-xl">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 bg-slate-900 px-5 py-3.5">
+                    <div className="flex items-center gap-2.5">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-red-500/30 bg-red-500/20 px-2.5 py-1 text-xs font-bold text-red-400">
+                        PDF Document
+                      </span>
+                      <span className="text-sm font-bold text-white">{pdfStudioTitle}</span>
+                    </div>
+                    <a
+                      href={getCloudinaryInlineViewerUrl(pdfStudioUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-sky-500 px-4 py-2 text-xs font-bold text-slate-950 shadow-sm hover:bg-sky-400 transition"
+                    >
+                      {pdfStudioButtonText || "Open Document"} &rarr;
+                    </a>
+                  </div>
+                  {pdfStudioSubtitle && (
+                    <div className="border-b border-slate-800 bg-slate-950 px-5 py-2 text-xs text-slate-400">
+                      {pdfStudioSubtitle}
+                    </div>
+                  )}
+                  <div
+                    className="flex flex-col items-center justify-center bg-slate-900/60 p-5 overflow-hidden"
+                    style={{ minHeight: `${Math.min(pdfStudioMaxHeight, 420)}px` }}
+                  >
+                    <PdfCanvasThumbnail
+                      url={pdfStudioUrl}
+                      alt={pdfStudioTitle}
+                      className="max-h-[400px] w-auto rounded-lg border border-slate-700 shadow-lg object-contain"
+                    />
+                  </div>
+                </div>
               ) : (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: generatePdfCardHtml({
-                      url: pdfStudioUrl,
-                      title: pdfStudioTitle,
-                      subtitle: pdfStudioSubtitle,
-                      buttonText: pdfStudioButtonText,
-                      theme: pdfStudioTheme,
-                      maxHeight: pdfStudioMaxHeight,
-                    }),
-                  }}
-                />
+                <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-800 shadow-md">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-3.5">
+                    <div className="flex items-center gap-2.5">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-red-100 px-2.5 py-1 text-xs font-bold text-red-600">
+                        PDF Document
+                      </span>
+                      <span className="text-sm font-bold text-slate-900">{pdfStudioTitle}</span>
+                    </div>
+                    <a
+                      href={getCloudinaryInlineViewerUrl(pdfStudioUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-[#1a5d9c] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#102a4c] transition"
+                    >
+                      {pdfStudioButtonText || "Open Document"} &rarr;
+                    </a>
+                  </div>
+                  {pdfStudioSubtitle && (
+                    <div className="border-b border-slate-100 px-5 py-2 text-xs text-slate-500">
+                      {pdfStudioSubtitle}
+                    </div>
+                  )}
+                  <div
+                    className="flex flex-col items-center justify-center bg-slate-100/70 p-5 overflow-hidden"
+                    style={{ minHeight: `${Math.min(pdfStudioMaxHeight, 420)}px` }}
+                  >
+                    <PdfCanvasThumbnail
+                      url={pdfStudioUrl}
+                      alt={pdfStudioTitle}
+                      className="max-h-[400px] w-auto rounded-lg border border-slate-300 shadow-md object-contain"
+                    />
+                  </div>
+                </div>
               )}
             </div>
 

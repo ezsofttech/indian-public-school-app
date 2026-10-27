@@ -164,11 +164,11 @@ export function toCleanRelativeAssetPath(url?: any): string {
 export type MediaDeliveryPreset = 'default' | 'cloud';
 
 export function getMediaDeliveryPreset(): MediaDeliveryPreset {
-  if (typeof window !== 'undefined') {
+  const envVal = (process.env.NEXT_PUBLIC_MEDIA_PRESET || 'default').toLowerCase().trim();
+  if (typeof window !== 'undefined' && window.location?.pathname?.startsWith('/admin')) {
     const local = localStorage.getItem('ips_media_preset');
     if (local === 'cloud' || local === 'default') return local;
   }
-  const envVal = (process.env.NEXT_PUBLIC_MEDIA_PRESET || 'default').toLowerCase().trim();
   return envVal === 'cloud' ? 'cloud' : 'default';
 }
 
@@ -213,6 +213,10 @@ export function getAssetUrl(url?: any): string {
 
   if (trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
     return trimmed;
+  }
+
+  if (trimmed.startsWith('/api/') || trimmed.startsWith('api/')) {
+    return trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
   }
 
   const preset = getMediaDeliveryPreset();

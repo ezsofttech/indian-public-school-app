@@ -20,6 +20,7 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronUp,
+  Trash2,
 } from "lucide-react";
 import axios from "axios";
 import { getOptionalApi, unwrapCollection, API_URL } from "@/lib/api-client";
@@ -150,6 +151,7 @@ interface MediaCardItemProps {
   isSelected: boolean;
   onSelect: (url: string) => void;
   onPreview: (url: string) => void;
+  onDelete?: (item: MediaItem) => void;
 }
 
 const MediaCardItem = React.memo(function MediaCardItem({
@@ -157,6 +159,7 @@ const MediaCardItem = React.memo(function MediaCardItem({
   isSelected,
   onSelect,
   onPreview,
+  onDelete,
 }: MediaCardItemProps) {
   const { fileType, isPdf, isExcel, isWord, isGoogleSheet, isGoogleDoc, title, url, displayCategory } = item;
 
@@ -239,11 +242,26 @@ const MediaCardItem = React.memo(function MediaCardItem({
         >
           <Eye size={13} />
         </button>
+
+        {/* Delete File Button */}
+        {onDelete && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(item);
+            }}
+            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition rounded-lg bg-slate-900/80 p-1.5 text-white hover:bg-red-600 shadow-md"
+            title="Delete File Permanently"
+          >
+            <Trash2 size={13} />
+          </button>
+        )}
       </div>
 
       {/* Checkmark overlay for selection */}
       {isSelected && (
-        <div className="absolute top-2 right-2 rounded-full bg-[#1a5d9c] p-1 text-white shadow-md">
+        <div className="absolute top-2 right-2 rounded-full bg-[#1a5d9c] p-1 text-white shadow-md pointer-events-none">
           <Check size={14} />
         </div>
       )}
@@ -485,8 +503,9 @@ export function CloudinaryGalleryModal({
       }));
 
       const data = res.data?.data ?? res.data;
-      const url = data?.url || data?.fileUrl || (Array.isArray(data?.fileUrl) ? data.fileUrl[0] : "");
-      if (!url) throw new Error("No URL returned from server upload.");
+      const rawReturnUrl = data?.url || data?.fileUrl || (Array.isArray(data?.fileUrl) ? data.fileUrl[0] : "");
+      if (!rawReturnUrl) throw new Error("No URL returned from server upload.");
+      const url = getAssetUrl(rawReturnUrl);
 
       const newItem = createMediaItem({
         id: `upload-${Date.now()}`,
@@ -665,6 +684,34 @@ export function CloudinaryGalleryModal({
     setPreviewFileUrl(url);
   }, []);
 
+  const handleDeleteCard = useCallback(
+    async (item: MediaItem) => {
+      if (!window.confirm(`Permanently delete "${item.title}" from Gallery and Cloudinary?`)) return;
+      try {
+        const token =
+          typeof window !== "undefined"
+            ? localStorage.getItem("ips_admin_token") ||
+              localStorage.getItem("admin_token") ||
+              localStorage.getItem("token") ||
+              ""
+            : "";
+        const cleanId = item.id.replace(/-\d+$/, "");
+        const headers: Record<string, string> = {};
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        await axios.delete(`${API_URL}/gallery/${encodeURIComponent(cleanId)}`, { headers });
+        setMediaList((prev) => prev.filter((m) => m.url !== item.url && m.id !== item.id));
+        if (selectedUrl === item.url) {
+          setSelectedUrl("");
+        }
+      } catch (err: any) {
+        console.error("Failed to delete file from gallery:", err);
+        alert(err?.response?.data?.message || "Failed to delete file from gallery.");
+      }
+    },
+    [selectedUrl]
+  );
+
   const handleCategorySelect = (cat: string) => {
     if (activeCategory.toLowerCase() === cat.toLowerCase()) return;
     startCategoryTransition(() => {
@@ -812,6 +859,7 @@ export function CloudinaryGalleryModal({
                     isSelected={selectedUrl === item.url}
                     onSelect={handleSelectCard}
                     onPreview={handlePreviewCard}
+                    onDelete={handleDeleteCard}
                   />
                 ))}
               </div>
@@ -863,7 +911,7 @@ export function CloudinaryGalleryModal({
               disabled={!selectedUrl}
               onClick={() => {
                 if (selectedUrl) {
-                  onSelectImage(selectedUrl);
+                  onSelectImage(getAssetUrl(selectedUrl));
                   onClose();
                 }
               }}
