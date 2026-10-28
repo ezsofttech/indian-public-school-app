@@ -77,9 +77,6 @@ export function RecordDialog({
       if (resource.key === "school-settings" && key === "value" && typeof val === "object" && val !== null) {
         val = JSON.stringify(val, null, 2);
       }
-      if (resource.key === "gallery" && key === "album" && !val) {
-        val = "Events";
-      }
       if (resource.key === "gallery" && key === "directory" && !val) {
         val = "Album/Events";
       }
@@ -189,11 +186,11 @@ export function RecordDialog({
           formData.append("album", "Staff");
           formData.append("folder", "Staff");
         } else if (resource.key === "gallery") {
-          const selectedAlbum = (typeof values.album === "string" && values.album.trim()) || "Events";
-          formData.append("album", selectedAlbum);
           const targetFolder =
-            (typeof values.directory === "string" && values.directory.trim()) ||
-            (selectedAlbum.toLowerCase() === "others" ? "Others" : `Album/${selectedAlbum}`);
+            (typeof values.directory === "string" && values.directory.trim()) || "Album/Events";
+          const derivedAlbum =
+            (typeof values.eventType === "string" && values.eventType.trim()) || "Events";
+          formData.append("album", derivedAlbum);
           formData.append("folder", targetFolder);
         } else {
           formData.append("album", resource.label);
@@ -902,7 +899,6 @@ export function RecordDialog({
                   </div>
                 ) : type === "select" ? (
                   (() => {
-                    const isGalleryAlbum = resource.key === "gallery" && field === "album";
                     const isGalleryEventType = resource.key === "gallery" && field === "eventType";
                     const isGalleryDirectory = resource.key === "gallery" && field === "directory";
                     const currentVal = String(values[field] ?? "");
@@ -943,29 +939,16 @@ export function RecordDialog({
                       return evt;
                     };
 
-                    const handleSelectAlbum = (val: string) => {
-                      setValue("album", val);
-                      if (val.toLowerCase() === "others") {
-                        setValue("directory", "Others");
-                        setValue("eventType", "Others");
-                      } else {
-                        setValue("directory", `Album/${val}`);
-                        setValue("eventType", val);
-                      }
-                    };
-
                     const handleSelectDirectory = (val: string) => {
                       setValue("directory", val);
                       const autoEvt = getAutoEventType(val);
                       if (autoEvt) {
                         setValue("eventType", autoEvt);
-                        setValue("album", autoEvt);
                       }
                     };
 
                     const handleSelectEventType = (val: string) => {
                       setValue("eventType", val);
-                      setValue("album", val);
                       const autoDir = getAutoDirectory(val);
                       if (autoDir) {
                         setValue("directory", autoDir);
@@ -981,9 +964,7 @@ export function RecordDialog({
                           value={currentVal}
                           onChange={(event) => {
                             const val = event.target.value;
-                            if (isGalleryAlbum) {
-                              handleSelectAlbum(val);
-                            } else if (isGalleryDirectory) {
+                            if (isGalleryDirectory) {
                               handleSelectDirectory(val);
                             } else if (isGalleryEventType) {
                               handleSelectEventType(val);

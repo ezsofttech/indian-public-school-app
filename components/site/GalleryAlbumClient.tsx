@@ -42,6 +42,7 @@ const CATEGORIES: Category[] = [
 interface AlbumImage {
   src: string;
   alt: string;
+  eventName?: string;
   category: Category;
   album: string;
   directory?: string;
@@ -265,6 +266,7 @@ function cleanEventTitle(rawName?: string, fallbackType?: string): string {
 
   if (
     !str ||
+    str.toLowerCase() === "album" ||
     str.toLowerCase() === "cloudinary album" ||
     str.toLowerCase() === "school album" ||
     /\.(jpg|jpeg|png|webp|gif|svg|avif|pdf|mp4)$/i.test(str) ||
@@ -275,20 +277,25 @@ function cleanEventTitle(rawName?: string, fallbackType?: string): string {
     str.toLowerCase().startsWith("hero-") ||
     /^file_[a-z0-9]+$/i.test(str)
   ) {
-    let fb = String(fallbackType || "School Album").trim();
+    let fb = String(fallbackType || "School Event").trim();
     if (fb.includes("/")) {
       const parts = fb.split("/").map((p) => p.trim()).filter(Boolean);
       fb = parts[parts.length - 1] || fb;
     }
     fb = fb.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ").trim();
-    return fb || "School Album";
+    return (!fb || fb.toLowerCase() === "album") ? "School Event" : fb;
   }
-  return text(str, fallbackType || "School Album");
+  return text(str, fallbackType || "School Event");
 }
 
 function cleanAlbumName(rawAlbum?: string, rawDir?: string, fallbackCategory?: string): string {
   let albumStr = String(rawAlbum || "").trim();
-  if (albumStr.toLowerCase() === "cloudinary album" || albumStr.toLowerCase().startsWith("album/") || !albumStr) {
+  if (
+    albumStr.toLowerCase() === "cloudinary album" ||
+    albumStr.toLowerCase() === "album" ||
+    albumStr.toLowerCase().startsWith("album/") ||
+    !albumStr
+  ) {
     const dir = String(rawDir || "").trim();
     if (dir.toLowerCase().includes("album")) {
       const parts = dir.replace(/^[/\\]+|[/\\]+$/g, "").split(/[/\\]+/);
@@ -298,7 +305,7 @@ function cleanAlbumName(rawAlbum?: string, rawDir?: string, fallbackCategory?: s
       }
     }
   }
-  if (!albumStr || albumStr.toLowerCase() === "cloudinary album") {
+  if (!albumStr || albumStr.toLowerCase() === "cloudinary album" || albumStr.toLowerCase() === "album") {
     albumStr = fallbackCategory || "Events";
   }
   if (albumStr.includes("/")) {
@@ -306,7 +313,7 @@ function cleanAlbumName(rawAlbum?: string, rawDir?: string, fallbackCategory?: s
     albumStr = parts[parts.length - 1] || albumStr;
   }
   albumStr = albumStr.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ").trim();
-  return albumStr || "Events";
+  return (!albumStr || albumStr.toLowerCase() === "album") ? (fallbackCategory || "Events") : albumStr;
 }
 
 function mapEventTypeToCategory(rawType: unknown): Category {
@@ -421,6 +428,7 @@ export function GalleryAlbumClient({
               .map((u: string) => ({
                 src: u,
                 alt: title,
+                eventName: title,
                 category: cat,
                 album: albumName,
                 directory: dir || `Album/${albumName}`,
@@ -461,7 +469,9 @@ export function GalleryAlbumClient({
         if (isMounted) {
           const seenKeys = new Set<string>();
           const uniqueApiList: AlbumImage[] = [];
-          for (const img of [...fetchedFromDb, ...fetchedFromCdn]) {
+          // When database records exist, strictly use them to match Admin panel and prevent duplicate/unwanted cloud-datasource files!
+          const primarySource = fetchedFromDb.length > 0 ? fetchedFromDb : fetchedFromCdn;
+          for (const img of primarySource) {
             const key = getCanonicalAssetKey(img.src);
             if (!key || seenKeys.has(key)) continue;
             seenKeys.add(key);
@@ -532,7 +542,8 @@ export function GalleryAlbumClient({
 
   // Combine and deduplicate images by canonical asset key
   const allImages = useMemo(() => {
-    const combined = extraApiImages.length > 0 ? [...extraApiImages, ...datasourceImages] : datasourceImages;
+    // When API images are present, strictly use them instead of mixing in cloud-datasource fallback
+    const combined = extraApiImages.length > 0 ? extraApiImages : datasourceImages;
     const seen = new Set<string>();
     const uniqueList: AlbumImage[] = [];
 
@@ -891,10 +902,11 @@ export function GalleryAlbumClient({
                     <div className="flex flex-1 flex-col justify-between p-4 bg-card text-card-foreground">
                       <div>
                         <h3 className="line-clamp-1 text-xs font-bold text-foreground group-hover:text-primary">
-                          {img.alt}
+                          {img.eventName || img.alt}
                         </h3>
-                        <p className="mt-1 line-clamp-1 text-[11px] font-medium text-muted-foreground">
-                          Album: {img.album}
+                        <p className="mt-1 flex items-center gap-1.5 line-clamp-1 text-[11px] font-medium text-muted-foreground">
+                          <span className="font-semibold text-primary/80">Event:</span>
+                          <span className="text-foreground/90 font-medium">{img.eventName || img.alt}</span>
                         </p>
                       </div>
                     </div>
@@ -1085,8 +1097,8 @@ export function GalleryAlbumClient({
                 {filteredImages[lightboxIndex].category}
               </div>
               <div>
-                <span className="font-semibold text-gold">Album: </span>
-                {filteredImages[lightboxIndex].album}
+                <span className="font-semibold text-gold">Event: </span>
+                {cleanEventTitle(filteredImages[lightboxIndex].eventName || filteredImages[lightboxIndex].alt)}
               </div>
             </div>
           </motion.div>
