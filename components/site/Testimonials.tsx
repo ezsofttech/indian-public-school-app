@@ -255,7 +255,7 @@ export function Testimonials() {
         <div className="flex flex-col items-center text-center">
           <SectionHeading
             eyebrow="Testimonials"
-            title="What families and students say"
+            title="What Our Parents and Students Say About Us."
             description="Voices from our community."
           />
 

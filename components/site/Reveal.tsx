@@ -55,7 +55,7 @@ export function SectionHeading({
   align = "center",
   tone = "light",
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: ReactNode;
   description?: string;
   align?: "center" | "left";
@@ -68,18 +68,21 @@ export function SectionHeading({
         align === "center" ? "mx-auto text-center" : "text-left",
       )}
     >
-      <span
-        className={cn(
-          "eyebrow",
-          tone === "dark" ? "text-[var(--gold)]" : "text-[var(--primary)]",
-        )}
-      >
-        <span className="h-px w-8 bg-[var(--gold)]" aria-hidden />
-        {eyebrow}
-      </span>
+      {eyebrow ? (
+        <span
+          className={cn(
+            "eyebrow",
+            tone === "dark" ? "text-[var(--gold)]" : "text-[var(--primary)]",
+          )}
+        >
+          <span className="h-px w-8 bg-[var(--gold)]" aria-hidden />
+          {eyebrow}
+        </span>
+      ) : null}
       <h2
         className={cn(
-          "mt-4 text-3xl leading-[1.1] sm:text-4xl lg:text-5xl font-[var(--font-display)]",
+          eyebrow ? "mt-4" : "",
+          "text-3xl leading-[1.1] sm:text-4xl lg:text-5xl font-[var(--font-display)]",
           tone === "dark" ? "text-navy-foreground" : "text-foreground",
         )}
       >
