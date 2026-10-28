@@ -486,6 +486,40 @@ export function getOfficeTimingsList(
   ];
 }
 
+export const DEFAULT_MAP_EMBED_URL =
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3712.3925860272975!2d83.9512879!3d21.4923374!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a211639e7ebccc3%3A0x3c5638a16fbf6b23!2sIndian%20Public%20School%2C%20Sambalpur!5e0!3m2!1sen!2sin!4v1793179521051!5m2!1sen!2sin";
+
+export const DEFAULT_MAP_DIRECTIONS_URL =
+  "https://www.google.com/maps/place/Indian+Public+School,+Sambalpur/@21.4923374,83.9512879,17z/data=!3m1!4b1!4m6!3m5!1s0x3a211639e7ebccc3:0x3c5638a16fbf6b23!8m2!3d21.4923374!4d83.9512879";
+
+export function getMapEmbedUrl(contactData?: Record<string, unknown> | null): string {
+  if (!contactData) return DEFAULT_MAP_EMBED_URL;
+  const embedMarkup = text(contactData["google-map-embed-link"]).trim();
+  const configuredEmbedUrl =
+    embedMarkup.match(/<iframe[^>]+src=["']([^"']+)["']/i)?.[1] ||
+    (embedMarkup.startsWith("http://") || embedMarkup.startsWith("https://") ? embedMarkup : "");
+
+  // If a valid custom embed URL is present and not the old broken bounding box
+  if (configuredEmbedUrl && !configuredEmbedUrl.includes("!5e1!")) {
+    return configuredEmbedUrl;
+  }
+
+  // Fallback to coordinates if customized and not the old incorrect coords
+  const mapCoordinates = (contactData.map as Record<string, unknown>) ?? {};
+  const latitude = text(mapCoordinates.latitude).match(/-?\d+(?:\.\d+)?/)?.[0];
+  const longitude = text(mapCoordinates.longitude).match(/-?\d+(?:\.\d+)?/)?.[0];
+
+  if (latitude && longitude && latitude !== "21.4653" && longitude !== "83.9757") {
+    // If it points to the Sambalpur campus coordinates, return the verified Place embed URL
+    if (latitude.startsWith("21.49") && longitude.startsWith("83.95")) {
+      return DEFAULT_MAP_EMBED_URL;
+    }
+    return `https://www.google.com/maps?q=${latitude},${longitude}&z=16&output=embed`;
+  }
+
+  return DEFAULT_MAP_EMBED_URL;
+}
+
 export function getWhatsAppConfig(siteData?: SiteData | null): Required<WhatsAppSetting> {
   const home = siteData?.home?.[0] as SiteRecord | undefined;
   const identityObj = (home?.identity as SiteRecord | undefined) ?? {};

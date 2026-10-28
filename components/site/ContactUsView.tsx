@@ -48,7 +48,7 @@ import {
 import { SectionHeading } from "@/components/site/Reveal";
 import { EASE } from "@/lib/motion-presets";
 import { useSiteData } from "@/components/site/SiteDataProvider";
-import { DEFAULT_HERO_IMAGE, getOfficeTimingsList, text, type OfficeTimingItem } from "@/lib/site-data";
+import { DEFAULT_HERO_IMAGE, DEFAULT_MAP_DIRECTIONS_URL, getMapEmbedUrl, getOfficeTimingsList, text, type OfficeTimingItem } from "@/lib/site-data";
 import { formatHref, isExternalUrl } from "@/lib/utils";
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
@@ -144,14 +144,11 @@ export function ContactUsView() {
   const phoneText = text(footerConfig.phone) || fallbackPhone || "+91 8114320555";
   const emailText = text(footerConfig.email) || text(contact.email) || "info@indianpublicschool.in";
 
-  const mapCoordinates = (contact.map as Record<string, unknown>) ?? {};
-  const latitude = text(mapCoordinates.latitude).match(/-?\d+(?:\.\d+)?/)?.[0];
-  const longitude = text(mapCoordinates.longitude).match(/-?\d+(?:\.\d+)?/)?.[0];
-  const embedMarkup = text(contact["google-map-embed-link"]);
-  const configuredEmbedUrl = embedMarkup.match(/<iframe[^>]+src=["']([^"']+)["']/i)?.[1];
-  const mapEmbedUrl = latitude && longitude
-    ? `https://www.google.com/maps?q=${latitude},${longitude}&z=16&output=embed`
-    : configuredEmbedUrl;
+  const mapEmbedUrl = getMapEmbedUrl(contact);
+  const rawMapLink = text(contact["google-map-link"]);
+  const mapDirectionsUrl = rawMapLink
+    ? formatHref(rawMapLink, DEFAULT_MAP_DIRECTIONS_URL)
+    : DEFAULT_MAP_DIRECTIONS_URL;
 
   // Active Tab state
   const [activeFormTab, setActiveFormTab] = useState<"inquiry" | "feedback">("feedback");
@@ -365,7 +362,7 @@ export function ContactUsView() {
                 value: addressText,
                 subtitle: "Indian Public School",
                 actionText: "Get Directions",
-                actionHref: formatHref(text(contact["google-map-link"]), "#map"),
+                actionHref: mapDirectionsUrl,
               },
               {
                 icon: Phone,

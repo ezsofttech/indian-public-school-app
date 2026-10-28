@@ -980,6 +980,48 @@ export function HomeLayoutEditorModal({
                     />
                   </div>
 
+                  <div className="sm:col-span-2">
+                    <label className="text-[11px] font-bold text-slate-500">Google Map Directions Link</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. https://maps.google.com/?cid=..."
+                      value={datasource?.["contact-us"]?.["google-map-link"] || ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setDatasource((prev: any) => {
+                          const next = { ...prev };
+                          const cUs = { ...(next["contact-us"] || {}) };
+                          cUs["google-map-link"] = val;
+                          next["contact-us"] = cUs;
+                          setJsonText(JSON.stringify(next, null, 2));
+                          return next;
+                        });
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold outline-none"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="text-[11px] font-bold text-slate-500">Google Map Embed Code (iframe or URL)</label>
+                    <textarea
+                      rows={2}
+                      placeholder="Paste <iframe ...></iframe> or embed URL"
+                      value={datasource?.["contact-us"]?.["google-map-embed-link"] || ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setDatasource((prev: any) => {
+                          const next = { ...prev };
+                          const cUs = { ...(next["contact-us"] || {}) };
+                          cUs["google-map-embed-link"] = val;
+                          next["contact-us"] = cUs;
+                          setJsonText(JSON.stringify(next, null, 2));
+                          return next;
+                        });
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold outline-none resize-y font-mono"
+                    />
+                  </div>
+
                   <div className="sm:col-span-2 rounded-xl border border-slate-200 bg-white p-4 space-y-3 shadow-2xs">
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
                       <div>

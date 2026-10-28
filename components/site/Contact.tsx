@@ -3,7 +3,7 @@ import { Clock, Mail, MapPin, Navigation, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/site/Reveal";
 import { EASE } from "@/lib/motion-presets";
-import { getOfficeTimingsList, text } from "@/lib/site-data";
+import { DEFAULT_MAP_DIRECTIONS_URL, getMapEmbedUrl, getOfficeTimingsList, text } from "@/lib/site-data";
 import { formatHref, isExternalUrl } from "@/lib/utils";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 
@@ -48,15 +48,11 @@ export function Contact() {
   const phone = text(footerConfig.phone) || fallbackPhone || "+91 8114320555";
   const emailText = text(footerConfig.email) || text(contact.email) || "info@indianpublicschool.in";
 
-  const mapCoordinates = (contact.map as Record<string, unknown>) ?? {};
-  const latitude = text(mapCoordinates.latitude).match(/-?\d+(?:\.\d+)?/)?.[0];
-  const longitude = text(mapCoordinates.longitude).match(/-?\d+(?:\.\d+)?/)?.[0];
-  const embedMarkup = text(contact["google-map-embed-link"]);
-  const configuredEmbedUrl = embedMarkup.match(/<iframe[^>]+src=["']([^"']+)["']/i)?.[1];
-  // A `q` parameter makes Google Maps render a marker, unlike a plain map viewport.
-  const mapEmbedUrl = latitude && longitude
-    ? `https://www.google.com/maps?q=${latitude},${longitude}&z=16&output=embed`
-    : configuredEmbedUrl;
+  const mapEmbedUrl = getMapEmbedUrl(contact);
+  const rawMapLink = text(contact["google-map-link"]);
+  const mapLink = rawMapLink
+    ? formatHref(rawMapLink, DEFAULT_MAP_DIRECTIONS_URL)
+    : DEFAULT_MAP_DIRECTIONS_URL;
   return (
     <section id="contact" className="py-20 lg:py-32">
       <div className="container-page">
@@ -127,7 +123,6 @@ export function Contact() {
                 </a>
               </Button>
               {(() => {
-                const mapLink = formatHref(text(contact["google-map-link"]), "#enquiry");
                 const isExternal = isExternalUrl(mapLink);
                 return (
                   <Button asChild variant="secondary" className="rounded-full">

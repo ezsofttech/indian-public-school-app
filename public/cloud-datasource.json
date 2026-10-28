@@ -486,7 +486,7 @@
         },
         "footer": {
           "aboutText": "We, at Indian Public School, recognize that each child is an individual and respect the individual needs of children.",
-          "address": "ndian Public School, Main Road, Near RMC, Khetrajpur, District – Sambalpur, Odisha, +91 9735181684",
+          "address": "Indian Public School, Main Road, Near RMC, Khetrajpur, District – Sambalpur, Odisha, +91 9735181684",
           "phone": "+91 8114320555 ",
           "email": " info@indianpublicschool.in",
           "columns": [
@@ -2780,11 +2780,11 @@
       "appstore": "/https://apps.apple.com/us/app/ips-connect-ipssbp/id6769958509"
     },
     "map": {
-      "latitude": "21.4653° N",
-      "longitude": "83.9757° E"
+      "latitude": "21.4923° N",
+      "longitude": "83.9513° E"
     },
-    "google-map-link": "/https://maps.app.goo.gl/XR26sBDWkTygWBbY9",
-    "google-map-embed-link": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d24593.46883888323!2d83.945741!3d21.499034!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sus!4v1789159130952!5m2!1sen!2sus\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"strict-origin-when-cross-origin\"></iframe>",
+    "google-map-link": "https://maps.google.com/?cid=4347716949010217763",
+    "google-map-embed-link": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3712.3925860272975!2d83.9512879!3d21.4923374!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a211639e7ebccc3%3A0x3c5638a16fbf6b23!2sIndian%20Public%20School%2C%20Sambalpur!5e0!3m2!1sen!2sin!4v1793179521051!5m2!1sen!2sin\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"strict-origin-when-cross-origin\"></iframe>",
     "office-timings": {
       "Monday-Friday": "7:30 AM - 5:00 PM",
       "Saturday": "7:30 AM - 5:00 PM",
@@ -2796,7 +2796,7 @@
   },
   "footer": {
     "aboutText": "We, at Indian Public School, recognize that each child is an individual and respect the individual needs of children.",
-    "address": "ndian Public School, Main Road, Near RMC, Khetrajpur, District – Sambalpur, Odisha, +91 9735181684",
+    "address": "Indian Public School, Main Road, Near RMC, Khetrajpur, District – Sambalpur, Odisha, +91 9735181684",
     "phone": "+91 8114320555 ",
     "email": " info@indianpublicschool.in",
     "columns": [
