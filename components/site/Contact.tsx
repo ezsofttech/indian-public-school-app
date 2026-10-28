@@ -3,8 +3,8 @@ import { Clock, Mail, MapPin, Navigation, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/site/Reveal";
 import { EASE } from "@/lib/motion-presets";
-import { DEFAULT_MAP_DIRECTIONS_URL, getMapEmbedUrl, getOfficeTimingsList, text } from "@/lib/site-data";
-import { formatHref, isExternalUrl } from "@/lib/utils";
+import { getMapDirectionsUrl, getMapEmbedUrl, getOfficeTimingsList, text } from "@/lib/site-data";
+import { isExternalUrl } from "@/lib/utils";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 
 const DETAILS = [
@@ -49,17 +49,13 @@ export function Contact() {
   const emailText = text(footerConfig.email) || text(contact.email) || "info@indianpublicschool.in";
 
   const mapEmbedUrl = getMapEmbedUrl(contact);
-  const rawMapLink = text(contact["google-map-link"]);
-  const mapLink = rawMapLink
-    ? formatHref(rawMapLink, DEFAULT_MAP_DIRECTIONS_URL)
-    : DEFAULT_MAP_DIRECTIONS_URL;
+  const mapLink = getMapDirectionsUrl(contact);
   return (
     <section id="contact" className="py-20 lg:py-32">
       <div className="container-page">
         <SectionHeading
           eyebrow="Contact"
           title="Visit us, call us, write to us"
-          description={text(contact.title, "Contact the Indian Public School office")}
         />
 
         <div className="mt-14 grid gap-8 lg:grid-cols-2 lg:gap-12">

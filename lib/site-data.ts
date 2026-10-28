@@ -1,5 +1,5 @@
 import { checkBackendHealth, getOptionalApi, unwrapCollection, unwrapSetting, type ApiRecord, type PaginatedData } from "@/lib/api-client";
-import { getAssetUrl, getCloudinaryRootFolder } from "@/lib/utils";
+import { formatHref, getAssetUrl, getCloudinaryRootFolder } from "@/lib/utils";
 import fallbackSiteData from "@/public/cloud-datasource.json";
 
 export const CLOUDINARY_ROOT_FOLDER = getCloudinaryRootFolder();
@@ -490,7 +490,24 @@ export const DEFAULT_MAP_EMBED_URL =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3712.3925860272975!2d83.9512879!3d21.4923374!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a211639e7ebccc3%3A0x3c5638a16fbf6b23!2sIndian%20Public%20School%2C%20Sambalpur!5e0!3m2!1sen!2sin!4v1793179521051!5m2!1sen!2sin";
 
 export const DEFAULT_MAP_DIRECTIONS_URL =
-  "https://www.google.com/maps/place/Indian+Public+School,+Sambalpur/@21.4923374,83.9512879,17z/data=!3m1!4b1!4m6!3m5!1s0x3a211639e7ebccc3:0x3c5638a16fbf6b23!8m2!3d21.4923374!4d83.9512879";
+  "https://www.google.com/maps/dir/?api=1&destination=Indian+Public+School,+Sambalpur";
+
+export function getMapDirectionsUrl(contactData?: Record<string, unknown> | null): string {
+  if (!contactData) return DEFAULT_MAP_DIRECTIONS_URL;
+  const rawLink = text(contactData["google-map-link"]).trim();
+
+  // If link is empty, or points to the known invalid/broken CID or stale place data
+  if (
+    !rawLink ||
+    rawLink.includes("4347716949010217763") ||
+    rawLink.includes("place//") ||
+    rawLink.includes("0x3a211639e7ebccc3")
+  ) {
+    return DEFAULT_MAP_DIRECTIONS_URL;
+  }
+
+  return formatHref(rawLink, DEFAULT_MAP_DIRECTIONS_URL);
+}
 
 export function getMapEmbedUrl(contactData?: Record<string, unknown> | null): string {
   if (!contactData) return DEFAULT_MAP_EMBED_URL;
