@@ -156,12 +156,19 @@ export function HomeHeroTab({ homeObj, updateHome, uploadImage }: HomeHeroTabPro
     }));
   };
 
-  const updateCurrentSlideField = (field: string, value: any) => {
+  const updateCurrentSlideField = (fieldOrObj: string | Record<string, any>, value?: any) => {
     const updated = [...slides];
-    updated[activeSlideIdx] = {
-      ...updated[activeSlideIdx],
-      [field]: value,
-    };
+    if (typeof fieldOrObj === "string") {
+      updated[activeSlideIdx] = {
+        ...updated[activeSlideIdx],
+        [fieldOrObj]: value,
+      };
+    } else {
+      updated[activeSlideIdx] = {
+        ...updated[activeSlideIdx],
+        ...fieldOrObj,
+      };
+    }
     updateSlidesList(updated);
   };
 
@@ -534,8 +541,10 @@ export function HomeHeroTab({ homeObj, updateHome, uploadImage }: HomeHeroTabPro
                 <button
                   type="button"
                   onClick={() => {
-                    updateCurrentSlideField("objectFit", "cover");
-                    updateCurrentSlideField("mobileObjectFit", "cover");
+                    updateCurrentSlideField({
+                      objectFit: "cover",
+                      mobileObjectFit: "cover",
+                    });
                   }}
                   className={`py-2 px-3 text-xs font-bold rounded-lg border transition cursor-pointer flex flex-col items-center gap-0.5 ${
                     (currentSlide.objectFit || "cover") === "cover"
@@ -555,8 +564,10 @@ export function HomeHeroTab({ homeObj, updateHome, uploadImage }: HomeHeroTabPro
                 <button
                   type="button"
                   onClick={() => {
-                    updateCurrentSlideField("objectFit", "contain");
-                    updateCurrentSlideField("mobileObjectFit", "contain");
+                    updateCurrentSlideField({
+                      objectFit: "contain",
+                      mobileObjectFit: "contain",
+                    });
                   }}
                   className={`py-2 px-3 text-xs font-bold rounded-lg border transition cursor-pointer flex flex-col items-center gap-0.5 ${
                     currentSlide.objectFit === "contain"
