@@ -10,7 +10,7 @@ export function EnquiryForm() {
     <section id="enquiry" className="bg-secondary/30 py-16 lg:py-24 border-t border-border">
       <div className="container-page">
         <SectionHeading
-          eyebrow="Admission Enquiry"
+          eyebrow="Enquiry"
           title="Start Your Child's Journey"
           description="Fill out the 4 quick details below and the Indian Public School admissions desk will get in touch with you shortly."
         />

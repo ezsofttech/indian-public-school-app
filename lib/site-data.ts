@@ -248,9 +248,9 @@ export async function getSiteData(): Promise<SiteData> {
   ] = await Promise.all([
     getOptionalApi<SiteData | { value?: SiteData; _doc?: { value?: SiteData } }>("/regarding/datasource"),
     getOptionalApi<SiteLogoSetting | { value?: SiteLogoSetting }>("/school-settings/key/site_logo"),
-    getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/news", { limit: 10, page: 1, sortOrder: "desc" }),
-    getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/gallery", { limit: 50, page: 1, sortOrder: "desc" }),
-    getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/reviews", { limit: 12, page: 1, sortOrder: "desc", isApproved: "true" }),
+    getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/news", { limit: 20, page: 1, sortOrder: "desc" }),
+    getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/gallery", { limit: 500, page: 1, sortOrder: "desc" }),
+    getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/reviews", { limit: 50, page: 1, sortOrder: "desc", isApproved: "true" }),
     getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/menu-items", { publishedOnly: "true" }),
   ]);
 
@@ -311,8 +311,8 @@ export async function getSiteData(): Promise<SiteData> {
     site_logo: siteLogoFromDb || siteData.site_logo,
     home: updatedHome,
     news: apiNews,
-    galleryItems: apiGallery.length ? apiGallery : (Array.isArray(siteData.gallery) ? (siteData.gallery as SiteRecord[]) : []),
-    reviewsItems: apiReviews.length ? apiReviews : (Array.isArray(siteData.reviews) ? (siteData.reviews as SiteRecord[]) : []),
+    galleryItems: apiGallery,
+    reviewsItems: apiReviews,
     menuItems: finalMenuItems,
     menuitems: menuList as SiteRecord[],
   };

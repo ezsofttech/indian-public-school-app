@@ -441,22 +441,19 @@ export function HomeSectionsTab({
                       };
                       updateHome((prev) => ({ ...prev, "section-1": sec }));
                     }}
-                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                      homeObj["section-1"]?.[0]?.btnLinkText?.show !== false ? "bg-[#1a5d9c]" : "bg-slate-300"
-                    }`}
+                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${homeObj["section-1"]?.[0]?.btnLinkText?.show !== false ? "bg-[#1a5d9c]" : "bg-slate-300"
+                      }`}
                   >
                     <span
-                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                        homeObj["section-1"]?.[0]?.btnLinkText?.show !== false ? "translate-x-4" : "translate-x-0"
-                      }`}
+                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${homeObj["section-1"]?.[0]?.btnLinkText?.show !== false ? "translate-x-4" : "translate-x-0"
+                        }`}
                     />
                   </button>
                   <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      homeObj["section-1"]?.[0]?.btnLinkText?.show !== false
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${homeObj["section-1"]?.[0]?.btnLinkText?.show !== false
                         ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                         : "bg-slate-100 text-slate-500 border border-slate-200"
-                    }`}
+                      }`}
                   >
                     {homeObj["section-1"]?.[0]?.btnLinkText?.show !== false ? "Enabled" : "Disabled"}
                   </span>
@@ -1801,73 +1798,73 @@ export function HomeSectionsTab({
               className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none"
             />
 
-              {/* Director Photo */}
-              <div className="rounded-xl border border-slate-200 bg-white p-3 space-y-2">
-                <span className="text-[11px] font-bold text-slate-700 block">Director / Intro Photo</span>
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Image Path / URL (Disabled)</label>
-                  <input
-                    type="text"
-                    value={homeObj["section-9"]?.[0]?.fileUrls?.[0] || ""}
-                    disabled
-                    readOnly
-                    placeholder="No image attached"
-                    className="w-full rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] font-mono text-slate-500 cursor-not-allowed outline-none select-all"
-                  />
-                </div>
-                <div className="flex items-center gap-3">
-                  {homeObj["section-9"]?.[0]?.fileUrls?.[0] && (
-                    <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-slate-200 bg-slate-900 shrink-0">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={getAssetUrl(homeObj["section-9"][0].fileUrls[0])}
-                        alt="Director"
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = "/assets/Settings/Home/hero-campus.png";
-                        }}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
+            {/* Director Photo */}
+            <div className="rounded-xl border border-slate-200 bg-white p-3 space-y-2">
+              <span className="text-[11px] font-bold text-slate-700 block">Director / Intro Photo</span>
+              <div>
+                <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Image Path / URL (Disabled)</label>
+                <input
+                  type="text"
+                  value={homeObj["section-9"]?.[0]?.fileUrls?.[0] || ""}
+                  disabled
+                  readOnly
+                  placeholder="No image attached"
+                  className="w-full rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] font-mono text-slate-500 cursor-not-allowed outline-none select-all"
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                {homeObj["section-9"]?.[0]?.fileUrls?.[0] && (
+                  <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-slate-200 bg-slate-900 shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={getAssetUrl(homeObj["section-9"][0].fileUrls[0])}
+                      alt="Director"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "/assets/Settings/Home/hero-campus.png";
+                      }}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                )}
+                <div className="flex flex-1 flex-col gap-1.5">
+                  {onOpenGalleryPicker && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onOpenGalleryPicker((url) => {
+                          const sec9 = [...(homeObj["section-9"] || [{}])];
+                          sec9[0] = { ...sec9[0], fileUrls: [url] };
+                          updateHome((prev) => ({ ...prev, "section-9": sec9 }));
+                        }, "Pick Director Photo from Gallery");
+                      }}
+                      className="flex cursor-pointer items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 py-1.5 text-xs font-bold text-amber-800 hover:bg-amber-100 transition shadow-2xs"
+                    >
+                      <ImageIcon size={13} className="text-amber-600" /> Pick from Gallery
+                    </button>
                   )}
-                  <div className="flex flex-1 flex-col gap-1.5">
-                    {onOpenGalleryPicker && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          onOpenGalleryPicker((url) => {
+                  <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-bold text-[#1a5d9c] hover:bg-blue-50">
+                    <UploadCloud size={14} /> Upload Director Photo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const url = await uploadImage(file);
+                          if (url) {
                             const sec9 = [...(homeObj["section-9"] || [{}])];
                             sec9[0] = { ...sec9[0], fileUrls: [url] };
                             updateHome((prev) => ({ ...prev, "section-9": sec9 }));
-                          }, "Pick Director Photo from Gallery");
-                        }}
-                        className="flex cursor-pointer items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 py-1.5 text-xs font-bold text-amber-800 hover:bg-amber-100 transition shadow-2xs"
-                      >
-                        <ImageIcon size={13} className="text-amber-600" /> Pick from Gallery
-                      </button>
-                    )}
-                    <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-bold text-[#1a5d9c] hover:bg-blue-50">
-                      <UploadCloud size={14} /> Upload Director Photo
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            const url = await uploadImage(file);
-                            if (url) {
-                              const sec9 = [...(homeObj["section-9"] || [{}])];
-                              sec9[0] = { ...sec9[0], fileUrls: [url] };
-                              updateHome((prev) => ({ ...prev, "section-9": sec9 }));
-                            }
                           }
-                        }}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
+                        }
+                      }}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
               </div>
+            </div>
           </div>
         </div>
       )}

@@ -352,7 +352,6 @@ export const RESOURCE_FILTERS: Record<string, { label: string; key: string; opti
     { label: "Status", key: "status", options: ["All", "New", "In Progress", "Contacted", "Resolved", "Closed"] },
   ],
   gallery: [
-    { label: "Event Type", key: "eventType", options: ["All", "General", "Settings", "Icons", "Logos", "Home", "AdmissionDocuments", "Documents", "News", "Campus", "Events", "Sports", "Activities", "Hostel", "Arts", "Awareness", "Celebration", "Academic", "Infrastructure"] },
     {
       label: "Directory",
       key: "directory",
@@ -360,14 +359,20 @@ export const RESOURCE_FILTERS: Record<string, { label: string; key: string; opti
         "All",
         "Album",
         "Album/Events",
+        "Album/Campus",
+        "Album/Sports",
+        "Album/Activities",
         "Album/Hostel",
+        "Album/Arts",
         "Album/Infrastructure",
-        "Album/Empowerment",
-        "Album/Competitions",
-        "Album/Partners",
+        "Album/Celebration",
+        "Album/Academic",
         "Album/Achievements",
-        "Album/Reviews",
+        "Album/Competitions",
+        "Album/Empowerment",
+        "Album/Partners",
         "Album/Awareness",
+        "Album/General",
         "PressRelease",
         "Settings/Logos",
         "Settings/Home",
@@ -377,8 +382,10 @@ export const RESOURCE_FILTERS: Record<string, { label: string; key: string; opti
         "Student",
         "Staff",
         "Videos",
+        "Others",
       ],
     },
+    { label: "Event Type", key: "eventType", options: ["All", "Events", "Campus", "Sports", "Activities", "Hostel", "Arts", "Infrastructure", "Celebration", "Academic", "Achievements", "Competitions", "Empowerment", "Partners", "Awareness", "General", "Documents", "Settings", "Home", "Logos", "Icons", "Student", "Staff", "Videos", "Others"] },
   ],
   "school-settings": [
     { label: "Status", key: "status", options: ["All", "Active", "Inactive"] },
@@ -2214,7 +2221,6 @@ export function ResourceView({
   const isMenuResource = resource.key === "menu-items";
   const [viewMode, setViewMode] = useState<"grid" | "list">(isMediaResource ? "grid" : "list");
   const [menuViewMode, setMenuViewMode] = useState<"table" | "flow">("table");
-  const [activeAlbum, setActiveAlbum] = useState<string>("All");
   const [detailItem, setDetailItem] = useState<RecordItem | null>(null);
   const [localSearch, setLocalSearch] = useState(query.search || "");
   const [internalSearching, setInternalSearching] = useState(false);

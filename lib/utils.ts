@@ -159,6 +159,30 @@ export function toCleanRelativeAssetPath(url?: any): string {
 }
 
 /**
+ * Generates a normalized, canonical deduplication key for an image or file asset.
+ * Unifies relative paths, full Cloudinary URLs, transformed URLs, encoded URLs, and protocol variants.
+ */
+export function getCanonicalAssetKey(url?: any): string {
+  if (!url) return '';
+  try {
+    const raw = extractStringUrl(url) || String(url);
+    const decoded = decodeURIComponent(raw);
+    const clean = toCleanRelativeAssetPath(decoded).toLowerCase().trim().replace(/^\/+/, '');
+    const filename = clean.split('/').pop()?.split('?')[0] || clean;
+    // For small numeric files like 1.jpg, keep directory path to avoid collision across different directories
+    if (clean.includes('/') && filename.length <= 6 && /^\d+\./.test(filename)) {
+      return clean;
+    }
+    return filename || clean;
+  } catch {
+    const raw = String(url || '');
+    const clean = toCleanRelativeAssetPath(raw).toLowerCase().trim().replace(/^\/+/, '');
+    const filename = clean.split('/').pop()?.split('?')[0] || clean;
+    return filename || clean;
+  }
+}
+
+/**
  * Resolves absolute or relative media/file paths to full URLs dynamically.
  */
 export type MediaDeliveryPreset = 'default' | 'cloud';

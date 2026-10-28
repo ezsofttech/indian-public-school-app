@@ -371,11 +371,21 @@ export function CloudinaryGalleryModal({
               const isSettingsAsset =
                 url.toLowerCase().includes("/settings/") || lowerDir.includes("settings") || item.eventType === "Settings";
 
+              const isOthersAsset =
+                lowerDir.includes("other") ||
+                lowerDir.includes("visual editor") ||
+                String(item.eventType || "").toLowerCase().includes("visual editor") ||
+                String(item.category || "").toLowerCase().includes("visual editor") ||
+                String(item.album || "").toLowerCase().includes("visual editor") ||
+                String(item.eventName || "").toLowerCase().includes("visual editor");
+
               const category = lowerDir.includes("admission")
                 ? "AdmissionDocuments"
                 : isSettingsAsset || lowerDir.includes("settings")
                   ? "Settings"
-                  : item.eventType || item.category || dir || "General";
+                  : isOthersAsset
+                    ? "Others"
+                    : item.eventType || item.category || dir || "General";
 
               return createMediaItem({
                 id: item._id || item.id ? `${item._id || item.id}-${uIdx}` : `media-${idx}-${uIdx}`,
@@ -441,13 +451,18 @@ export function CloudinaryGalleryModal({
       const isLogosCategory = activeCategory === "Logos" || activeCategory === "Settings/Logos";
       const isSettingsCategory =
         activeCategory && (activeCategory.toLowerCase().includes("setting") || activeCategory === "Settings");
+      const isOthersCategory =
+        activeCategory === "Others" || activeCategory.toLowerCase() === "others";
+
       formData.append(
         "album",
         isIconsCategory || isLogosCategory || isSettingsCategory
           ? "Settings"
           : activeCategory === "AdmissionDocuments"
             ? "Admission"
-            : "Visual Editor Picked"
+            : isOthersCategory || activeCategory === "All"
+              ? "Others"
+              : activeCategory
       );
       if (activeCategory && activeCategory !== "All") {
         formData.append(
@@ -460,7 +475,9 @@ export function CloudinaryGalleryModal({
                 ? "Settings/Home"
                 : activeCategory === "AdmissionDocuments"
                   ? "Documents/Admission"
-                  : activeCategory
+                  : activeCategory === "Others"
+                    ? "Others"
+                    : activeCategory
         );
       }
 
@@ -513,12 +530,21 @@ export function CloudinaryGalleryModal({
       if (!rawReturnUrl) throw new Error("No URL returned from server upload.");
       const url = getAssetUrl(rawReturnUrl);
 
+      const isOthersChosen = isOthersCategory || activeCategory === "All";
+      const chosenCategory = isOthersChosen ? "Others" : activeCategory;
+      const chosenDir =
+        activeCategory === "AdmissionDocuments"
+          ? "Documents/Admission"
+          : isOthersChosen
+            ? "Others"
+            : activeCategory;
+
       const newItem = createMediaItem({
         id: `upload-${Date.now()}`,
         url,
         title: file.name.replace(/\.[^/.]+$/, ""),
-        category: activeCategory !== "All" ? activeCategory : "New Uploads",
-        directory: activeCategory === "AdmissionDocuments" ? "Documents/Admission" : activeCategory,
+        category: chosenCategory,
+        directory: chosenDir,
         source: "database",
       });
 
@@ -562,6 +588,7 @@ export function CloudinaryGalleryModal({
     categoryMap.set("student", "Student");
     categoryMap.set("staff", "Staff");
     categoryMap.set("admissiondocuments", "AdmissionDocuments");
+    categoryMap.set("others", "Others");
 
     mediaList.forEach((m) => {
       [m.category, m.directory].forEach((raw) => {
@@ -624,6 +651,18 @@ export function CloudinaryGalleryModal({
           m.category.toLowerCase().includes("admissiondocuments") ||
           (m.directory && m.directory.toLowerCase().includes("admissiondocuments")) ||
           m.url.toLowerCase().includes("admissiondocuments")
+        );
+      }
+
+      if (activeNorm === "others") {
+        return (
+          m.category.toLowerCase().includes("other") ||
+          (m.directory && m.directory.toLowerCase().includes("other")) ||
+          m.url.toLowerCase().includes("other") ||
+          m.category.toLowerCase().includes("visual editor") ||
+          (m.directory && m.directory.toLowerCase().includes("visual editor")) ||
+          m.url.toLowerCase().includes("visual-editor") ||
+          m.url.toLowerCase().includes("visual_editor")
         );
       }
 

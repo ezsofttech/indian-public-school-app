@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { EASE } from "@/lib/motion-presets";
-import { cn, getAssetUrl } from "@/lib/utils";
+import { cn, getAssetUrl, getCanonicalAssetKey } from "@/lib/utils";
 import { getOptionalApi, unwrapCollection } from "@/lib/api-client";
 import { DEFAULT_HERO_IMAGE } from "@/lib/site-data";
 
@@ -30,20 +30,8 @@ export interface PressReleaseImage {
   alt: string;
   title: string;
   date?: string;
-  source?: "database" | "cloudinary" | "static";
+  source?: "database" | "cloudinary";
 }
-
-const STATIC_PRESS_RELEASE_IMAGES: PressReleaseImage[] = Array.from({ length: 25 }, (_, i) => {
-  const index = i + 1;
-  const ext = index === 2 ? "png" : "jpg";
-  return {
-    src: `/PressRelease/PRESS_${index}.${ext}`,
-    alt: `Press Release Media Clipping ${index}`,
-    title: `Official Press Release Media Feature #${index}`,
-    date: "2024-05-15",
-    source: "static",
-  };
-});
 
 function cleanTitle(raw: string): string {
   if (!raw) return "Press Release Clipping";
@@ -63,41 +51,61 @@ export function PressReleaseClient() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [extraApiImages, setExtraApiImages] = useState<PressReleaseImage[]>([]);
+  const [failedUrls, setFailedUrls] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const pageSize = 24;
+
+  const handleImageError = (src: string) => {
+    setFailedUrls((prev) => {
+      const next = new Set(prev);
+      next.add(src);
+      return next;
+    });
+  };
 
   useEffect(() => {
     let isMounted = true;
     const fetchLivePressReleaseImages = async () => {
       try {
-        const directoryPath = encodeURIComponent("indian-public-school/assets/PressRelease");
-        const [dirGalleryRes, cdnRes] = await Promise.all([
-          getOptionalApi<any>(`/gallery?page=1&limit=500&sortBy=createdAt&sortOrder=desc&directory=${directoryPath}`),
-          getOptionalApi<any>("/uploads/cloudinary-resources"),
-        ]);
+        const dirGalleryRes = await getOptionalApi<any>(
+          "/gallery?page=1&limit=500&sortBy=createdAt&sortOrder=desc&directory=PressRelease"
+        );
 
         const dirItems = unwrapCollection<any>(dirGalleryRes);
 
-        const fetchedFromDb: PressReleaseImage[] = (Array.isArray(dirItems) ? dirItems : []).flatMap((item: any) => {
-          const rawTitle = text(item.eventName || item.title, "Press Release Media");
-          const formattedTitle = cleanTitle(rawTitle);
-          const urls = Array.isArray(item.fileUrl)
-            ? item.fileUrl
-            : typeof item.fileUrl === "string" && item.fileUrl.trim()
-            ? [item.fileUrl]
-            : [];
-          return urls.map((u: string) => ({
-            src: u,
-            alt: formattedTitle,
-            title: formattedTitle,
-            date: item.createdAt ? new Date(item.createdAt).toISOString().split("T")[0] : undefined,
-            source: "database" as const,
-          }));
-        });
+        // Map 1:1 with database records so public web portal cards match admin panel records exactly
+        const fetchedFromDb: PressReleaseImage[] = (Array.isArray(dirItems) ? dirItems : [])
+          .map((item: any) => {
+            const rawTitle = text(item.eventName || item.title, "Press Release Media");
+            const formattedTitle = cleanTitle(rawTitle);
+            const urls = Array.isArray(item.fileUrl)
+              ? item.fileUrl
+              : typeof item.fileUrl === "string" && item.fileUrl.trim()
+              ? [item.fileUrl]
+              : [];
+            const validUrl = urls.find((u: string) => !u.toLowerCase().includes("press_13")) || urls[0] || "";
+            return {
+              src: validUrl,
+              alt: formattedTitle,
+              title: formattedTitle,
+              date: item.createdAt ? new Date(item.createdAt).toISOString().split("T")[0] : undefined,
+              source: "database" as const,
+            };
+          })
+          .filter((img) => Boolean(img.src) && !img.src.toLowerCase().includes("press_13"));
 
         if (isMounted) {
-          setExtraApiImages(fetchedFromDb);
+          const combined: PressReleaseImage[] = [];
+          const seenKeys = new Set<string>();
+
+          for (const img of fetchedFromDb) {
+            const key = getCanonicalAssetKey(img.src);
+            if (!key || seenKeys.has(key)) continue;
+            seenKeys.add(key);
+            combined.push(img);
+          }
+          setExtraApiImages(combined);
         }
       } catch (err) {
         console.error("Failed to fetch live press release images:", err);
@@ -113,9 +121,17 @@ export function PressReleaseClient() {
   }, []);
 
   const allImages = useMemo(() => {
-    const list = extraApiImages.length ? extraApiImages : STATIC_PRESS_RELEASE_IMAGES;
-    return list;
-  }, [extraApiImages]);
+    const seen = new Set<string>();
+    const uniqueList: PressReleaseImage[] = [];
+    for (const img of extraApiImages) {
+      if (!img.src || img.src.toLowerCase().includes("press_13") || failedUrls.has(img.src)) continue;
+      const key = getCanonicalAssetKey(img.src);
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      uniqueList.push(img);
+    }
+    return uniqueList;
+  }, [extraApiImages, failedUrls]);
 
   const filteredImages = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -278,6 +294,7 @@ export function PressReleaseClient() {
                       src={getAssetUrl(img.src)}
                       alt={img.alt}
                       loading="lazy"
+                      onError={() => handleImageError(img.src)}
                       className="h-full w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

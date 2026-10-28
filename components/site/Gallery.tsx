@@ -6,14 +6,34 @@ import { ArrowRight, X } from "lucide-react";
 import Link from "next/link";
 import { SectionHeading } from "@/components/site/Reveal";
 import { EASE } from "@/lib/motion-presets";
-import { cn } from "@/lib/utils";
+import { cn, getCanonicalAssetKey } from "@/lib/utils";
 import { homeData, imageUrls, imageUrl, text } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { getOptionalApi, unwrapCollection } from "@/lib/api-client";
 
-type Category = "Campus" | "Events" | "Sports" | "Activities" | "Hostel" | "Arts";
+type Category =
+  | "Campus"
+  | "Events"
+  | "Sports"
+  | "Activities"
+  | "Hostel"
+  | "Arts"
+  | "Infrastructure"
+  | "Celebration"
+  | "Academic";
 
-const CATEGORIES: ("All" | Category)[] = ["All", "Campus", "Events", "Sports", "Activities", "Hostel", "Arts"];
+const CATEGORIES: ("All" | Category)[] = [
+  "All",
+  "Campus",
+  "Events",
+  "Sports",
+  "Activities",
+  "Hostel",
+  "Arts",
+  "Infrastructure",
+  "Celebration",
+  "Academic",
+];
 
 interface AlbumImage {
   src: string;
@@ -52,6 +72,35 @@ const FORBIDDEN_TERMS = [
   "review",
   "reviews",
   "album/reviews",
+  "others",
+  "other",
+  "/others",
+  "album/others",
+  "assets/others",
+  "visual editor",
+  "visual editor picked",
+  "visual-editor-picked",
+  "visual_editor_picked",
+  "visualeditor",
+  "document",
+  "documents",
+  "/documents",
+  "/document",
+  "documents/general",
+  "documents/admission",
+  "documents/career",
+  "documents/staff",
+  "admissiondocuments",
+  "admission_documents",
+  "assets/documents",
+  "assets/document",
+  "popupbanner",
+  "popup_banner",
+  "popup-banner",
+  "pop-up-banner",
+  "album/popupbanner",
+  "album/home",
+  "album/news",
 ];
 
 function isStaffStudentOrPressItem(item: Record<string, unknown>): boolean {
@@ -59,14 +108,36 @@ function isStaffStudentOrPressItem(item: Record<string, unknown>): boolean {
   const type = String(item.eventType || item.type || item.directory || "").toLowerCase().trim();
   const name = String(item.eventName || item.title || item.name || item.album || "").toLowerCase().trim();
   const cat = String(item.category || "").toLowerCase().trim();
+  const dir = String(item.directoryName || item.directory || item.folder || "").toLowerCase().trim();
   const tags = Array.isArray(item.tags)
     ? item.tags.map((t) => String(t).toLowerCase())
     : [String(item.tags || "").toLowerCase()];
 
-  if (FORBIDDEN_TERMS.some((term) => type === term || type.includes(`${term}_`) || type.includes(`_${term}`) || type.includes(term))) {
+  if (
+    dir.includes("document") ||
+    type.includes("document") ||
+    cat.includes("document") ||
+    item.mimeType === "application/pdf"
+  ) {
     return true;
   }
-  if (FORBIDDEN_TERMS.some((term) => cat === term || cat.includes(term))) return true;
+
+  const urls = Array.isArray(item.fileUrl)
+    ? item.fileUrl
+    : typeof item.fileUrl === "string"
+      ? [item.fileUrl]
+      : [];
+  if (urls.some((u: any) => typeof u === "string" && (u.toLowerCase().includes("/documents/") || u.toLowerCase().includes("/document/")))) {
+    return true;
+  }
+
+  if (FORBIDDEN_TERMS.some((term) =>
+    type === term || type.includes(`${term}_`) || type.includes(`_${term}`) || type.includes(term) ||
+    cat === term || cat.includes(term) ||
+    dir === term || dir.includes(term)
+  )) {
+    return true;
+  }
   if (FORBIDDEN_TERMS.some((term) => tags.some((tag) => tag.includes(term)))) return true;
   if (
     name.includes("staff photo") ||
@@ -76,7 +147,12 @@ function isStaffStudentOrPressItem(item: Record<string, unknown>): boolean {
     name.includes("press release") ||
     name.includes("press document") ||
     name.includes("setting") ||
-    name.includes("review")
+    name.includes("review") ||
+    name.includes("visual editor") ||
+    name.includes("visual-editor") ||
+    name.includes("visual_editor") ||
+    name.includes("others") ||
+    name.includes("document")
   ) {
     return true;
   }
@@ -87,7 +163,23 @@ function isStaffStudentOrPressUrl(url: string): boolean {
   if (!url) return true;
   const lower = url.toLowerCase();
 
-  if (lower.endsWith(".pdf") || lower.endsWith(".doc") || lower.endsWith(".docx") || lower.endsWith(".mp4")) {
+  // Exclude non-image file extensions if any
+  if (
+    lower.endsWith(".pdf") ||
+    lower.endsWith(".doc") ||
+    lower.endsWith(".docx") ||
+    lower.endsWith(".mp4") ||
+    lower.endsWith(".xls") ||
+    lower.endsWith(".xlsx") ||
+    lower.endsWith(".ppt") ||
+    lower.endsWith(".pptx") ||
+    lower.endsWith(".txt") ||
+    lower.endsWith(".csv") ||
+    lower.endsWith(".zip") ||
+    lower.includes(".pdf?") ||
+    lower.includes(".doc?") ||
+    lower.includes(".docx?")
+  ) {
     return true;
   }
 
@@ -112,6 +204,24 @@ function isStaffStudentOrPressUrl(url: string): boolean {
     "/reviews/",
     "/assets/review/",
     "/assets/Review/",
+    "/others/",
+    "/Others/",
+    "/assets/others/",
+    "/assets/Others/",
+    "/documents/",
+    "/Documents/",
+    "/assets/documents/",
+    "/assets/Documents/",
+    "/document/",
+    "/Document/",
+    "/assets/document/",
+    "/assets/Document/",
+    "admissiondocuments",
+    "others",
+    "visual_editor",
+    "visual-editor",
+    "visual editor",
+    "visualeditor",
     "staff_photo",
     "student_photo",
     "staff-photo",
@@ -134,32 +244,67 @@ function isStaffStudentOrPressUrl(url: string): boolean {
   return forbiddenSubstrings.some((term) => lower.includes(term)) && !lower.includes("campus");
 }
 
-function formatEventTitle(rawName?: string, fallbackType?: string): string {
-  const str = String(rawName || "").trim();
+function cleanEventTitle(rawName?: string, fallbackType?: string): string {
+  let str = String(rawName || "").trim();
+  if (str.includes("/")) {
+    const parts = str.split("/").map((p) => p.trim()).filter(Boolean);
+    str = parts[parts.length - 1] || str;
+  }
+  str = str.replace(/([a-z])([A-Z])/g, "$1 $2");
+  str = str.replace(/[_-]+/g, " ").trim();
+
   if (
     !str ||
+    str.toLowerCase() === "cloudinary album" ||
+    str.toLowerCase() === "school album" ||
     /\.(jpg|jpeg|png|webp|gif|svg|avif|pdf|mp4)$/i.test(str) ||
     /^upload-\d+$/i.test(str) ||
     /^cdn-\d+$/i.test(str) ||
     str.toLowerCase().startsWith("facility-") ||
     str.toLowerCase().startsWith("banner_") ||
-    str.toLowerCase().startsWith("hero-")
+    str.toLowerCase().startsWith("hero-") ||
+    /^file_[a-z0-9]+$/i.test(str)
   ) {
-    return String(fallbackType || "School Album").trim();
+    let fb = String(fallbackType || "School Album").trim();
+    if (fb.includes("/")) {
+      const parts = fb.split("/").map((p) => p.trim()).filter(Boolean);
+      fb = parts[parts.length - 1] || fb;
+    }
+    fb = fb.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ").trim();
+    return fb || "School Album";
   }
   return text(str, fallbackType || "School Album");
 }
 
+function cleanAlbumName(rawAlbum?: string, rawDir?: string, fallbackCategory?: string): string {
+  let albumStr = String(rawAlbum || "").trim();
+  if (albumStr.toLowerCase() === "cloudinary album" || albumStr.toLowerCase().startsWith("album/") || !albumStr) {
+    const dir = String(rawDir || "").trim();
+    if (dir.toLowerCase().includes("album")) {
+      const parts = dir.replace(/^[/\\]+|[/\\]+$/g, "").split(/[/\\]+/);
+      const idx = parts.findIndex((p) => p.toLowerCase() === "album");
+      if (idx !== -1 && parts[idx + 1]) {
+        albumStr = parts[idx + 1];
+      }
+    }
+  }
+  if (!albumStr || albumStr.toLowerCase() === "cloudinary album") {
+    albumStr = fallbackCategory || "Events";
+  }
+  if (albumStr.includes("/")) {
+    const parts = albumStr.split("/").map((p) => p.trim()).filter(Boolean);
+    albumStr = parts[parts.length - 1] || albumStr;
+  }
+  albumStr = albumStr.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ").trim();
+  return albumStr || "Events";
+}
+
 function mapEventTypeToCategory(rawType: unknown): Category {
-  const t = text(rawType, "Campus").trim();
-  if (t.startsWith("/album/")) {
-    const folder = t.replace(/^\/album\//i, "").trim();
-    const matched = CATEGORIES.find((c) => c.toLowerCase() === folder.toLowerCase());
-    if (matched && matched !== "All") return matched as Category;
-  }
-  if (["Campus", "Events", "Sports", "Activities", "Hostel", "Arts"].includes(t)) {
-    return t as Category;
-  }
+  const t = text(rawType, "Events").trim();
+  const clean = t.replace(/^\/?album\/?/i, "").trim();
+  const matched = CATEGORIES.find((c) => c.toLowerCase() === clean.toLowerCase());
+  if (matched && matched !== "All") return matched as Category;
+
   const lower = t.toLowerCase();
   if (lower.includes("sports") || lower.includes("winner")) return "Sports";
   if (
@@ -176,7 +321,10 @@ function mapEventTypeToCategory(rawType: unknown): Category {
   }
   if (lower.includes("hostel")) return "Hostel";
   if (lower.includes("art") || lower.includes("cultural")) return "Arts";
-  if (lower.includes("campus") || lower.includes("partner")) return "Campus";
+  if (lower.includes("infra")) return "Infrastructure";
+  if (lower.includes("celebrat")) return "Celebration";
+  if (lower.includes("academ")) return "Academic";
+  if (lower.includes("campus") || lower.includes("building") || lower.includes("partner")) return "Campus";
   return "Events";
 }
 
@@ -201,11 +349,19 @@ export function Gallery() {
         const cdnItems = unwrapCollection<any>(cdnRes);
 
         const fetchedFromDb: AlbumImage[] = (Array.isArray(dbItems) ? dbItems : [])
-          .filter((item) => !isStaffStudentOrPressItem(item))
+          .filter((item) => {
+            if (isStaffStudentOrPressItem(item)) return false;
+            const dir = String(item.directoryName || item.directory || "").toLowerCase().trim();
+            const alb = String(item.album || "").toLowerCase().trim();
+            const src = Array.isArray(item.fileUrl) ? item.fileUrl[0] : item.fileUrl;
+            const srcStr = String(src || "").toLowerCase();
+            return dir.includes("album") || (alb.length > 0 && alb !== "others") || srcStr.includes("/album/");
+          })
           .flatMap((item: any) => {
-            const cat = mapEventTypeToCategory(item.eventType || item.category || item.directory);
-            const albumName = formatEventTitle(item.eventName || item.title || item.album, item.eventType || cat);
-            const dir = String(item.directoryName || item.directory || "").trim() || `/album/${cat.toLowerCase()}`;
+            const dir = String(item.directoryName || item.directory || "").trim();
+            const cat = mapEventTypeToCategory(item.album || item.eventType || item.category || dir);
+            const albumName = cleanAlbumName(item.album, dir, cat);
+            const title = cleanEventTitle(item.eventName || item.title || albumName, cat);
             const urls = Array.isArray(item.fileUrl)
               ? item.fileUrl
               : typeof item.fileUrl === "string" && item.fileUrl.trim()
@@ -215,28 +371,36 @@ export function Gallery() {
               .filter((u: string) => !isStaffStudentOrPressUrl(u))
               .map((u: string) => ({
                 src: u,
-                alt: albumName,
+                alt: title,
                 category: cat,
                 album: albumName,
-                directory: dir,
-                directoryName: dir,
+                directory: dir || `Album/${albumName}`,
+                directoryName: dir || `Album/${albumName}`,
               }));
           });
 
         const fetchedFromCdn: AlbumImage[] = (Array.isArray(cdnItems) ? cdnItems : [])
-          .filter((item) => !isStaffStudentOrPressItem(item))
+          .filter((item) => {
+            if (isStaffStudentOrPressItem(item)) return false;
+            const folderStr = String(item.folder || item.category || "").toLowerCase().trim();
+            const pubId = String(item.public_id || item.id || "").toLowerCase().trim();
+            return folderStr.includes("album") || pubId.includes("/album/");
+          })
           .map((item: any) => {
             const url = item.secure_url || item.url || item.fileUrl || "";
-            const cat = mapEventTypeToCategory(item.folder || item.category);
-            const folderStr = String(item.folder || item.category || "general").toLowerCase();
-            const dir = folderStr.startsWith("/album/") ? folderStr : `/album/${folderStr}`;
+            const folderStr = String(item.folder || item.category || "").trim();
+            const cat = mapEventTypeToCategory(folderStr);
+            const dir = folderStr.startsWith("/album/") || folderStr.startsWith("album/")
+              ? folderStr
+              : `/album/${folderStr.replace(/^.*?album\/?/i, "")}`;
             const rawTitle = item.public_id ? item.public_id.split("/").pop() || "" : "";
-            const title = formatEventTitle(rawTitle, item.folder || item.category || cat);
+            const albumName = cleanAlbumName(item.folder || item.category, dir, cat);
+            const title = cleanEventTitle(rawTitle || item.title, albumName || cat);
             return {
               src: url,
               alt: title,
               category: cat,
-              album: item.folder || "Cloudinary Album",
+              album: albumName,
               directory: dir,
               directoryName: dir,
             };
@@ -244,7 +408,15 @@ export function Gallery() {
           .filter((img) => img.src && !isStaffStudentOrPressUrl(img.src));
 
         if (isMounted) {
-          setExtraApiImages([...fetchedFromDb, ...fetchedFromCdn]);
+          const seenApiKeys = new Set<string>();
+          const uniqueApiList: AlbumImage[] = [];
+          for (const img of [...fetchedFromDb, ...fetchedFromCdn]) {
+            const key = getCanonicalAssetKey(img.src);
+            if (!key || seenApiKeys.has(key)) continue;
+            seenApiKeys.add(key);
+            uniqueApiList.push(img);
+          }
+          setExtraApiImages(uniqueApiList);
         }
       } catch (err) {
         console.error("Failed to load live gallery API images:", err);
@@ -262,20 +434,26 @@ export function Gallery() {
     const list = Array.isArray(rawGallery) ? (rawGallery as Record<string, unknown>[]) : [];
 
     const galleryMapped = list
-      .filter((item) => !isStaffStudentOrPressItem(item))
+      .filter((item) => {
+        if (isStaffStudentOrPressItem(item)) return false;
+        const dir = String(item.directoryName || item.directory || "").toLowerCase().trim();
+        const alb = String((item as any).album || "").toLowerCase().trim();
+        return dir.includes("album") || (alb.length > 0 && alb !== "others");
+      })
       .flatMap((item) => {
-        const cat = mapEventTypeToCategory(item.eventType);
-        const eventName = text(item.eventName, "Campus Photo");
-        const dir = String(item.directoryName || item.directory || "").trim() || `/album/${cat.toLowerCase()}`;
+        const dir = String(item.directoryName || item.directory || "").trim();
+        const cat = mapEventTypeToCategory((item as any).album || item.eventType);
+        const albumName = cleanAlbumName((item as any).album as string, dir, cat);
+        const eventName = cleanEventTitle(item.eventName as string, albumName || cat);
         return imageUrls(item)
           .filter((url) => !isStaffStudentOrPressUrl(url))
           .map((url) => ({
             src: url,
             alt: eventName,
             category: cat,
-            album: text(item.album || item.eventName, "School Gallery"),
-            directory: dir,
-            directoryName: dir,
+            album: albumName,
+            directory: dir || `Album/${albumName}`,
+            directoryName: dir || `Album/${albumName}`,
           }));
       });
 
@@ -297,15 +475,61 @@ export function Gallery() {
 
   // Combined & deduplicated album images
   const allAlbumImages = useMemo(() => {
-    const combined = [...extraApiImages, ...datasourceImages];
+    // When backend is connected, strictly render from DB / API! Only use datasourceImages if backend is offline.
+    const isBackendConnected = siteData.backendConnected !== false;
+    const sourceImages = isBackendConnected ? extraApiImages : (extraApiImages.length > 0 ? extraApiImages : datasourceImages);
     const seen = new Set<string>();
     const uniqueList: AlbumImage[] = [];
 
-    for (const img of combined) {
+    for (const img of sourceImages) {
       if (!img.src || isStaffStudentOrPressUrl(img.src)) continue;
+      const key = getCanonicalAssetKey(img.src);
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
 
       // Strictly filter for album images matching /gallery-album logic
       const dirPath = (img.directoryName || img.directory || "").toLowerCase().trim();
+      const albumName = (img.album || "").toLowerCase().trim();
+      const altText = (img.alt || "").toLowerCase().trim();
+      const srcUrl = (img.src || "").toLowerCase().trim();
+
+      if (
+        dirPath.includes("document") ||
+        dirPath.includes("documents") ||
+        albumName.includes("document") ||
+        albumName.includes("documents") ||
+        srcUrl.includes("/documents") ||
+        srcUrl.includes("/document") ||
+        dirPath.includes("others") ||
+        albumName.includes("others") ||
+        srcUrl.includes("/others") ||
+        dirPath.includes("visual editor") ||
+        dirPath.includes("visual-editor") ||
+        dirPath.includes("visual_editor") ||
+        albumName.includes("visual editor") ||
+        albumName.includes("visual-editor") ||
+        albumName.includes("visual_editor") ||
+        altText.includes("visual editor") ||
+        altText.includes("visual-editor") ||
+        altText.includes("visual_editor") ||
+        srcUrl.includes("visual-editor") ||
+        srcUrl.includes("visual_editor") ||
+        srcUrl.includes("visual editor")
+      ) {
+        continue;
+      }
+
+      // In public web portal, strictly ONLY show images which include directory name "album" or have a valid album name
+      const isAlbumItem =
+        dirPath.includes("album") ||
+        srcUrl.includes("/album/") ||
+        srcUrl.includes("/album") ||
+        (Boolean(albumName) && !["others", "general document", "document", "documents"].includes(albumName));
+
+      if (!isAlbumItem) {
+        continue;
+      }
+
       const isForbiddenFolder =
         dirPath.includes("/staff") ||
         dirPath.includes("/press") ||
@@ -314,23 +538,42 @@ export function Gallery() {
 
       if (isForbiddenFolder) continue;
 
-      const isExplicitAlbum = dirPath.startsWith("/album/") || dirPath.includes("/album");
-      const isAlbumCategory = ["Campus", "Events", "Sports", "Activities", "Hostel", "Arts", "Banners"].includes(img.category);
+      const isExplicitAlbum =
+        dirPath.includes("album") ||
+        srcUrl.includes("/album/") ||
+        Boolean(albumName);
+
+      const isAlbumCategory = [
+        "Campus",
+        "Events",
+        "Sports",
+        "Activities",
+        "Hostel",
+        "Arts",
+        "Infrastructure",
+        "Celebration",
+        "Academic",
+      ].map((s) => s.toLowerCase()).includes(img.category.toLowerCase());
 
       if (!isExplicitAlbum && !isAlbumCategory) continue;
 
-      if (seen.has(img.src)) continue;
-      seen.add(img.src);
       uniqueList.push(img);
     }
     return uniqueList;
-  }, [extraApiImages, datasourceImages]);
+  }, [extraApiImages, datasourceImages, siteData.backendConnected]);
 
   const [active, setActive] = useState<Category | "All">("All");
   const [lightbox, setLightbox] = useState<number | null>(null);
 
   const shownAll = useMemo(
-    () => allAlbumImages.filter((i) => active === "All" || i.category === active),
+    () =>
+      allAlbumImages.filter(
+        (i) =>
+          active === "All" ||
+          i.category.toLowerCase() === active.toLowerCase() ||
+          i.album.toLowerCase() === active.toLowerCase() ||
+          (i.directoryName && i.directoryName.toLowerCase().includes(active.toLowerCase()))
+      ),
     [active, allAlbumImages],
   );
 
