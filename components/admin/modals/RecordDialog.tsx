@@ -389,7 +389,7 @@ export function RecordDialog({
             .map(([field, type]) => {
             const required = isRequiredField(field, resource.key, Boolean(record));
             return (
-              <label key={field} className={type === "textarea" || type === "file" || type === "richtext" || field === "role" || field === "targetUrl" || field === "redirectUrl" || field === "linkUrl" ? "sm:col-span-2" : ""}>
+              <div key={field} className={type === "textarea" || type === "file" || type === "richtext" || field === "role" || field === "targetUrl" || field === "redirectUrl" || field === "linkUrl" ? "sm:col-span-2" : ""}>
                 <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">
                   {titleCase(field)}
                   {required && <span className="ml-1 font-bold text-red-500" title="Required field">*</span>}
@@ -1040,7 +1040,7 @@ export function RecordDialog({
                     )}
                   </div>
                 )}
-              </label>
+              </div>
             );
           })}
         </div>

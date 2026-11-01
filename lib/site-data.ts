@@ -435,6 +435,117 @@ export function processHtmlAssetUrls(html?: string | null): string {
     }
   );
 
+  // Replace known offline domain broken assets
+  processed = processed.replace(
+    /\bsrc=["']https?:\/\/(?:www\.)?indianpublicschool\.in\/admin\/uploads\/images\/1633335421791download[^"']*["']/gi,
+    'src="/assets/Settings/Home/hero-campus.png"'
+  );
+  processed = processed.replace(
+    /\bsrc=["']https?:\/\/(?:www\.)?indianpublicschool\.in\/admin\/uploads\/blog\/1635841731blog-banner[^"']*["']/gi,
+    'src="/assets/Settings/Home/Banner_2.jpg"'
+  );
+  processed = processed.replace(
+    /\bhref=["']https?:\/\/(?:www\.)?indianpublicschool\.in\/index\.php\/Home\/blog_details\/[^"']*["']/gi,
+    'href="/campus/connectivity/blog"'
+  );
+
+  // Strip hardcoded fixed root wrapper backgrounds that cause white-on-white text in dark mode
+  processed = processed.replace(
+    /(class=["'][^"']*wysiwyg-page-wrapper[^"']*["'][^>]*style=["'][^"']*)background-color:\s*(?:#ffffff|rgb\(255,\s*255,\s*255\)|white);?/gi,
+    '$1background-color: transparent;'
+  );
+
+  // Clean inspect-element and browser-specific artifacts that break styling
+  processed = processed.replace(/scrollbar-color:\s*[^;]+;?/gi, "");
+  processed = processed.replace(/scrollbar-width:\s*[^;]+;?/gi, "");
+
+  // =========================================================
+  // UNIVERSAL DYNAMIC TABLE PROCESSOR
+  // Works on ANY table copied from WordPad, Word, Web, or CMS
+  // =========================================================
+  if (processed.includes("<table")) {
+    processed = processed.replace(/<table\b([^>]*)>([\s\S]*?)<\/table>/gi, (tableMatch, tableAttrs, tableInner) => {
+      // 1. Strip rigid pixel width and min-width styles from table
+      let cleanAttrs = tableAttrs.replace(/style=["']([^"']*)["']/i, (_: string, styleContent: string) => {
+        const cleanedStyle = styleContent
+          .replace(/width:\s*[\d.]+px;?/gi, "width: 100%;")
+          .replace(/min-width:\s*[\d.]+px;?/gi, "min-width: 0;");
+        return `style="${cleanedStyle}"`;
+      });
+
+      // 2. Extract column headers from thead or first tr
+      const headerMatches: string[] = [];
+      const theadMatch = tableInner.match(/<thead\b[^>]*>([\s\S]*?)<\/thead>/i);
+      const headerSource = theadMatch ? theadMatch[1] : (tableInner.match(/<tr\b[^>]*>([\s\S]*?)<\/tr>/i)?.[1] || "");
+
+      const thRegex = /<th\b[^>]*>([\s\S]*?)<\/th>/gi;
+      let thMatch: RegExpExecArray | null;
+      while ((thMatch = thRegex.exec(headerSource)) !== null) {
+        const cleanHeader = (thMatch[1] || "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+        headerMatches.push(cleanHeader);
+      }
+
+      // If no th found, check if first row has td as headers
+      if (headerMatches.length === 0 && !theadMatch) {
+        const tdRegex = /<td\b[^>]*>([\s\S]*?)<\/td>/gi;
+        let tdMatch: RegExpExecArray | null;
+        while ((tdMatch = tdRegex.exec(headerSource)) !== null) {
+          const cleanHeader = (tdMatch[1] || "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+          headerMatches.push(cleanHeader);
+        }
+      }
+
+      // 3. Attach data-label attributes to all tbody cells for dynamic card rendering
+      let enhancedInner = tableInner;
+      if (headerMatches.length > 0) {
+        enhancedInner = tableInner.replace(/<tr\b([^>]*)>([\s\S]*?)<\/tr>/gi, (rowMatch: string, rowAttrs: string, rowInner: string) => {
+          // Skip if this is the header row inside thead
+          if (theadMatch && tableInner.indexOf(rowMatch) < (theadMatch.index || 0) + theadMatch[0].length && tableInner.indexOf(rowMatch) >= (theadMatch.index || 0)) {
+            return rowMatch;
+          }
+
+          let cellIndex = 0;
+          const enhancedCells = rowInner.replace(/<td\b([^>]*)>([\s\S]*?)<\/td>/gi, (cellMatch: string, cellAttrs: string, cellContent: string) => {
+            const label = headerMatches[cellIndex] || `Item ${cellIndex + 1}`;
+            cellIndex++;
+            if (!cellAttrs.includes("data-label=")) {
+              return `<td data-label="${label.replace(/"/g, '&quot;')}" ${cellAttrs}>${cellContent}</td>`;
+            }
+            return cellMatch;
+          });
+
+          return `<tr${rowAttrs}>${enhancedCells}</tr>`;
+        });
+      }
+
+      return `<div class="ips-table-responsive-wrapper overflow-x-auto w-full my-4"><table${cleanAttrs}>${enhancedInner}</table></div>`;
+    });
+  }
+
+  // Scoped layout adjustments for legacy HTML
+  if (processed.includes("ips-chairman")) {
+    processed = processed
+      .replace(
+        /\.ips-chairman-layout\s*\{\s*grid-template-columns:\s*1fr;/g,
+        `.ips-chairman-layout {\n    display: flex;\n    flex-direction: column;\n    grid-template-columns: 1fr;`
+      )
+      .replace(
+        /\.ips-chairman-profile-wrapper\s*\{\s*position:\s*relative;\s*top:\s*auto;\s*\}/g,
+        `.ips-chairman-profile-wrapper {\n    position: relative;\n    top: auto;\n    grid-column: auto;\n    grid-row: auto;\n    order: 1;\n  }\n\n  .ips-chairman-message {\n    grid-column: auto;\n    grid-row: auto;\n    order: 2;\n  }`
+      );
+  }
+
+  if (processed.includes("ips-principal")) {
+    processed = processed.replace(
+      /(class=["'][^"']*ips-principal-teachers[^"']*["'][^>]*style=["'][^"']*background-color:\s*rgb\(16,\s*42,\s*76\)[^"']*["'][\s\S]*?<h2[^>]*style=["'][^"']*)color:\s*rgb\(8,\s*42,\s*82\);?/gi,
+      `$1color: #ffffff;`
+    );
+    processed = processed.replace(
+      /(class=["'][^"']*ips-principal-teachers[^"']*["'][^>]*style=["'][^"']*background-color:\s*rgb\(16,\s*42,\s*76\)[^"']*["'][\s\S]*?<p[^>]*style=["'][^"']*)color:\s*rgb\(102,\s*112,\s*133\);?/gi,
+      `$1color: #e2e8f0;`
+    );
+  }
+
   return processed;
 }
 
@@ -621,5 +732,112 @@ export function getPopupBannerConfig(siteData?: SiteData | null): Required<Popup
     showImageZoomOnClick,
   };
 }
+
+/**
+ * Builds a complete self-contained HTML document for device preview frames (Mobile 390px, Tablet 768px, Desktop).
+ * Rendering inside an iframe allows CSS @media queries to trigger authentically.
+ */
+export function buildPagePreviewDoc(htmlContent?: string | null): string {
+  const content = processHtmlAssetUrls(htmlContent || "");
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+      color: #1e293b;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      padding: 16px;
+    }
+    img, video, iframe {
+      max-width: 100%;
+      height: auto;
+    }
+    a {
+      color: #1a5d9c;
+      text-decoration: underline;
+    }
+
+    /* Universal Responsive Table Cards on viewports <= 768px */
+    @media (max-width: 768px) {
+      table {
+        display: block !important;
+        width: 100% !important;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        margin: 1rem 0 !important;
+      }
+      thead {
+        display: none !important;
+      }
+      tbody {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+        width: 100% !important;
+      }
+      tr {
+        display: flex !important;
+        flex-direction: column !important;
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 1rem !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+        overflow: hidden !important;
+        padding: 0 !important;
+      }
+      td:first-child {
+        display: flex !important;
+        align-items: center !important;
+        background: linear-gradient(135deg, #082a52 0%, #123b70 100%) !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        padding: 0.75rem 1rem !important;
+        border-bottom: 2px solid #f4c430 !important;
+      }
+      td:not(:first-child) {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.25rem !important;
+        padding: 0.75rem 1rem !important;
+        border-bottom: 1px dashed #e2e8f0 !important;
+        font-size: 0.875rem !important;
+        color: #334155 !important;
+      }
+      td:last-child {
+        border-bottom: none !important;
+      }
+      td[data-label]:not(:first-child)::before {
+        content: attr(data-label);
+        display: block !important;
+        font-size: 0.75rem !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        color: #1a5d9c !important;
+        margin-bottom: 2px !important;
+      }
+    }
+  </style>
+</head>
+<body class="dynamic-page-content">
+  ${content}
+</body>
+</html>`;
+}
+
 
 

@@ -436,6 +436,137 @@ export function useRichTextEditor({
               th, td { border: 1px solid #cbd5e1; padding: 10px 14px; text-align: left; }
               th { background-color: #f1f5f9; font-weight: 700; color: #0f172a; }
               img[src=""], img:not([src]) { display: none !important; }
+
+              /* Live Responsive Table Mobile Card Transformation inside Editor Canvas */
+              @media (max-width: 768px) {
+                table {
+                  display: block !important;
+                  width: 100% !important;
+                  border: none !important;
+                  box-shadow: none !important;
+                  background: transparent !important;
+                  margin: 12px 0 !important;
+                }
+                thead {
+                  display: none !important;
+                }
+                tbody {
+                  display: flex !important;
+                  flex-direction: column !important;
+                  gap: 14px !important;
+                  width: 100% !important;
+                }
+                tbody tr {
+                  display: flex !important;
+                  flex-direction: column !important;
+                  background: #ffffff !important;
+                  border: 1px solid #e2e8f0 !important;
+                  border-radius: 16px !important;
+                  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+                  overflow: hidden !important;
+                  padding: 0 !important;
+                }
+                tbody tr td:first-child {
+                  display: flex !important;
+                  align-items: center !important;
+                  justify-content: space-between !important;
+                  background: linear-gradient(135deg, #082a52 0%, #123b70 100%) !important;
+                  color: #ffffff !important;
+                  font-weight: 800 !important;
+                  padding: 10px 14px !important;
+                  font-size: 15px !important;
+                  border: none !important;
+                  border-bottom: 2px solid #f4c430 !important;
+                }
+                tbody tr td:not(:first-child) {
+                  display: flex !important;
+                  flex-direction: column !important;
+                  gap: 3px !important;
+                  padding: 10px 14px !important;
+                  border: none !important;
+                  border-bottom: 1px dashed #e2e8f0 !important;
+                  font-size: 13.5px !important;
+                  color: #334155 !important;
+                  line-height: 1.55 !important;
+                }
+                tbody tr td:last-child {
+                  border-bottom: none !important;
+                }
+                tbody tr td[data-label]:not(:first-child)::before {
+                  content: attr(data-label);
+                  display: block !important;
+                  font-size: 11px !important;
+                  font-weight: 800 !important;
+                  text-transform: uppercase !important;
+                  letter-spacing: 0.05em !important;
+                  color: #1a5d9c !important;
+                  margin-bottom: 2px !important;
+                }
+              }
+
+              body[data-canvas-mode="mobile"] table {
+                display: block !important;
+                width: 100% !important;
+                border: none !important;
+                box-shadow: none !important;
+                background: transparent !important;
+                margin: 12px 0 !important;
+              }
+              body[data-canvas-mode="mobile"] thead {
+                display: none !important;
+              }
+              body[data-canvas-mode="mobile"] tbody {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 14px !important;
+                width: 100% !important;
+              }
+              body[data-canvas-mode="mobile"] tbody tr {
+                display: flex !important;
+                flex-direction: column !important;
+                background: #ffffff !important;
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 16px !important;
+                box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+                overflow: hidden !important;
+                padding: 0 !important;
+              }
+              body[data-canvas-mode="mobile"] tbody tr td:first-child {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                background: linear-gradient(135deg, #082a52 0%, #123b70 100%) !important;
+                color: #ffffff !important;
+                font-weight: 800 !important;
+                padding: 10px 14px !important;
+                font-size: 15px !important;
+                border: none !important;
+                border-bottom: 2px solid #f4c430 !important;
+              }
+              body[data-canvas-mode="mobile"] tbody tr td:not(:first-child) {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 3px !important;
+                padding: 10px 14px !important;
+                border: none !important;
+                border-bottom: 1px dashed #e2e8f0 !important;
+                font-size: 13.5px !important;
+                color: #334155 !important;
+                line-height: 1.55 !important;
+              }
+              body[data-canvas-mode="mobile"] tbody tr td:last-child {
+                border-bottom: none !important;
+              }
+              body[data-canvas-mode="mobile"] tbody tr td[data-label]:not(:first-child)::before {
+                content: attr(data-label);
+                display: block !important;
+                font-size: 11px !important;
+                font-weight: 800 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.05em !important;
+                color: #1a5d9c !important;
+                margin-bottom: 2px !important;
+              }
             </style>
             <script>
               window.addEventListener('error', function(e) {
@@ -1470,6 +1601,10 @@ export function useRichTextEditor({
         const iframe = iframeRef.current;
         const doc = iframe?.contentDocument || iframe?.contentWindow?.document;
         if (doc && doc.body) {
+            doc.body.setAttribute("data-canvas-mode", mode);
+            if (doc.documentElement) {
+                doc.documentElement.setAttribute("data-canvas-mode", mode);
+            }
             const widthMap = {
                 desktop: "100%",
                 tablet: "768px",
