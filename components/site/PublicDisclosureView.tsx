@@ -257,11 +257,11 @@ export function PublicDisclosureView({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start shrink-0">
             <button
               type="button"
               onClick={toggleAllSections}
-              className="inline-flex items-center gap-1.5 border border-border bg-card text-card-foreground hover:bg-muted/70 px-3.5 py-2 text-xs font-bold transition-colors shadow-2xs cursor-pointer"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 border border-border bg-card text-card-foreground hover:bg-muted/70 px-3.5 py-2 text-xs font-bold transition-colors shadow-2xs cursor-pointer"
               style={{ borderRadius: "var(--btn-radius, 9999px)" }}
             >
               <ChevronDown
@@ -275,7 +275,7 @@ export function PublicDisclosureView({
             <button
               type="button"
               onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground hover:opacity-90 px-4 py-2 text-xs font-bold transition-all shadow-2xs hover:shadow-xs cursor-pointer"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 bg-primary text-primary-foreground hover:opacity-90 px-4 py-2 text-xs font-bold transition-all shadow-2xs hover:shadow-xs cursor-pointer"
               style={{ borderRadius: "var(--btn-radius, 9999px)" }}
               title="Open document preview to print or save as PDF"
             >
@@ -323,7 +323,7 @@ export function PublicDisclosureView({
                         {getSectionBadge(sec.sectionTitle, secIdx)}
                       </span>
                       <div className="min-w-0">
-                        <h2 className="text-sm sm:text-base font-bold text-white tracking-tight font-[var(--font-display)] truncate">
+                        <h2 className="text-sm sm:text-base font-bold text-white tracking-tight font-[var(--font-display)] break-words sm:truncate">
                           {sec.sectionTitle}
                         </h2>
                       </div>
@@ -351,111 +351,182 @@ export function PublicDisclosureView({
                           No records listed under this section yet.
                         </div>
                       ) : (
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-left text-xs border-collapse">
-                            <thead>
-                              <tr className="border-b-2 border-border bg-muted/60 text-foreground text-[11px] font-extrabold uppercase tracking-wider font-[var(--font-display)]">
-                                <th className="py-3.5 px-3 text-center w-16 sm:w-20 border-r border-border">
-                                  Sr.
-                                </th>
-                                <th className="py-3.5 px-4 sm:px-5 w-2/5 sm:w-1/3 min-w-[220px] border-r border-border">
-                                  Information / Subject
-                                </th>
-                                <th className="py-3.5 px-4 sm:px-5 border-r border-border">
-                                  Details / Information
-                                </th>
-                                <th className="py-3.5 px-4 text-center w-36 sm:w-44 min-w-[140px]">
-                                  Document
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border text-xs">
-                              {sec.items.map((row, rowIdx) => {
-                                const hasDetail = Boolean(row.detail && row.detail.trim());
-                                const hasDoc = Boolean(row.view && row.view.url);
-                                const rawUrl = row.view?.url || "";
-                                const resolvedUrl = getAssetUrl(rawUrl) || rawUrl;
-                                const isExternalWeb =
-                                  row.view?.type === "LINK" &&
-                                  !isPdfFile(rawUrl) &&
-                                  !isDocumentFile(rawUrl) &&
-                                  isExternalUrl(rawUrl);
+                        <>
+                          {/* Mobile Card Layout (Visible only on small screens < 640px) */}
+                          <div className="block sm:hidden divide-y divide-border/60">
+                            {sec.items.map((row, rowIdx) => {
+                              const hasDetail = Boolean(row.detail && row.detail.trim());
+                              const hasDoc = Boolean(row.view && row.view.url);
+                              const rawUrl = row.view?.url || "";
+                              const resolvedUrl = getAssetUrl(rawUrl) || rawUrl;
+                              const isExternalWeb =
+                                row.view?.type === "LINK" &&
+                                !isPdfFile(rawUrl) &&
+                                !isDocumentFile(rawUrl) &&
+                                isExternalUrl(rawUrl);
 
-                                return (
-                                  <tr
-                                    key={row.rowId || rowIdx}
-                                    className="even:bg-muted/30 hover:bg-muted/70 transition-colors"
-                                  >
-                                    {/* Serial Number */}
-                                    <td className="py-4 px-3 text-center border-r border-border align-middle">
-                                      <span
-                                        className="inline-flex size-7 items-center justify-center bg-secondary text-secondary-foreground font-mono text-xs font-bold border border-border shadow-2xs"
-                                        style={{ borderRadius: "var(--badge-radius, 0.5rem)" }}
-                                      >
-                                        {row.srNo ?? rowIdx + 1}
-                                      </span>
-                                    </td>
-
-                                    {/* Row Title */}
-                                    <td className="py-4 px-4 sm:px-5 border-r border-border align-middle">
-                                      <span className="font-semibold text-foreground text-xs sm:text-[13px] leading-snug">
+                              return (
+                                <div key={row.rowId || rowIdx} className="p-4 space-y-3 bg-card hover:bg-muted/30 transition-colors">
+                                  <div className="flex items-start gap-3">
+                                    <span
+                                      className="inline-flex size-6 shrink-0 items-center justify-center bg-secondary text-secondary-foreground font-mono text-[11px] font-bold border border-border shadow-2xs mt-0.5"
+                                      style={{ borderRadius: "var(--badge-radius, 0.375rem)" }}
+                                    >
+                                      {row.srNo ?? rowIdx + 1}
+                                    </span>
+                                    <div className="min-w-0 flex-1">
+                                      <h4 className="text-xs font-bold text-foreground leading-snug">
                                         {row.title}
-                                      </span>
-                                    </td>
-
-                                    {/* Text Detail */}
-                                    <td className="py-4 px-4 sm:px-5 border-r border-border align-middle">
-                                      {hasDetail ? (
-                                        <p className="whitespace-pre-line text-muted-foreground text-xs sm:text-[13px] font-sans leading-relaxed">
+                                      </h4>
+                                      {hasDetail && (
+                                        <p className="mt-1.5 whitespace-pre-line text-xs leading-relaxed text-muted-foreground bg-muted/40 p-2.5 rounded-lg border border-border/50">
                                           {row.detail}
                                         </p>
-                                      ) : (
-                                        <span className="text-muted-foreground/40 font-mono text-sm select-none">—</span>
                                       )}
-                                    </td>
+                                    </div>
+                                  </div>
 
-                                    {/* Document Action Button */}
-                                    <td className="py-4 px-4 text-center align-middle">
-                                      {hasDoc ? (
-                                        <div className="inline-flex justify-center">
-                                          {isExternalWeb ? (
-                                            <a
-                                              href={resolvedUrl}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="inline-flex items-center justify-center gap-1.5 bg-primary text-primary-foreground hover:opacity-90 px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-[0.98] border border-primary/20 group cursor-pointer"
-                                              style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
-                                            >
-                                              <FileText size={13} className="text-primary-foreground/90 group-hover:scale-110 transition-transform" />
-                                              <span>{row.view?.label || "VIEW"}</span>
-                                              <ExternalLink size={11} className="text-primary-foreground/70 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-transform" />
-                                            </a>
-                                          ) : (
-                                            <button
-                                              type="button"
-                                              onClick={() => {
-                                                setPreviewUrl(resolvedUrl);
-                                                setPreviewTitle(row.title || "Mandatory Disclosure Document");
-                                              }}
-                                              className="inline-flex items-center justify-center gap-1.5 bg-primary text-primary-foreground hover:opacity-90 px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-[0.98] border border-primary/20 group cursor-pointer"
-                                              style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
-                                            >
-                                              <FileText size={13} className="text-primary-foreground/90 group-hover:scale-110 transition-transform" />
-                                              <span>{row.view?.label || "VIEW"}</span>
-                                              <Eye size={12} className="text-primary-foreground/80 group-hover:text-primary-foreground transition-colors" />
-                                            </button>
-                                          )}
-                                        </div>
+                                  {hasDoc && (
+                                    <div className="pt-1">
+                                      {isExternalWeb ? (
+                                        <a
+                                          href={resolvedUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:opacity-90 py-2.5 px-4 text-xs font-bold rounded-xl shadow-xs transition-all"
+                                        >
+                                          <FileText size={14} />
+                                          <span>{row.view?.label || "VIEW DOCUMENT"}</span>
+                                          <ExternalLink size={12} className="opacity-80" />
+                                        </a>
                                       ) : (
-                                        <span className="text-muted-foreground/40 font-mono text-sm select-none">—</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setPreviewUrl(resolvedUrl);
+                                            setPreviewTitle(row.title || "Mandatory Disclosure Document");
+                                          }}
+                                          className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:opacity-90 py-2.5 px-4 text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer"
+                                        >
+                                          <FileText size={14} />
+                                          <span>{row.view?.label || "VIEW DOCUMENT"}</span>
+                                          <Eye size={13} className="opacity-80" />
+                                        </button>
                                       )}
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {/* Desktop / Tablet Table Layout (Hidden on mobile < 640px) */}
+                          <div className="hidden sm:block overflow-x-auto">
+                            <table className="w-full text-left text-xs border-collapse">
+                              <thead>
+                                <tr className="border-b-2 border-border bg-muted/60 text-foreground text-[11px] font-extrabold uppercase tracking-wider font-[var(--font-display)]">
+                                  <th className="py-3.5 px-3 text-center w-16 sm:w-20 border-r border-border">
+                                    Sr.
+                                  </th>
+                                  <th className="py-3.5 px-4 sm:px-5 w-2/5 sm:w-1/3 min-w-[220px] border-r border-border">
+                                    Information / Subject
+                                  </th>
+                                  <th className="py-3.5 px-4 sm:px-5 border-r border-border">
+                                    Details / Information
+                                  </th>
+                                  <th className="py-3.5 px-4 text-center w-36 sm:w-44 min-w-[140px]">
+                                    Document
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-border text-xs">
+                                {sec.items.map((row, rowIdx) => {
+                                  const hasDetail = Boolean(row.detail && row.detail.trim());
+                                  const hasDoc = Boolean(row.view && row.view.url);
+                                  const rawUrl = row.view?.url || "";
+                                  const resolvedUrl = getAssetUrl(rawUrl) || rawUrl;
+                                  const isExternalWeb =
+                                    row.view?.type === "LINK" &&
+                                    !isPdfFile(rawUrl) &&
+                                    !isDocumentFile(rawUrl) &&
+                                    isExternalUrl(rawUrl);
+
+                                  return (
+                                    <tr
+                                      key={row.rowId || rowIdx}
+                                      className="even:bg-muted/30 hover:bg-muted/70 transition-colors"
+                                    >
+                                      {/* Serial Number */}
+                                      <td className="py-4 px-3 text-center border-r border-border align-middle">
+                                        <span
+                                          className="inline-flex size-7 items-center justify-center bg-secondary text-secondary-foreground font-mono text-xs font-bold border border-border shadow-2xs"
+                                          style={{ borderRadius: "var(--badge-radius, 0.5rem)" }}
+                                        >
+                                          {row.srNo ?? rowIdx + 1}
+                                        </span>
+                                      </td>
+
+                                      {/* Row Title */}
+                                      <td className="py-4 px-4 sm:px-5 border-r border-border align-middle">
+                                        <span className="font-semibold text-foreground text-xs sm:text-[13px] leading-snug">
+                                          {row.title}
+                                        </span>
+                                      </td>
+
+                                      {/* Text Detail */}
+                                      <td className="py-4 px-4 sm:px-5 border-r border-border align-middle">
+                                        {hasDetail ? (
+                                          <p className="whitespace-pre-line text-muted-foreground text-xs sm:text-[13px] font-sans leading-relaxed">
+                                            {row.detail}
+                                          </p>
+                                        ) : (
+                                          <span className="text-muted-foreground/40 font-mono text-sm select-none">—</span>
+                                        )}
+                                      </td>
+
+                                      {/* Document Action Button */}
+                                      <td className="py-4 px-4 text-center align-middle">
+                                        {hasDoc ? (
+                                          <div className="inline-flex justify-center">
+                                            {isExternalWeb ? (
+                                              <a
+                                                href={resolvedUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center justify-center gap-1.5 bg-primary text-primary-foreground hover:opacity-90 px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-[0.98] border border-primary/20 group cursor-pointer"
+                                                style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
+                                              >
+                                                <FileText size={13} className="text-primary-foreground/90 group-hover:scale-110 transition-transform" />
+                                                <span>{row.view?.label || "VIEW"}</span>
+                                                <ExternalLink size={11} className="text-primary-foreground/70 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-transform" />
+                                              </a>
+                                            ) : (
+                                              <button
+                                                type="button"
+                                                onClick={() => {
+                                                  setPreviewUrl(resolvedUrl);
+                                                  setPreviewTitle(row.title || "Mandatory Disclosure Document");
+                                                }}
+                                                className="inline-flex items-center justify-center gap-1.5 bg-primary text-primary-foreground hover:opacity-90 px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-[0.98] border border-primary/20 group cursor-pointer"
+                                                style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
+                                              >
+                                                <FileText size={13} className="text-primary-foreground/90 group-hover:scale-110 transition-transform" />
+                                                <span>{row.view?.label || "VIEW"}</span>
+                                                <Eye size={12} className="text-primary-foreground/80 group-hover:text-primary-foreground transition-colors" />
+                                              </button>
+                                            )}
+                                          </div>
+                                        ) : (
+                                          <span className="text-muted-foreground/40 font-mono text-sm select-none">—</span>
+                                        )}
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </>
                       )}
                     </div>
                   )}
