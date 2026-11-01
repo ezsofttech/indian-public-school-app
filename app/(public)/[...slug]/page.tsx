@@ -471,6 +471,7 @@ export default async function ContentPage({
   const bulletItems = stringList(activePage.list);
   const rawHtmlContent = typeof activePage.textContent === "string" ? activePage.textContent : "";
   const htmlContent = processHtmlAssetUrls(rawHtmlContent);
+  const isCustomPage = rawHtmlContent.includes("ips-") || rawHtmlContent.includes("<style");
   const breadcrumbs = buildBreadcrumbs(slug, title);
 
   const rawBannerImg =
@@ -540,11 +541,72 @@ export default async function ContentPage({
 
       <section className="container-page py-12 lg:py-20">
         {htmlContent ? (
-          <div
-            className="mx-auto max-w-4xl prose dark:prose-invert prose-lg max-w-none space-y-6 text-foreground leading-relaxed font-sans dynamic-page-content"
-            dangerouslySetInnerHTML={{ __html: htmlContent }}
-            suppressHydrationWarning
-          />
+          <>
+            <style
+              dangerouslySetInnerHTML={{
+                __html: `
+              .ips-chairman-closing, .ips-chairman-closing *,
+              .ips-director-closing, .ips-director-closing *,
+              .ips-closing, .ips-closing *,
+              .ips-dark-card, .ips-dark-card *,
+              [class*="-closing"], [class*="-closing"] *,
+              [class*="-dark-card"], [class*="-dark-card"] * {
+                color: #ffffff !important;
+              }
+              .ips-chairman-closing-sub,
+              .ips-chairman-closing-sub *,
+              .ips-director-closing-sub,
+              .ips-director-closing-sub *,
+              [class*="-closing-sub"],
+              [class*="-closing-sub"] *,
+              .ips-chairman-closing p.ips-chairman-closing-sub,
+              .ips-director-closing p.ips-director-closing-sub,
+              [class*="-closing"] p.ips-chairman-closing-sub,
+              [class*="-closing"] p.ips-director-closing-sub,
+              [class*="-closing"] p:last-child {
+                color: #ffffff !important;
+                opacity: 1 !important;
+              }
+              .ips-chairman-closing-main, .ips-director-closing-main,
+              [class*="-closing-main"] {
+                color: #ffffff !important;
+              }
+              @media (max-width: 1024px) {
+                .ips-chairman-layout, .ips-director-layout {
+                  display: flex !important;
+                  flex-direction: column !important;
+                  gap: 2rem !important;
+                  width: 100% !important;
+                }
+                .ips-chairman-profile-wrapper, .ips-director-profile-wrapper {
+                  order: 1 !important;
+                  position: static !important;
+                  width: 100% !important;
+                  max-width: 380px !important;
+                  margin: 0 auto !important;
+                  grid-column: auto !important;
+                  grid-row: auto !important;
+                }
+                .ips-chairman-message, .ips-director-message {
+                  order: 2 !important;
+                  width: 100% !important;
+                  grid-column: auto !important;
+                  grid-row: auto !important;
+                }
+              }
+            `,
+              }}
+            />
+            <div
+              className={`mx-auto max-w-5xl dynamic-page-content font-sans ${
+                isCustomPage
+                  ? "not-prose w-full"
+                  : "prose dark:prose-invert prose-lg max-w-none space-y-6 text-foreground leading-relaxed"
+              }`}
+              dangerouslySetInnerHTML={{ __html: htmlContent }}
+              suppressHydrationWarning
+            />
+          </>
         ) : (
           <div className="mx-auto max-w-4xl space-y-5 text-base leading-relaxed text-foreground sm:text-lg">
             {description.map((paragraph, i) => (

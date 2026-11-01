@@ -333,6 +333,33 @@ export function useRichTextEditor({
                 bottom: -6px !important;
                 right: -6px !important;
               }
+              /* High contrast safeguards for closing cards and dark banners */
+              .ips-chairman-closing,
+              .ips-chairman-closing *,
+              .ips-director-closing,
+              .ips-director-closing *,
+              .ips-closing,
+              .ips-closing *,
+              [class*="-closing"],
+              [class*="-closing"] *,
+              [class*="-final"],
+              [class*="-final"] *,
+              [class*="-dark-card"],
+              [class*="-dark-card"] * {
+                color: #ffffff !important;
+              }
+              .ips-chairman-closing-sub,
+              .ips-chairman-closing-sub *,
+              .ips-director-closing-sub,
+              .ips-director-closing-sub *,
+              [class*="-closing-sub"],
+              [class*="-closing-sub"] *,
+              [class*="-closing"] p.ips-chairman-closing-sub,
+              [class*="-closing"] p.ips-director-closing-sub,
+              [class*="-closing"] p:last-child {
+                color: #ffffff !important;
+                opacity: 1 !important;
+              }
               .wysiwyg-block-toolbar {
                 position: absolute !important;
                 display: inline-flex !important;

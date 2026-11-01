@@ -449,15 +449,31 @@ export function processHtmlAssetUrls(html?: string | null): string {
     'href="/campus/connectivity/blog"'
   );
 
-  // Strip hardcoded fixed root wrapper backgrounds that cause white-on-white text in dark mode
-  processed = processed.replace(
-    /(class=["'][^"']*wysiwyg-page-wrapper[^"']*["'][^>]*style=["'][^"']*)background-color:\s*(?:#ffffff|rgb\(255,\s*255,\s*255\)|white);?/gi,
-    '$1background-color: transparent;'
-  );
-
   // Clean inspect-element and browser-specific artifacts that break styling
   processed = processed.replace(/scrollbar-color:\s*[^;]+;?/gi, "");
   processed = processed.replace(/scrollbar-width:\s*[^;]+;?/gi, "");
+  processed = processed.replace(/border:\s*0px solid oklch\([^)]+\);?/gi, "");
+  processed = processed.replace(/color:\s*lab\([^)]+\)\s*rgba\([^)]+\);?/gi, "");
+
+  // Normalize non-standard oklch colors on container elements
+  processed = processed.replace(/background-color:\s*oklch\([^)]+\);?/gi, "");
+  processed = processed.replace(/color:\s*oklch\(0\.21[^)]+\);?/gi, "");
+
+  // Fix ips-principal-teachers conflicting light gradient with white text
+  processed = processed.replace(
+    /(class=["'][^"']*ips-principal-teachers[^"']*["'][^>]*style=["'][^"']*)color:\s*rgb\(255,\s*255,\s*255\)\s*!important;?\s*/gi,
+    "$1"
+  );
+  processed = processed.replace(
+    /(class=["'][^"']*ips-principal-teachers[^"']*["'][^>]*style=["'][^"']*)background-color:\s*rgb\(16,\s*42,\s*76\)\s*!important;?\s*/gi,
+    "$1"
+  );
+
+  // Strip hardcoded fixed root wrapper backgrounds that cause white-on-white text in dark mode
+  processed = processed.replace(
+    /(class=["'][^"']*(?:wysiwyg-page-wrapper|ips-principal-content|ips-chairman-page|ips-director-content)[^"']*["'][^>]*style=["'][^"']*)background(?:-color)?:\s*(?:#ffffff|rgb\(255,\s*255,\s*255\)|white|#f8fafc);?/gi,
+    "$1"
+  );
 
   // =========================================================
   // UNIVERSAL DYNAMIC TABLE PROCESSOR
@@ -534,6 +550,70 @@ export function processHtmlAssetUrls(html?: string | null): string {
         `.ips-chairman-profile-wrapper {\n    position: relative;\n    top: auto;\n    grid-column: auto;\n    grid-row: auto;\n    order: 1;\n  }\n\n  .ips-chairman-message {\n    grid-column: auto;\n    grid-row: auto;\n    order: 2;\n  }`
       );
   }
+
+  if (processed.includes("ips-director")) {
+    processed = processed
+      .replace(
+        /\.ips-director-layout\s*\{\s*grid-template-columns:\s*1fr;/g,
+        `.ips-director-layout {\n    display: flex;\n    flex-direction: column;\n    grid-template-columns: 1fr;`
+      )
+      .replace(
+        /\.ips-director-profile-wrapper\s*\{\s*position:\s*relative;\s*top:\s*auto;\s*\}/g,
+        `.ips-director-profile-wrapper {\n    position: relative;\n    top: auto;\n    grid-column: auto;\n    grid-row: auto;\n    order: 1;\n  }\n\n  .ips-director-message {\n    grid-column: auto;\n    grid-row: auto;\n    order: 2;\n  }`
+      );
+  }
+
+  // Universal Closing Card High-Contrast & Tailwind Typography Immunity
+  // 1. Add 'not-prose' to all dark container cards so Tailwind Typography never turns their text dark
+  processed = processed.replace(
+    /class=["']([^"']*(?:ips-chairman-closing|ips-director-closing|ips-closing|ips-dark-card|ips-bus-route-closing|ips-documents-final|ips-af-final|ips-senior)[^"']*)["']/gi,
+    (match, existingClasses) => {
+      if (existingClasses.includes("not-prose")) return match;
+      return `class="${existingClasses} not-prose"`;
+    }
+  );
+
+  // 2. Enforce explicit inline pure white colors on closing subtext paragraphs
+  processed = processed.replace(
+    /<p([^>]*class=["'][^"']*(?:closing-sub|closing-subtext)[^"']*["'][^>]*)>/gi,
+    (match, attrs) => {
+      if (attrs.includes("style=")) {
+        return `<p${attrs.replace(/style=["']([^"']*)["']/i, 'style="$1; color: #ffffff !important; opacity: 1 !important;"')}>`;
+      }
+      return `<p${attrs} style="color: #ffffff !important; opacity: 1 !important;">`;
+    }
+  );
+
+  // 3. Enforce explicit inline pure white colors on closing main paragraphs
+  processed = processed.replace(
+    /<p([^>]*class=["'][^"']*(?:closing-main|closing-title)[^"']*["'][^>]*)>/gi,
+    (match, attrs) => {
+      if (attrs.includes("style=")) {
+        return `<p${attrs.replace(/style=["']([^"']*)["']/i, 'style="$1; color: #ffffff !important; opacity: 1 !important;"')}>`;
+      }
+      return `<p${attrs} style="color: #ffffff !important; opacity: 1 !important;">`;
+    }
+  );
+
+  // 4. Force white !important on closing sub and main in embedded style tags
+  processed = processed.replace(
+    /(\.ips-(?:chairman|director)-closing-sub\s*\{[^}]*?color:\s*)[^;}]+(;|\s*\})/gi,
+    `$1#ffffff !important$2`
+  );
+  processed = processed.replace(
+    /(\.ips-(?:chairman|director)-closing-main\s*\{[^}]*?color:\s*)[^;}]+(;|\s*\})/gi,
+    `$1#ffffff !important$2`
+  );
+
+  // 5. Ensure any nested span/font inside closing cards is pure white
+  processed = processed.replace(
+    /(<div\b[^>]*class=["'][^"']*(?:ips-chairman-closing|ips-director-closing|ips-closing|ips-dark-card)[^"']*["'][^>]*>)([\s\S]*?)(<\/div>\s*<\/div>|<\/div>)/gi,
+    (fullMatch, openTag, innerHtml, closeTag) => {
+      let clean = innerHtml.replace(/\bcolor:\s*[^;"]+;?/gi, "color: #ffffff !important;");
+      clean = clean.replace(/<font\b[^>]*color=["'][^"']*["']/gi, "<font");
+      return `${openTag}${clean}${closeTag}`;
+    }
+  );
 
   if (processed.includes("ips-principal")) {
     processed = processed.replace(
@@ -759,7 +839,7 @@ export function buildPagePreviewDoc(htmlContent?: string | null): string {
       -webkit-font-smoothing: antialiased;
     }
     body {
-      padding: 16px;
+      padding: 0;
     }
     img, video, iframe {
       max-width: 100%;
@@ -768,6 +848,130 @@ export function buildPagePreviewDoc(htmlContent?: string | null): string {
     a {
       color: #1a5d9c;
       text-decoration: underline;
+    }
+
+    /* Mobile & Tablet Layout Stacking (Prevents empty 2nd column / blank preview) */
+    @media (max-width: 1024px) {
+      .ips-chairman-layout,
+      .ips-director-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 2rem !important;
+        width: 100% !important;
+      }
+      .ips-chairman-profile-wrapper,
+      .ips-director-profile-wrapper {
+        order: 1 !important;
+        position: static !important;
+        width: 100% !important;
+        max-width: 380px !important;
+        margin: 0 auto !important;
+        grid-column: auto !important;
+        grid-row: auto !important;
+      }
+      .ips-chairman-message,
+      .ips-director-message {
+        order: 2 !important;
+        width: 100% !important;
+        grid-column: auto !important;
+        grid-row: auto !important;
+      }
+      .ips-principal-pillars {
+        grid-template-columns: 1fr !important;
+      }
+      .ips-chairman-container,
+      .ips-director-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .ips-ap-main-grid {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+      }
+      .ips-ap-image-card img {
+        max-height: 280px !important;
+        width: 100% !important;
+        object-fit: cover !important;
+      }
+      .ips-ap-flow-steps {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+      }
+    }
+
+    /* Principal Message feature cards contrast in preview */
+    .ips-principal-teachers {
+      background-image: linear-gradient(135deg, #eef6ff, #f7fbff) !important;
+      color: #1e293b !important;
+    }
+    .ips-principal-teachers h2 {
+      color: #082a52 !important;
+    }
+    .ips-principal-teachers p {
+      color: #475569 !important;
+    }
+    .ips-principal-students h2 {
+      color: #082a52 !important;
+    }
+    .ips-principal-students p {
+      color: #475569 !important;
+    }
+
+    /* Closing cards and dark banner sections contrast guarantee */
+    .ips-chairman-closing,
+    .ips-chairman-closing *,
+    .ips-director-closing,
+    .ips-director-closing *,
+    .ips-closing,
+    .ips-closing *,
+    .ips-bus-route-closing,
+    .ips-bus-route-closing *,
+    .ips-documents-final,
+    .ips-documents-final *,
+    .ips-af-final,
+    .ips-af-final *,
+    .ips-senior,
+    .ips-senior *,
+    .ips-dark-card,
+    .ips-dark-card *,
+    .ips-established,
+    .ips-established *,
+    [class*="-closing"],
+    [class*="-closing"] *,
+    [class*="-final"],
+    [class*="-final"] *,
+    [class*="-dark-card"],
+    [class*="-dark-card"] * {
+      color: #ffffff !important;
+    }
+
+    .ips-chairman-closing-sub,
+    .ips-chairman-closing-sub *,
+    .ips-director-closing-sub,
+    .ips-director-closing-sub *,
+    [class*="-closing-sub"],
+    [class*="-closing-sub"] *,
+    .ips-chairman-closing p.ips-chairman-closing-sub,
+    .ips-director-closing p.ips-director-closing-sub,
+    [class*="-closing"] p.ips-chairman-closing-sub,
+    [class*="-closing"] p.ips-director-closing-sub,
+    [class*="-closing"] p:last-child {
+      color: #ffffff !important;
+      opacity: 1 !important;
+    }
+
+    .ips-chairman-closing-main,
+    .ips-director-closing-main,
+    [class*="-closing-main"],
+    [class*="-closing"] h1,
+    [class*="-closing"] h2,
+    [class*="-closing"] h3,
+    [class*="-closing"] strong {
+      color: #ffffff !important;
     }
 
     /* Universal Responsive Table Cards on viewports <= 768px */

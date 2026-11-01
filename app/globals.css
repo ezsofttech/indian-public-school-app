@@ -1040,13 +1040,16 @@ html:not(.dark) .dynamic-page-content font[color="white" i] {
    ========================================================= */
 
 @media (max-width: 1024px) {
-  .dynamic-page-content .ips-chairman-layout {
+  .dynamic-page-content .ips-chairman-layout,
+  .dynamic-page-content .ips-director-layout {
     display: flex !important;
     flex-direction: column !important;
     gap: 2.5rem !important;
+    width: 100% !important;
   }
 
-  .dynamic-page-content .ips-chairman-profile-wrapper {
+  .dynamic-page-content .ips-chairman-profile-wrapper,
+  .dynamic-page-content .ips-director-profile-wrapper {
     order: 1 !important;
     position: static !important;
     width: 100% !important;
@@ -1056,7 +1059,8 @@ html:not(.dark) .dynamic-page-content font[color="white" i] {
     grid-row: auto !important;
   }
 
-  .dynamic-page-content .ips-chairman-message {
+  .dynamic-page-content .ips-chairman-message,
+  .dynamic-page-content .ips-director-message {
     order: 2 !important;
     width: 100% !important;
     grid-column: auto !important;
@@ -1065,6 +1069,12 @@ html:not(.dark) .dynamic-page-content font[color="white" i] {
 
   .dynamic-page-content .ips-principal-pillars {
     grid-template-columns: 1fr !important;
+  }
+
+  .dynamic-page-content .ips-chairman-container,
+  .dynamic-page-content .ips-director-container {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
 
@@ -1097,41 +1107,155 @@ html:not(.dark) .dynamic-page-content font[color="white" i] {
    Prevents invisible white text on white bg & dark-on-dark text
    ========================================================= */
 
-/* In light mode: ensure light text copied from external editors is clearly readable */
-html:not(.dark) .dynamic-page-content [style*="color: rgb(255, 255, 255)"]:not([style*="background"]):not([class*="bg-"]):not([class*="-hero"]):not([class*="-dark"]):not([style*="background-color: rgb(8"]):not([style*="background-color: #0"]):not([style*="background-color: #1"]):not([style*="background-color:#0"]):not([style*="background-color:#1"]),
-html:not(.dark) .dynamic-page-content [style*="color: #ffffff"]:not([style*="background"]):not([class*="bg-"]):not([class*="-hero"]):not([class*="-dark"]):not([style*="background-color: rgb(8"]):not([style*="background-color: #0"]):not([style*="background-color: #1"]):not([style*="background-color:#0"]):not([style*="background-color:#1"]),
-html:not(.dark) .dynamic-page-content [style*="color: #fff"]:not([style*="background"]):not([class*="bg-"]):not([class*="-hero"]):not([class*="-dark"]):not([style*="background-color: rgb(8"]):not([style*="background-color: #0"]):not([style*="background-color: #1"]):not([style*="background-color:#0"]):not([style*="background-color:#1"]),
-html:not(.dark) .dynamic-page-content [style*="color: white"]:not([style*="background"]):not([class*="bg-"]):not([class*="-hero"]):not([class*="-dark"]):not([style*="background-color: rgb(8"]):not([style*="background-color: #0"]):not([style*="background-color: #1"]):not([style*="background-color:#0"]):not([style*="background-color:#1"]) {
-  color: #1e293b !important;
+/* All dark containers, closing cards, and banners: preserve crisp white/light text */
+.dynamic-page-content .ips-chairman-closing,
+.dynamic-page-content .ips-chairman-closing *,
+.dynamic-page-content .ips-director-closing,
+.dynamic-page-content .ips-director-closing *,
+.dynamic-page-content .ips-closing,
+.dynamic-page-content .ips-closing *,
+.dynamic-page-content .ips-bus-route-closing,
+.dynamic-page-content .ips-bus-route-closing *,
+.dynamic-page-content .ips-documents-final,
+.dynamic-page-content .ips-documents-final *,
+.dynamic-page-content .ips-af-final,
+.dynamic-page-content .ips-af-final *,
+.dynamic-page-content .ips-senior,
+.dynamic-page-content .ips-senior *,
+.dynamic-page-content .ips-dark-card,
+.dynamic-page-content .ips-dark-card *,
+.dynamic-page-content .ips-established,
+.dynamic-page-content .ips-established *,
+.dynamic-page-content [class*="-closing"],
+.dynamic-page-content [class*="-closing"] *,
+.dynamic-page-content [class*="-final"],
+.dynamic-page-content [class*="-final"] *,
+.dynamic-page-content [class*="-dark-card"],
+.dynamic-page-content [class*="-dark-card"] * {
+  color: #ffffff !important;
 }
 
-/* In dark mode: ensure any element with an explicit white or near-white background flips to dark theme with legible light text */
+.dynamic-page-content .ips-chairman-closing-sub,
+.dynamic-page-content .ips-chairman-closing-sub *,
+.dynamic-page-content .ips-director-closing-sub,
+.dynamic-page-content .ips-director-closing-sub *,
+.dynamic-page-content [class*="-closing-sub"],
+.dynamic-page-content [class*="-closing-sub"] *,
+.dynamic-page-content .ips-chairman-closing p.ips-chairman-closing-sub,
+.dynamic-page-content .ips-director-closing p.ips-director-closing-sub,
+.dynamic-page-content [class*="-closing"] p.ips-chairman-closing-sub,
+.dynamic-page-content [class*="-closing"] p.ips-director-closing-sub,
+.dynamic-page-content [class*="-closing"] p:last-child {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.dynamic-page-content .ips-chairman-closing-main,
+.dynamic-page-content .ips-director-closing-main,
+.dynamic-page-content [class*="-closing-main"],
+.dynamic-page-content [class*="-closing"] h1,
+.dynamic-page-content [class*="-closing"] h2,
+.dynamic-page-content [class*="-closing"] h3,
+.dynamic-page-content [class*="-closing"] strong {
+  color: #ffffff !important;
+}
+
+/* Prevent Tailwind .prose from turning text inside dark sections to dark charcoal */
+.prose.dynamic-page-content [class*="-closing"] p,
+.prose .dynamic-page-content [class*="-closing"] p,
+.prose [class*="-closing"] p,
+.prose .ips-chairman-closing p,
+.prose .ips-director-closing p,
+.prose .ips-dark-card p,
+.prose .ips-senior p {
+  color: #ffffff !important;
+}
+
+.prose.dynamic-page-content .ips-chairman-closing-sub,
+.prose .dynamic-page-content .ips-chairman-closing-sub,
+.prose.dynamic-page-content [class*="-closing-sub"],
+.prose [class*="-closing-sub"],
+.prose [class*="-closing"] p:last-child {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Principal Message feature cards contrast in light & dark modes */
+.dynamic-page-content .ips-principal-teachers {
+  background-image: linear-gradient(135deg, #eef6ff, #f7fbff) !important;
+}
+.dynamic-page-content .ips-principal-teachers h2 {
+  color: #082a52 !important;
+}
+.dynamic-page-content .ips-principal-teachers p {
+  color: #475569 !important;
+}
+.dynamic-page-content .ips-principal-students h2 {
+  color: #082a52 !important;
+}
+.dynamic-page-content .ips-principal-students p {
+  color: #475569 !important;
+}
+
+/* In dark mode: ensure ALL feature cards, document blocks, and tables have high-contrast text */
+.dark .dynamic-page-content .ips-principal-feature,
+.dark .dynamic-page-content .ips-principal-teachers,
+.dark .dynamic-page-content .ips-principal-students,
+.dark .dynamic-page-content .ips-principal-pillar,
+.dark .dynamic-page-content .ips-principal-welcome {
+  background: var(--color-card, #112240) !important;
+  background-image: none !important;
+  background-color: var(--color-card, #112240) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.dark .dynamic-page-content .ips-principal-feature h2,
+.dark .dynamic-page-content .ips-principal-teachers h2,
+.dark .dynamic-page-content .ips-principal-students h2,
+.dark .dynamic-page-content .ips-principal-pillar h3,
+.dark .dynamic-page-content .ips-principal-welcome h2 {
+  color: #ffffff !important;
+}
+
+.dark .dynamic-page-content .ips-principal-feature p,
+.dark .dynamic-page-content .ips-principal-teachers p,
+.dark .dynamic-page-content .ips-principal-students p,
+.dark .dynamic-page-content .ips-principal-pillar p,
+.dark .dynamic-page-content .ips-principal-welcome p,
+.dark .dynamic-page-content .ips-principal-text p {
+  color: #cbd5e1 !important;
+}
+
+/* Document blocks & Light containers in Dark Mode */
+.dark .dynamic-page-content [style*="background: #f8fafc"],
+.dark .dynamic-page-content [style*="background:#f8fafc"],
+.dark .dynamic-page-content [style*="background-color: #f8fafc"],
+.dark .dynamic-page-content [style*="background-color:#f8fafc"],
+.dark .dynamic-page-content [style*="background: rgb(241, 245, 249)"],
+.dark .dynamic-page-content [style*="background-color: rgb(241, 245, 249)"],
+.dark .dynamic-page-content [style*="background: rgb(248, 250, 252)"],
+.dark .dynamic-page-content [style*="background-color: rgb(248, 250, 252)"],
 .dark .dynamic-page-content [style*="background: rgb(255, 255, 255)"],
 .dark .dynamic-page-content [style*="background-color: rgb(255, 255, 255)"],
-.dark .dynamic-page-content [style*="background: rgb(255,255,255)"],
-.dark .dynamic-page-content [style*="background-color: rgb(255,255,255)"],
 .dark .dynamic-page-content [style*="background: #ffffff"],
 .dark .dynamic-page-content [style*="background-color: #ffffff"],
-.dark .dynamic-page-content [style*="background: #fff"],
-.dark .dynamic-page-content [style*="background-color: #fff"],
 .dark .dynamic-page-content [style*="background: white"],
-.dark .dynamic-page-content [style*="background-color: white"],
-.dark .dynamic-page-content [style*="background-color: oklch(0.9"],
-.dark .dynamic-page-content [style*="background-color: oklch(1"],
-.dark .dynamic-page-content [style*="background: oklch(0.9"],
-.dark .dynamic-page-content [style*="background: oklch(1"] {
-  background: var(--color-background, #0b192c) !important;
-  background-color: var(--color-background, #0b192c) !important;
-  color: var(--color-foreground, #f8fafc) !important;
+.dark .dynamic-page-content [style*="background-color: white"] {
+  background: var(--color-card, #112240) !important;
+  background-color: var(--color-card, #112240) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
-.dark .dynamic-page-content [style*="background: rgb(255, 255, 255)"] *,
-.dark .dynamic-page-content [style*="background-color: rgb(255, 255, 255)"] *,
-.dark .dynamic-page-content [style*="background: #ffffff"] *,
-.dark .dynamic-page-content [style*="background-color: #ffffff"] *,
-.dark .dynamic-page-content [style*="background: white"] *,
-.dark .dynamic-page-content [style*="background-color: white"] * {
-  color: var(--color-foreground, #f8fafc) !important;
+.dark .dynamic-page-content [style*="background: #f8fafc"] span,
+.dark .dynamic-page-content [style*="background: #f8fafc"] p,
+.dark .dynamic-page-content [style*="background: #f8fafc"] div,
+.dark .dynamic-page-content [style*="background: rgb(241, 245, 249)"] span,
+.dark .dynamic-page-content [style*="background: rgb(241, 245, 249)"] p,
+.dark .dynamic-page-content [style*="background: rgb(255, 255, 255)"] span,
+.dark .dynamic-page-content [style*="background: rgb(255, 255, 255)"] p,
+.dark .dynamic-page-content [style*="background: #ffffff"] span,
+.dark .dynamic-page-content [style*="background: #ffffff"] p {
+  color: #f8fafc !important;
 }
 
 
