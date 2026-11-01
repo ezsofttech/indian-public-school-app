@@ -333,32 +333,39 @@ export function useRichTextEditor({
                 bottom: -6px !important;
                 right: -6px !important;
               }
-              /* High contrast safeguards for closing cards and dark banners */
+              /* High contrast safeguards strictly for dark closing cards */
               .ips-chairman-closing,
               .ips-chairman-closing *,
               .ips-director-closing,
-              .ips-director-closing *,
-              .ips-closing,
-              .ips-closing *,
-              [class*="-closing"],
-              [class*="-closing"] *,
-              [class*="-final"],
-              [class*="-final"] *,
-              [class*="-dark-card"],
-              [class*="-dark-card"] * {
+              .ips-director-closing * {
                 color: #ffffff !important;
               }
-              .ips-chairman-closing-sub,
-              .ips-chairman-closing-sub *,
-              .ips-director-closing-sub,
-              .ips-director-closing-sub *,
-              [class*="-closing-sub"],
-              [class*="-closing-sub"] *,
-              [class*="-closing"] p.ips-chairman-closing-sub,
-              [class*="-closing"] p.ips-director-closing-sub,
-              [class*="-closing"] p:last-child {
+              .ips-chairman-closing .ips-chairman-closing-sub,
+              .ips-director-closing .ips-director-closing-sub,
+              .ips-chairman-closing p.ips-chairman-closing-sub,
+              .ips-director-closing p.ips-director-closing-sub {
                 color: #ffffff !important;
                 opacity: 1 !important;
+              }
+              .ips-chairman-closing-main,
+              .ips-director-closing-main {
+                color: #ffffff !important;
+              }
+              /* Ensure white cards, bulk collections, and blog content stay readable with dark text */
+              .board-exam-blog,
+              .board-exam-blog p,
+              .board-exam-blog h1,
+              .board-exam-blog h2,
+              .board-exam-blog h3,
+              .board-exam-blog h4,
+              .board-exam-blog td,
+              .wysiwyg-frame-card h3,
+              .wysiwyg-frame-card h4,
+              .wysiwyg-frame-card p,
+              .wysiwyg-frame-bulk-collection h3,
+              .wysiwyg-frame-bulk-collection h4,
+              .wysiwyg-frame-bulk-collection p {
+                color: #1e293b !important;
               }
               .wysiwyg-block-toolbar {
                 position: absolute !important;
@@ -493,7 +500,10 @@ export function useRichTextEditor({
                   overflow: hidden !important;
                   padding: 0 !important;
                 }
-                tbody tr td:first-child {
+                tbody tr td:first-child,
+                tbody tr td.ips-table-card-header,
+                tbody tr td:first-child *,
+                tbody tr td.ips-table-card-header * {
                   display: flex !important;
                   align-items: center !important;
                   justify-content: space-between !important;

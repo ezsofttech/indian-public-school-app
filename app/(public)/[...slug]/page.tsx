@@ -546,30 +546,35 @@ export default async function ContentPage({
               dangerouslySetInnerHTML={{
                 __html: `
               .ips-chairman-closing, .ips-chairman-closing *,
-              .ips-director-closing, .ips-director-closing *,
-              .ips-closing, .ips-closing *,
-              .ips-dark-card, .ips-dark-card *,
-              [class*="-closing"], [class*="-closing"] *,
-              [class*="-dark-card"], [class*="-dark-card"] * {
+              .ips-director-closing, .ips-director-closing * {
                 color: #ffffff !important;
               }
               .ips-chairman-closing-sub,
               .ips-chairman-closing-sub *,
               .ips-director-closing-sub,
               .ips-director-closing-sub *,
-              [class*="-closing-sub"],
-              [class*="-closing-sub"] *,
               .ips-chairman-closing p.ips-chairman-closing-sub,
-              .ips-director-closing p.ips-director-closing-sub,
-              [class*="-closing"] p.ips-chairman-closing-sub,
-              [class*="-closing"] p.ips-director-closing-sub,
-              [class*="-closing"] p:last-child {
+              .ips-director-closing p.ips-director-closing-sub {
                 color: #ffffff !important;
                 opacity: 1 !important;
               }
-              .ips-chairman-closing-main, .ips-director-closing-main,
-              [class*="-closing-main"] {
+              .ips-chairman-closing-main, .ips-director-closing-main {
                 color: #ffffff !important;
+              }
+              .board-exam-blog,
+              .board-exam-blog p,
+              .board-exam-blog h1,
+              .board-exam-blog h2,
+              .board-exam-blog h3,
+              .board-exam-blog h4,
+              .board-exam-blog td,
+              .wysiwyg-frame-card h3,
+              .wysiwyg-frame-card h4,
+              .wysiwyg-frame-card p,
+              .wysiwyg-frame-bulk-collection h3,
+              .wysiwyg-frame-bulk-collection h4,
+              .wysiwyg-frame-bulk-collection p {
+                color: #1e293b !important;
               }
               @media (max-width: 1024px) {
                 .ips-chairman-layout, .ips-director-layout {
@@ -592,6 +597,53 @@ export default async function ContentPage({
                   width: 100% !important;
                   grid-column: auto !important;
                   grid-row: auto !important;
+                }
+              }
+              .board-exam-blog {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                background: transparent !important;
+              }
+              .board-exam-blog .blog-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+              }
+              .board-exam-blog .blog-banner {
+                width: 100% !important;
+                border-radius: 1.25rem !important;
+                overflow: hidden !important;
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
+                margin: 0 0 2rem !important;
+                background: #f1f5f9 !important;
+                border: 1px solid #e2e8f0 !important;
+              }
+              .board-exam-blog .blog-banner img {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                aspect-ratio: 16 / 9 !important;
+                max-height: 480px !important;
+                object-fit: cover !important;
+                object-position: center !important;
+                border-radius: 1.25rem !important;
+              }
+              @media (max-width: 768px) {
+                .board-exam-blog .blog-banner img {
+                  max-height: 240px !important;
+                  aspect-ratio: 16 / 9 !important;
+                  object-fit: cover !important;
+                }
+                .board-exam-blog .table-wrapper {
+                  overflow-x: auto !important;
+                  -webkit-overflow-scrolling: touch !important;
+                }
+                .dynamic-page-content table tbody tr td:first-child,
+                .dynamic-page-content table tbody tr td.ips-table-card-header,
+                .dynamic-page-content table tbody tr td:first-child *,
+                .dynamic-page-content table tbody tr td.ips-table-card-header * {
+                  color: #ffffff !important;
                 }
               }
             `,

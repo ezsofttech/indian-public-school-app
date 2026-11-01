@@ -965,7 +965,10 @@ html:not(.dark) .dynamic-page-content font[color="white" i] {
   }
 
   /* First cell is Card Header */
-  .dynamic-page-content table tbody tr td:first-child {
+  .dynamic-page-content table tbody tr td:first-child,
+  .dynamic-page-content table tbody tr td.ips-table-card-header,
+  .dynamic-page-content table tbody tr td:first-child *,
+  .dynamic-page-content table tbody tr td.ips-table-card-header * {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -1107,31 +1110,11 @@ html:not(.dark) .dynamic-page-content font[color="white" i] {
    Prevents invisible white text on white bg & dark-on-dark text
    ========================================================= */
 
-/* All dark containers, closing cards, and banners: preserve crisp white/light text */
+/* Chairman & Director dark closing cards: preserve crisp pure white text */
 .dynamic-page-content .ips-chairman-closing,
 .dynamic-page-content .ips-chairman-closing *,
 .dynamic-page-content .ips-director-closing,
-.dynamic-page-content .ips-director-closing *,
-.dynamic-page-content .ips-closing,
-.dynamic-page-content .ips-closing *,
-.dynamic-page-content .ips-bus-route-closing,
-.dynamic-page-content .ips-bus-route-closing *,
-.dynamic-page-content .ips-documents-final,
-.dynamic-page-content .ips-documents-final *,
-.dynamic-page-content .ips-af-final,
-.dynamic-page-content .ips-af-final *,
-.dynamic-page-content .ips-senior,
-.dynamic-page-content .ips-senior *,
-.dynamic-page-content .ips-dark-card,
-.dynamic-page-content .ips-dark-card *,
-.dynamic-page-content .ips-established,
-.dynamic-page-content .ips-established *,
-.dynamic-page-content [class*="-closing"],
-.dynamic-page-content [class*="-closing"] *,
-.dynamic-page-content [class*="-final"],
-.dynamic-page-content [class*="-final"] *,
-.dynamic-page-content [class*="-dark-card"],
-.dynamic-page-content [class*="-dark-card"] * {
+.dynamic-page-content .ips-director-closing * {
   color: #ffffff !important;
 }
 
@@ -1139,45 +1122,48 @@ html:not(.dark) .dynamic-page-content font[color="white" i] {
 .dynamic-page-content .ips-chairman-closing-sub *,
 .dynamic-page-content .ips-director-closing-sub,
 .dynamic-page-content .ips-director-closing-sub *,
-.dynamic-page-content [class*="-closing-sub"],
-.dynamic-page-content [class*="-closing-sub"] *,
 .dynamic-page-content .ips-chairman-closing p.ips-chairman-closing-sub,
-.dynamic-page-content .ips-director-closing p.ips-director-closing-sub,
-.dynamic-page-content [class*="-closing"] p.ips-chairman-closing-sub,
-.dynamic-page-content [class*="-closing"] p.ips-director-closing-sub,
-.dynamic-page-content [class*="-closing"] p:last-child {
+.dynamic-page-content .ips-director-closing p.ips-director-closing-sub {
   color: #ffffff !important;
   opacity: 1 !important;
 }
 
 .dynamic-page-content .ips-chairman-closing-main,
-.dynamic-page-content .ips-director-closing-main,
-.dynamic-page-content [class*="-closing-main"],
-.dynamic-page-content [class*="-closing"] h1,
-.dynamic-page-content [class*="-closing"] h2,
-.dynamic-page-content [class*="-closing"] h3,
-.dynamic-page-content [class*="-closing"] strong {
+.dynamic-page-content .ips-director-closing-main {
   color: #ffffff !important;
 }
 
 /* Prevent Tailwind .prose from turning text inside dark sections to dark charcoal */
-.prose.dynamic-page-content [class*="-closing"] p,
-.prose .dynamic-page-content [class*="-closing"] p,
-.prose [class*="-closing"] p,
-.prose .ips-chairman-closing p,
-.prose .ips-director-closing p,
-.prose .ips-dark-card p,
-.prose .ips-senior p {
+.prose.dynamic-page-content .ips-chairman-closing p,
+.prose .dynamic-page-content .ips-chairman-closing p,
+.prose.dynamic-page-content .ips-director-closing p,
+.prose .dynamic-page-content .ips-director-closing p {
   color: #ffffff !important;
 }
 
 .prose.dynamic-page-content .ips-chairman-closing-sub,
 .prose .dynamic-page-content .ips-chairman-closing-sub,
-.prose.dynamic-page-content [class*="-closing-sub"],
-.prose [class*="-closing-sub"],
-.prose [class*="-closing"] p:last-child {
+.prose.dynamic-page-content .ips-director-closing-sub,
+.prose .dynamic-page-content .ips-director-closing-sub {
   color: #ffffff !important;
   opacity: 1 !important;
+}
+
+/* Content readable safeguards: ensure blog and custom cards have dark text */
+.dynamic-page-content .board-exam-blog,
+.dynamic-page-content .board-exam-blog p,
+.dynamic-page-content .board-exam-blog h1,
+.dynamic-page-content .board-exam-blog h2,
+.dynamic-page-content .board-exam-blog h3,
+.dynamic-page-content .board-exam-blog h4,
+.dynamic-page-content .board-exam-blog td,
+.dynamic-page-content .wysiwyg-frame-card h3,
+.dynamic-page-content .wysiwyg-frame-card h4,
+.dynamic-page-content .wysiwyg-frame-card p,
+.dynamic-page-content .wysiwyg-frame-bulk-collection h3,
+.dynamic-page-content .wysiwyg-frame-bulk-collection h4,
+.dynamic-page-content .wysiwyg-frame-bulk-collection p {
+  color: #1e293b !important;
 }
 
 /* Principal Message feature cards contrast in light & dark modes */
@@ -1256,6 +1242,59 @@ html:not(.dark) .dynamic-page-content font[color="white" i] {
 .dark .dynamic-page-content [style*="background: #ffffff"] span,
 .dark .dynamic-page-content [style*="background: #ffffff"] p {
   color: #f8fafc !important;
+}
+
+/* =========================================================
+   BLOG POST: CONSISTENT RESPONSIVE STYLING (MOBILE & DESKTOP)
+   Ensures identical 16:9 aspect ratio, clean card framing,
+   and prevents image distortion between mobile & desktop.
+   ========================================================= */
+
+.dynamic-page-content .board-exam-blog {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.dynamic-page-content .board-exam-blog .blog-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+
+.dynamic-page-content .board-exam-blog .blog-banner {
+  width: 100% !important;
+  border-radius: 1.25rem !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
+  margin: 0 0 2rem !important;
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.dynamic-page-content .board-exam-blog .blog-banner img {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9 !important;
+  max-height: 480px !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: 1.25rem !important;
+}
+
+@media (max-width: 768px) {
+  .dynamic-page-content .board-exam-blog .blog-banner img {
+    max-height: 240px !important;
+    aspect-ratio: 16 / 9 !important;
+    object-fit: cover !important;
+  }
+
+  .dynamic-page-content .board-exam-blog .table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
 }
 
 
