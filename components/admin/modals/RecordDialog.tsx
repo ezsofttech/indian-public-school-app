@@ -28,7 +28,7 @@ import { PdfCanvasThumbnail } from "@/components/ui/PdfCanvasThumbnail";
 import { isPdfFile, isWordFile, isExcelFile, getCloudinaryInlineViewerUrl } from "@/lib/file-preview";
 import { SmartFileThumbnail } from "@/components/ui/SmartFileThumbnail";
 import { FileUploadProgressLoader, FileUploadStatus } from "@/components/ui/FileUploadProgressLoader";
-import { toCleanRelativeAssetPath, getAssetUrl, formatHref } from "@/lib/utils";
+import { toCleanRelativeAssetPath, getAssetUrl, formatHref, formatPhoneNumber, handlePhoneKeyDown, isPhoneField } from "@/lib/utils";
 import { HomeLayoutEditorModal } from "./HomeLayoutEditorModal";
 import { Resource, RecordItem } from "../types/admin.types";
 import { API_URL, resources } from "../config/admin.config";
@@ -1032,9 +1032,18 @@ export function RecordDialog({
                     ) : (
                       <input
                         required={required}
-                        type={type}
+                        type={isPhoneField(field) ? "tel" : type}
+                        maxLength={isPhoneField(field) ? 13 : undefined}
+                        placeholder={isPhoneField(field) ? "+91 Mobile number" : undefined}
                         value={String(values[field] ?? "").slice(0, type === "date" ? 10 : undefined)}
-                        onChange={(event) => setValue(field, type === "number" ? Number(event.target.value) : event.target.value)}
+                        onKeyDown={isPhoneField(field) ? handlePhoneKeyDown : undefined}
+                        onChange={(event) => {
+                          if (isPhoneField(field)) {
+                            setValue(field, formatPhoneNumber(event.target.value));
+                          } else {
+                            setValue(field, type === "number" ? Number(event.target.value) : event.target.value);
+                          }
+                        }}
                         className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm opacity-90 outline-none transition focus:border-[#1a5d9c] focus:ring-2 focus:ring-blue-100 shadow-2xs"
                       />
                     )}

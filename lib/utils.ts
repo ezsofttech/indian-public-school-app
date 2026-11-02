@@ -422,3 +422,90 @@ export function ensureExternalUrl(url?: any, fallback = ""): string {
   return `https://${trimmed.replace(/^\/+/, "")}`;
 }
 
+/**
+ * Normalizes and restricts phone number inputs:
+ * - Allows ONLY the country symbol '+' (at the start) and digits (0-9).
+ * - Maximum 12 digits allowed.
+ * - Disallows all letters, spaces, symbols, and special characters.
+ */
+export function formatPhoneNumber(val: string): string {
+  if (!val) return "";
+  const str = String(val);
+  const startsWithPlus = str.trimStart().startsWith("+");
+  // Extract all digits (0-9) and cap at 12 digits max
+  const digits = str.replace(/\D/g, "").slice(0, 12);
+
+  if (startsWithPlus) {
+    return `+${digits}`;
+  }
+  return digits;
+}
+
+/**
+ * Keydown handler to block non-digits and invalid characters before they are typed:
+ * - Allows Backspace, Delete, Tab, Escape, Enter, Arrow keys, Home, End, and Ctrl/Cmd shortcuts
+ * - Allows '+' only as the first character (position 0)
+ * - Allows 0-9 digits up to 12 digits total
+ * - Blocks letters, spaces, and any other symbols
+ */
+export function handlePhoneKeyDown(e: React.KeyboardEvent<HTMLInputElement>): void {
+  // Allow navigation & control keys
+  if (
+    [
+      "Backspace",
+      "Delete",
+      "Tab",
+      "Escape",
+      "Enter",
+      "ArrowLeft",
+      "ArrowRight",
+      "ArrowUp",
+      "ArrowDown",
+      "Home",
+      "End",
+    ].includes(e.key) ||
+    (e.ctrlKey || e.metaKey)
+  ) {
+    return;
+  }
+
+  const input = e.currentTarget;
+  const currentVal = input.value || "";
+  const selectionStart = input.selectionStart ?? currentVal.length;
+  const selectionEnd = input.selectionEnd ?? currentVal.length;
+
+  // Allow '+' only at position 0 and if not already present
+  if (e.key === "+") {
+    if (selectionStart === 0 && !currentVal.includes("+")) {
+      return;
+    }
+    e.preventDefault();
+    return;
+  }
+
+  // Only allow digits 0-9
+  if (/^[0-9]$/.test(e.key)) {
+    const existingDigits = currentVal.replace(/\D/g, "");
+    const selectedText = currentVal.slice(selectionStart, selectionEnd);
+    const removedDigits = selectedText.replace(/\D/g, "").length;
+    const remainingDigits = existingDigits.length - removedDigits;
+
+    if (remainingDigits >= 12) {
+      e.preventDefault();
+    }
+    return;
+  }
+
+  // Block all letters, spaces, special symbols
+  e.preventDefault();
+}
+
+/**
+ * Checks if a form field represents a phone / contact number
+ */
+export function isPhoneField(fieldName: string): boolean {
+  if (!fieldName) return false;
+  const lower = fieldName.toLowerCase();
+  return lower.includes("phone") || lower.includes("contact") || lower === "mobile";
+}
+

@@ -49,7 +49,7 @@ import { SectionHeading } from "@/components/site/Reveal";
 import { EASE } from "@/lib/motion-presets";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { DEFAULT_HERO_IMAGE, DEFAULT_MAP_DIRECTIONS_URL, getMapDirectionsUrl, getMapEmbedUrl, getOfficeTimingsList, text, type OfficeTimingItem } from "@/lib/site-data";
-import { formatHref, isExternalUrl } from "@/lib/utils";
+import { formatHref, isExternalUrl, formatPhoneNumber, handlePhoneKeyDown } from "@/lib/utils";
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
 
@@ -83,8 +83,8 @@ const inquirySchema = z
     contact: z
       .string()
       .optional()
-      .refine((val) => !val || /^\d{10}$/.test(val), {
-        message: "Contact number must be 10 digits (numbers only)",
+      .refine((val) => !val || /^\+?\d{10,12}$/.test(val), {
+        message: "Contact number must be 10 to 12 digits (with optional +)",
       }),
     email: z
       .string()
@@ -538,13 +538,12 @@ export function ContactUsView() {
                                   <FormControl>
                                     <Input
                                       type="tel"
-                                      inputMode="numeric"
-                                      maxLength={10}
-                                      placeholder="e.g. 9876543210"
+                                      maxLength={13}
+                                      placeholder="+91 Mobile number"
                                       {...field}
+                                      onKeyDown={handlePhoneKeyDown}
                                       onChange={(e) => {
-                                        const val = e.target.value.replace(/\D/g, "");
-                                        field.onChange(val);
+                                        field.onChange(formatPhoneNumber(e.target.value));
                                       }}
                                     />
                                   </FormControl>

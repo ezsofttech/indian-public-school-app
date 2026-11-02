@@ -23,10 +23,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatPhoneNumber, handlePhoneKeyDown } from "@/lib/utils";
 
 const schema = z.object({
   fullName: z.string().min(2, "Please enter your full name"),
-  phone: z.string().regex(/^\d{10}$/, "Contact number must be 10 digits (numbers only)"),
+  phone: z.string().regex(/^\+?\d{10,12}$/, "Contact number must be 10 to 12 digits (with optional +)"),
   inquiryType: z.string().min(1, "Select enquiry type"),
   email: z.string().email("Enter a valid email address"),
 });
@@ -219,15 +220,14 @@ export function AdmissionEnquiryForm({
                       <FormControl>
                         <Input
                           type="tel"
-                          inputMode="numeric"
-                          maxLength={10}
-                          placeholder="e.g. 9876543210"
+                          maxLength={13}
+                          placeholder="+91 Mobile number"
                           className="h-11 border-border bg-secondary/40 text-sm font-medium text-foreground focus:bg-card focus:border-[var(--primary)]"
                           style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                           {...field}
+                          onKeyDown={handlePhoneKeyDown}
                           onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, "");
-                            field.onChange(val);
+                            field.onChange(formatPhoneNumber(e.target.value));
                           }}
                         />
                       </FormControl>
