@@ -279,15 +279,15 @@ export function Overview({
 
   return (
     <div className="space-y-7">
-      <div className="overflow-hidden rounded-2xl bg-[#102a4c] p-7 text-white shadow-xl relative">
+      <div className="overflow-hidden rounded-2xl bg-[#102a4c] p-5 sm:p-7 text-white shadow-xl relative">
         <div className="relative z-10 max-w-xl">
           <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-[#ffd983]">
             Operations at a glance
           </span>
-          <h2 className="mt-4 font-display text-3xl font-bold leading-tight">
+          <h2 className="mt-3 sm:mt-4 font-display text-xl sm:text-3xl font-bold leading-tight">
             Everything your school needs, in one calm workspace.
           </h2>
-          <p className="mt-3 text-sm leading-6 text-blue-100">
+          <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm leading-5 sm:leading-6 text-blue-100">
             Manage people, public content and day-to-day communication from the same dashboard.
           </p>
         </div>

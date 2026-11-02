@@ -16,6 +16,9 @@ import {
   Music,
   Video,
   Download,
+  Monitor,
+  Tablet,
+  Smartphone,
 } from "lucide-react";
 import { getFileType } from "@/components/admin/CloudinaryGalleryModal";
 import {
@@ -27,7 +30,7 @@ import {
   getCloudinaryInlineViewerUrl,
 } from "@/lib/file-preview";
 import { SmartFileThumbnail } from "@/components/ui/SmartFileThumbnail";
-import { imageUrl } from "@/lib/site-data";
+import { imageUrl, processHtmlAssetUrls, buildPagePreviewDoc } from "@/lib/site-data";
 import { RecordItem, Resource } from "../types/admin.types";
 import { titleCase, decodeHtmlEntities, getPreviewUrl } from "../utils/admin.helpers";
 
@@ -95,10 +98,17 @@ export function StructuredDetailValue({
         decoded.includes("<br"));
 
     if (isHtml) {
+      if (keyName === "textContent") {
+        return (
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 italic py-1">
+            <span>Page HTML content (Rendered in the Interactive Device Inspector above)</span>
+          </div>
+        );
+      }
       return (
         <div
-          className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-800 max-h-[500px] overflow-y-auto leading-relaxed font-sans shadow-xs"
-          dangerouslySetInnerHTML={{ __html: decoded }}
+          className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-800 max-h-[500px] overflow-y-auto leading-relaxed font-sans shadow-xs dynamic-page-content"
+          dangerouslySetInnerHTML={{ __html: processHtmlAssetUrls(decoded) }}
         />
       );
     }
@@ -345,6 +355,9 @@ export function MediaDetailDialog({
 }) {
   const [copied, setCopied] = useState(false);
   const [activeUrlIndex, setActiveUrlIndex] = useState(0);
+  const [pageDeviceMode, setPageDeviceMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [previewSource, setPreviewSource] = useState<"content" | "page">("content");
+  const hasHtmlPageContent = Boolean(item.textContent && typeof item.textContent === "string" && item.textContent.trim().length > 0);
 
   const getMediaUrls = (val: unknown): string[] => {
     const list: string[] = [];
@@ -427,7 +440,7 @@ export function MediaDetailDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-xs">
-      <div className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      <div className={`flex max-h-[92vh] w-full ${hasHtmlPageContent ? "max-w-5xl" : "max-w-4xl"} flex-col overflow-hidden rounded-3xl bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200`}>
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/80 px-6 py-4">
           <div className="min-w-0 pr-4">
@@ -649,6 +662,129 @@ export function MediaDetailDialog({
               )}
             </div>
           </div>
+
+          {/* Page Content Interactive Device Inspector */}
+          {hasHtmlPageContent && (
+            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50/60 shadow-xs">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-5 py-3.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="grid h-8 w-8 place-items-center rounded-xl bg-blue-50 text-[#1a5d9c] border border-blue-200/50">
+                    <Monitor size={16} />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-sm font-bold text-[#102a4c]">
+                      Page Content &amp; Responsiveness Inspector
+                    </h3>
+                    <p className="text-[11px] text-slate-500">
+                      Live interactive preview across Desktop, Tablet &amp; Mobile phone viewports
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {pagePreviewUrl && (
+                    <div className="flex items-center rounded-xl border border-slate-200 bg-slate-50 p-0.5 shadow-2xs text-xs">
+                      <button
+                        type="button"
+                        onClick={() => setPreviewSource("content")}
+                        className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
+                          previewSource === "content"
+                            ? "bg-slate-800 text-white shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-200/60"
+                        }`}
+                      >
+                        Content HTML
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPreviewSource("page")}
+                        className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
+                          previewSource === "page"
+                            ? "bg-emerald-600 text-white shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-200/60"
+                        }`}
+                        title={`Live route preview: ${pagePreviewUrl}`}
+                      >
+                        <ExternalLink size={11} />
+                        Live Page
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Device Viewport Selector */}
+                  <div className="flex items-center rounded-xl border border-slate-200 bg-slate-50 p-0.5 shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={() => setPageDeviceMode("desktop")}
+                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
+                        pageDeviceMode === "desktop"
+                          ? "bg-[#1a5d9c] text-white shadow-2xs"
+                          : "text-slate-600 hover:bg-slate-200/60"
+                      }`}
+                    >
+                      <Monitor size={13} />
+                      <span>Desktop (100%)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPageDeviceMode("tablet")}
+                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
+                        pageDeviceMode === "tablet"
+                          ? "bg-[#1a5d9c] text-white shadow-2xs"
+                          : "text-slate-600 hover:bg-slate-200/60"
+                      }`}
+                    >
+                      <Tablet size={13} />
+                      <span>Tablet (768px)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPageDeviceMode("mobile")}
+                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
+                        pageDeviceMode === "mobile"
+                          ? "bg-[#1a5d9c] text-white shadow-2xs"
+                          : "text-slate-600 hover:bg-slate-200/60"
+                      }`}
+                    >
+                      <Smartphone size={13} />
+                      <span>Mobile (390px)</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Viewport Canvas */}
+              <div
+                className={`flex justify-center items-start overflow-y-auto max-h-[700px] transition-all duration-300 ${
+                  pageDeviceMode !== "desktop" ? "p-6 bg-slate-900/10" : "p-4 bg-slate-50/40"
+                }`}
+              >
+                <div
+                  className={`relative transition-all duration-300 bg-white overflow-hidden ${
+                    pageDeviceMode === "mobile"
+                      ? "w-[390px] h-[660px] max-w-full rounded-[40px] shadow-2xl border-[10px] border-slate-900 ring-1 ring-slate-800/10"
+                      : pageDeviceMode === "tablet"
+                      ? "w-[768px] h-[660px] max-w-full rounded-[28px] shadow-2xl border-[8px] border-slate-800 ring-1 ring-slate-800/10"
+                      : "w-full h-[600px] max-w-full rounded-2xl border border-slate-200 shadow-sm"
+                  }`}
+                >
+                  {pageDeviceMode === "mobile" && (
+                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-3.5 bg-slate-900 rounded-full z-20 pointer-events-none flex items-center justify-center">
+                      <div className="w-8 h-1 bg-slate-700/60 rounded-full" />
+                    </div>
+                  )}
+
+                  <iframe
+                    key={`${pageDeviceMode}-${previewSource}-${String(item._id || item.id || item.slug || "page")}`}
+                    title="Page Responsiveness Preview Frame"
+                    src={previewSource === "page" && pagePreviewUrl ? pagePreviewUrl : undefined}
+                    srcDoc={previewSource === "content" || !pagePreviewUrl ? buildPagePreviewDoc(String(item.textContent || "")) : undefined}
+                    className="w-full h-full border-none bg-white"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Complete Metadata Details */}
           <div>

@@ -382,6 +382,10 @@
 .dynamic-page-content {
   color: var(--color-foreground, #1e293b);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
 }
 
 /* 0. DYNAMIC PAGE DARK THEME OVERRIDES & CSS VARIABLE SYNC */
@@ -810,6 +814,1067 @@ iframe, video, embed, object {
 
 .media-skeleton {
   animation: media-skeleton-pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* =========================================================
+   UNIVERSAL CONTRAST GUARDS (PREVENTS WHITE-ON-WHITE & DARK-ON-DARK TEXT)
+   Protects against MS Word, WordPad, and Web copy-paste inline styles
+   ========================================================= */
+
+/* In light mode: ensure stray white text pasted from Word on normal white backgrounds is legible */
+html:not(.dark) .dynamic-page-content > p[style*="color: rgb(255" i],
+html:not(.dark) .dynamic-page-content > p[style*="color: #fff" i],
+html:not(.dark) .dynamic-page-content > p[style*="color: white" i],
+html:not(.dark) .dynamic-page-content > span[style*="color: rgb(255" i],
+html:not(.dark) .dynamic-page-content > span[style*="color: #fff" i],
+html:not(.dark) .dynamic-page-content > span[style*="color: white" i],
+html:not(.dark) .dynamic-page-content > font[color="#ffffff" i],
+html:not(.dark) .dynamic-page-content > font[color="white" i],
+html:not(.dark) .dynamic-page-content .ips-chairman-text p[style*="color: rgb(255" i],
+html:not(.dark) .dynamic-page-content .ips-chairman-text p[style*="color: #fff" i],
+html:not(.dark) .dynamic-page-content .ips-chairman-text p[style*="color: white" i],
+html:not(.dark) .dynamic-page-content .ips-chairman-text font,
+html:not(.dark) .dynamic-page-content .ips-principal-text font,
+html:not(.dark) .dynamic-page-content .ips-director-text font {
+  color: #1e293b !important;
+}
+
+/* =========================================================
+   UNIVERSAL BLUE & DARK BACKGROUND CONTRAST GUARANTEE
+   Whenever ANY blue, navy, or dark background appears,
+   ensure ALL text, headings, paragraphs, spans, links,
+   font tags, and subtext have crisp, readable PURE WHITE text.
+   ========================================================= */
+.dynamic-page-content [style*="background-color: #082a52" i],
+.dynamic-page-content [style*="background-color: #082A52" i],
+.dynamic-page-content [style*="background-color: #102a4c" i],
+.dynamic-page-content [style*="background-color: #123b70" i],
+.dynamic-page-content [style*="background-color: #123B70" i],
+.dynamic-page-content [style*="background-color: #0a2540" i],
+.dynamic-page-content [style*="background-color: #061224" i],
+.dynamic-page-content [style*="background-color: rgb(8, 42, 82)" i],
+.dynamic-page-content [style*="background-color: rgb(16, 42, 76)" i],
+.dynamic-page-content [style*="background-color: rgb(18, 59, 112)" i],
+.dynamic-page-content [style*="background-color: rgb(13, 50, 96)" i],
+.dynamic-page-content [style*="background: #082a52" i],
+.dynamic-page-content [style*="background: #082A52" i],
+.dynamic-page-content [style*="background: #102a4c" i],
+.dynamic-page-content [style*="background: #123b70" i],
+.dynamic-page-content [style*="background: #123B70" i],
+.dynamic-page-content [style*="background: #0a2540" i],
+.dynamic-page-content [style*="background: #061224" i],
+.dynamic-page-content [style*="background: rgb(8, 42, 82)" i],
+.dynamic-page-content [style*="background: rgb(16, 42, 76)" i],
+.dynamic-page-content [style*="background: rgb(18, 59, 112)" i],
+.dynamic-page-content [style*="background: rgb(13, 50, 96)" i],
+.dynamic-page-content [style*="rgb(8, 42, 82)"][style*="background" i],
+.dynamic-page-content [style*="#082a52"][style*="background" i],
+.dynamic-page-content [style*="#102a4c"][style*="background" i],
+.dynamic-page-content [style*="#123b70"][style*="background" i],
+.dynamic-page-content .ips-chairman-name-card,
+.dynamic-page-content .ips-director-name-card,
+.dynamic-page-content .ips-principal-name-card,
+.dynamic-page-content .ips-chairman-closing,
+.dynamic-page-content .ips-director-closing,
+.dynamic-page-content table thead,
+.dynamic-page-content table thead th,
+.dynamic-page-content .ips-principal-content .ips-chairman-hero h1 section,
+.dynamic-page-content .ips-estab-header,
+.dynamic-page-content .ips-estab-hero,
+.dynamic-page-content .ips-ap-header,
+.dynamic-page-content [style*="background-color: #082a52" i] *,
+.dynamic-page-content [style*="background-color: #082A52" i] *,
+.dynamic-page-content [style*="background-color: #102a4c" i] *,
+.dynamic-page-content [style*="background-color: #123b70" i] *,
+.dynamic-page-content [style*="background-color: #123B70" i] *,
+.dynamic-page-content [style*="background-color: #0a2540" i] *,
+.dynamic-page-content [style*="background-color: #061224" i] *,
+.dynamic-page-content [style*="background-color: rgb(8, 42, 82)" i] *,
+.dynamic-page-content [style*="background-color: rgb(16, 42, 76)" i] *,
+.dynamic-page-content [style*="background-color: rgb(18, 59, 112)" i] *,
+.dynamic-page-content [style*="background-color: rgb(13, 50, 96)" i] *,
+.dynamic-page-content [style*="background: #082a52" i] *,
+.dynamic-page-content [style*="background: #082A52" i] *,
+.dynamic-page-content [style*="background: #102a4c" i] *,
+.dynamic-page-content [style*="background: #123b70" i] *,
+.dynamic-page-content [style*="background: #123B70" i] *,
+.dynamic-page-content [style*="background: #0a2540" i] *,
+.dynamic-page-content [style*="background: #061224" i] *,
+.dynamic-page-content [style*="background: rgb(8, 42, 82)" i] *,
+.dynamic-page-content [style*="background: rgb(16, 42, 76)" i] *,
+.dynamic-page-content [style*="background: rgb(18, 59, 112)" i] *,
+.dynamic-page-content [style*="background: rgb(13, 50, 96)" i] *,
+.dynamic-page-content [style*="rgb(8, 42, 82)"][style*="background" i] *,
+.dynamic-page-content [style*="#082a52"][style*="background" i] *,
+.dynamic-page-content [style*="#102a4c"][style*="background" i] *,
+.dynamic-page-content [style*="#123b70"][style*="background" i] *,
+.dynamic-page-content .ips-chairman-name-card *,
+.dynamic-page-content .ips-director-name-card *,
+.dynamic-page-content .ips-principal-name-card *,
+.dynamic-page-content .ips-chairman-closing *,
+.dynamic-page-content .ips-director-closing *,
+.dynamic-page-content .ips-chairman-closing font,
+.dynamic-page-content .ips-director-closing font,
+.dynamic-page-content .ips-chairman-name-card font,
+.dynamic-page-content .ips-director-name-card font,
+.dynamic-page-content .ips-principal-name-card font,
+.dynamic-page-content table thead th *,
+.dynamic-page-content .ips-principal-content .ips-chairman-hero h1 section *,
+.dynamic-page-content .ips-estab-header *,
+.dynamic-page-content .ips-estab-hero *,
+.dynamic-page-content .ips-ap-header * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* In dark mode: pasted HTML with white background must NOT remain white */
+.dark .dynamic-page-content [style*="background-color: #fff" i],
+.dark .dynamic-page-content [style*="background-color: rgb(255" i],
+.dark .dynamic-page-content [style*="background-color: white" i],
+.dark .dynamic-page-content [style*="background: #fff" i],
+.dark .dynamic-page-content [style*="background: rgb(255" i],
+.dark .dynamic-page-content [style*="background: white" i],
+.dark .dynamic-page-content .wysiwyg-page-wrapper {
+  background-color: var(--color-card, #112240) !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Faded gray text from legacy paste normalized to readable high-contrast */
+.dynamic-page-content p[style*="color: rgb(102, 112, 133)" i],
+.dynamic-page-content span[style*="color: rgb(102, 112, 133)" i],
+.dynamic-page-content td[style*="color: rgb(102, 112, 133)" i] {
+  color: #334155 !important;
+}
+
+.dark .dynamic-page-content p[style*="color: rgb(102, 112, 133)" i],
+.dark .dynamic-page-content span[style*="color: rgb(102, 112, 133)" i],
+.dark .dynamic-page-content td[style*="color: rgb(102, 112, 133)" i] {
+  color: #cbd5e1 !important;
+}
+
+/* =========================================================
+   UNIVERSAL RESPONSIVE TABLES & MOBILE CARD TRANSFORMATION
+   Works on ANY table pasted from WordPad, Word, Excel, or CMS
+   ========================================================= */
+
+.dynamic-page-content .ips-table-responsive-wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  margin: 1.5rem 0 !important;
+}
+
+/* Desktop & Tablet Table Presentation (> 768px) */
+@media (min-width: 769px) {
+  .dynamic-page-content table {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    border-radius: 1rem !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 20px rgba(8, 42, 82, 0.06) !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
+    margin: 1.5rem 0 !important;
+  }
+
+  .dynamic-page-content table thead th {
+    background: #082a52 !important;
+    background-color: #082a52 !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    font-size: 0.95rem !important;
+    padding: 1rem 1.5rem !important;
+    border: none !important;
+    border-bottom: 2px solid #1a5d9c !important;
+    text-align: left !important;
+  }
+
+  .dynamic-page-content table tbody tr:nth-child(odd) td {
+    background-color: #ffffff !important;
+  }
+
+  .dynamic-page-content table tbody tr:nth-child(even) td {
+    background-color: #f8fafc !important;
+  }
+
+  .dynamic-page-content table tbody tr:hover td {
+    background-color: #f1f5f9 !important;
+  }
+
+  .dynamic-page-content table td {
+    color: #1e293b !important;
+    border: none !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 1.15rem 1.5rem !important;
+    font-size: 0.95rem !important;
+    line-height: 1.65 !important;
+    text-align: left !important;
+    vertical-align: top !important;
+  }
+
+  .dynamic-page-content table tbody tr:last-child td {
+    border-bottom: none !important;
+  }
+
+  html:not(.dark) body .dynamic-page-content table tbody tr td:first-child,
+  html:not(.dark) body .dynamic-page-content table tbody tr td.ips-table-card-header,
+  html:not(.dark) body .dynamic-page-content table tbody tr td.ips-stream-table-stream,
+  html:not(.dark) body .dynamic-page-content table tbody tr td:first-child *,
+  html:not(.dark) body .dynamic-page-content table tbody tr td.ips-table-card-header *,
+  html:not(.dark) body .dynamic-page-content table tbody tr td.ips-stream-table-stream *,
+  .dynamic-page-content table td:first-child {
+    color: #082a52 !important;
+    -webkit-text-fill-color: #082a52 !important;
+    font-weight: 800 !important;
+    background: transparent !important;
+  }
+}
+
+/* Mobile Screens (<= 768px): Automatic Card Transformation for ANY Table */
+@media (max-width: 768px) {
+  .dynamic-page-content .ips-table-responsive-wrapper {
+    overflow-x: visible !important;
+    margin: 1rem 0 !important;
+  }
+
+  .dynamic-page-content table {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    margin: 0 !important;
+  }
+
+  .dynamic-page-content table thead {
+    display: none !important;
+  }
+
+  .dynamic-page-content table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+    width: 100% !important;
+  }
+
+  .dynamic-page-content table tbody tr {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 1.25rem !important;
+    box-shadow: 0 4px 20px rgba(8, 42, 82, 0.08) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* First cell is Card Header on mobile view */
+  html:not(.dark) body .dynamic-page-content table tbody tr td:first-child,
+  html:not(.dark) body .dynamic-page-content table tbody tr td.ips-table-card-header,
+  html:not(.dark) body .dynamic-page-content table tbody tr td:first-child *,
+  html:not(.dark) body .dynamic-page-content table tbody tr td.ips-table-card-header *,
+  .dynamic-page-content table tbody tr td:first-child,
+  .dynamic-page-content table tbody tr td.ips-table-card-header,
+  .dynamic-page-content table tbody tr td:first-child *,
+  .dynamic-page-content table tbody tr td.ips-table-card-header * {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: linear-gradient(135deg, #082a52 0%, #123b70 100%) !important;
+    color: #ffffff !important;
+    padding: 1rem 1.25rem !important;
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.01em !important;
+    border: none !important;
+    border-bottom: 2px solid #f4c430 !important;
+    text-align: left !important;
+  }
+
+  /* Other cells are Card Attributes */
+  .dynamic-page-content table tbody tr td:not(:first-child) {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.35rem !important;
+    padding: 0.9rem 1.25rem !important;
+    border: none !important;
+    border-bottom: 1px dashed #e2e8f0 !important;
+    background: transparent !important;
+    color: #1e293b !important;
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    text-align: left !important;
+  }
+
+  .dynamic-page-content table tbody tr td:last-child {
+    border-bottom: none !important;
+    padding-bottom: 1.2rem !important;
+  }
+
+  /* Automatically render column header label from data-label */
+  .dynamic-page-content table tbody tr td[data-label]:not(:first-child)::before {
+    content: attr(data-label);
+    display: block !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    color: #1a5d9c !important;
+    margin-bottom: 2px !important;
+  }
+
+  /* Dark mode card styling for all tables */
+  .dark .dynamic-page-content table tbody tr {
+    background: #0f1f38 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+  }
+
+  .dark .dynamic-page-content table tbody tr td:first-child {
+    background: #09172c !important;
+    color: #ffffff !important;
+    border-bottom-color: var(--gold, #f4c430) !important;
+  }
+
+  .dark .dynamic-page-content table tbody tr td:not(:first-child) {
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+    color: #cbd5e1 !important;
+  }
+
+  .dark .dynamic-page-content table tbody tr td[data-label]:not(:first-child)::before {
+    color: var(--gold, #f4c430) !important;
+  }
+}
+
+/* =========================================================
+   CHAIRMAN & ADMISSION SECTIONS: RESPONSIVE BEHAVIOR
+   ========================================================= */
+
+/* On desktop (> 1024px): sticky profile follows reading flow so left column is NEVER blank */
+@media (min-width: 1025px) {
+  .dynamic-page-content .ips-chairman-page,
+  .dynamic-page-content .ips-director-page,
+  .dynamic-page-content .ips-principal-page,
+  .dynamic-page-content .ips-principal-content,
+  .dynamic-page-content .wysiwyg-page-wrapper {
+    overflow: visible !important;
+  }
+
+  .dynamic-page-content .ips-chairman-layout,
+  .dynamic-page-content .ips-director-layout,
+  .dynamic-page-content .ips-principal-layout {
+    display: grid !important;
+    grid-template-columns: 360px minmax(0, 1fr) !important;
+    gap: 40px !important;
+    align-items: start !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .dynamic-page-content .ips-chairman-profile-wrapper,
+  .dynamic-page-content .ips-director-profile-wrapper,
+  .dynamic-page-content .ips-principal-profile-wrapper,
+  .dynamic-page-content .ips-principal-profile {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    position: sticky !important;
+    top: 90px !important;
+    align-self: start !important;
+    z-index: 10 !important;
+    max-width: 360px !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .dynamic-page-content .ips-chairman-message,
+  .dynamic-page-content .ips-director-message,
+  .dynamic-page-content .ips-principal-main,
+  .dynamic-page-content .ips-principal-right {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    float: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+  }
+
+  .dynamic-page-content .ips-principal-right > * {
+    margin: 0 !important;
+  }
+
+  /* Ensures all non-profile cards inside ips-principal-layout strictly stay in column 2 unless full-width */
+  .dynamic-page-content .ips-principal-layout > :not(.ips-principal-profile):not(.ips-principal-profile-wrapper):not(.ips-principal-feature):not(.ips-principal-features-full) {
+    grid-column: 2 !important;
+  }
+
+  /* Full-width features take complete place across both columns below the pillars and profile */
+  .dynamic-page-content .ips-principal-layout > .ips-principal-feature,
+  .dynamic-page-content .ips-principal-layout > .ips-principal-features-full,
+  .dynamic-page-content .ips-principal-feature {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+.dynamic-page-content .ips-chairman-content,
+.dynamic-page-content .ips-director-content,
+.dynamic-page-content .ips-principal-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+}
+
+/* Profile Card Shared Components (Chairman, Director, Principal) */
+.dynamic-page-content .ips-chairman-profile,
+.dynamic-page-content .ips-director-profile,
+.dynamic-page-content .ips-principal-profile {
+  position: relative !important;
+  max-width: 380px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+.dynamic-page-content .ips-chairman-profile-decoration,
+.dynamic-page-content .ips-director-profile-decoration,
+.dynamic-page-content .ips-principal-profile-decoration {
+  position: absolute !important;
+  width: 100px !important;
+  height: 100px !important;
+  left: -12px !important;
+  top: -12px !important;
+  border-top: 4px solid var(--gold, #F4C430) !important;
+  border-left: 4px solid var(--gold, #F4C430) !important;
+  border-radius: 28px 0 0 0 !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+.dynamic-page-content .ips-chairman-image-box,
+.dynamic-page-content .ips-director-image-box,
+.dynamic-page-content .ips-principal-image-box {
+  position: relative !important;
+  z-index: 2 !important;
+  overflow: hidden !important;
+  padding: 16px !important;
+  border: 1px solid #e4eaf2 !important;
+  border-radius: 28px !important;
+  background: #ffffff !important;
+  box-shadow: 0 14px 40px rgba(8, 42, 82, 0.1) !important;
+  box-sizing: border-box !important;
+}
+
+.dynamic-page-content .ips-chairman-image-box img,
+.dynamic-page-content .ips-director-image-box img,
+.dynamic-page-content .ips-principal-image-box img,
+.dynamic-page-content .ips-principal-image {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: 400px !important;
+  aspect-ratio: 3/4 !important;
+  object-fit: cover !important;
+  border-radius: 20px !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+
+.dynamic-page-content .ips-chairman-name-card,
+.dynamic-page-content .ips-director-name-card,
+.dynamic-page-content .ips-principal-name-card {
+  position: relative !important;
+  z-index: 4 !important;
+  margin: -32px 18px 0 !important;
+  padding: 22px 18px !important;
+  border-radius: 19px !important;
+  background: linear-gradient(135deg, #082A52, #123B70) !important;
+  text-align: center !important;
+  box-shadow: 0 14px 30px rgba(8, 42, 82, 0.22) !important;
+  color: #ffffff !important;
+  box-sizing: border-box !important;
+}
+
+.dynamic-page-content .ips-chairman-name-card h2,
+.dynamic-page-content .ips-director-name-card h2,
+.dynamic-page-content .ips-principal-name-card h2 {
+  margin: 0 !important;
+  color: #ffffff !important;
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.2px !important;
+}
+
+.dynamic-page-content .ips-chairman-name-line,
+.dynamic-page-content .ips-director-name-line,
+.dynamic-page-content .ips-principal-name-line {
+  width: 44px !important;
+  height: 3px !important;
+  margin: 10px auto !important;
+  border-radius: 10px !important;
+  background: var(--gold, #F4C430) !important;
+}
+
+.dynamic-page-content .ips-chairman-designation,
+.dynamic-page-content .ips-director-designation,
+.dynamic-page-content .ips-principal-designation {
+  margin: 6px 0 0 !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+}
+
+.dynamic-page-content .ips-chairman-school,
+.dynamic-page-content .ips-director-school,
+.dynamic-page-content .ips-principal-school {
+  margin: 5px 0 0 !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+.dynamic-page-content .ips-chairman-mini-grid,
+.dynamic-page-content .ips-director-mini-grid,
+.dynamic-page-content .ips-principal-mini-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 10px !important;
+  margin-top: 18px !important;
+}
+
+.dynamic-page-content .ips-chairman-mini-card,
+.dynamic-page-content .ips-director-mini-card,
+.dynamic-page-content .ips-principal-mini-card {
+  padding: 11px 6px !important;
+  border: 1px solid #dce8f6 !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  text-align: center !important;
+  box-shadow: 0 5px 14px rgba(8, 42, 82, 0.05) !important;
+}
+
+.dynamic-page-content .ips-chairman-mini-card span,
+.dynamic-page-content .ips-director-mini-card span,
+.dynamic-page-content .ips-principal-mini-card span {
+  display: block !important;
+  color: #082A52 !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+@media (max-width: 1024px) {
+  .dynamic-page-content .ips-chairman-layout,
+  .dynamic-page-content .ips-director-layout,
+  .dynamic-page-content .ips-principal-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2.5rem !important;
+    width: 100% !important;
+  }
+
+  .dynamic-page-content .ips-chairman-profile-wrapper,
+  .dynamic-page-content .ips-director-profile-wrapper,
+  .dynamic-page-content .ips-principal-profile-wrapper,
+  .dynamic-page-content .ips-principal-profile {
+    order: 1 !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 380px !important;
+    margin: 0 auto !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
+  .dynamic-page-content .ips-chairman-message,
+  .dynamic-page-content .ips-director-message,
+  .dynamic-page-content .ips-principal-main,
+  .dynamic-page-content .ips-principal-right {
+    order: 2 !important;
+    width: 100% !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
+  .dynamic-page-content .ips-principal-pillars {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dynamic-page-content .ips-chairman-container,
+  .dynamic-page-content .ips-director-container,
+  .dynamic-page-content .ips-principal-container {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .dynamic-page-content .ips-ap-main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2.5rem !important;
+  }
+
+  .dynamic-page-content .ips-ap-image-card img {
+    max-height: 280px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+  }
+
+  .dynamic-page-content .ips-ap-image-badge {
+    right: 12px !important;
+    bottom: -16px !important;
+    padding: 10px 14px !important;
+  }
+
+  .dynamic-page-content .ips-ap-flow-steps {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+}
+
+/* =========================================================
+   UNIVERSAL CONTRAST SAFEGUARDS (MOBILE & DESKTOP)
+   Prevents invisible white text on white bg & dark-on-dark text
+   ========================================================= */
+
+/* Chairman & Director dark closing cards: preserve crisp pure white text */
+html:not(.dark) body .dynamic-page-content .ips-chairman-closing,
+html:not(.dark) body .dynamic-page-content .ips-chairman-closing *,
+html:not(.dark) body .dynamic-page-content .ips-director-closing,
+html:not(.dark) body .dynamic-page-content .ips-director-closing *,
+html:not(.dark) body .dynamic-page-content .ips-chairman-closing p,
+html:not(.dark) body .dynamic-page-content .ips-director-closing p,
+html:not(.dark) body .dynamic-page-content .ips-chairman-closing p *,
+html:not(.dark) body .dynamic-page-content .ips-director-closing p *,
+html:not(.dark) body .dynamic-page-content .ips-chairman-closing-sub,
+html:not(.dark) body .dynamic-page-content .ips-chairman-closing-sub *,
+html:not(.dark) body .dynamic-page-content .ips-director-closing-sub,
+html:not(.dark) body .dynamic-page-content .ips-director-closing-sub *,
+html:not(.dark) body .dynamic-page-content .ips-chairman-closing-main,
+html:not(.dark) body .dynamic-page-content .ips-director-closing-main,
+.dynamic-page-content .ips-chairman-closing,
+.dynamic-page-content .ips-chairman-closing *,
+.dynamic-page-content .ips-director-closing,
+.dynamic-page-content .ips-director-closing * {
+  color: #ffffff !important;
+}
+
+.dynamic-page-content .ips-chairman-closing-sub,
+.dynamic-page-content .ips-chairman-closing-sub *,
+.dynamic-page-content .ips-director-closing-sub,
+.dynamic-page-content .ips-director-closing-sub *,
+.dynamic-page-content .ips-chairman-closing p.ips-chairman-closing-sub,
+.dynamic-page-content .ips-director-closing p.ips-director-closing-sub {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.dynamic-page-content .ips-chairman-closing-main,
+.dynamic-page-content .ips-director-closing-main {
+  color: #ffffff !important;
+}
+
+/* Ensure closing cards span full width of container without left blank space */
+.dynamic-page-content .ips-chairman-closing,
+.dynamic-page-content .ips-director-closing {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 3rem 0 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Prevent Tailwind .prose from turning text inside dark sections to dark charcoal */
+.prose.dynamic-page-content .ips-chairman-closing p,
+.prose .dynamic-page-content .ips-chairman-closing p,
+.prose.dynamic-page-content .ips-director-closing p,
+.prose .dynamic-page-content .ips-director-closing p {
+  color: #ffffff !important;
+}
+
+.prose.dynamic-page-content .ips-chairman-closing-sub,
+.prose .dynamic-page-content .ips-chairman-closing-sub,
+.prose.dynamic-page-content .ips-director-closing-sub,
+.prose .dynamic-page-content .ips-director-closing-sub {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Content readable safeguards: ensure blog and custom cards have dark text */
+.dynamic-page-content .board-exam-blog,
+.dynamic-page-content .board-exam-blog p,
+.dynamic-page-content .board-exam-blog h1,
+.dynamic-page-content .board-exam-blog h2,
+.dynamic-page-content .board-exam-blog h3,
+.dynamic-page-content .board-exam-blog h4,
+.dynamic-page-content .board-exam-blog td,
+.dynamic-page-content .wysiwyg-frame-card h3,
+.dynamic-page-content .wysiwyg-frame-card h4,
+.dynamic-page-content .wysiwyg-frame-card p,
+.dynamic-page-content .wysiwyg-frame-bulk-collection h3,
+.dynamic-page-content .wysiwyg-frame-bulk-collection h4,
+.dynamic-page-content .wysiwyg-frame-bulk-collection p {
+  color: #1e293b !important;
+}
+
+/* Principal Message feature cards contrast in light & dark modes */
+.dynamic-page-content .ips-principal-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.dynamic-page-content .ips-principal-container,
+.dynamic-page-content .ips-principal-main {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+}
+
+.dynamic-page-content .ips-principal-content .ips-chairman-hero,
+.dynamic-page-content .ips-chairman-hero {
+  padding: 0 !important;
+  margin: 0 0 1.25rem 0 !important;
+  background: transparent !important;
+  position: relative !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.dynamic-page-content .ips-chairman-bg,
+.dynamic-page-content .ips-chairman-bg-left {
+  display: none !important;
+}
+
+.dynamic-page-content .ips-chairman-bg-right {
+  position: static !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  right: auto !important;
+  bottom: auto !important;
+  background: transparent !important;
+  filter: none !important;
+  box-sizing: border-box !important;
+}
+
+.dynamic-page-content .ips-principal-content .ips-chairman-hero h1 {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.dynamic-page-content .ips-principal-content .ips-chairman-hero h1 section,
+.dynamic-page-content .ips-principal-quote {
+  margin: 0 0 1.5rem 0 !important;
+  padding: 1.5rem 2rem !important;
+  border-radius: 1.25rem !important;
+  background: #102a4c !important;
+  color: #ffffff !important;
+  font-size: 1.15rem !important;
+  font-style: italic !important;
+  line-height: 1.7 !important;
+  box-shadow: 0 8px 24px -4px rgba(16, 42, 76, 0.2) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.dynamic-page-content .ips-principal-quote,
+.dynamic-page-content .ips-principal-quote * {
+  color: #ffffff !important;
+}
+
+.dynamic-page-content .ips-principal-pillar-icon {
+  font-size: 2rem !important;
+  margin-bottom: 0.75rem !important;
+  line-height: 1 !important;
+}
+
+.dynamic-page-content .ips-principal-welcome {
+  margin-top: 1.25rem !important;
+  padding: 1.5rem 1.75rem !important;
+  border: 1px solid #dce7f5 !important;
+  border-radius: 1.25rem !important;
+  background: #ffffff !important;
+  box-shadow: 0 4px 20px rgba(8, 42, 82, 0.05) !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.dynamic-page-content .ips-principal-welcome h2 {
+  margin: 0 !important;
+  font-size: 22px !important;
+  color: #082a52 !important;
+}
+
+.dynamic-page-content .ips-principal-welcome p {
+  margin: 6px 0 0 !important;
+  color: #123b70 !important;
+  font-weight: 600 !important;
+}
+
+.dynamic-page-content .ips-principal-text {
+  margin-top: 1.25rem !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.dynamic-page-content .ips-principal-text p {
+  margin-bottom: 0.85rem !important;
+  line-height: 1.8 !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  color: #475569 !important;
+}
+
+@media (min-width: 769px) {
+  .dynamic-page-content .ips-principal-pillars {
+    margin-top: 1.5rem !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 1.25rem !important;
+  }
+}
+
+.dynamic-page-content .ips-principal-pillar {
+  padding: 1.5rem 1.25rem !important;
+  border: 1px solid #dce6f2 !important;
+  border-radius: 1.25rem !important;
+  background: #ffffff !important;
+  box-shadow: 0 4px 20px rgba(8, 42, 82, 0.05) !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.dynamic-page-content .ips-principal-feature {
+  margin-top: 1.25rem !important;
+  padding: 1.5rem 1.75rem !important;
+  border: 1px solid #dce6f2 !important;
+  border-radius: 1.25rem !important;
+  background: #ffffff !important;
+  box-shadow: 0 4px 20px rgba(8, 42, 82, 0.05) !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.dynamic-page-content .ips-principal-teachers {
+  background: linear-gradient(135deg, #eef6ff, #f7fbff) !important;
+  border: 1px solid #d0e3fa !important;
+}
+
+.dynamic-page-content .ips-principal-students {
+  background: #ffffff !important;
+  border: 1px solid #dce6f2 !important;
+}
+
+@media (max-width: 768px) {
+  .dynamic-page-content .ips-principal-pillars {
+    margin-top: 1.25rem !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+
+  .dynamic-page-content .ips-principal-content .ips-chairman-hero h1 section,
+  .dynamic-page-content .ips-principal-quote {
+    padding: 1.25rem 1rem !important;
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+    border-radius: 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .dynamic-page-content .ips-principal-welcome {
+    margin-top: 1rem !important;
+    padding: 1.25rem 1.15rem !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  .dynamic-page-content .ips-principal-pillar {
+    padding: 1.25rem 1.15rem !important;
+  }
+
+  .dynamic-page-content .ips-principal-feature {
+    margin-top: 1rem !important;
+    padding: 1.25rem 1.15rem !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  .dynamic-page-content,
+  .dynamic-page-content .ips-principal-content,
+  .dynamic-page-content .ips-principal-container,
+  .dynamic-page-content .ips-principal-main,
+  .dynamic-page-content .ips-principal-right {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+  }
+}
+
+.dynamic-page-content .ips-principal-teachers {
+  background-image: linear-gradient(135deg, #eef6ff, #f7fbff) !important;
+}
+.dynamic-page-content .ips-principal-teachers h2 {
+  color: #082a52 !important;
+}
+.dynamic-page-content .ips-principal-teachers p {
+  color: #475569 !important;
+}
+.dynamic-page-content .ips-principal-students h2 {
+  color: #082a52 !important;
+}
+.dynamic-page-content .ips-principal-students p {
+  color: #475569 !important;
+}
+
+/* In dark mode: ensure ALL feature cards, document blocks, and tables have high-contrast text */
+.dark .dynamic-page-content .ips-principal-feature,
+.dark .dynamic-page-content .ips-principal-teachers,
+.dark .dynamic-page-content .ips-principal-students,
+.dark .dynamic-page-content .ips-principal-pillar,
+.dark .dynamic-page-content .ips-principal-welcome {
+  background: var(--color-card, #112240) !important;
+  background-image: none !important;
+  background-color: var(--color-card, #112240) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.dark .dynamic-page-content .ips-principal-feature h2,
+.dark .dynamic-page-content .ips-principal-teachers h2,
+.dark .dynamic-page-content .ips-principal-students h2,
+.dark .dynamic-page-content .ips-principal-pillar h3,
+.dark .dynamic-page-content .ips-principal-welcome h2 {
+  color: #ffffff !important;
+}
+
+.dark .dynamic-page-content .ips-principal-feature p,
+.dark .dynamic-page-content .ips-principal-teachers p,
+.dark .dynamic-page-content .ips-principal-students p,
+.dark .dynamic-page-content .ips-principal-pillar p,
+.dark .dynamic-page-content .ips-principal-welcome p,
+.dark .dynamic-page-content .ips-principal-text p {
+  color: #cbd5e1 !important;
+}
+
+/* Document blocks & Light containers in Dark Mode */
+.dark .dynamic-page-content [style*="background: #f8fafc"],
+.dark .dynamic-page-content [style*="background:#f8fafc"],
+.dark .dynamic-page-content [style*="background-color: #f8fafc"],
+.dark .dynamic-page-content [style*="background-color:#f8fafc"],
+.dark .dynamic-page-content [style*="background: rgb(241, 245, 249)"],
+.dark .dynamic-page-content [style*="background-color: rgb(241, 245, 249)"],
+.dark .dynamic-page-content [style*="background: rgb(248, 250, 252)"],
+.dark .dynamic-page-content [style*="background-color: rgb(248, 250, 252)"],
+.dark .dynamic-page-content [style*="background: rgb(255, 255, 255)"],
+.dark .dynamic-page-content [style*="background-color: rgb(255, 255, 255)"],
+.dark .dynamic-page-content [style*="background: #ffffff"],
+.dark .dynamic-page-content [style*="background-color: #ffffff"],
+.dark .dynamic-page-content [style*="background: white"],
+.dark .dynamic-page-content [style*="background-color: white"] {
+  background: var(--color-card, #112240) !important;
+  background-color: var(--color-card, #112240) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.dark .dynamic-page-content [style*="background: #f8fafc"] span,
+.dark .dynamic-page-content [style*="background: #f8fafc"] p,
+.dark .dynamic-page-content [style*="background: #f8fafc"] div,
+.dark .dynamic-page-content [style*="background: rgb(241, 245, 249)"] span,
+.dark .dynamic-page-content [style*="background: rgb(241, 245, 249)"] p,
+.dark .dynamic-page-content [style*="background: rgb(255, 255, 255)"] span,
+.dark .dynamic-page-content [style*="background: rgb(255, 255, 255)"] p,
+.dark .dynamic-page-content [style*="background: #ffffff"] span,
+.dark .dynamic-page-content [style*="background: #ffffff"] p {
+  color: #f8fafc !important;
+}
+
+/* =========================================================
+   BLOG POST: CONSISTENT RESPONSIVE STYLING (MOBILE & DESKTOP)
+   Ensures identical 16:9 aspect ratio, clean card framing,
+   and prevents image distortion between mobile & desktop.
+   ========================================================= */
+
+.dynamic-page-content .board-exam-blog {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.dynamic-page-content .board-exam-blog .blog-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+
+.dynamic-page-content .board-exam-blog .blog-banner {
+  width: 100% !important;
+  border-radius: 1.25rem !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
+  margin: 0 0 2rem !important;
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.dynamic-page-content .board-exam-blog .blog-banner img {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9 !important;
+  max-height: 480px !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: 1.25rem !important;
+}
+
+@media (max-width: 768px) {
+  .dynamic-page-content .board-exam-blog .blog-banner img {
+    max-height: 240px !important;
+    aspect-ratio: 16 / 9 !important;
+    object-fit: cover !important;
+  }
+
+  .dynamic-page-content .board-exam-blog .table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
 }
 
 

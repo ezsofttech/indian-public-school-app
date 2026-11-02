@@ -265,7 +265,7 @@ export function generateCustomTableHtml(data: {
 
       const formattedHtml = formatCellContent(cellVal, colName);
 
-      outerHtml += `<td style="padding: 12px 18px; text-align: ${align}; color: #334155 !important; background-color: ${rowBg} !important; border-bottom: ${isLastRow ? "none" : `1px solid ${borderColor}`}; border-right: ${isLastCol ? "none" : `1px solid ${borderColor}`}; min-width: ${c === 0 ? "60px" : "110px"}; line-height: 1.5;">${formattedHtml}</td>`;
+      outerHtml += `<td style="padding: 12px 18px; text-align: ${align}; color: #334155; background-color: ${rowBg}; border-bottom: ${isLastRow ? "none" : `1px solid ${borderColor}`}; border-right: ${isLastCol ? "none" : `1px solid ${borderColor}`}; min-width: ${c === 0 ? "60px" : "110px"}; line-height: 1.5;">${formattedHtml}</td>`;
     }
     outerHtml += `</tr>`;
   }

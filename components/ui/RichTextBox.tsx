@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { processHtmlAssetUrls, buildPagePreviewDoc } from "@/lib/site-data";
 import { CloudinaryGalleryModal } from "@/components/admin/CloudinaryGalleryModal";
 import { ImageStudioModal } from "@/components/admin/ImageStudioModal";
 import {
@@ -218,24 +219,89 @@ export function RichTextBox({
                     )}
 
                     {editor.activeTab === "visual" && (
-                        <iframe
-                            ref={editor.iframeRef}
-                            title="Visual CMS Content Editor Workspace"
-                            className={`w-full border border-slate-100 outline-none bg-white rounded-2xl ${editor.isFullscreen ? "flex-1 min-h-[70vh]" : "min-h-[460px]"
+                        <div className={`w-full flex justify-center items-center overflow-auto transition-all duration-300 ${
+                            editor.canvasMode !== "desktop" ? "py-4 bg-slate-900/5 rounded-2xl" : ""
+                        }`}>
+                            <iframe
+                                ref={editor.iframeRef}
+                                title="Visual CMS Content Editor Workspace"
+                                className={`border border-slate-200 outline-none bg-white transition-all duration-300 ${
+                                    editor.canvasMode === "mobile"
+                                        ? "w-[400px] h-[780px] max-w-full rounded-[2.5rem] shadow-2xl border-4 border-slate-800"
+                                        : editor.canvasMode === "tablet"
+                                        ? "w-[780px] h-[780px] max-w-full rounded-3xl shadow-2xl border-4 border-slate-800"
+                                        : `w-full rounded-2xl ${editor.isFullscreen ? "flex-1 min-h-[70vh]" : "min-h-[460px]"}`
                                 }`}
-                        />
+                            />
+                        </div>
                     )}
 
                     {editor.activeTab === "preview" && (
-                        <div
-                            className={`w-full max-w-full overflow-x-hidden box-border p-6 text-slate-800 border border-slate-100 rounded-2xl bg-white leading-relaxed text-base dynamic-page-content ${editor.isFullscreen ? "flex-1 overflow-y-auto" : "min-h-[460px]"
-                                }`}
-                            dangerouslySetInnerHTML={{
-                                __html:
-                                    value ||
-                                    '<div className="py-16 text-center text-slate-400 italic"><p>No page content entered yet. Switch to Visual Editor and click any block in the Visual Component Toolbox to build!</p></div>',
-                            }}
-                        />
+                        <div className={`w-full flex-1 flex flex-col overflow-hidden ${editor.isFullscreen ? "overflow-hidden" : ""}`}>
+                            {/* Device Switcher Toolbar for Live Preview */}
+                            <div className="flex items-center justify-between gap-2 pb-3 mb-2 border-b border-slate-200 text-xs shrink-0">
+                                <span className="font-bold text-slate-500">Live Device Viewport:</span>
+                                <div className="flex items-center rounded-xl border border-slate-200 bg-white p-0.5 shadow-2xs">
+                                    <button
+                                        type="button"
+                                        onClick={() => editor.updateCanvasMode("desktop")}
+                                        className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
+                                            editor.canvasMode === "desktop" ? "bg-blue-600 text-white shadow-2xs" : "text-slate-600 hover:bg-slate-100"
+                                        }`}
+                                    >
+                                        Desktop (100%)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => editor.updateCanvasMode("tablet")}
+                                        className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
+                                            editor.canvasMode === "tablet" ? "bg-blue-600 text-white shadow-2xs" : "text-slate-600 hover:bg-slate-100"
+                                        }`}
+                                    >
+                                        Tablet (768px)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => editor.updateCanvasMode("mobile")}
+                                        className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
+                                            editor.canvasMode === "mobile" ? "bg-blue-600 text-white shadow-2xs" : "text-slate-600 hover:bg-slate-100"
+                                        }`}
+                                    >
+                                        Mobile (390px)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className={`w-full flex justify-center items-start overflow-y-auto flex-1 transition-all duration-300 ${
+                                editor.canvasMode !== "desktop" ? "p-6 bg-slate-900/10 rounded-2xl" : "p-2"
+                            }`}>
+                                <div
+                                    className={`relative transition-all duration-300 bg-white overflow-hidden ${
+                                        editor.canvasMode === "mobile"
+                                            ? "w-[390px] h-[720px] max-w-full rounded-[40px] shadow-2xl border-[10px] border-slate-900 ring-1 ring-slate-800/10"
+                                            : editor.canvasMode === "tablet"
+                                            ? "w-[768px] h-[720px] max-w-full rounded-[28px] shadow-2xl border-[8px] border-slate-800 ring-1 ring-slate-800/10"
+                                            : `w-full rounded-2xl border border-slate-200 shadow-sm ${editor.isFullscreen ? "h-[75vh]" : "h-[540px]"}`
+                                    }`}
+                                >
+                                    {editor.canvasMode === "mobile" && (
+                                        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-3.5 bg-slate-900 rounded-full z-20 pointer-events-none flex items-center justify-center">
+                                            <div className="w-8 h-1 bg-slate-700/60 rounded-full" />
+                                        </div>
+                                    )}
+
+                                    <iframe
+                                        key={`editor-preview-${editor.canvasMode}`}
+                                        title="Live Content Device Preview Frame"
+                                        srcDoc={buildPagePreviewDoc(
+                                            value ||
+                                                '<div class="py-16 text-center text-slate-400 italic"><p>No page content entered yet. Switch to Visual Editor and click any block in the Visual Component Toolbox to build!</p></div>'
+                                        )}
+                                        className="w-full h-full border-none bg-white"
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     )}
 
                     {editor.activeTab === "html" && (
