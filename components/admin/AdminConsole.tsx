@@ -608,15 +608,33 @@ export function AdminConsole() {
     </aside>
     {mobileMenu && <button aria-label="Close navigation" onClick={() => setMobileMenu(false)} className="fixed inset-0 z-20 bg-slate-950/40 lg:hidden" />}
     <section className="min-h-screen lg:pl-[272px]">
-      <header className="sticky top-0 z-30 flex h-[76px] items-center justify-between border-b border-slate-200 bg-[#f4f7fb] px-5 shadow-xs lg:px-9">
-        <div className="flex items-center gap-4">
-          <button onClick={() => setMobileMenu(true)} className="rounded-lg p-2 text-slate-600 lg:hidden"><Menu /></button>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#d69d26]">School administration</p>
-            <h1 className="font-display text-xl font-bold text-[#102a4c]">{active === "overview" ? "Good morning, Administrator" : current?.label}</h1>
+      <header className="sticky top-0 z-30 flex min-h-[64px] sm:h-[76px] items-center justify-between border-b border-slate-200 bg-[#f4f7fb] px-3.5 sm:px-6 lg:px-9 py-2 sm:py-0 shadow-xs">
+        <div className="flex items-center gap-2.5 sm:gap-4 min-w-0 flex-1 mr-2 sm:mr-4">
+          <button
+            onClick={() => setMobileMenu(true)}
+            className="shrink-0 rounded-lg p-1.5 sm:p-2 -ml-1 text-slate-600 hover:bg-slate-200/60 transition cursor-pointer lg:hidden"
+            aria-label="Open navigation menu"
+          >
+            <Menu size={20} />
+          </button>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.12em] sm:tracking-[0.15em] text-[#d69d26] truncate leading-tight whitespace-nowrap">
+              <span className="hidden sm:inline">School administration</span>
+              <span className="sm:hidden">Administration</span>
+            </p>
+            <h1 className="font-display text-sm sm:text-xl font-bold text-[#102a4c] truncate leading-tight whitespace-nowrap">
+              {active === "overview" ? (
+                <>
+                  <span className="hidden sm:inline">Good morning, Administrator</span>
+                  <span className="sm:hidden">Good morning</span>
+                </>
+              ) : (
+                current?.label
+              )}
+            </h1>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           {/* Notification Bell Dropdown */}
           <div className="relative" ref={notificationRef}>
             {(() => {
@@ -625,12 +643,13 @@ export function AdminConsole() {
                 <>
                   <button
                     onClick={() => setNotificationOpen((prev) => !prev)}
-                    className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 transition cursor-pointer"
+                    className="relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 transition cursor-pointer"
                     title="Notifications"
+                    aria-label="Notifications"
                   >
-                    <Bell size={18} className="text-[#102a4c]" />
+                    <Bell size={17} className="text-[#102a4c]" />
                     {totalUnread > 0 && (
-                      <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-extrabold text-white ring-2 ring-white animate-pulse">
+                      <span className="absolute -top-1 -right-1 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-red-600 text-[9px] sm:text-[10px] font-extrabold text-white ring-2 ring-white animate-pulse">
                         {totalUnread > 99 ? "99+" : totalUnread}
                       </span>
                     )}
@@ -638,7 +657,7 @@ export function AdminConsole() {
 
                   {/* Notification Popover Dropdown */}
                   {notificationOpen && (
-                    <div className="absolute right-0 mt-3 w-80 sm:w-96 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl z-50 animate-in fade-in duration-150">
+                    <div className="absolute right-0 mt-3 w-[calc(100vw-24px)] max-w-sm sm:w-96 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl z-50 animate-in fade-in duration-150">
                       <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                         <div className="flex items-center gap-2">
                           <Bell size={16} className="text-[#1a5d9c]" />
@@ -784,25 +803,26 @@ export function AdminConsole() {
               void refresh();
               void fetchUnreadNotifications();
             }}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 transition cursor-pointer"
+            className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 transition cursor-pointer"
             title="Refresh Console Data"
+            aria-label="Refresh data"
           >
-            <RefreshCw size={18} className={`text-[#102a4c] ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw size={17} className={`text-[#102a4c] ${loading ? "animate-spin" : ""}`} />
           </button>
           {token && (
-            <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white p-1 pr-3 shadow-xs">
+            <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white p-0.5 sm:p-1 sm:pr-3 shadow-xs">
               <div className={`grid h-8 w-8 place-items-center rounded-full font-bold text-xs ${isSuperAdmin ? "bg-amber-100 text-amber-900 border border-amber-300" : "bg-blue-100 text-[#1a5d9c]"}`}>
                 {isSuperAdmin ? <Crown size={15} className="text-amber-600 fill-amber-400" /> : <Shield size={15} />}
               </div>
               <div className="hidden sm:block text-left">
-                <p className="text-xs font-bold text-[#102a4c]">{currentUser?.name || "Administrator"}</p>
+                <p className="text-xs font-bold text-[#102a4c] truncate max-w-[120px]">{currentUser?.name || "Administrator"}</p>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{isSuperAdmin ? "Super Admin" : "Sub Admin"}</p>
               </div>
             </div>
           )}
         </div>
       </header>
-      <div className="p-5 lg:p-9">
+      <div className="p-3.5 sm:p-5 lg:p-9">
         {error && (
           <div className="mb-5 flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
             <span>{error}</span>
