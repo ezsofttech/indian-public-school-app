@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import {
   Briefcase,
@@ -28,6 +28,47 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { CloudinaryGalleryModal } from "@/components/admin/CloudinaryGalleryModal";
+import { getAssetUrl } from "@/lib/utils";
+
+export function CareerThumbnail({
+  src,
+  title,
+  className = "w-10 h-10 rounded-xl object-cover border border-slate-200 shadow-2xs",
+  fallbackClassName = "w-10 h-10 rounded-xl bg-[#102a4c] border border-white/10 text-[#f4bd4f] flex items-center justify-center font-bold text-xs shadow-2xs shrink-0",
+  style,
+}: {
+  src?: string;
+  title: string;
+  className?: string;
+  fallbackClassName?: string;
+  style?: React.CSSProperties;
+}) {
+  const [hasError, setHasError] = useState(false);
+  const initials = (title || "CP").trim().substring(0, 2).toUpperCase();
+  const normalizedSrc = src ? getAssetUrl(src) : "";
+
+  useEffect(() => {
+    setHasError(false);
+  }, [src]);
+
+  if (!normalizedSrc || hasError) {
+    return (
+      <div className={fallbackClassName} style={style} title={title}>
+        {initials}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={normalizedSrc}
+      alt={title}
+      style={style}
+      onError={() => setHasError(true)}
+      className={className}
+    />
+  );
+}
 
 export interface CustomField {
   key: string;
@@ -106,6 +147,8 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
 
   // Gallery Modal for Image selection
   const [isGalleryOpen, setIsGalleryOpen] = useState<boolean>(false);
+  const [isUploadingImage, setIsUploadingImage] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Applications State
   const [applications, setApplications] = useState<CareerApplicationRecord[]>([]);
@@ -169,6 +212,48 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
     fetchPosts();
     fetchApplications();
   }, [fetchPosts, fetchApplications]);
+
+  // Direct Image Upload from Device
+  const handleDirectImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "careers/posts");
+      const res = await axios.post(`${apiUrl}/uploads`, formData, {
+        headers: {
+          ...getHeaders(),
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const data = res.data?.data ?? res.data;
+      const uploadedUrl = data?.url || data?.fileUrl || (Array.isArray(data?.fileUrl) ? data.fileUrl[0] : "");
+      if (uploadedUrl) {
+        setFormImage(uploadedUrl);
+      }
+    } catch (err: any) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("folder", "careers/posts");
+        const res = await axios.post(`${apiUrl}/uploads/public`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        const data = res.data?.data ?? res.data;
+        const uploadedUrl = data?.url || data?.fileUrl || (Array.isArray(data?.fileUrl) ? data.fileUrl[0] : "");
+        if (uploadedUrl) {
+          setFormImage(uploadedUrl);
+        }
+      } catch (err2: any) {
+        alert(`Failed to upload image: ${err?.response?.data?.message || err.message}`);
+      }
+    } finally {
+      setIsUploadingImage(false);
+      if (e.target) e.target.value = "";
+    }
+  };
 
   // Open Create/Edit Post Modal
   const handleOpenPostModal = (post?: CareerPostRecord) => {
@@ -542,17 +627,12 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
                           {idx + 1}
                         </td>
                         <td className="whitespace-nowrap px-5 py-4">
-                          {post.image ? (
-                            <img
-                              src={post.image}
-                              alt={post.title}
-                              className="w-10 h-10 rounded-xl object-cover border border-slate-200 shadow-2xs"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-xl bg-[#102a4c] border border-white/10 text-[#f4bd4f] flex items-center justify-center font-bold text-xs shadow-2xs">
-                              {post.title.substring(0, 2).toUpperCase()}
-                            </div>
-                          )}
+                          <CareerThumbnail
+                            src={post.image}
+                            title={post.title}
+                            className="w-10 h-10 rounded-xl object-cover border border-slate-200 shadow-2xs"
+                            fallbackClassName="w-10 h-10 rounded-xl bg-[#102a4c] border border-white/10 text-[#f4bd4f] flex items-center justify-center font-bold text-xs shadow-2xs shrink-0"
+                          />
                         </td>
                         <td className="whitespace-nowrap px-5 py-4 font-bold text-[#102a4c] text-sm">
                           {post.title}
@@ -894,22 +974,32 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
       {/* MODAL: CREATE / EDIT CAREER POST */}
       {/* ========================================================= */}
       {isPostModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-2xl rounded-3xl shadow-2xl p-6 space-y-6 my-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+          onClick={() => setIsPostModalOpen(false)}
+        >
+          <div
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-2xl rounded-3xl shadow-2xl my-auto max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Stable / Fixed Header */}
+            <div className="shrink-0 px-6 py-5 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between z-10">
               <h3 className="text-lg font-bold text-[#102a4c] dark:text-white flex items-center gap-2 font-display">
                 <Briefcase className="w-5 h-5 text-[#1a5d9c]" />
                 {editingPost ? "Edit Career Opening" : "Create Dynamic Career Opening"}
               </h3>
               <button
+                type="button"
                 onClick={() => setIsPostModalOpen(false)}
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                title="Close"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-4 text-xs text-slate-700 dark:text-slate-300">
+            {/* Scrollable Form Body */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4 text-xs text-slate-700 dark:text-slate-300">
               <div>
                 <label className="block font-semibold text-[#102a4c] dark:text-slate-200 mb-1">
                   Name of Post <span className="text-red-500">*</span>
@@ -938,24 +1028,44 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
 
               <div>
                 <label className="block font-semibold text-[#102a4c] dark:text-slate-200 mb-1">Post / Category Image</label>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center">
                   <input
                     type="text"
-                    disabled
-                    readOnly
                     value={formImage}
                     onChange={(e) => setFormImage(e.target.value)}
-                    placeholder="Select media from gallery"
-                    className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 cursor-not-allowed outline-none select-all font-mono text-[11px]"
+                    placeholder="Image URL or pick from gallery / upload below"
+                    className="flex-1 min-w-[200px] px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#1a5d9c]/40 outline-none font-mono text-[11px]"
                   />
                   <button
                     type="button"
                     onClick={() => setIsGalleryOpen(true)}
-                    className="px-3.5 py-2.5 bg-[#102a4c] text-[#f4bd4f] hover:bg-[#1a5d9c] hover:text-white transition-colors border border-slate-200 dark:border-slate-700 rounded-xl flex items-center gap-1.5 cursor-pointer font-bold shrink-0 shadow-xs"
+                    className="px-3.5 py-2.5 bg-[#102a4c] text-[#f4bd4f] hover:bg-[#1a5d9c] hover:text-white transition-colors border border-slate-200 dark:border-slate-700 rounded-xl flex items-center gap-1.5 cursor-pointer font-bold shrink-0 shadow-xs text-xs"
+                    title="Select media from Cloudinary gallery"
                   >
                     <UploadCloud className="w-4 h-4" />
-                    <span>Select Media</span>
+                    <span>Gallery</span>
                   </button>
+                  <label
+                    className={`px-3.5 py-2.5 bg-white dark:bg-slate-800 text-[#102a4c] dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl flex items-center gap-1.5 cursor-pointer font-bold shrink-0 shadow-xs text-xs transition-colors ${
+                      isUploadingImage ? "opacity-60 cursor-not-allowed" : ""
+                    }`}
+                    title="Upload image directly from computer"
+                  >
+                    {isUploadingImage ? (
+                      <LoaderCircle className="w-4 h-4 animate-spin text-[#1a5d9c]" />
+                    ) : (
+                      <Plus className="w-4 h-4 text-[#1a5d9c]" />
+                    )}
+                    <span>{isUploadingImage ? "Uploading..." : "Upload File"}</span>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleDirectImageUpload}
+                      disabled={isUploadingImage}
+                      className="hidden"
+                    />
+                  </label>
                   {formImage && (
                     <button
                       type="button"
@@ -968,11 +1078,12 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
                   )}
                 </div>
                 {formImage && (
-                  <div className="mt-2.5 flex items-center gap-3 p-2 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
-                    <img
+                  <div className="mt-2.5 flex items-center gap-3 p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <CareerThumbnail
                       src={formImage}
-                      alt="Category Preview"
+                      title={formTitle || "Post Preview"}
                       className="w-12 h-12 rounded-lg object-cover border border-slate-200 dark:border-slate-700 shadow-2xs shrink-0"
+                      fallbackClassName="w-12 h-12 rounded-lg bg-[#102a4c] border border-white/10 text-[#f4bd4f] flex items-center justify-center font-bold text-xs shadow-2xs shrink-0"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Image Attached</p>
@@ -1150,11 +1261,12 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800 pt-4">
+            {/* Stable / Fixed Footer */}
+            <div className="shrink-0 px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xs flex items-center justify-end gap-3 z-10">
               <button
                 type="button"
                 onClick={() => setIsPostModalOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
               >
                 Cancel
               </button>
@@ -1162,7 +1274,7 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
                 type="button"
                 onClick={handleSavePost}
                 disabled={savingPost}
-                className="px-5 py-2 rounded-xl text-xs font-bold bg-[#102a4c] hover:bg-[#1a5d9c] text-white shadow-md flex items-center gap-2"
+                className="px-5 py-2 rounded-xl text-xs font-bold bg-[#102a4c] hover:bg-[#1a5d9c] text-white shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {savingPost ? <LoaderCircle className="w-4 h-4 animate-spin text-white" /> : <Briefcase className="w-4 h-4 text-[#f4bd4f]" />}
                 <span>{savingPost ? (editingPost ? "Updating Opening..." : "Creating Opening...") : (editingPost ? "Update Opening" : "Create Opening")}</span>
@@ -1176,9 +1288,16 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
       {/* MODAL: CANDIDATE APPLICATION DETAILS */}
       {/* ========================================================= */}
       {selectedApp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-xl rounded-3xl shadow-2xl p-6 space-y-6 my-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+          onClick={() => setSelectedApp(null)}
+        >
+          <div
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-xl rounded-3xl shadow-2xl my-auto max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Stable / Fixed Header */}
+            <div className="shrink-0 px-6 py-5 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between z-10">
               <div>
                 <span className="text-[10px] font-bold font-mono px-2.5 py-0.5 rounded-full bg-[#fdf3da] text-[#b7790a] border border-amber-200">
                   {selectedApp.applicationNo}
@@ -1188,14 +1307,17 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
                 </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedApp(null)}
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                title="Close"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-4 text-xs">
+            {/* Scrollable Content Body */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3 p-3.5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
                 <div>
                   <span className="text-[11px] text-slate-400">Position Applied For</span>
@@ -1229,14 +1351,14 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
               {selectedApp.photoUrl && (
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-3">
                   <img
-                    src={selectedApp.photoUrl}
+                    src={getAssetUrl(selectedApp.photoUrl)}
                     alt={selectedApp.fullName}
-                    className="w-16 h-16 rounded-xl object-cover border border-slate-300 dark:border-slate-600 shadow-sm shrink-0"
+                    className="w-16 h-16 rounded-xl object-cover border border-slate-300 dark:border-slate-600 shadow-sm shrink-0 bg-slate-100 dark:bg-slate-800"
                   />
                   <div className="min-w-0 flex-1">
                     <h5 className="font-bold text-[#102a4c] dark:text-white text-xs">Candidate Photograph</h5>
                     <a
-                      href={selectedApp.photoUrl}
+                      href={getAssetUrl(selectedApp.photoUrl)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-[11px] text-[#1a5d9c] hover:underline flex items-center gap-1 mt-0.5"
@@ -1288,12 +1410,12 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
                             {isImageUrl ? (
                               <div className="flex items-center gap-2">
                                 <img
-                                  src={v}
+                                  src={getAssetUrl(v)}
                                   alt={k}
-                                  className="w-10 h-10 rounded-lg object-cover border border-slate-300 dark:border-slate-600 shadow-2xs"
+                                  className="w-10 h-10 rounded-lg object-cover border border-slate-300 dark:border-slate-600 shadow-2xs bg-slate-100 dark:bg-slate-800"
                                 />
                                 <a
-                                  href={v}
+                                  href={getAssetUrl(v)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-[11px] text-[#1a5d9c] hover:underline flex items-center gap-1 font-bold"
@@ -1304,7 +1426,7 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
                               </div>
                             ) : isDocUrl ? (
                               <a
-                                href={v}
+                                href={getAssetUrl(v)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-[11px] text-[#1a5d9c] hover:underline flex items-center gap-1 font-bold"
@@ -1329,7 +1451,7 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
                 </h4>
                 {selectedApp.resumeUrl ? (
                   <a
-                    href={selectedApp.resumeUrl}
+                    href={getAssetUrl(selectedApp.resumeUrl)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#102a4c] hover:bg-[#1a5d9c] text-white font-bold shadow-sm transition-all"
@@ -1344,7 +1466,8 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
               </div>
             </div>
 
-            <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
+            {/* Stable / Fixed Footer */}
+            <div className="shrink-0 px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xs flex items-center justify-between z-10">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold">Status:</span>
                 <select
@@ -1356,7 +1479,7 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
                       e.target.value as "PENDING" | "SHORTLISTED" | "REJECTED" | "HIRED"
                     );
                   }}
-                  className="px-3 py-1.5 rounded-xl text-xs font-bold border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 cursor-pointer"
                 >
                   <option value="PENDING">PENDING</option>
                   <option value="SHORTLISTED">SHORTLISTED</option>
@@ -1366,8 +1489,9 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
               </div>
 
               <button
+                type="button"
                 onClick={() => setSelectedApp(null)}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-[#102a4c] text-white"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-[#102a4c] hover:bg-[#1a5d9c] text-white cursor-pointer transition-colors"
               >
                 Close
               </button>

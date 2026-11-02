@@ -25,6 +25,7 @@ import { API_URL } from "@/lib/api-client";
 import { FileUploadProgressLoader, FileUploadStatus } from "@/components/ui/FileUploadProgressLoader";
 import { getAssetUrl } from "@/lib/utils";
 import { DEFAULT_HERO_IMAGE } from "@/lib/site-data";
+import { CareerThumbnail } from "@/components/admin/careers/CareersAdmin";
 
 export interface CustomField {
   key: string;
@@ -64,6 +65,7 @@ export function CareersView() {
   const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [candidatePhoto, setCandidatePhoto] = useState<string>("");
+  const [candidatePhotoPreview, setCandidatePhotoPreview] = useState<string>("");
   const [uploadingPhoto, setUploadingPhoto] = useState<boolean>(false);
   const [photoUploadStatus, setPhotoUploadStatus] = useState<FileUploadStatus>({
     isUploading: false,
@@ -134,6 +136,7 @@ export function CareersView() {
     setEmail("");
     setPhone("");
     setCandidatePhoto("");
+    setCandidatePhotoPreview("");
     setPhotoUploadStatus({ isUploading: false, progress: 0, step: "preparing" });
     setCoverNote("");
     setResumeUrl("");
@@ -245,6 +248,7 @@ export function CareersView() {
     const previewUrl = URL.createObjectURL(file);
     const formattedSize = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
 
+    setCandidatePhotoPreview(previewUrl);
     setPhotoUploadStatus({
       isUploading: true,
       fileName: file.name,
@@ -364,6 +368,26 @@ export function CareersView() {
 
     if (!fullName.trim() || !email.trim() || !phone.trim()) {
       setErrorMsg("Please fill in your Name, Email, and Phone number.");
+      return;
+    }
+
+    if (uploadingPhoto || photoUploadStatus.isUploading) {
+      setErrorMsg("Please wait for candidate photograph to finish uploading.");
+      return;
+    }
+
+    if (!candidatePhoto.trim()) {
+      setErrorMsg("Please upload your Candidate Photograph / Passport Photo.");
+      return;
+    }
+
+    if (uploadingResume || resumeUploadStatus.isUploading) {
+      setErrorMsg("Please wait for your resume file to finish uploading.");
+      return;
+    }
+
+    if (!resumeUrl.trim()) {
+      setErrorMsg("Please upload your Resume / CV file (PDF / Word).");
       return;
     }
 
@@ -565,21 +589,13 @@ export function CareersView() {
 
                         {/* 2. Image */}
                         <td className="py-4 px-4 text-center">
-                          {post.image ? (
-                            <img
-                              src={post.image}
-                              alt={post.title}
-                              className="w-11 h-11 object-cover border border-slate-200 dark:border-slate-700 shadow-2xs mx-auto"
-                              style={{ borderRadius: "var(--logo-radius, 0.75rem)" }}
-                            />
-                          ) : (
-                            <div
-                              className="w-11 h-11 bg-[var(--navy)] text-[var(--gold)] font-extrabold flex items-center justify-center shadow-xs mx-auto text-xs border border-white/10"
-                              style={{ borderRadius: "var(--logo-radius, 0.75rem)" }}
-                            >
-                              {post.title.substring(0, 2).toUpperCase()}
-                            </div>
-                          )}
+                          <CareerThumbnail
+                            src={post.image}
+                            title={post.title}
+                            className="w-11 h-11 object-cover border border-slate-200 dark:border-slate-700 shadow-2xs mx-auto"
+                            style={{ borderRadius: "var(--logo-radius, 0.75rem)" }}
+                            fallbackClassName="w-11 h-11 bg-[var(--navy)] text-[var(--gold)] font-extrabold flex items-center justify-center shadow-xs mx-auto text-xs border border-white/10 shrink-0"
+                          />
                         </td>
 
                         {/* 3. Name of Post */}
@@ -637,22 +653,26 @@ export function CareersView() {
       {/* INTERACTIVE APPLICATION FORM MODAL */}
       {/* ========================================================= */}
       {selectedPost && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--navy-deep)]/75 backdrop-blur-sm overflow-y-auto">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--navy-deep)]/75 backdrop-blur-sm"
+          onClick={() => setSelectedPost(null)}
+        >
           <div
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-2xl shadow-2xl p-6 sm:p-8 space-y-6 my-8 max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-2xl shadow-2xl my-auto max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
             style={{ borderRadius: "var(--card-radius, 1.5rem)" }}
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+            {/* Stable / Fixed Header */}
+            <div className="shrink-0 px-6 sm:px-8 py-5 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 z-10 flex items-start justify-between gap-4">
               <div>
                 <span
-                  className="inline-flex items-center gap-1 px-3 py-1 bg-[var(--gold)]/15 text-[var(--navy)] font-bold text-[11px] border border-[var(--gold)]/30"
+                  className="inline-flex items-center gap-1 px-3 py-1 bg-[var(--gold)]/15 text-[var(--navy)] dark:text-amber-300 font-bold text-[11px] border border-[var(--gold)]/30"
                   style={{ borderRadius: "var(--badge-radius, 9999px)" }}
                 >
                   <Briefcase className="w-3.5 h-3.5" />
                   Applying for Position
                 </span>
-                <h3 className="text-xl font-bold text-[var(--navy)] dark:text-white mt-1 font-[var(--font-display)]">
+                <h3 className="text-xl font-bold text-[var(--navy)] dark:text-white mt-1.5 font-[var(--font-display)]">
                   {selectedPost.title}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -660,135 +680,346 @@ export function CareersView() {
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedPost(null)}
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors shrink-0"
+                title="Close"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {errorMsg && (
-              <div
-                className="p-3.5 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-300 text-xs"
-                style={{ borderRadius: "var(--card-radius, 1rem)" }}
-              >
-                {errorMsg}
-              </div>
-            )}
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleSubmitApplication} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto custom-scrollbar px-6 sm:px-8 py-6 space-y-4 text-xs text-slate-700 dark:text-slate-300">
+                {errorMsg && (
+                  <div
+                    className="p-3.5 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-300 text-xs"
+                    style={{ borderRadius: "var(--card-radius, 1rem)" }}
+                  >
+                    {errorMsg}
+                  </div>
+                )}
 
-            <form onSubmit={handleSubmitApplication} className="space-y-4 text-xs text-slate-700 dark:text-slate-300">
-              {/* Applying for Position (Readonly / Disabled Input Field) */}
-              <div>
-                <label className="block font-semibold text-[var(--navy)] dark:text-slate-200 mb-1">
-                  Applying for Position
-                </label>
-                <input
-                  type="text"
-                  disabled
-                  readOnly
-                  value={selectedPost.title}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold cursor-not-allowed outline-none select-all shadow-2xs"
-                  style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Full Name */}
+                {/* Applying for Position (Readonly / Disabled Input Field) */}
                 <div>
                   <label className="block font-semibold text-[var(--navy)] dark:text-slate-200 mb-1">
-                    Full Name <span className="text-red-500">*</span>
+                    Applying for Position
                   </label>
                   <input
                     type="text"
-                    required
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter your full name"
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)]/40 outline-none transition-all"
+                    disabled
+                    readOnly
+                    value={selectedPost.title}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold cursor-not-allowed outline-none select-all shadow-2xs"
                     style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                   />
                 </div>
 
-                {/* Contact Phone */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Full Name */}
+                  <div>
+                    <label className="block font-semibold text-[var(--navy)] dark:text-slate-200 mb-1">
+                      Full Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Enter your full name"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)]/40 outline-none transition-all"
+                      style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
+                    />
+                  </div>
+
+                  {/* Contact Phone */}
+                  <div>
+                    <label className="block font-semibold text-[var(--navy)] dark:text-slate-200 mb-1">
+                      Phone Number <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+91 Mobile number"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)]/40 outline-none transition-all"
+                      style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
+                    />
+                  </div>
+                </div>
+
+                {/* Email */}
                 <div>
                   <label className="block font-semibold text-[var(--navy)] dark:text-slate-200 mb-1">
-                    Phone Number <span className="text-red-500">*</span>
+                    Email Address <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="tel"
+                    type="email"
                     required
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+91 Mobile number"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your.email@example.com"
                     className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)]/40 outline-none transition-all"
                     style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                   />
                 </div>
-              </div>
 
-              {/* Email */}
-              <div>
-                <label className="block font-semibold text-[var(--navy)] dark:text-slate-200 mb-1">
-                  Email Address <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your.email@example.com"
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)]/40 outline-none transition-all"
-                  style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
-                />
-              </div>
+                {/* Candidate Photograph / Passport Image Field */}
+                <div
+                  className="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2"
+                  style={{ borderRadius: "var(--card-radius, 1rem)" }}
+                >
+                  <label className="block font-semibold text-[var(--navy)] dark:text-slate-200">
+                    Candidate Photograph / Passport Photo <span className="text-red-500">*</span>
+                  </label>
 
-              {/* Candidate Photograph / Passport Image Field */}
-              <div
-                className="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2"
-                style={{ borderRadius: "var(--card-radius, 1rem)" }}
-              >
-                <label className="block font-semibold text-[var(--navy)] dark:text-slate-200">
-                  Candidate Photograph / Passport Photo (Optional)
-                </label>
-
-                {candidatePhoto ? (
-                  <div className="flex items-center gap-3 bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
-                    <img
-                      src={candidatePhoto}
-                      alt="Candidate Photo Preview"
-                      className="w-14 h-14 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shadow-2xs shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-bold">
-                        <CheckCircle2 className="w-4 h-4" />
-                        <span>Photo Attached Successfully</span>
+                  {candidatePhoto ? (
+                    <div className="flex items-center gap-3 bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                      <img
+                        src={candidatePhotoPreview || getAssetUrl(candidatePhoto)}
+                        alt="Candidate Photo Preview"
+                        className="w-14 h-14 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shadow-2xs shrink-0 bg-slate-100 dark:bg-slate-800"
+                        onError={(e) => {
+                          if (candidatePhotoPreview && e.currentTarget.src !== candidatePhotoPreview) {
+                            e.currentTarget.src = candidatePhotoPreview;
+                          }
+                        }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-bold">
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span>Photo Attached Successfully</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 truncate mt-0.5 font-mono">{candidatePhoto}</p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCandidatePhoto("");
+                            setCandidatePhotoPreview("");
+                          }}
+                          className="text-[11px] text-red-500 hover:text-red-700 font-bold underline mt-1 cursor-pointer"
+                        >
+                          Remove & Re-upload
+                        </button>
                       </div>
-                      <p className="text-[11px] text-slate-400 truncate mt-0.5 font-mono">{candidatePhoto}</p>
-                      <button
-                        type="button"
-                        onClick={() => setCandidatePhoto("")}
-                        className="text-[11px] text-red-500 hover:text-red-700 font-bold underline mt-1 cursor-pointer"
-                      >
-                        Remove & Re-upload
-                      </button>
                     </div>
-                  </div>
-                ) : (
+                  ) : (
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <label
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 border border-dashed border-[var(--primary)] bg-white dark:bg-slate-900 text-[var(--primary)] font-semibold cursor-pointer hover:bg-[var(--primary)]/10 transition-colors"
+                        style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
+                      >
+                        {uploadingPhoto ? (
+                          <LoaderCircle className="w-4 h-4 animate-spin text-[var(--primary)]" />
+                        ) : (
+                          <Upload className="w-4 h-4" />
+                        )}
+                        <span>{uploadingPhoto ? "Uploading Photo..." : "Upload Photo (JPG/PNG)"}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleCandidatePhotoUpload}
+                          className="hidden"
+                        />
+                      </label>
+
+                      <input
+                        type="text"
+                        disabled
+                        readOnly
+                        value={candidatePhoto}
+                        placeholder="Candidate photo required * (upload photo using button above)"
+                        className="flex-1 px-3.5 py-2 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono text-xs cursor-not-allowed outline-none select-all"
+                        style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
+                      />
+                    </div>
+                  )}
+
+                  {photoUploadStatus.isUploading && (
+                    <div className="pt-2">
+                      <FileUploadProgressLoader status={photoUploadStatus} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Cover Note */}
+                <div>
+                  <label className="block font-semibold text-[var(--navy)] dark:text-slate-200 mb-1">Cover Note / Brief Intro</label>
+                  <textarea
+                    rows={3}
+                    value={coverNote}
+                    onChange={(e) => setCoverNote(e.target.value)}
+                    placeholder="Tell us briefly about your teaching experience, subjects, or why you want to join Indian Public School..."
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)]/40 outline-none transition-all"
+                    style={{ borderRadius: "var(--card-radius, 0.75rem)" }}
+                  />
+                </div>
+
+                {/* DYNAMIC APPLICATION FORM QUESTIONS DEFINED FOR THIS POST */}
+                {Array.isArray(selectedPost.applicationFields) &&
+                  selectedPost.applicationFields.length > 0 && (
+                    <div
+                      className="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3"
+                      style={{ borderRadius: "var(--card-radius, 1rem)" }}
+                    >
+                      <h4 className="font-bold text-[var(--navy)] dark:text-white text-xs font-[var(--font-display)]">
+                        Additional Position Questions
+                      </h4>
+                      {selectedPost.applicationFields.map((q) => (
+                        <div key={q.key}>
+                          <label className="block font-semibold mb-1">
+                            {q.label} {q.required && <span className="text-red-500">*</span>}
+                          </label>
+
+                          {q.type === "image" || q.type === "file" ? (
+                            <div className="space-y-2">
+                              {customAnswers[q.key] ? (
+                                <div className="flex items-center gap-3 p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                                  {q.type === "image" ||
+                                  customAnswers[q.key].match(/\.(jpeg|jpg|gif|png|webp|svg|avif)($|\?)/i) ? (
+                                    <img
+                                      src={getAssetUrl(customAnswers[q.key])}
+                                      alt={q.label}
+                                      className="w-12 h-12 rounded-lg object-cover border border-slate-200 shadow-2xs shrink-0"
+                                    />
+                                  ) : (
+                                    <FileText className="w-8 h-8 text-[#1a5d9c] shrink-0" />
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-bold">
+                                      <CheckCircle2 className="w-3.5 h-3.5" />
+                                      <span>File Uploaded</span>
+                                    </div>
+                                    <span className="text-[11px] text-slate-500 truncate block font-mono">
+                                      {customAnswers[q.key]}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setCustomAnswers((prev) => {
+                                          const next = { ...prev };
+                                          delete next[q.key];
+                                          return next;
+                                        })
+                                      }
+                                      className="text-[11px] text-red-500 hover:text-red-700 underline font-semibold mt-0.5 cursor-pointer"
+                                    >
+                                      Remove & Replace
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex flex-col sm:flex-row gap-2">
+                                  <label
+                                    className="flex items-center justify-center gap-2 px-3.5 py-2 border border-dashed border-[var(--primary)] bg-white dark:bg-slate-900 text-[var(--primary)] font-semibold cursor-pointer hover:bg-[var(--primary)]/10 transition-colors"
+                                    style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
+                                  >
+                                    {uploadingDynamicKey === q.key ? (
+                                      <LoaderCircle className="w-4 h-4 animate-spin text-[var(--primary)]" />
+                                    ) : (
+                                      <Upload className="w-4 h-4" />
+                                    )}
+                                    <span>
+                                      {uploadingDynamicKey === q.key
+                                        ? "Uploading..."
+                                        : q.type === "image"
+                                        ? `Upload ${q.label} Image`
+                                        : `Upload ${q.label} Document`}
+                                    </span>
+                                    <input
+                                      type="file"
+                                      accept={q.type === "image" ? "image/*" : ".pdf,.doc,.docx,image/*"}
+                                      onChange={(e) => {
+                                        const f = e.target.files?.[0];
+                                        if (f) void handleDynamicFileUpload(q.key, f);
+                                      }}
+                                      className="hidden"
+                                    />
+                                  </label>
+                                  <input
+                                    type="text"
+                                    disabled
+                                    readOnly
+                                    value={customAnswers[q.key] || ""}
+                                    placeholder="No file attached (upload using button)"
+                                    className="flex-1 px-3 py-2 border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono text-xs cursor-not-allowed outline-none select-all"
+                                    style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          ) : q.type === "textarea" ? (
+                            <textarea
+                              rows={2}
+                              required={q.required}
+                              value={customAnswers[q.key] || ""}
+                              onChange={(e) =>
+                                setCustomAnswers({ ...customAnswers, [q.key]: e.target.value })
+                              }
+                              className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none"
+                              style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
+                            />
+                          ) : q.type === "select" && q.options ? (
+                            <select
+                              required={q.required}
+                              value={customAnswers[q.key] || ""}
+                              onChange={(e) =>
+                                setCustomAnswers({ ...customAnswers, [q.key]: e.target.value })
+                              }
+                              className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none"
+                              style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
+                            >
+                              <option value="">Select option...</option>
+                              {q.options.map((opt) => (
+                                <option key={opt} value={opt}>
+                                  {opt}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input
+                              type={q.type || "text"}
+                              required={q.required}
+                              value={customAnswers[q.key] || ""}
+                              onChange={(e) =>
+                                setCustomAnswers({ ...customAnswers, [q.key]: e.target.value })
+                              }
+                              placeholder={`Enter ${q.label}`}
+                              className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none"
+                              style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                {/* Resume Document Upload / URL Attachment */}
+                <div
+                  className="p-4 bg-[var(--primary)]/5 dark:bg-slate-800/60 border border-[var(--primary)]/20 dark:border-slate-700 space-y-2"
+                  style={{ borderRadius: "var(--card-radius, 1rem)" }}
+                >
+                  <label className="block font-bold text-[var(--navy)] dark:text-white">
+                    Resume / CV File (PDF / Word) <span className="text-red-500">*</span>
+                  </label>
+
                   <div className="flex flex-col sm:flex-row gap-2">
                     <label
                       className="flex items-center justify-center gap-2 px-4 py-2.5 border border-dashed border-[var(--primary)] bg-white dark:bg-slate-900 text-[var(--primary)] font-semibold cursor-pointer hover:bg-[var(--primary)]/10 transition-colors"
                       style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                     >
-                      {uploadingPhoto ? (
+                      {uploadingResume ? (
                         <LoaderCircle className="w-4 h-4 animate-spin text-[var(--primary)]" />
                       ) : (
                         <Upload className="w-4 h-4" />
                       )}
-                      <span>{uploadingPhoto ? "Uploading Photo..." : "Upload Photo (JPG/PNG)"}</span>
+                      <span>{uploadingResume ? "Uploading Resume..." : "Upload Resume File"}</span>
                       <input
                         type="file"
-                        accept="image/*"
-                        onChange={handleCandidatePhotoUpload}
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleResumeFileUpload}
                         className="hidden"
                       />
                     </label>
@@ -797,242 +1028,44 @@ export function CareersView() {
                       type="text"
                       disabled
                       readOnly
-                      value={candidatePhoto}
-                      placeholder="No photo attached (upload photo using button)"
+                      value={resumeUrl}
+                      placeholder="Resume file required * (upload using button above)"
                       className="flex-1 px-3.5 py-2 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono text-xs cursor-not-allowed outline-none select-all"
                       style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                     />
-                  </div>
-                )}
-
-                {photoUploadStatus.isUploading && (
-                  <div className="pt-2">
-                    <FileUploadProgressLoader status={photoUploadStatus} />
-                  </div>
-                )}
-              </div>
-
-              {/* Cover Note */}
-              <div>
-                <label className="block font-semibold text-[var(--navy)] dark:text-slate-200 mb-1">Cover Note / Brief Intro</label>
-                <textarea
-                  rows={3}
-                  value={coverNote}
-                  onChange={(e) => setCoverNote(e.target.value)}
-                  placeholder="Tell us briefly about your teaching experience, subjects, or why you want to join Indian Public School..."
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)]/40 outline-none transition-all"
-                  style={{ borderRadius: "var(--card-radius, 0.75rem)" }}
-                />
-              </div>
-
-              {/* DYNAMIC APPLICATION FORM QUESTIONS DEFINED FOR THIS POST */}
-              {Array.isArray(selectedPost.applicationFields) &&
-                selectedPost.applicationFields.length > 0 && (
-                  <div
-                    className="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3"
-                    style={{ borderRadius: "var(--card-radius, 1rem)" }}
-                  >
-                    <h4 className="font-bold text-[var(--navy)] dark:text-white text-xs font-[var(--font-display)]">
-                      Additional Position Questions
-                    </h4>
-                    {selectedPost.applicationFields.map((q) => (
-                      <div key={q.key}>
-                        <label className="block font-semibold mb-1">
-                          {q.label} {q.required && <span className="text-red-500">*</span>}
-                        </label>
-
-                        {q.type === "image" || q.type === "file" ? (
-                          <div className="space-y-2">
-                            {customAnswers[q.key] ? (
-                              <div className="flex items-center gap-3 p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
-                                {q.type === "image" ||
-                                customAnswers[q.key].match(/\.(jpeg|jpg|gif|png|webp|svg|avif)($|\?)/i) ? (
-                                  <img
-                                    src={customAnswers[q.key]}
-                                    alt={q.label}
-                                    className="w-12 h-12 rounded-lg object-cover border border-slate-200 shadow-2xs shrink-0"
-                                  />
-                                ) : (
-                                  <FileText className="w-8 h-8 text-[#1a5d9c] shrink-0" />
-                                )}
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-bold">
-                                    <CheckCircle2 className="w-3.5 h-3.5" />
-                                    <span>File Uploaded</span>
-                                  </div>
-                                  <span className="text-[11px] text-slate-500 truncate block font-mono">
-                                    {customAnswers[q.key]}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      setCustomAnswers((prev) => {
-                                        const next = { ...prev };
-                                        delete next[q.key];
-                                        return next;
-                                      })
-                                    }
-                                    className="text-[11px] text-red-500 hover:text-red-700 underline font-semibold mt-0.5 cursor-pointer"
-                                  >
-                                    Remove & Replace
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="flex flex-col sm:flex-row gap-2">
-                                <label
-                                  className="flex items-center justify-center gap-2 px-3.5 py-2 border border-dashed border-[var(--primary)] bg-white dark:bg-slate-900 text-[var(--primary)] font-semibold cursor-pointer hover:bg-[var(--primary)]/10 transition-colors"
-                                  style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
-                                >
-                                  {uploadingDynamicKey === q.key ? (
-                                    <LoaderCircle className="w-4 h-4 animate-spin text-[var(--primary)]" />
-                                  ) : (
-                                    <Upload className="w-4 h-4" />
-                                  )}
-                                  <span>
-                                    {uploadingDynamicKey === q.key
-                                      ? "Uploading..."
-                                      : q.type === "image"
-                                      ? `Upload ${q.label} Image`
-                                      : `Upload ${q.label} Document`}
-                                  </span>
-                                  <input
-                                    type="file"
-                                    accept={q.type === "image" ? "image/*" : ".pdf,.doc,.docx,image/*"}
-                                    onChange={(e) => {
-                                      const f = e.target.files?.[0];
-                                      if (f) void handleDynamicFileUpload(q.key, f);
-                                    }}
-                                    className="hidden"
-                                  />
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  readOnly
-                                  value={customAnswers[q.key] || ""}
-                                  placeholder="No file attached (upload using button)"
-                                  className="flex-1 px-3 py-2 border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono text-xs cursor-not-allowed outline-none select-all"
-                                  style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
-                                />
-                              </div>
-                            )}
-                          </div>
-                        ) : q.type === "textarea" ? (
-                          <textarea
-                            rows={2}
-                            required={q.required}
-                            value={customAnswers[q.key] || ""}
-                            onChange={(e) =>
-                              setCustomAnswers({ ...customAnswers, [q.key]: e.target.value })
-                            }
-                            className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none"
-                            style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
-                          />
-                        ) : q.type === "select" && q.options ? (
-                          <select
-                            required={q.required}
-                            value={customAnswers[q.key] || ""}
-                            onChange={(e) =>
-                              setCustomAnswers({ ...customAnswers, [q.key]: e.target.value })
-                            }
-                            className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none"
-                            style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
-                          >
-                            <option value="">Select option...</option>
-                            {q.options.map((opt) => (
-                              <option key={opt} value={opt}>
-                                {opt}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          <input
-                            type={q.type || "text"}
-                            required={q.required}
-                            value={customAnswers[q.key] || ""}
-                            onChange={(e) =>
-                              setCustomAnswers({ ...customAnswers, [q.key]: e.target.value })
-                            }
-                            placeholder={`Enter ${q.label}`}
-                            className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none"
-                            style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
-                          />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-              {/* Resume Document Upload / URL Attachment */}
-              <div
-                className="p-4 bg-[var(--primary)]/5 dark:bg-slate-800/60 border border-[var(--primary)]/20 dark:border-slate-700 space-y-2"
-                style={{ borderRadius: "var(--card-radius, 1rem)" }}
-              >
-                <label className="block font-bold text-[var(--navy)] dark:text-white">
-                  Resume / CV File (PDF / Word)
-                </label>
-
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <label
-                    className="flex items-center justify-center gap-2 px-4 py-2.5 border border-dashed border-[var(--primary)] bg-white dark:bg-slate-900 text-[var(--primary)] font-semibold cursor-pointer hover:bg-[var(--primary)]/10 transition-colors"
-                    style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
-                  >
-                    {uploadingResume ? (
-                      <LoaderCircle className="w-4 h-4 animate-spin text-[var(--primary)]" />
-                    ) : (
-                      <Upload className="w-4 h-4" />
+                    {resumeUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setResumeUrl("")}
+                        className="px-3 py-2 text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-950/30 rounded-xl font-bold cursor-pointer text-xs shrink-0"
+                        title="Remove attached resume"
+                      >
+                        Clear
+                      </button>
                     )}
-                    <span>{uploadingResume ? "Uploading Resume..." : "Upload Resume File"}</span>
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      onChange={handleResumeFileUpload}
-                      className="hidden"
-                    />
-                  </label>
+                  </div>
 
-                  <input
-                    type="text"
-                    disabled
-                    readOnly
-                    value={resumeUrl}
-                    placeholder="No resume file attached (upload using button)"
-                    className="flex-1 px-3.5 py-2 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono text-xs cursor-not-allowed outline-none select-all"
-                    style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
-                  />
+                  {(resumeUploadStatus.isUploading || resumeUploadStatus.step === "done" || resumeUploadStatus.step === "error") && (
+                    <div className="pt-2">
+                      <FileUploadProgressLoader status={resumeUploadStatus} />
+                    </div>
+                  )}
+
                   {resumeUrl && (
-                    <button
-                      type="button"
-                      onClick={() => setResumeUrl("")}
-                      className="px-3 py-2 text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-950/30 rounded-xl font-bold cursor-pointer text-xs shrink-0"
-                      title="Remove attached resume"
-                    >
-                      Clear
-                    </button>
+                    <div className="flex items-center gap-2 text-[11px] text-emerald-600 font-semibold pt-1">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Resume attached successfully!</span>
+                    </div>
                   )}
                 </div>
-
-                {(resumeUploadStatus.isUploading || resumeUploadStatus.step === "done" || resumeUploadStatus.step === "error") && (
-                  <div className="pt-2">
-                    <FileUploadProgressLoader status={resumeUploadStatus} />
-                  </div>
-                )}
-
-                {resumeUrl && (
-                  <div className="flex items-center gap-2 text-[11px] text-emerald-600 font-semibold pt-1">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Resume attached successfully!</span>
-                  </div>
-                )}
               </div>
 
-              {/* Action buttons */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+              {/* Action buttons (Stable / Fixed footer) */}
+              <div className="shrink-0 px-6 sm:px-8 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xs flex items-center justify-end gap-3 z-10">
                 <button
                   type="button"
                   onClick={() => setSelectedPost(null)}
-                  className="px-5 py-2.5 font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                  className="px-5 py-2.5 font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors"
                   style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                 >
                   Cancel
@@ -1040,7 +1073,7 @@ export function CareersView() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-6 py-2.5 font-bold bg-[var(--primary)] hover:bg-[var(--navy)] text-[var(--gold)] hover:text-white shadow-md flex items-center gap-2 transition-all cursor-pointer"
+                  className="px-6 py-2.5 font-bold bg-[var(--primary)] hover:bg-[var(--navy)] text-[var(--gold)] hover:text-white shadow-md flex items-center gap-2 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                   style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                 >
                   {submitting ? (
