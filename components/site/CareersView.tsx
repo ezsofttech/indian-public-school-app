@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { API_URL } from "@/lib/api-client";
 import { FileUploadProgressLoader, FileUploadStatus } from "@/components/ui/FileUploadProgressLoader";
-import { getAssetUrl } from "@/lib/utils";
+import { getAssetUrl, formatPhoneNumber, handlePhoneKeyDown, isPhoneField } from "@/lib/utils";
 import { DEFAULT_HERO_IMAGE } from "@/lib/site-data";
 import { CareerThumbnail } from "@/components/admin/careers/CareersAdmin";
 
@@ -741,8 +741,10 @@ export function CareersView() {
                     <input
                       type="tel"
                       required
+                      maxLength={13}
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      onKeyDown={handlePhoneKeyDown}
+                      onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
                       placeholder="+91 Mobile number"
                       className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)]/40 outline-none transition-all"
                       style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
@@ -980,13 +982,18 @@ export function CareersView() {
                             </select>
                           ) : (
                             <input
-                              type={q.type || "text"}
+                              type={isPhoneField(q.key) || isPhoneField(q.label) ? "tel" : (q.type || "text")}
                               required={q.required}
+                              maxLength={isPhoneField(q.key) || isPhoneField(q.label) ? 13 : undefined}
                               value={customAnswers[q.key] || ""}
-                              onChange={(e) =>
-                                setCustomAnswers({ ...customAnswers, [q.key]: e.target.value })
-                              }
-                              placeholder={`Enter ${q.label}`}
+                              onKeyDown={isPhoneField(q.key) || isPhoneField(q.label) ? handlePhoneKeyDown : undefined}
+                              onChange={(e) => {
+                                const val = isPhoneField(q.key) || isPhoneField(q.label)
+                                  ? formatPhoneNumber(e.target.value)
+                                  : e.target.value;
+                                setCustomAnswers({ ...customAnswers, [q.key]: val });
+                              }}
+                              placeholder={isPhoneField(q.key) || isPhoneField(q.label) ? "+91 Mobile number" : `Enter ${q.label}`}
                               className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none"
                               style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                             />
