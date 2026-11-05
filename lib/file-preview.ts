@@ -29,7 +29,7 @@ export function normalizePdfUrl(url?: any): string {
       const format = urlObj.searchParams.get("format") || "pdf";
       const pathParts = urlObj.pathname.split("/");
       const cloudIdx = pathParts.indexOf("v1_1");
-      const cloudName = cloudIdx !== -1 ? pathParts[cloudIdx + 1] : "dnw7mgysa";
+      const cloudName = cloudIdx !== -1 ? pathParts[cloudIdx + 1] : "";
 
       if (publicId && cloudName) {
         const decodedPublicId = decodeURIComponent(publicId);
@@ -40,15 +40,6 @@ export function normalizePdfUrl(url?: any): string {
     } catch {
       // Ignore URL parse error and proceed with original clean string
     }
-  }
-
-  // ONLY for PDFs: If Cloudinary URL has raw/upload, map to image pipeline where inline PDF rendering is supported
-  if (
-    isPdfFile(clean) &&
-    clean.includes("res.cloudinary.com") &&
-    clean.includes("/raw/upload/")
-  ) {
-    clean = clean.replace("/raw/upload/", "/image/upload/");
   }
 
   // If an image URL mistakenly contains /raw/upload/, restore it to /image/upload/ (Cloudinary requirement)
@@ -175,10 +166,6 @@ export function getCloudinaryPdfThumbnailUrl(url?: string | null, page = 1, widt
   let trimmed = normalizePdfUrl(url);
 
   if (isCloudinaryUrl(trimmed)) {
-    if (trimmed.includes("res.cloudinary.com/niefrrkx")) {
-      trimmed = trimmed.replace("res.cloudinary.com/niefrrkx", "res.cloudinary.com/dnw7mgysa");
-    }
-
     let cdnUrl = trimmed;
     // Map any Cloudinary raw upload of PDFs to the image pipeline where page previews are rendered
     if (cdnUrl.includes("/raw/upload/")) {
@@ -402,5 +389,3 @@ export function getDocumentViewerUrl(url?: string | null): string {
   }
   return getGoogleDocsViewerUrl(url);
 }
-
-

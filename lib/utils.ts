@@ -6,7 +6,21 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getCloudinaryRootFolder(): string {
-  return (process.env.NEXT_PUBLIC_CLOUDINARY_ROOT_FOLDER || 'ips-education/assets').replace(/^\/+|\/+$/g, '');
+  const folder = process.env.NEXT_PUBLIC_CLOUDINARY_ROOT_FOLDER;
+  if (!folder?.trim()) {
+    console.error('NEXT_PUBLIC_CLOUDINARY_ROOT_FOLDER is required to build Cloudinary asset URLs');
+    return '';
+  }
+  return folder.replace(/^\/+|\/+$/g, '');
+}
+
+export function getCloudinaryBaseUrl(): string {
+  const baseUrl = process.env.NEXT_PUBLIC_CLOUDINARY_BASE_URL?.trim().replace(/\/+$/, '');
+  if (!baseUrl) {
+    console.error('NEXT_PUBLIC_CLOUDINARY_BASE_URL is required to build Cloudinary asset URLs');
+    return '';
+  }
+  return baseUrl;
 }
 
 
@@ -257,7 +271,8 @@ export function getAssetUrl(url?: any): string {
         fixedUrl.toLowerCase().includes('aakashfoundationlogo') ||
         fixedUrl.toLowerCase().includes('file_xpnvia')
       ) {
-        fixedUrl = 'https://res.cloudinary.com/dnw7mgysa/image/upload/ips-education/assets/Settings/Logos/AakashFoundationLogo.png';
+        const cloudinaryBase = getCloudinaryBaseUrl();
+        fixedUrl = `${cloudinaryBase}/image/upload/ips-education/assets/Settings/Logos/AakashFoundationLogo.png`;
       }
 
       // If preset is 'default', check if this is a Settings asset that is available locally
@@ -357,7 +372,7 @@ export function getAssetUrl(url?: any): string {
 
   const lowerPath = cleanPath.toLowerCase();
   let resourcePrefix = 'image/upload';
-  const cloudinaryBase = (process.env.NEXT_PUBLIC_CLOUDINARY_BASE_URL || 'https://res.cloudinary.com/dnw7mgysa').replace(/\/+$/, '');
+  const cloudinaryBase = getCloudinaryBaseUrl();
 
   if (
     lowerPath.startsWith('video/upload/') ||
@@ -508,4 +523,3 @@ export function isPhoneField(fieldName: string): boolean {
   const lower = fieldName.toLowerCase();
   return lower.includes("phone") || lower.includes("contact") || lower === "mobile";
 }
-

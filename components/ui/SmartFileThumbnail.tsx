@@ -190,7 +190,13 @@ export function SmartFileThumbnail({
           (currentSrc.startsWith("/") || currentSrc.startsWith("assets/"))
         ) {
           const cleanSub = currentSrc.replace(/^\/?(assets\/)?/, "").replace(/^\/+/, "");
-          const cloudUrl = `https://res.cloudinary.com/dnw7mgysa/image/upload/f_auto,q_auto/ips-education/assets/${cleanSub}`;
+          const cloudBase = process.env.NEXT_PUBLIC_CLOUDINARY_BASE_URL?.trim().replace(/\/+$/, "");
+          if (!cloudBase) {
+            console.error("NEXT_PUBLIC_CLOUDINARY_BASE_URL is required for Cloudinary fallback URLs");
+            setHasError(true);
+            return;
+          }
+          const cloudUrl = `${cloudBase}/image/upload/f_auto,q_auto/ips-education/assets/${cleanSub}`;
           if (currentSrc !== cloudUrl) {
             setCurrentSrc(cloudUrl);
             return;

@@ -1351,7 +1351,12 @@ export function HeaderFooterSettingsCard({
                     onError={(e) => {
                       const target = e.currentTarget as HTMLImageElement;
                       if (!target.src.includes("IPSLogo.png")) {
-                        target.src = "https://res.cloudinary.com/dnw7mgysa/image/upload/ips-education/assets/Settings/Logos/IPSLogo.png";
+                        const cloudBase = process.env.NEXT_PUBLIC_CLOUDINARY_BASE_URL?.trim().replace(/\/+$/, "");
+                        if (!cloudBase) {
+                          console.error("NEXT_PUBLIC_CLOUDINARY_BASE_URL is required for logo fallback URLs");
+                          return;
+                        }
+                        target.src = `${cloudBase}/image/upload/ips-education/assets/Settings/Logos/IPSLogo.png`;
                       }
                     }}
                   />
@@ -1372,7 +1377,12 @@ export function HeaderFooterSettingsCard({
                       onError={(e) => {
                         const target = e.currentTarget as HTMLImageElement;
                         if (!target.src.includes("AakashFoundationLogo.png")) {
-                          target.src = "https://res.cloudinary.com/dnw7mgysa/image/upload/ips-education/assets/Settings/Logos/AakashFoundationLogo.png";
+                          const cloudBase = process.env.NEXT_PUBLIC_CLOUDINARY_BASE_URL?.trim().replace(/\/+$/, "");
+                          if (!cloudBase) {
+                            console.error("NEXT_PUBLIC_CLOUDINARY_BASE_URL is required for logo fallback URLs");
+                            return;
+                          }
+                          target.src = `${cloudBase}/image/upload/ips-education/assets/Settings/Logos/AakashFoundationLogo.png`;
                         }
                       }}
                     />
