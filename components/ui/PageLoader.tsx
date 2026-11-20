@@ -15,6 +15,7 @@ export function PageLoader({
   variant = "full",
   className,
 }: PageLoaderProps) {
+  const dark = className?.includes("bg-slate-900") ?? false;
   if (variant === "inline") {
     return (
       <div className={cn("flex items-center justify-center gap-3 py-8 text-[var(--navy)]", className)}>
@@ -36,12 +37,12 @@ export function PageLoader({
   return (
     <div
       className={cn(
-        "min-h-[65vh] flex flex-col items-center justify-center p-6 text-center bg-slate-50/70",
+        "min-h-[65vh] flex flex-col items-center justify-center p-6 text-center",
         variant === "full" && "w-full flex-1",
         className
       )}
     >
-      <div className="relative flex items-center justify-center mb-6">
+      <div className="relative flex items-center justify-center mb-7">
         {/* Outer glowing pulsing aura */}
         <div className="absolute size-24 rounded-full bg-[var(--gold)]/20 blur-xl animate-pulse" />
         
@@ -71,21 +72,24 @@ export function PageLoader({
 
       {/* School Name Tag */}
       <div
-        className="inline-flex items-center gap-1.5 border border-[var(--gold)]/30 bg-[var(--gold)]/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[var(--navy)] shadow-xs mb-2"
+        className={cn(
+          "inline-flex items-center gap-1.5 border px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] shadow-xs mb-3",
+          dark ? "border-[var(--gold)]/40 bg-[var(--gold)]/10 text-[var(--gold)]" : "border-[var(--gold)]/30 bg-[var(--gold)]/10 text-[var(--navy)]"
+        )}
         style={{ borderRadius: "var(--badge-radius, 9999px)" }}
       >
         Indian Public School
       </div>
 
-      <h3 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight font-[var(--font-display)]">
+      <h3 className={cn("text-lg sm:text-xl font-bold tracking-tight font-[var(--font-display)]", dark ? "text-white" : "text-slate-800")}>
         {message}
       </h3>
-      <p className="mt-1 text-xs text-slate-500 max-w-xs leading-relaxed">
+      <p className={cn("mt-2 text-sm max-w-sm leading-relaxed", dark ? "text-slate-300/80" : "text-slate-500")}>
         Preparing official school documents, schedules, and academic information...
       </p>
 
       {/* Progress Dots */}
-      <div className="mt-4 flex items-center gap-1.5">
+      <div className="mt-5 flex items-center gap-2">
         <span className="size-2 rounded-full bg-[var(--navy)] animate-bounce" style={{ animationDelay: "0ms" }} />
         <span className="size-2 rounded-full bg-[var(--primary)] animate-bounce" style={{ animationDelay: "150ms" }} />
         <span className="size-2 rounded-full bg-[var(--gold)] animate-bounce" style={{ animationDelay: "300ms" }} />
