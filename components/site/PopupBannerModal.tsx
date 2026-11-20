@@ -12,7 +12,7 @@ export function PopupBannerModal() {
   const siteData = useSiteData();
   const config = getPopupBannerConfig(siteData);
 
-  const DEFAULT_POPUP_IMAGE = "/assets/Settings/Home/Banner_1.jpg";
+  const DEFAULT_POPUP_IMAGE = "/assets/Settings/Home/PopUp.jpg";
   const [isOpen, setIsOpen] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [imgSrc, setImgSrc] = useState(() => getAssetUrl(config.imageUrl) || DEFAULT_POPUP_IMAGE);

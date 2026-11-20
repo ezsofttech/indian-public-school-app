@@ -187,6 +187,12 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
 
   // Load Applications
   const fetchApplications = useCallback(async () => {
+    if (!token) {
+      setApplications([]);
+      setLoadingApps(false);
+      return;
+    }
+
     setLoadingApps(true);
     try {
       const res = await axios.get(`${apiUrl}/careers/applications/all`, {
@@ -206,7 +212,7 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
     } finally {
       setLoadingApps(false);
     }
-  }, [apiUrl, getHeaders]);
+  }, [apiUrl, getHeaders, token]);
 
   useEffect(() => {
     fetchPosts();

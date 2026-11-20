@@ -1440,9 +1440,9 @@ export function HomeSectionsTab({
             {(() => {
               const secVid = homeObj["section-video"]?.[0] || {};
               const sec8 = homeObj["section-8"]?.[0] || {};
-              const DEFAULT_VIDEO = "/Videos/IPSIntroVideo.mp4";
+              const DEFAULT_VIDEO = "/Videos/file_feszan.mp4";
               let videoUrlVal = secVid.introFileUrl || secVid.videoUrl || sec8.introFileUrl || sec8.videoUrl;
-              if (!videoUrlVal || videoUrlVal === "/IPSIntroVideo.mp4") {
+              if (!videoUrlVal || videoUrlVal === "/IPSIntroVideo.mp4" || videoUrlVal === "/Videos/IPSIntroVideo.mp4") {
                 videoUrlVal = DEFAULT_VIDEO;
               }
 

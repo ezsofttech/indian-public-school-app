@@ -177,24 +177,25 @@ export function CloudinaryStorageCard({
   if (!storage || error) {
     return null;
   }
+  if (storage.provider === "local") {
+    return null;
+  }
 
-  // Allowed limit in GB (from provider plan limit, default 25 GB)
-  const limitGB = Number(storage.credits?.limit || 25);
-
-  // Storage used in bytes converted to GB
-  const usedBytes = Number(storage.storage?.usedBytes || 0);
-  const usedGB = usedBytes > 0
-    ? usedBytes / (1024 * 1024 * 1024)
-    : Number(storage.storage?.creditsUsage || 0);
-
-  const usedGBFormatted = usedGB < 0.01 && usedGB > 0 ? "0.01" : usedGB.toFixed(2);
-  const limitGBFormatted = limitGB.toFixed(0);
-  const remainingGB = Math.max(0, limitGB - usedGB);
-  const remainingGBFormatted = remainingGB.toFixed(2);
-
-  const percentUsed = limitGB > 0 ? Math.min(100, (usedGB / limitGB) * 100) : 0;
+  const creditUsed = Number(storage.credits?.usage || 0);
+  const creditLimit = Number(storage.credits?.limit || 0);
+  const creditRemaining = Number(storage.credits?.remaining ?? Math.max(0, creditLimit - creditUsed));
+  const percentUsed = creditLimit > 0 ? Math.min(100, (creditUsed / creditLimit) * 100) : 0;
   const percentRemaining = Math.max(0, 100 - percentUsed).toFixed(1);
-
+  const storageUsed = storage.storage?.usedFormatted || "0 MB";
+  const storageUsedBytes = Number(storage.storage?.usedBytes || 0);
+  const storageLimitBytes = creditLimit > 0 ? creditLimit * 1024 * 1024 * 1024 : 25 * 1024 * 1024 * 1024;
+  const storageRemainingBytes = Math.max(0, storageLimitBytes - storageUsedBytes);
+  const formatStorageGb = (bytes: number) => {
+    const gb = bytes / (1024 * 1024 * 1024);
+    if (gb <= 0) return "0 GB";
+    if (gb < 0.01) return "<0.01 GB";
+    return `${gb.toFixed(2)} GB`;
+  };
   const isCritical = percentUsed >= 90;
   const isWarning = percentUsed >= 75 && !isCritical;
 
@@ -205,51 +206,64 @@ export function CloudinaryStorageCard({
     : "bg-emerald-500";
 
   return (
-    <div className="rounded-xl border border-slate-200/80 bg-white px-4 py-3 shadow-2xs">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        {/* Left: Icon & Used info in GB */}
-        <div className="flex items-center gap-2.5">
-          <div className="grid h-8 w-8 place-items-center rounded-lg bg-blue-50 text-[#1a5d9c]">
-            <Cloud size={16} />
+    <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white via-white to-blue-50/70 px-4 py-4 shadow-sm">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+        <div className="flex min-w-[210px] items-center gap-3">
+          <div className="relative grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#1a5d9c] to-[#102a4c] text-white shadow-md">
+            <Cloud size={20} />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-[#102a4c]">Cloud Storage</h4>
-            <p className="text-[11px] text-slate-500">
-              <span className="font-semibold text-slate-700">Used:</span>{" "}
-              <span title={storage.storage?.usedFormatted || undefined} className="font-medium text-slate-800">
-                {usedGBFormatted}/{limitGBFormatted} GB
-              </span>
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-600">Cloudinary</p>
+            <h4 className="text-sm font-bold text-[#102a4c]">Usage monitor</h4>
+          </div>
+        </div>
+
+        <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-xl border border-slate-100 bg-white/80 px-3 py-2.5">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Used credit</p>
+            <p className="mt-1 text-lg font-extrabold text-[#102a4c]">{creditUsed.toFixed(2)}</p>
+          </div>
+          <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 px-3 py-2.5">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Remaining credit</p>
+            <p className={`mt-1 text-lg font-extrabold ${isCritical ? "text-red-600" : isWarning ? "text-amber-600" : "text-emerald-700"}`}>
+              {creditRemaining.toFixed(2)}
+            </p>
+          </div>
+          <div className="rounded-xl border border-slate-100 bg-white/80 px-3 py-2.5">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Storage used</p>
+            <p className="mt-1 text-lg font-extrabold text-[#102a4c]">
+              {storageUsedBytes > 0 ? formatStorageGb(storageUsedBytes) : storageUsed}
+            </p>
+          </div>
+          <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 px-3 py-2.5">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Storage remaining</p>
+            <p className="mt-1 text-lg font-extrabold text-emerald-700">
+              {formatStorageGb(storageRemainingBytes)}
             </p>
           </div>
         </div>
 
-        {/* Right: Remaining info & Refresh */}
-        <div className="flex items-center gap-3">
-          <div className="text-right">
-            <span className="text-[11px] font-semibold text-slate-500">Remaining: </span>
-            <span className={`text-xs font-bold ${isCritical ? "text-red-600" : isWarning ? "text-amber-600" : "text-emerald-700"}`}>
-              {remainingGBFormatted} GB ({percentRemaining}%)
-            </span>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => fetchStorage(true)}
-            disabled={refreshing}
-            className="grid h-7 w-7 place-items-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer disabled:opacity-50"
-            title="Refresh storage usage"
-          >
-            <RefreshCw size={13} className={refreshing ? "animate-spin text-blue-600" : ""} />
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => fetchStorage(true)}
+          disabled={refreshing}
+          className="grid h-9 w-9 shrink-0 place-items-center self-end rounded-xl border border-slate-200 bg-white text-slate-400 shadow-xs transition hover:bg-slate-50 hover:text-[#1a5d9c] disabled:opacity-50 lg:self-center"
+          title="Refresh Cloudinary usage"
+        >
+          <RefreshCw size={15} className={refreshing ? "animate-spin text-blue-600" : ""} />
+        </button>
       </div>
 
-      {/* Mini Progress Bar */}
-      <div className="mt-2.5 h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+      <div className="mt-3 flex items-center gap-3">
+        <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
         <div
-          className={`h-full rounded-full transition-all duration-500 ${barColor}`}
+            className={`h-full rounded-full transition-all duration-500 ${barColor}`}
           style={{ width: `${Math.min(100, Math.max(3, percentUsed))}%` }}
         />
+        </div>
+        <span className="w-24 text-right text-[11px] font-bold text-slate-500">
+          {percentUsed.toFixed(1)}% used
+        </span>
       </div>
     </div>
   );

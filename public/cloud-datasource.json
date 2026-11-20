@@ -1,74 +1,7 @@
 {
   "home": [
     {
-      "hero": {
-        "content": [
-          {
-            "title": "ADMISSSIONS OPEN 2027-28",
-            "description": "",
-            "h1": "Where Curiosity Meets",
-            "h2": "Excellence",
-            "enableOverlay": true,
-            "showText": true,
-            "overlayColor": "#0a192f",
-            "overlayOpacity": 0.6
-          }
-        ],
-        "fileUrls": [
-          "/Settings/Home/hero-campus.png",
-          "/Album/Achievements.png",
-          "/Album/Competition_1.jpg",
-          "/Album/Awareness.png"
-        ],
-        "slides": [
-          {
-            "bannerUrl": "/Settings/Home/hero-campus.png",
-            "title": "ADMISSSIONS OPEN 2027-28",
-            "h1": "Where Curiosity Meets",
-            "h2": "Excellence",
-            "description": "",
-            "enableOverlay": true,
-            "showText": true,
-            "overlayColor": "#0a192f",
-            "overlayOpacity": 0.6
-          },
-          {
-            "bannerUrl": "/Album/Achievements.png",
-            "title": "",
-            "h1": "",
-            "h2": "",
-            "description": "",
-            "enableOverlay": true,
-            "showText": true,
-            "overlayColor": "#0a192f",
-            "overlayOpacity": 0.6
-          },
-          {
-            "bannerUrl": "/Album/Competition_1.jpg",
-            "title": "Sport",
-            "h1": "",
-            "h2": "",
-            "description": "",
-            "enableOverlay": false,
-            "showText": true,
-            "overlayColor": "#0a192f",
-            "overlayOpacity": 0.6
-          },
-          {
-            "bannerUrl": "/Album/Awareness.png",
-            "title": "",
-            "h1": "",
-            "h2": "",
-            "description": "",
-            "enableOverlay": true,
-            "showText": true,
-            "overlayColor": "#0a192f",
-            "overlayOpacity": 0.6
-          }
-        ],
-        "bannerUrl": "/Settings/Home/hero-campus.png",
-        "slideDuration": 5000
-      },
+      "hero": {},
       "menuCard": [
         {
           "heading": "Admission",
@@ -120,14 +53,7 @@
         "fileUrls": []
       },
       "section-1": [
-        {
-          "heading": "About Our School",
-          "description": [
-            "Indian Public School is a co-educational CBSE school where academic rigour meets genuine care. Our classrooms are designed for enquiry rather than repetition, and our teachers know every child by name, strength and ambition.",
-            "From the earliest years to senior secondary, students are guided to think clearly, speak confidently, collaborate generously and act with integrity."
-          ],
-          "subHeading": "Building Confident Learners for a Changing World"
-        }
+        
       ],
       "section-2": [
         {

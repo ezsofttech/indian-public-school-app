@@ -63,7 +63,8 @@ export function Achievements() {
     Array.isArray(section.fileUrls) ? section.fileUrls[0] : (section.fileUrl as string) || ""
   );
 
-  const fallbackCourseImg = DEFAULT_COURSE_IMAGES[activeIndex % DEFAULT_COURSE_IMAGES.length] || getAssetUrl("/Album/PrePrimary.webp") || "/assets/Settings/Home/Banner_1.jpg";
+  const fallbackCourseImg =
+    DEFAULT_COURSE_IMAGES[activeIndex % DEFAULT_COURSE_IMAGES.length];
 
   const currentImage =
     activeCardImg ||

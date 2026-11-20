@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import axios from "axios";
 import fallbackSiteData from "@/public/cloud-datasource.json";
 import {
@@ -55,6 +56,7 @@ import {
   RotateCcw,
   RefreshCw,
   Briefcase,
+  PanelLeft,
 } from "lucide-react";
 import { RichTextBox } from "@/components/ui/RichTextBox";
 import { CloudinaryGalleryModal, getFileType } from "@/components/admin/CloudinaryGalleryModal";
@@ -115,8 +117,34 @@ import { ResourceView } from "./tables/AdminResourceTable";
 
 
 
-export function AdminConsole() {
-  const [active, setActive] = useState<ResourceKey | "overview">("overview");
+const routeByResource: Record<ResourceKey, string> = {
+  students: "student",
+  staff: "staff",
+  inquiries: "inquiry",
+  news: "news",
+  gallery: "gallery",
+  reviews: "reviews",
+  "school-settings": "settings",
+  "menu-items": "menu-items",
+  pages: "pages",
+  users: "users",
+  careers: "careers",
+  theme: "theme",
+  "public-disclosure": "public-disclosure",
+};
+
+const resourceByRoute: Record<string, ResourceKey> = Object.fromEntries(
+  Object.entries(routeByResource).map(([resource, route]) => [route, resource]),
+) as Record<string, ResourceKey>;
+
+export function AdminConsole({ initialSection = "" }: { initialSection?: string }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const routeSection = pathname?.split("/")[2] || initialSection;
+  const active: ResourceKey | "overview" = routeSection === "overview" ? "overview" : resourceByRoute[routeSection] || "overview";
+  const navigateTo = useCallback((next: ResourceKey | "overview") => {
+    router.push(next === "overview" ? "/admin" : `/admin/${routeByResource[next]}`);
+  }, [router]);
   const [data, setData] = useState<Partial<Record<ResourceKey, RecordItem[]>>>({});
   const [metaData, setMetaData] = useState<Partial<Record<ResourceKey, PaginationMeta>>>({});
   const [queryParams, setQueryParams] = useState<Partial<Record<ResourceKey, QueryParamsState>>>({});
@@ -138,6 +166,7 @@ export function AdminConsole() {
   const [editing, setEditing] = useState<RecordItem | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [actionFeedback, setActionFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -513,8 +542,8 @@ export function AdminConsole() {
   const signOut = () => { window.localStorage.removeItem("ips_admin_token"); document.cookie = "ips_admin_session=; Path=/; Max-Age=0; SameSite=Lax"; window.location.assign("/admin/login"); };
 
   return <main className="min-h-screen bg-[#f4f7fb] text-slate-800">
-    <aside className={`fixed inset-y-0 left-0 z-30 flex w-[272px] flex-col bg-[#102a4c] px-4 py-5 text-slate-200 shadow-2xl transition-transform lg:translate-x-0 ${mobileMenu ? "translate-x-0" : "-translate-x-full"}`}>
-      <div className="mb-8 flex items-center gap-3.5 rounded-2xl bg-white/5 p-2.5 border border-white/10 backdrop-blur-md shadow-inner">
+    <aside className={`fixed inset-y-0 left-0 z-30 flex w-[272px] flex-col bg-[#102a4c] px-4 py-5 text-slate-200 shadow-2xl transition-[width,transform] duration-200 md:translate-x-0 ${sidebarCollapsed ? "md:w-[76px]" : ""} ${mobileMenu ? "translate-x-0" : "-translate-x-full"}`}>
+      <div className={`mb-8 flex items-center gap-3.5 rounded-2xl bg-white/5 p-2.5 border border-white/10 backdrop-blur-md shadow-inner ${sidebarCollapsed ? "justify-center" : ""}`}>
         <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-white p-1 shadow-md shrink-0 ring-2 ring-amber-400/50 overflow-hidden">
           <img
             src={imageUrl(DEFAULT_CREST_LOGO)}
@@ -532,21 +561,21 @@ export function AdminConsole() {
             }}
           />
         </div>
-        <div className="min-w-0">
+        <div className={`min-w-0 ${sidebarCollapsed ? "hidden" : ""}`}>
           <div className="flex items-center gap-1.5">
             <p className="font-display text-base font-extrabold text-white tracking-wide truncate">IPS Admin</p>
           </div>
           <p className="text-[11px] font-semibold text-blue-200/90 truncate">Indian Public School</p>
         </div>
       </div>
-      <nav className="flex-1 space-y-5 overflow-y-auto">
-        <button onClick={() => { setActive("overview"); setMobileMenu(false); }} className={`sidebar-link cursor-pointer ${active === "overview" ? "sidebar-link-active" : ""}`}><LayoutDashboard size={18} /> Overview</button>
+        <nav className="flex-1 space-y-5 overflow-y-auto">
+          <button onClick={() => { navigateTo("overview"); setMobileMenu(false); }} title={sidebarCollapsed ? "Overview" : undefined} className={`sidebar-link cursor-pointer ${sidebarCollapsed ? "justify-center px-0" : ""} ${active === "overview" ? "sidebar-link-active" : ""}`}><LayoutDashboard size={18} /> <span className={sidebarCollapsed ? "hidden" : ""}>Overview</span></button>
         {sectionNames.slice(1).map((section) => {
           const sectionResources = resources.filter((resource) => resourceSections[resource.key] === section && canAccessResource(resource.key));
           if (!sectionResources.length) return null;
           return (
             <div key={section}>
-              <div className="mb-2 flex items-center justify-between px-3">
+              <div className={`mb-2 flex items-center justify-between px-3 ${sidebarCollapsed ? "hidden" : ""}`}>
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-300">{section}</p>
                 {section === "System" && <span className="flex items-center gap-1 rounded-full bg-amber-400/20 px-1.5 py-0.5 text-[9px] font-bold text-[#ffd983]"><Crown size={10} /> SUPER</span>}
               </div>
@@ -556,22 +585,23 @@ export function AdminConsole() {
                   return (
                     <button
                       key={resource.key}
-                      onClick={() => { setActive(resource.key); setMobileMenu(false); }}
-                      className={`sidebar-link cursor-pointer ${active === resource.key ? "sidebar-link-active" : ""}`}
+                      onClick={() => { navigateTo(resource.key); setMobileMenu(false); }}
+                      title={sidebarCollapsed ? resource.label : undefined}
+                      className={`sidebar-link cursor-pointer ${sidebarCollapsed ? "justify-center px-0" : ""} ${active === resource.key ? "sidebar-link-active" : ""}`}
                     >
                       <Icon size={18} />
-                      <span>{resource.label}</span>
-                      {resource.key === "inquiries" && (data.inquiries?.length || 0) > 0 && (
+                      <span className={sidebarCollapsed ? "hidden" : ""}>{resource.label}</span>
+                      {resource.key === "inquiries" && !sidebarCollapsed && (data.inquiries?.length || 0) > 0 && (
                         <span className="ml-auto rounded-full bg-[#f4bd4f] px-2 py-0.5 text-[10px] font-bold text-[#102a4c]">
                           {data.inquiries?.length}
                         </span>
                       )}
-                      {resource.key === "careers" && careerNotifications.unreadCount > 0 && (
+                      {resource.key === "careers" && !sidebarCollapsed && careerNotifications.unreadCount > 0 && (
                         <span className="ml-auto rounded-full bg-[#f4bd4f] px-2 py-0.5 text-[10px] font-bold text-[#102a4c]">
                           {careerNotifications.unreadCount}
                         </span>
                       )}
-                      {resource.key === "users" && <span className="ml-auto flex items-center gap-1 text-[10px] font-bold text-amber-300"><Crown size={11} /></span>}
+                      {resource.key === "users" && !sidebarCollapsed && <span className="ml-auto flex items-center gap-1 text-[10px] font-bold text-amber-300"><Crown size={11} /></span>}
                     </button>
                   );
                 })}
@@ -583,39 +613,47 @@ export function AdminConsole() {
       <div className="border-t border-white/10 pt-4 space-y-2">
         {token ? (
           <>
-            <div className="flex items-center gap-2.5 rounded-xl bg-white/5 p-2.5 border border-white/10">
+            <div className={`flex items-center gap-2.5 rounded-xl bg-white/5 p-2.5 border border-white/10 ${sidebarCollapsed ? "justify-center" : ""}`}>
               <div className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg font-bold text-xs ${isSuperAdmin ? "bg-amber-400 text-[#102a4c]" : "bg-blue-200 text-[#102a4c]"}`}>
                 {isSuperAdmin ? <Crown size={18} /> : <Shield size={18} />}
               </div>
-              <div className="min-w-0 flex-1">
+              <div className={`min-w-0 flex-1 ${sidebarCollapsed ? "hidden" : ""}`}>
                 <p className="truncate text-xs font-bold text-white">{currentUser?.name || currentUser?.email || "Administrator"}</p>
                 <p className="text-[10px] font-semibold text-blue-200 uppercase tracking-wider">{currentUser?.role || (isSuperAdmin ? "Super Admin" : "Sub Admin")}</p>
               </div>
             </div>
-            <button onClick={() => setChangePasswordOpen(true)} className="sidebar-link cursor-pointer w-full text-xs">
-              <KeyRound size={16} /> Change password
+            <button onClick={() => setChangePasswordOpen(true)} title={sidebarCollapsed ? "Change password" : undefined} className={`sidebar-link cursor-pointer w-full text-xs ${sidebarCollapsed ? "justify-center px-0" : ""}`}>
+              <KeyRound size={16} /> <span className={sidebarCollapsed ? "hidden" : ""}>Change password</span>
             </button>
-            <button onClick={signOut} className="sidebar-link cursor-pointer w-full text-xs">
-              <LogOut size={16} /> Sign out
+            <button onClick={signOut} title={sidebarCollapsed ? "Sign out" : undefined} className={`sidebar-link cursor-pointer w-full text-xs ${sidebarCollapsed ? "justify-center px-0" : ""}`}>
+              <LogOut size={16} /> <span className={sidebarCollapsed ? "hidden" : ""}>Sign out</span>
             </button>
           </>
         ) : (
-          <button onClick={() => setLoginOpen(true)} className="sidebar-link cursor-pointer w-full">
-            <LogIn size={18} /> Admin sign in
+          <button onClick={() => setLoginOpen(true)} title={sidebarCollapsed ? "Admin sign in" : undefined} className={`sidebar-link cursor-pointer w-full ${sidebarCollapsed ? "justify-center px-0" : ""}`}>
+            <LogIn size={18} /> <span className={sidebarCollapsed ? "hidden" : ""}>Admin sign in</span>
           </button>
         )}
       </div>
     </aside>
-    {mobileMenu && <button aria-label="Close navigation" onClick={() => setMobileMenu(false)} className="fixed inset-0 z-20 bg-slate-950/40 lg:hidden" />}
-    <section className="min-h-screen lg:pl-[272px]">
+    {mobileMenu && <button aria-label="Close navigation" onClick={() => setMobileMenu(false)} className="fixed inset-0 z-20 bg-slate-950/40 md:hidden" />}
+    <section className={`min-h-screen transition-[padding] duration-200 ${sidebarCollapsed ? "md:pl-[76px]" : "md:pl-[272px]"}`}>
       <header className="sticky top-0 z-30 flex min-h-[64px] sm:h-[76px] items-center justify-between border-b border-slate-200 bg-[#f4f7fb] px-3.5 sm:px-6 lg:px-9 py-2 sm:py-0 shadow-xs">
         <div className="flex items-center gap-2.5 sm:gap-4 min-w-0 flex-1 mr-2 sm:mr-4">
           <button
             onClick={() => setMobileMenu(true)}
-            className="shrink-0 rounded-lg p-1.5 sm:p-2 -ml-1 text-slate-600 hover:bg-slate-200/60 transition cursor-pointer lg:hidden"
+            className="shrink-0 rounded-lg p-1.5 sm:p-2 -ml-1 text-slate-600 hover:bg-slate-200/60 transition cursor-pointer md:hidden"
             aria-label="Open navigation menu"
           >
             <Menu size={20} />
+          </button>
+          <button
+            onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
+            className="hidden shrink-0 rounded-lg p-2 text-slate-600 transition hover:bg-slate-200/60 md:block"
+            aria-label={sidebarCollapsed ? "Expand navigation sidebar" : "Collapse navigation sidebar"}
+            title={sidebarCollapsed ? "Expand navigation sidebar" : "Collapse navigation sidebar"}
+          >
+            <PanelLeft size={20} />
           </button>
           <div className="min-w-0 flex-1">
             <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.12em] sm:tracking-[0.15em] text-[#d69d26] truncate leading-tight whitespace-nowrap">
@@ -695,7 +733,7 @@ export function AdminConsole() {
                                   key={cId}
                                   onClick={() => {
                                     setNotificationOpen(false);
-                                    setActive("careers");
+                                    navigateTo("careers");
                                     void careerNotifications.markAsRead(cId);
                                   }}
                                   className="group flex flex-col gap-1 rounded-xl border border-amber-200 bg-[#fdf3da]/60 p-3 text-left transition hover:bg-amber-100/80 cursor-pointer"
@@ -734,7 +772,7 @@ export function AdminConsole() {
                                   key={id}
                                   onClick={() => {
                                     setNotificationOpen(false);
-                                    setActive("inquiries");
+                                    navigateTo("inquiries");
                                     setEditing(inq);
                                     setFormOpen(true);
                                     void markInquiryAsRead(id);
@@ -774,7 +812,7 @@ export function AdminConsole() {
                         <button
                           onClick={() => {
                             setNotificationOpen(false);
-                            setActive("careers");
+                            navigateTo("careers");
                           }}
                           className="hover:underline cursor-pointer"
                         >
@@ -784,7 +822,7 @@ export function AdminConsole() {
                         <button
                           onClick={() => {
                             setNotificationOpen(false);
-                            setActive("inquiries");
+                            navigateTo("inquiries");
                           }}
                           className="hover:underline cursor-pointer"
                         >
@@ -830,7 +868,7 @@ export function AdminConsole() {
           </div>
         )}
         {active === "overview" ? (
-          <Overview data={data} loading={loading} onNavigate={setActive} />
+          <Overview data={data} loading={loading} onNavigate={navigateTo} />
         ) : active === "careers" ? (
           <CareersAdmin apiUrl={API_URL} token={token} onRefreshNotifications={careerNotifications.refreshNotifications} />
         ) : active === "theme" ? (

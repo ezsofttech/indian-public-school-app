@@ -23,7 +23,7 @@ export function About() {
   const sec8 = firstSection(siteHome, "section-8");
 
   const configuredUrl = text(secVid.introFileUrl || secVid.videoUrl || sec8.introFileUrl || sec8.videoUrl);
-  const videoRaw = (configuredUrl && configuredUrl.trim().length > 0 && configuredUrl !== "/IPSIntroVideo.mp4" && !configuredUrl.includes("v1789299171"))
+  const videoRaw = (configuredUrl && configuredUrl.trim().length > 0 && configuredUrl !== "/IPSIntroVideo.mp4" && configuredUrl !== "/Videos/IPSIntroVideo.mp4" && !configuredUrl.includes("v1789299171"))
     ? configuredUrl
     : DEFAULT_INTRO_VIDEO;
   const videoSource = imageUrl(videoRaw);

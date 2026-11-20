@@ -89,7 +89,7 @@ export function HomeBannerTab({ homeObj, updateHome, uploadImage, onOpenGallery 
                     alt={`Banner ${idx + 1}`}
                     onError={(e) => {
                       e.currentTarget.onerror = null;
-                      e.currentTarget.src = "/assets/Settings/Home/Banner_1.jpg";
+                      e.currentTarget.src = "/assets/Settings/Home/Hero-5.png";
                     }}
                     className="h-full w-full object-cover"
                   />

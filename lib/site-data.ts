@@ -3,11 +3,11 @@ import { formatHref, getAssetUrl, getCloudinaryRootFolder } from "@/lib/utils";
 import fallbackSiteData from "@/public/cloud-datasource.json";
 
 export const CLOUDINARY_ROOT_FOLDER = getCloudinaryRootFolder();
-export const DEFAULT_HERO_IMAGE = "/assets/Settings/Home/Banner_1.jpg";
+export const DEFAULT_HERO_IMAGE = "/assets/Settings/Home/Hero-5.png";
 export const DEFAULT_LOGO = "/assets/Settings/Logos/IPSLogo.png";
 export const DEFAULT_SECONDARY_LOGO = "/assets/Settings/Logos/AakashFoundationLogo.png";
 export const DEFAULT_CREST_LOGO = "/assets/Settings/Logos/IPSStandardLogo.png";
-export const DEFAULT_INTRO_VIDEO = "/Videos/IPSIntroVideo.mp4";
+export const DEFAULT_INTRO_VIDEO = "/Videos/file_feszan.mp4";
 
 export type SiteRecord = ApiRecord;
 
@@ -842,11 +842,11 @@ export function getPopupBannerConfig(siteData?: SiteData | null): Required<Popup
 
   const enabled = pb.enabled !== false;
   const delaySeconds = typeof pb.delaySeconds === "number" ? pb.delaySeconds : (Number(pb.delaySeconds) || 1);
-  let rawImageUrl = pb.imageUrl !== undefined && text(pb.imageUrl).trim() !== "" ? text(pb.imageUrl).trim() : "/assets/Settings/Home/Banner_1.jpg";
-  if (rawImageUrl.includes("Banner_8") || !rawImageUrl.trim()) {
-    rawImageUrl = "/assets/Settings/Home/Banner_1.jpg";
+  let rawImageUrl = pb.imageUrl !== undefined && text(pb.imageUrl).trim() !== "" ? text(pb.imageUrl).trim() : "/assets/Settings/Home/Hero-2.png";
+  if (!rawImageUrl.trim()) {
+    rawImageUrl = "/assets/Settings/Home/Hero-5.png";
   }
-  const resolvedImageUrl = imageUrl(rawImageUrl) || getAssetUrl(rawImageUrl) || rawImageUrl || "/assets/Settings/Home/Banner_1.jpg";
+  const resolvedImageUrl = imageUrl(rawImageUrl) || getAssetUrl(rawImageUrl) || rawImageUrl || "/assets/Settings/Home/Hero-2.png";
   const showTitle = pb.showTitle !== false;
   const rawTitle = pb.title !== undefined ? text(pb.title).trim() : "";
   const title = showTitle ? (rawTitle !== "" ? rawTitle : "Enquiry") : "";

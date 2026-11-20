@@ -30,6 +30,8 @@ import { AdmissionEnquiryForm } from "@/components/site/AdmissionEnquiryForm";
 import { FileUploadProgressLoader, FileUploadStatus } from "@/components/ui/FileUploadProgressLoader";
 import { getAssetUrl, ensureExternalUrl, formatHref, isExternalUrl, toCleanRelativeAssetPath } from "@/lib/utils";
 
+const DEFAULT_POPUP_IMAGE = "/assets/Settings/Home/PopUp.jpg";
+
 const EDITOR_TABS = [
   { id: "header", label: "Header Config", icon: "bi-card-heading" },
   { id: "footer", label: "Footer Config", icon: "bi-layout-text-window" },
@@ -356,6 +358,9 @@ export function HomeLayoutEditorModal({
       ...(datasource?.home?.[0]?.identity?.popupBanner || {}),
     };
   }, [datasource]);
+  const popupImage = currentPopupBanner.imageUrl
+    ? getAssetUrl(currentPopupBanner.imageUrl)
+    : DEFAULT_POPUP_IMAGE;
 
   const homeObj = useMemo(() => {
     return datasource?.home?.[0] || {};
@@ -3176,9 +3181,9 @@ export function HomeLayoutEditorModal({
                 {(() => {
                   const secVid = homeObj["section-video"]?.[0] || {};
                   const sec8 = homeObj["section-8"]?.[0] || {};
-                  const DEFAULT_VIDEO = "/Videos/IPSIntroVideo.mp4";
+                  const DEFAULT_VIDEO = "/Videos/file_feszan.mp4";
                   let videoUrlVal = secVid.introFileUrl || secVid.videoUrl || sec8.introFileUrl || sec8.videoUrl;
-                  if (!videoUrlVal || videoUrlVal === "/IPSIntroVideo.mp4") {
+                  if (!videoUrlVal || videoUrlVal === "/IPSIntroVideo.mp4" || videoUrlVal === "/Videos/IPSIntroVideo.mp4") {
                     videoUrlVal = DEFAULT_VIDEO;
                   }
 
@@ -3745,7 +3750,7 @@ export function HomeLayoutEditorModal({
             {/* Backdrop mock web content */}
             <div
               className="fixed inset-0 pointer-events-none opacity-30 bg-cover bg-center filter blur-xs"
-              style={{ backgroundImage: `url(${getAssetUrl(currentPopupBanner.imageUrl || "/assets/Settings/Home/Banner_1.jpg")})` }}
+              style={{ backgroundImage: `url(${popupImage})` }}
             />
 
             {/* Live Popup Banner Preview Component using exact popup code */}
@@ -3762,11 +3767,11 @@ export function HomeLayoutEditorModal({
                   </button>
                   <div className="w-full md:w-1/2 h-[42vh] sm:h-[48vh] md:h-full shrink-0 rounded-xl sm:rounded-2xl overflow-hidden bg-slate-950/80 border border-blue-400/30 flex items-center justify-center p-2">
                     <img
-                      src={getAssetUrl(currentPopupBanner.imageUrl || "/assets/Settings/Home/Banner_1.jpg")}
+                      src={popupImage}
                       alt="Preview"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
-                        e.currentTarget.src = "/assets/Settings/Home/Banner_1.jpg";
+                        e.currentTarget.src = DEFAULT_POPUP_IMAGE;
                       }}
                       className="w-full h-full object-contain drop-shadow-xl"
                     />
@@ -3786,11 +3791,11 @@ export function HomeLayoutEditorModal({
                 <div className="relative w-[92vw] sm:w-[88vw] max-w-5xl h-[88vh] md:h-[80vh] max-h-[92vh] bg-[#051326] text-white rounded-2xl sm:rounded-3xl border border-blue-400/30 shadow-2xl overflow-y-auto md:overflow-hidden flex flex-col md:flex-row items-stretch">
                   <div className="w-full md:w-1/2 h-[42vh] sm:h-[48vh] md:h-full bg-slate-950 flex items-center justify-center p-3 shrink-0 border-b md:border-b-0 md:border-r border-blue-900/50">
                     <img
-                      src={getAssetUrl(currentPopupBanner.imageUrl || "/assets/Settings/Home/Banner_1.jpg")}
+                      src={popupImage}
                       alt="Preview"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
-                        e.currentTarget.src = "/assets/Settings/Home/Banner_1.jpg";
+                        e.currentTarget.src = DEFAULT_POPUP_IMAGE;
                       }}
                       className="w-full h-full object-contain"
                     />
@@ -3815,11 +3820,11 @@ export function HomeLayoutEditorModal({
                   <button onClick={() => setShowLivePopUpPreview(false)} className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 size-8 sm:size-9 rounded-full bg-slate-900 text-white flex items-center justify-center border border-white/20"><i className="bi bi-x-lg text-xs" /></button>
                   <div className="w-full md:w-1/2 h-[32vh] sm:h-[40vh] md:h-full bg-slate-950 flex items-center justify-center p-2 overflow-hidden border-b md:border-b-0 md:border-r border-blue-900/50 shrink-0">
                     <img
-                      src={getAssetUrl(currentPopupBanner.imageUrl || "/assets/Settings/Home/Banner_1.jpg")}
+                      src={popupImage}
                       alt="Preview"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
-                        e.currentTarget.src = "/assets/Settings/Home/Banner_1.jpg";
+                        e.currentTarget.src = DEFAULT_POPUP_IMAGE;
                       }}
                       className="w-full h-full object-contain"
                     />
@@ -3840,11 +3845,11 @@ export function HomeLayoutEditorModal({
                   <button onClick={() => setShowLivePopUpPreview(false)} className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 size-9 sm:size-10 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400 flex items-center justify-center"><i className="bi bi-x-lg text-xs sm:text-sm" /></button>
                   <div className="w-full md:w-1/2 h-[42vh] sm:h-[48vh] md:h-full rounded-xl sm:rounded-2xl border-2 border-amber-400/40 bg-slate-950 overflow-hidden flex items-center justify-center p-2 shadow-2xl shrink-0">
                     <img
-                      src={getAssetUrl(currentPopupBanner.imageUrl || "/assets/Settings/Home/Banner_1.jpg")}
+                      src={popupImage}
                       alt="Preview"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
-                        e.currentTarget.src = "/assets/Settings/Home/Banner_1.jpg";
+                        e.currentTarget.src = DEFAULT_POPUP_IMAGE;
                       }}
                       className="w-full h-full object-contain"
                     />
@@ -3867,11 +3872,11 @@ export function HomeLayoutEditorModal({
                 <div className="relative w-[92vw] sm:w-[88vw] max-w-5xl h-[88vh] md:h-[80vh] max-h-[90vh] bg-slate-950 text-white rounded-2xl sm:rounded-3xl border border-white/20 shadow-2xl flex flex-col justify-between overflow-hidden">
                   <div className="w-full flex-1 min-h-0 bg-slate-950 flex items-center justify-center p-2 sm:p-3 overflow-hidden">
                     <img
-                      src={getAssetUrl(currentPopupBanner.imageUrl || "/assets/Settings/Home/Banner_1.jpg")}
+                      src={popupImage}
                       alt="Preview"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
-                        e.currentTarget.src = "/assets/Settings/Home/Banner_1.jpg";
+                        e.currentTarget.src = DEFAULT_POPUP_IMAGE;
                       }}
                       className="w-full h-full object-contain"
                     />
