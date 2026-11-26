@@ -473,8 +473,8 @@
             {
               "title": "Art & Music Rooms",
               "sub-title": "Dedicated spaces where students can explore their creativity and develop their artistic and musical talents.",
-              "fileUrl": "/Settings/Home/Banner_6.jpg",
-              "imageUrl": "/Settings/Home/Banner_6.jpg",
+              "fileUrl": "/Album/Music_Dance_Room_4.jpg",
+              "imageUrl": "/Album/Music_Dance_Room_4.jpg",
               "description": "Dedicated spaces where students can explore their creativity and develop their artistic and musical talents."
             }
           ]
@@ -510,7 +510,7 @@
             },
             {
               "title": "Gallery Photo",
-              "fileUrl": "/Settings/Home/Banner_6.jpg"
+              "fileUrl": "/Album/Visual%20Editor%20Picked/file_okddht.jpg"
             }
           ],
           "redirectUrl": "/about-us/director-message"

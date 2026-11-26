@@ -1,11 +1,20 @@
 [
   {
+    "_id": "6ad88a1d8b82a7316a267868",
+    "affiliationNo": "330833",
+    "schoolCode": "65830",
+    "showNotice": true,
+    "complianceNote": "Fields marked [Enter details] and document links are awaiting the school's verified information.",
+    "createdAt": "2026-10-21T09:47:09.734Z",
+    "updatedAt": "2026-10-21T09:47:09.734Z"
+  },
+  {
     "_id": "6ad56d0437b6d1102dae0914",
     "affiliationNo": "1530152",
-    "schoolCode": "15389",
-    "showNotice": true,
     "complianceNote": "",
     "createdAt": "2026-10-15T17:54:30.148Z",
+    "schoolCode": "15389",
+    "showNotice": true,
     "updatedAt": "2026-10-26T10:58:42.525Z"
   }
 ]

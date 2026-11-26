@@ -11,6 +11,7 @@ import { useSiteData } from "@/components/site/SiteDataProvider";
 import { API_URL, checkBackendHealth } from "@/lib/api-client";
 import { openAdmissionModal } from "@/components/site/AdmissionApplicationModal";
 import { SmartFileThumbnail } from "@/components/ui/SmartFileThumbnail";
+import { CloudStatusIcon } from "@/components/ui/CloudStatusIcon";
 
 interface ApiMenuItem {
   _id?: string;
@@ -510,27 +511,7 @@ export function Footer() {
               </a>
 
               {developer.showBackendStatus !== false && (
-                <span
-                  title={
-                    isBackendOnline
-                      ? "Backend: Online & Connected"
-                      : "Backend: Offline (Serving Local Data)"
-                  }
-                  aria-label={isBackendOnline ? "Backend: Online" : "Backend: Offline"}
-                  className={cn(
-                    "inline-flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300 cursor-help select-none",
-                    isBackendOnline
-                      ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 hover:scale-110 shadow-sm shadow-emerald-500/20"
-                      : "bg-amber-500/15 text-amber-400 hover:bg-amber-500/25 hover:scale-110 shadow-sm shadow-amber-500/20"
-                  )}
-                >
-                  <i
-                    className={cn(
-                      "bi text-xs leading-none",
-                      isBackendOnline ? "bi-cloud-fill" : "bi-cloud-slash-fill"
-                    )}
-                  />
-                </span>
+                <CloudStatusIcon className="ml-1" />
               )}
             </span>
           </div>

@@ -1,10 +1,8 @@
 [
   {
     "_id": "6ae830d6dc6f2a58df18ef66",
-    "title": "Physics Teacher",
-    "qualification": "MSc in Physics",
-    "image": "",
-    "description": "",
+    "applicationFields": [],
+    "createdAt": "2026-11-02T06:42:30.630Z",
     "customFields": [
       {
         "key": "experience",
@@ -17,10 +15,12 @@
         "value": "Academics"
       }
     ],
-    "applicationFields": [],
-    "isActive": true,
+    "description": "",
     "displayOrder": 0,
-    "createdAt": "2026-11-02T06:42:30.630Z",
+    "image": "",
+    "isActive": true,
+    "qualification": "MSc in Physics",
+    "title": "Physics Teacher",
     "updatedAt": "2026-11-02T17:21:03.702Z"
   }
 ]

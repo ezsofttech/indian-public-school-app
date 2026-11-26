@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { LoaderCircle, LockKeyhole } from "lucide-react";
 import { DEFAULT_CREST_LOGO, imageUrl } from "@/lib/site-data";
-import { checkBackendHealth } from "@/lib/api-client";
+import { CloudStatusIcon } from "@/components/ui/CloudStatusIcon";
 
 const API_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
 
@@ -16,17 +16,6 @@ export function AdminLogin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isBackendOnline, setIsBackendOnline] = useState<boolean>(false);
-
-  useEffect(() => {
-    let mounted = true;
-    checkBackendHealth(2500, true).then((online) => {
-      if (mounted) setIsBackendOnline(online);
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -73,21 +62,7 @@ export function AdminLogin() {
       <label className="mt-4 block text-sm font-bold text-slate-700">Password<input type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-3 font-normal outline-none focus:border-[#1a5d9c] focus:ring-2 focus:ring-blue-100" /></label>
       <button disabled={loading} className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#1a5d9c] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#124c81] disabled:opacity-60">{loading ? <LoaderCircle size={17} className="animate-spin" /> : <LockKeyhole size={17} />} {loading ? "Signing in…" : "Sign in securely"}</button>
       <div className="mt-6 flex items-center justify-end border-t border-slate-100 pt-4 text-xs text-slate-500">
-        <span
-          title={isBackendOnline ? "Backend: Online & Connected" : "Backend: Offline (Serving Local Data)"}
-          aria-label={isBackendOnline ? "Backend: Online" : "Backend: Offline"}
-          className={`inline-flex h-6 w-6 items-center justify-center rounded-full transition-all duration-300 cursor-help select-none ${
-            isBackendOnline
-              ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:scale-110 shadow-sm"
-              : "bg-amber-50 text-amber-600 hover:bg-amber-100 hover:scale-110 shadow-sm"
-          }`}
-        >
-          <i
-            className={`bi text-xs leading-none ${
-              isBackendOnline ? "bi-cloud-fill" : "bi-cloud-slash-fill"
-            }`}
-          />
-        </span>
+        <CloudStatusIcon />
       </div>
     </form>
   </main>;

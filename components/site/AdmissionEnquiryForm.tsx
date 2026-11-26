@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { checkBackendHealth } from "@/lib/api/health";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -58,6 +59,14 @@ export function AdmissionEnquiryForm({
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [inquiryId, setInquiryId] = useState("");
+  const [isOffline, setIsOffline] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  useEffect(() => {
+    checkBackendHealth().then((res) => {
+      if (!res.online) setIsOffline(true);
+    });
+  }, []);
 
   const form = useForm<AdmissionEnquiryFormValues>({
     resolver: zodResolver(schema),
@@ -84,7 +93,12 @@ export function AdmissionEnquiryForm({
   };
 
   const onSubmit = async (values: AdmissionEnquiryFormValues) => {
+    if (isOffline) {
+      setSubmitError("Server is currently unavailable. Please try again later.");
+      return;
+    }
     setSubmitting(true);
+    setSubmitError("");
     const clientRefId = generateInquiryId();
     setInquiryId(clientRefId);
 
@@ -109,12 +123,13 @@ export function AdmissionEnquiryForm({
       } else if (data?.id && !/^[0-9a-fA-F]{24}$/.test(String(data.id))) {
         setInquiryId(String(data.id));
       }
-    } catch (err) {
-      console.error("Enquiry submission error:", err);
-    } finally {
-      setSubmitting(false);
       setSubmitted(true);
       if (onSuccess) onSuccess();
+    } catch (err) {
+      console.error("Enquiry submission error:", err);
+      setSubmitError("Unable to submit enquiry at this time. Please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -183,8 +198,26 @@ export function AdmissionEnquiryForm({
         </motion.div>
       ) : (
         <motion.div key="form" exit={{ opacity: 0 }} className={className}>
+          {isOffline && (
+            <div className="mb-4 rounded-xl border border-rose-300 bg-rose-50/90 dark:bg-rose-950/40 p-3.5 text-center">
+              <p className="text-xs sm:text-sm font-semibold text-rose-700 dark:text-rose-300">
+                Server is currently unavailable. Please try again later.
+              </p>
+            </div>
+          )}
+          {submitError && (
+            <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-center text-xs font-semibold text-red-700">
+              {submitError}
+            </div>
+          )}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <fieldset
+                disabled={isOffline || submitting}
+                className={`contents space-y-0 border-none p-0 m-0 ${
+                  isOffline || submitting ? "cursor-not-allowed opacity-60 [&_*]:cursor-not-allowed" : ""
+                }`}
+              >
               <div className="grid gap-5 sm:grid-cols-2">
                 {/* Field 1: Full Name */}
                 <FormField
@@ -334,6 +367,7 @@ export function AdmissionEnquiryForm({
                   </span>
                 </Button>
               )}
+              </fieldset>
             </form>
           </Form>
         </motion.div>

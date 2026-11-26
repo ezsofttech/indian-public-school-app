@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
+import { checkBackendHealth } from "@/lib/api/health";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -163,6 +164,13 @@ export function ContactUsView() {
   const [isSearchingTrack, setIsSearchingTrack] = useState(false);
   const [trackedResults, setTrackedResults] = useState<TrackedInquiry[] | null>(null);
   const [trackError, setTrackError] = useState<string | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
+
+  useEffect(() => {
+    checkBackendHealth().then((res) => {
+      if (!res.online) setIsOffline(true);
+    });
+  }, []);
 
   // Inquiry Form
   const inquiryForm = useForm<InquiryFormValues>({
@@ -190,6 +198,10 @@ export function ContactUsView() {
 
   // Handle Inquiry Form Submission
   const onInquirySubmit = async (values: InquiryFormValues) => {
+    if (isOffline) {
+      alert("Server is currently unavailable. Please try again later.");
+      return;
+    }
     try {
       const fullMessage = values.subject
         ? `[Subject: ${values.subject}]\n${values.message}`
@@ -229,6 +241,10 @@ export function ContactUsView() {
 
   // Handle Feedback Form Submission
   const onFeedbackSubmit = async (values: FeedbackFormValues) => {
+    if (isOffline) {
+      alert("Server is currently unavailable. Please try again later.");
+      return;
+    }
     try {
       const res = await axios.post(`${API_BASE_URL}/reviews`, {
         name: values.name,
@@ -513,8 +529,23 @@ export function ContactUsView() {
 
                     {/* Inquiry Tab Form */}
                     <TabsContent value="inquiry" className="mt-6">
+                      {isOffline && (
+                        <div className="mb-4 rounded-2xl border border-rose-300 bg-rose-50/90 dark:bg-rose-950/40 p-4 text-center">
+                          <p className="text-sm font-semibold text-rose-700 dark:text-rose-300">
+                            Server is currently unavailable. Please try again later.
+                          </p>
+                        </div>
+                      )}
                       <Form {...inquiryForm}>
                         <form onSubmit={inquiryForm.handleSubmit(onInquirySubmit)} className="space-y-4">
+                          <fieldset
+                            disabled={isOffline || inquiryForm.formState.isSubmitting}
+                            className={`contents space-y-0 border-none p-0 m-0 ${
+                              isOffline || inquiryForm.formState.isSubmitting
+                                ? "cursor-not-allowed opacity-60 [&_*]:cursor-not-allowed"
+                                : ""
+                            }`}
+                          >
                           <div className="grid gap-4 sm:grid-cols-2">
                             <FormField
                               control={inquiryForm.control}
@@ -642,14 +673,30 @@ export function ContactUsView() {
                               </>
                             )}
                           </Button>
+                          </fieldset>
                         </form>
                       </Form>
                     </TabsContent>
 
                     {/* Feedback Tab Form */}
                     <TabsContent value="feedback" className="mt-6">
+                      {isOffline && (
+                        <div className="mb-4 rounded-2xl border border-rose-300 bg-rose-50/90 dark:bg-rose-950/40 p-4 text-center">
+                          <p className="text-sm font-semibold text-rose-700 dark:text-rose-300">
+                            Server is currently unavailable. Please try again later.
+                          </p>
+                        </div>
+                      )}
                       <Form {...feedbackForm}>
                         <form onSubmit={feedbackForm.handleSubmit(onFeedbackSubmit)} className="space-y-4">
+                          <fieldset
+                            disabled={isOffline || feedbackForm.formState.isSubmitting}
+                            className={`contents space-y-0 border-none p-0 m-0 ${
+                              isOffline || feedbackForm.formState.isSubmitting
+                                ? "cursor-not-allowed opacity-60 [&_*]:cursor-not-allowed"
+                                : ""
+                            }`}
+                          >
                           <div className="grid gap-4 sm:grid-cols-2">
                             <FormField
                               control={feedbackForm.control}
@@ -747,6 +794,7 @@ export function ContactUsView() {
                               </>
                             )}
                           </Button>
+                          </fieldset>
                         </form>
                       </Form>
                     </TabsContent>

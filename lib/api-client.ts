@@ -1,4 +1,13 @@
 import axios, { type AxiosInstance, type AxiosResponse } from "axios";
+import {
+  checkBackendHealth as checkHealthResult,
+  getClientSource,
+  type BackendHealthResult,
+  type HealthVisitorData,
+} from "@/lib/api/health";
+
+export type { BackendHealthResult, HealthVisitorData };
+export { getClientSource };
 
 export type ApiRecord = Record<string, unknown>;
 
@@ -39,39 +48,9 @@ export const apiClient: AxiosInstance = axios.create({
   headers: { Accept: "application/json" },
 });
 
-let cachedHealth: { isHealthy: boolean; expiresAt: number } | null = null;
-
 export async function checkBackendHealth(timeoutMs = 3000, forceCheck = false): Promise<boolean> {
-  const now = Date.now();
-  if (!forceCheck && cachedHealth && cachedHealth.expiresAt > now) {
-    return cachedHealth.isHealthy;
-  }
-
-  let isHealthy = false;
-  try {
-    const res = await apiClient.get<{ success?: boolean; statusCode?: number; data?: unknown }>("/health", {
-      timeout: timeoutMs,
-    });
-    isHealthy = res.status >= 200 && res.status < 300 && (res.data?.success !== false);
-  } catch {
-    try {
-      const rootUrl = baseURL.replace(/\/v1\/?$/, "");
-      const res = await axios.get<{ success?: boolean; statusCode?: number; data?: unknown }>(`${rootUrl}/health`, {
-        timeout: timeoutMs,
-        headers: { Accept: "application/json" },
-      });
-      isHealthy = res.status >= 200 && res.status < 300 && (res.data?.success !== false);
-    } catch {
-      isHealthy = false;
-    }
-  }
-
-  cachedHealth = {
-    isHealthy,
-    expiresAt: now + (isHealthy ? 10000 : 3000),
-  };
-
-  return isHealthy;
+  const result = await checkHealthResult(undefined, timeoutMs, forceCheck);
+  return result.online;
 }
 
 export interface PaginationParams {

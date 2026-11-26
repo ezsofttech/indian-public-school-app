@@ -1,6 +1,6 @@
 [
   {
-    "_id": "6ac5373d8aac69d9aa46385f",
+    "_id": "6ad4b861f1bdb59602089bc8",
     "name": "Classic Navy & Gold",
     "slug": "classic-navy-gold",
     "description": "Timeless prestigious academic theme featuring deep navy blue and refined gold accents.",
@@ -43,7 +43,7 @@
     "updatedAt": "2026-10-26T05:57:02.305Z"
   },
   {
-    "_id": "6ac5373d8aac69d9aa463860",
+    "_id": "6ad4b861f1bdb59602089bc9",
     "name": "Royal Emerald",
     "slug": "royal-emerald",
     "description": "Vibrant educational theme with deep royal emerald green, rich gold, and mint fresh accents.",
@@ -86,7 +86,7 @@
     "updatedAt": "2026-10-26T05:57:02.190Z"
   },
   {
-    "_id": "6ac5373d8aac69d9aa463861",
+    "_id": "6ad4b861f1bdb59602089bca",
     "name": "Sunset Crimson & Amber",
     "slug": "sunset-crimson-amber",
     "description": "Warm regal academic palette featuring crimson red, amber orange, and warm parchment background.",
@@ -129,7 +129,7 @@
     "updatedAt": "2026-10-26T05:57:02.190Z"
   },
   {
-    "_id": "6ac5373e8aac69d9aa463862",
+    "_id": "6ad4b861f1bdb59602089bcb",
     "name": "Cyber Dark Sapphire",
     "slug": "cyber-dark-sapphire",
     "description": "Sleek dark mode theme with glowing cyan, ice blue, and dark sapphire glass surfaces.",
