@@ -18,7 +18,7 @@ import {
   Lock,
   ChevronDown,
 } from "lucide-react";
-import fallbackSiteData from "@/public/cloud-datasource.json";
+import fallbackSiteData from "@/public/collections/schoolsettings.json";
 import fallbackMenuItemsList from "@/public/collections/menuitems.json";
 import { RecordItem } from "../types/admin.types";
 import { API_URL } from "../config/admin.config";
@@ -520,18 +520,19 @@ export function HomeLayoutEditorModal({
 
     if (firstHome.hero) {
       const hero = { ...firstHome.hero };
-      if (Array.isArray(hero.slides)) {
+      if (Array.isArray(hero.slides) && hero.slides.length > 0) {
         hero.slides = hero.slides.map((s: any) => ({
           ...s,
           bannerUrl: toCleanRelativeAssetPath(s.bannerUrl) || s.bannerUrl,
           ...(s.mobileBannerUrl ? { mobileBannerUrl: toCleanRelativeAssetPath(s.mobileBannerUrl) || s.mobileBannerUrl } : {}),
         }));
+        // When slides carry bannerUrl, fileUrls is redundant and not required at hero in settings
+        delete (hero as any).fileUrls;
+      } else if (Array.isArray(hero.fileUrls)) {
+        hero.fileUrls = hero.fileUrls.map((u: any) => toCleanRelativeAssetPath(u) || u);
       }
       if (hero.bannerUrl) {
         hero.bannerUrl = toCleanRelativeAssetPath(hero.bannerUrl) || hero.bannerUrl;
-      }
-      if (Array.isArray(hero.fileUrls)) {
-        hero.fileUrls = hero.fileUrls.map((u: any) => toCleanRelativeAssetPath(u) || u);
       }
       firstHome.hero = hero;
     }

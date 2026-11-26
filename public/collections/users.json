@@ -1,0 +1,18 @@
+[
+  {
+    "_id": "6aa8aac2d8e8f8ffe666eded",
+    "email": "admin.ips@gmail.com",
+    "allowedModules": [
+      "*"
+    ],
+    "createdAt": "2026-09-15T02:17:38.268Z",
+    "lastLoginAt": "2026-11-20T19:27:34.672Z",
+    "name": "Super Admin",
+    "passwordHash": "$2b$10$wwIjsB.cbj1hOmvr7UaBbuphgA528PFbsbJVh.b2.zEK4C.wYcYXy",
+    "publicId": "USR-MU21KPGC-73J3N",
+    "role": "Super Admin",
+    "status": "ACTIVE",
+    "updatedAt": "2026-11-25T12:53:40.913Z",
+    "parentId": null
+  }
+]

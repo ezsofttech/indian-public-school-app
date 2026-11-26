@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import axios from "axios";
-import fallbackSiteData from "@/public/cloud-datasource.json";
+import fallbackSiteData from "@/public/collections/schoolsettings.json";
 import {
   AlertCircle,
   Bell,

@@ -135,14 +135,12 @@ export function HomeHeroTab({ homeObj, updateHome, uploadImage }: HomeHeroTabPro
       };
     }
 
-    updateHome((prev) => ({
-      ...prev,
-      hero: {
+    updateHome((prev) => {
+      const nextHero: Record<string, any> = {
         ...prev.hero,
         slides: newSlides,
         bannerUrl: primaryBanner,
         mobileBannerUrl: newSlides[0]?.mobileBannerUrl || "",
-        fileUrls: updatedFileUrls,
         slideDuration: newDuration !== undefined ? newDuration : (prev.hero?.slideDuration ?? slideDuration),
         fontSizeTitle: newSlides[0]?.fontSizeTitle,
         fontSizeH1: newSlides[0]?.fontSizeH1,
@@ -152,8 +150,16 @@ export function HomeHeroTab({ homeObj, updateHome, uploadImage }: HomeHeroTabPro
         objectFit: newSlides[0]?.objectFit || "cover",
         mobileObjectFit: newSlides[0]?.mobileObjectFit || "contain",
         content: updatedContent,
-      },
-    }));
+      };
+
+      // When slides carry bannerUrl, fileUrls is not required at hero in settings
+      delete nextHero.fileUrls;
+
+      return {
+        ...prev,
+        hero: nextHero,
+      };
+    });
   };
 
   const updateCurrentSlideField = (fieldOrObj: string | Record<string, any>, value?: any) => {

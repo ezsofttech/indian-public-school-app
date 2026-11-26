@@ -7,7 +7,7 @@ import { EASE } from "@/lib/motion-presets";
 import { DEFAULT_HERO_IMAGE, firstSection, homeData, imageUrl, text } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { SmartImage } from "@/components/ui/SmartImage";
-import fallbackSiteData from "@/public/cloud-datasource.json";
+import fallbackSiteData from "@/public/collections/schoolsettings.json";
 
 export interface HeroSlide {
   bannerUrl: string;

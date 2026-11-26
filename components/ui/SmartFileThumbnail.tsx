@@ -183,27 +183,7 @@ export function SmartFileThumbnail({
       alt={alt}
       loading="lazy"
       onError={() => {
-        // 1. If local /assets/ image failed to load, fall back to Cloudinary CDN
-        if (
-          !currentSrc.includes("cloudinary.com") &&
-          !currentSrc.includes("res.cloudinary.com") &&
-          (currentSrc.startsWith("/") || currentSrc.startsWith("assets/"))
-        ) {
-          const cleanSub = currentSrc.replace(/^\/?(assets\/)?/, "").replace(/^\/+/, "");
-          const cloudBase = process.env.NEXT_PUBLIC_CLOUDINARY_BASE_URL?.trim().replace(/\/+$/, "");
-          if (!cloudBase) {
-            console.error("NEXT_PUBLIC_CLOUDINARY_BASE_URL is required for Cloudinary fallback URLs");
-            setHasError(true);
-            return;
-          }
-          const cloudUrl = `${cloudBase}/image/upload/f_auto,q_auto/ips-education/assets/${cleanSub}`;
-          if (currentSrc !== cloudUrl) {
-            setCurrentSrc(cloudUrl);
-            return;
-          }
-        }
-
-        // 2. If Cloudinary image failed, fallback to local /assets/ copy
+        // 1. If remote/Cloudinary image failed, fallback to local /assets/ copy if applicable
         if (currentSrc.includes("cloudinary.com") || currentSrc.includes("res.cloudinary.com")) {
           const match = currentSrc.match(/(?:ips-education\/assets\/|assets\/)(.*)$/i);
           if (match && match[1]) {
@@ -215,7 +195,7 @@ export function SmartFileThumbnail({
           }
         }
 
-        // 3. If already tried fallback or has cleanUrl, fallback to cleanUrl
+        // 2. If already tried fallback or has cleanUrl, fallback to cleanUrl
         if (currentSrc !== cleanUrl && cleanUrl) {
           setCurrentSrc(cleanUrl);
         } else if (

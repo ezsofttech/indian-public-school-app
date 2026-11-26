@@ -1,0 +1,383 @@
+[
+  {
+    "_id": "6ad0d9f2080dc9d5135a0d04",
+    "publicId": "DISC-MV9LI6D9-QOQ78",
+    "sectionKey": "A_GENERAL_INFORMATION",
+    "sectionTitle": "GENERAL INFORMATION",
+    "order": 1,
+    "isPublished": true,
+    "items": [
+      {
+        "srNo": 1,
+        "title": "NAME OF THE SCHOOL",
+        "detail": "INDIAN PUBLIC SCHOOL",
+        "view": null
+      },
+      {
+        "srNo": 2,
+        "title": "AFFILIATION NUMBER",
+        "detail": "1530152",
+        "view": null
+      },
+      {
+        "srNo": 3,
+        "title": "SCHOOL CODE",
+        "detail": "15389",
+        "view": null
+      },
+      {
+        "srNo": 4,
+        "title": "COMPLETE ADDRESS WITH PIN CODE",
+        "detail": "INDIAN PUBLIC SCHOOL, MAIN ROAD, NEAR RMC, KHETRAJPUR, DISTRTCT – SAMBAPUR, ODISHA, 768006",
+        "view": null
+      },
+      {
+        "srNo": 5,
+        "title": "PRINCIPAL NAME & QUALIFICATION",
+        "detail": "MR. PATHAK SACHIN SUDHIR | MA, MPHIL, B.ED",
+        "view": null
+      },
+      {
+        "srNo": 6,
+        "title": "SCHOOL MAIL ID",
+        "detail": "ipssbp75@gmail.com",
+        "view": null
+      },
+      {
+        "srNo": 7,
+        "title": "CONTACT DETAILS",
+        "detail": "9438625404",
+        "view": null
+      }
+    ],
+    "createdAt": "2026-10-15T13:49:38.135Z",
+    "updatedAt": "2026-10-28T08:03:36.054Z"
+  },
+  {
+    "_id": "6ad12072291534fbc06461ae",
+    "publicId": "DISC-MV9W90PO-7XCK0",
+    "sectionKey": "DOCUMENTS_AND_INFORMATION",
+    "sectionTitle": "DOCUMENTS AND INFORMATION",
+    "order": 2,
+    "isPublished": true,
+    "items": [
+      {
+        "srNo": 1,
+        "title": "AFFILIATION LETTER",
+        "detail": "COPIES OF THE AFFILIATION LETTER",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/CBSE_AFFILIATION.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 2,
+        "title": "NO OBJECTION CERTIFICATE",
+        "detail": "COPIES OF THE NO OBJECTION CERTIFICATE ISSUED BY THE STATE GOVERNMENT/UT",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/NO_OBJECTION_CERTIFICATE.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 3,
+        "title": "BUILDING SAFETY CERTIFICATE",
+        "detail": "COPY OF THE VALID BUILDING SAFETY CERTIFICATE AS PER THE NATIONAL BUILDING CODE (NBC)",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/BUILDING_SAFETY_CERTIFICATE.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 4,
+        "title": "SELF-CERTIFICATION",
+        "detail": "COPY OF THE SELF-CERTIFICATION SUBMITTED BY THE SCHOOL FOR AFFILIATION",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/SEL_CERTIFICATION.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 5,
+        "title": "SAFE WATER, HEALTH AND SANITATION CERTIFICATES",
+        "detail": "COPIES OF THE SAFE DRINKING WATER, HEALTH AND SANITATION CERTIFICATES",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/SAFE_DRINKING_AND_SANITATION_CERTIFICATE.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 6,
+        "title": "FIRE SAFETY CERTIFICATE",
+        "detail": "COPIES OF THE VALID FIRE SAFETY CERTIFICATE ISSUED BY THE COMPETENT AUTHORITY",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/FIRE_SAFETY_CERTIFICATE.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 7,
+        "title": "RECOGNITION CERTIFICATE UNDER THE RTE ACT, 2009",
+        "detail": "COPIES OF THE RECOGNITION CERTIFICATE ISSUED UNDER THE RIGHT TO EDUCATION (RTE) ACT, 2009",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/CERTIFICATE_OF_RECOGNITION.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 8,
+        "title": "TRUST DEED",
+        "detail": "COPIES OF THE TRUST DEED",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/TRUSTEE.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 9,
+        "title": "POPULATION CERTIFICATE",
+        "detail": "COPY OF THE POPULATION CERTIFICATE",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/POPULATION_CERTIFICATE.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 10,
+        "title": "LAND CERTIFICATE",
+        "detail": "COPY OF THE LAND CERTIFICATE",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/General/1793173110190_1713610964953Certification_Of_Land.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 11,
+        "title": "WATER ANALYSIS REPORT",
+        "detail": "COPIES OF THE WATER ANALYSIS REPORT",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/General/1793173819777_WATER_ANALYSIS_REPORT.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 12,
+        "title": "MANDATORY PUBLIC DISCLOSURE",
+        "detail": "COPIES OF THE MANDATORY PUBLIC DISCLOSURE DETAILS",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/General/1793173985377_1713606172939Mandatory_Disclosure_Details.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 13,
+        "title": "TRANSFER CERTIFICATE (TC)",
+        "detail": "COPIES OF THE TRANSFER CERTIFICATE (TC)",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/General/1791789785717_TC.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 14,
+        "title": "TRANSPORT EMERGENCY CONTACT DETAILS",
+        "detail": "COPY OF THE TRANSPORT EMERGENCY CONTACT DETAILS",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/General/1793174300982_1724386787112CONTACT_DETAILS__IN_CASE_OF_EMERGENCY_ONLY_.pdf",
+          "openInNewTab": true
+        }
+      }
+    ],
+    "createdAt": "2026-10-15T18:50:26.660Z",
+    "updatedAt": "2026-10-28T08:00:30.461Z"
+  },
+  {
+    "_id": "6ad12f0706e3cf2e0c3060ef",
+    "publicId": "DISC-MV9YH1DB-5MYF5",
+    "sectionKey": "STAFF_TEACHING",
+    "sectionTitle": "STAFF (TEACHING)",
+    "order": 4,
+    "isPublished": true,
+    "items": [
+      {
+        "srNo": 1,
+        "title": "PRINCIPAL",
+        "detail": "01",
+        "view": null
+      },
+      {
+        "srNo": 2,
+        "title": "TOTAL NO. OF TEACHERS",
+        "detail": "72",
+        "view": null
+      },
+      {
+        "srNo": 3,
+        "title": "PGT",
+        "detail": "22",
+        "view": null
+      },
+      {
+        "srNo": 4,
+        "title": "TGT",
+        "detail": "18",
+        "view": null
+      },
+      {
+        "srNo": 5,
+        "title": "PRT",
+        "detail": "26",
+        "view": null
+      },
+      {
+        "srNo": 6,
+        "title": "TEACHER SECTION RATIO",
+        "detail": "1.5 : 1",
+        "view": null
+      },
+      {
+        "srNo": 7,
+        "title": "DETAILS OF SPECIAL EDUCATOR",
+        "detail": "01",
+        "view": null
+      },
+      {
+        "srNo": 8,
+        "title": "DETAILS OF COUNSELLOR & WELNESS TEACHER",
+        "detail": "01",
+        "view": null
+      }
+    ],
+    "createdAt": "2026-10-15T19:52:39.985Z",
+    "updatedAt": "2026-10-28T06:49:29.079Z"
+  },
+  {
+    "_id": "6ad12f1906e3cf2e0c3060f0",
+    "publicId": "DISC-MV9YHF42-SWZZW",
+    "sectionKey": "SCHOOL_INFRASTRUCTURE",
+    "sectionTitle": "SCHOOL INFRASTRUCTURE",
+    "order": 5,
+    "isPublished": true,
+    "items": [
+      {
+        "srNo": 1,
+        "title": "TOTAL CAMPUS AREA OF THE SCHOOL (IN SQ MTR)",
+        "detail": "15758",
+        "view": null
+      },
+      {
+        "srNo": 2,
+        "title": "NO. & SIZE OF CLASS ROOM (IN SQ MTR)",
+        "detail": "52, 48 SQ MTR.",
+        "view": null
+      },
+      {
+        "srNo": 3,
+        "title": "NO & SIZE OF LABORATORIES INCLUDING COMP. LABS",
+        "detail": "6, 70 SQ.MTR.",
+        "view": null
+      },
+      {
+        "srNo": 4,
+        "title": "INTERNET FACILITIES (Y / N)",
+        "detail": "YES",
+        "view": null
+      },
+      {
+        "srNo": 5,
+        "title": "NO. OF GIRLS TOILETS",
+        "detail": "24",
+        "view": null
+      },
+      {
+        "srNo": 6,
+        "title": "NO. OF BOYS TOILETS",
+        "detail": "24",
+        "view": null
+      }
+    ],
+    "createdAt": "2026-10-15T19:52:57.796Z",
+    "updatedAt": "2026-10-28T06:49:29.079Z"
+  },
+  {
+    "_id": "6ae19528ce7abaef95ad3768",
+    "publicId": "DISC-MVRQC131-IOPKK",
+    "sectionKey": "ACADEMICS_AND_RESULT",
+    "sectionTitle": "ACADEMICS AND RESULT",
+    "order": 3,
+    "isPublished": true,
+    "items": [
+      {
+        "srNo": 1,
+        "title": "STAFF DIRECTORY",
+        "detail": "COPIES OF THE STAFF DIRECTORY",
+        "view": {
+          "label": "VIEW",
+          "type": "PDF",
+          "url": "/Documents/STAFF_DIRECTORY.pdf",
+          "openInNewTab": true
+        }
+      },
+      {
+        "srNo": 2,
+        "title": "ANNUAL ACADEMIC CALENDAR",
+        "detail": "-",
+        "view": null
+      },
+      {
+        "srNo": 3,
+        "title": "FEE STRUCTURE OF SCHOOL",
+        "detail": "-",
+        "view": null
+      },
+      {
+        "srNo": 4,
+        "title": "LIST OF SCHOOL MANAGEMENT COMMITTEE (SMC)",
+        "detail": "-",
+        "view": null
+      },
+      {
+        "srNo": 5,
+        "title": "PARENTS TEACHERS' ASSOCIATION (PTA) MEMBERS",
+        "detail": "COPIES OF PARENTS TEACHERS' ASSOCIATION (PTA) MEMBERS",
+        "view": null
+      },
+      {
+        "srNo": 6,
+        "title": "LAST THREE YEARS RESULTS OF THE BOARD EXAMINATION AS PER APPLICABILITY",
+        "detail": "-",
+        "view": null
+      }
+    ],
+    "createdAt": "2026-10-28T06:24:40.574Z",
+    "updatedAt": "2026-10-28T08:06:15.650Z"
+  }
+]

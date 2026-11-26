@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import datasource from "@/public/cloud-datasource.json";
+import schoolsettings from "@/public/collections/schoolsettings.json";
+import pagesCollection from "@/public/collections/pages.json";
 
 function extractInternalRoutes(obj: unknown, foundRoutes = new Set<string>()): Set<string> {
   if (!obj || typeof obj !== "object") return foundRoutes;
@@ -40,7 +41,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/press-release", priority: 0.75, changeFrequency: "weekly" },
   ];
 
-  const dynamicRoutesSet = extractInternalRoutes(datasource);
+  const dynamicRoutesSet = extractInternalRoutes(schoolsettings);
+  extractInternalRoutes(pagesCollection, dynamicRoutesSet);
 
   // Add default core dynamic pages if not already extracted
   const corePages = [

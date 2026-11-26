@@ -1,0 +1,36 @@
+[
+  {
+    "_id": "6aab628f57ac46acecbf8386",
+    "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Staff/Amit.webp",
+    "department": "Hindi Teacher",
+    "designation": "Senior Teacher",
+    "email": "amit@gmail.com",
+    "employeeId": "EMP001",
+    "joinDate": "2020-06-15T00:00:00.000Z",
+    "mimeType": "image/webp",
+    "name": "Amit Kumar Sharma",
+    "phone": "+91-9876543210",
+    "publicId": "STF-MU4ZMKIJ-U74OE",
+    "qualification": "M.A. in Hindi Literature",
+    "staffType": "Faculty",
+    "status": "Active",
+    "parentId": null
+  },
+  {
+    "_id": "6aab628f57ac46acecbf8387",
+    "avatar": "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Staff/Sonam.jpg",
+    "department": "CS Teacher",
+    "designation": "Senior Teacher",
+    "email": "sonam@gmail.com",
+    "employeeId": "EMP002",
+    "joinDate": "2020-06-15T00:00:00.000Z",
+    "mimeType": "image/jpeg",
+    "name": "Sonam Sharma",
+    "phone": "+91-9876543212",
+    "publicId": "STF-MU4ZMKKL-T30SO",
+    "qualification": "B.Tech in Computer Science",
+    "staffType": "Faculty",
+    "status": "Active",
+    "parentId": null
+  }
+]

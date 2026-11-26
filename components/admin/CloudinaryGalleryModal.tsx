@@ -340,8 +340,12 @@ export function CloudinaryGalleryModal({
     const fetchGalleryMedia = async () => {
       setLoading(true);
       try {
-        const galleryRes = await getOptionalApi<any>("/gallery?limit=1000");
+        const [galleryRes, cdnRes] = await Promise.all([
+          getOptionalApi<any>("/gallery?limit=1000&includeCdn=true"),
+          getOptionalApi<any>("/uploads/cloudinary-resources"),
+        ]);
         let dbItems = unwrapCollection<any>(galleryRes);
+        let cdnItems = unwrapCollection<any>(cdnRes);
 
         // Fallback to offline collections if API fails, times out, or returns empty
         if (!dbItems || dbItems.length === 0) {
@@ -352,17 +356,34 @@ export function CloudinaryGalleryModal({
               if (Array.isArray(fallbackJson) && fallbackJson.length > 0) {
                 dbItems = fallbackJson;
               }
+            } else {
+              const altFallbackRes = await fetch("/collections/gallery.json");
+              if (altFallbackRes.ok) {
+                const altJson = await altFallbackRes.json();
+                if (Array.isArray(altJson) && altJson.length > 0) {
+                  dbItems = altJson;
+                }
+              }
             }
           } catch {}
         }
 
-        const fetchedMedia: MediaItem[] = (Array.isArray(dbItems) ? dbItems : []).flatMap(
+        const combinedRaw = [
+          ...(Array.isArray(dbItems) ? dbItems : []),
+          ...(Array.isArray(cdnItems) ? cdnItems : []),
+        ];
+
+        const fetchedMedia: MediaItem[] = combinedRaw.flatMap(
           (item: any, idx: number): MediaItem[] => {
             const urls = Array.isArray(item.fileUrl)
               ? item.fileUrl
               : typeof item.fileUrl === "string" && item.fileUrl.trim()
                 ? [item.fileUrl]
-                : [];
+                : item.url
+                  ? [item.url]
+                  : item.secure_url
+                    ? [item.secure_url]
+                    : [];
             if (urls.length === 0) return [];
             return urls.map((rawUrl: string, uIdx: number) => {
               const url = getAssetUrl(rawUrl);
@@ -397,7 +418,7 @@ export function CloudinaryGalleryModal({
                   `Gallery Media #${idx + 1}${urls.length > 1 ? ` (${uIdx + 1})` : ""}`,
                 category,
                 directory: dir,
-                source: item.isCdnResource ? "cloudinary" : "database",
+                source: item.isCdnResource || item.resource_type ? "cloudinary" : "database",
               });
             });
           }

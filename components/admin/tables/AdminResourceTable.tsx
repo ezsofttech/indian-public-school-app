@@ -1005,6 +1005,7 @@ export function HeaderFooterSettingsCard({
         home: homeList,
       };
 
+      // Save all unified identity & layout settings in a single fast atomic request
       await axios.post(
         `${API_URL}/school-settings`,
         {
@@ -1018,70 +1019,8 @@ export function HeaderFooterSettingsCard({
       );
 
       setFetchedDsValue(finalVal);
-
-      try {
-        await axios.post(
-          `${API_URL}/school-settings`,
-          {
-            key: "site_logo",
-            category: "Branding",
-            description: "School logo and header branding titles",
-            value: siteLogo,
-            status: "Active",
-          },
-          { headers }
-        );
-      } catch (e) {
-        console.warn("Syncing standalone site_logo skipped or failed:", e);
-      }
-
-      if (certItem) {
-        try {
-          await axios.post(
-            `${API_URL}/school-settings`,
-            {
-              key: "certified_board",
-              category: "Footer",
-              description: "Board Affiliation footer card",
-              value: certToSave,
-              status: certToSave.enabled ? "Active" : "Inactive",
-            },
-            { headers }
-          );
-        } catch { }
-      }
-
-      if (trustItem) {
-        try {
-          await axios.post(
-            `${API_URL}/school-settings`,
-            {
-              key: "trust_board",
-              category: "Footer",
-              description: "Trust Board footer card",
-              value: trustToSave,
-              status: trustToSave.enabled ? "Active" : "Inactive",
-            },
-            { headers }
-          );
-        } catch { }
-      }
-
-      if (partnerItem) {
-        try {
-          await axios.post(
-            `${API_URL}/school-settings`,
-            {
-              key: "academic_partner",
-              category: "Footer",
-              description: "Academic Partner footer card",
-              value: partnerToSave,
-              status: partnerToSave.enabled ? "Active" : "Inactive",
-            },
-            { headers }
-          );
-        } catch { }
-      }
+      setMessage("Settings saved and updated successfully!");
+      onSaveComplete();
 
       setMessage("Settings saved successfully! Footer identity cards updated.");
       onSaveComplete();
@@ -1351,12 +1290,7 @@ export function HeaderFooterSettingsCard({
                     onError={(e) => {
                       const target = e.currentTarget as HTMLImageElement;
                       if (!target.src.includes("IPSLogo.png")) {
-                        const cloudBase = process.env.NEXT_PUBLIC_CLOUDINARY_BASE_URL?.trim().replace(/\/+$/, "");
-                        if (!cloudBase) {
-                          console.error("NEXT_PUBLIC_CLOUDINARY_BASE_URL is required for logo fallback URLs");
-                          return;
-                        }
-                        target.src = `${cloudBase}/image/upload/ips-education/assets/Settings/Logos/IPSLogo.png`;
+                        target.src = imageUrl(DEFAULT_LOGO);
                       }
                     }}
                   />
@@ -1377,12 +1311,7 @@ export function HeaderFooterSettingsCard({
                       onError={(e) => {
                         const target = e.currentTarget as HTMLImageElement;
                         if (!target.src.includes("AakashFoundationLogo.png")) {
-                          const cloudBase = process.env.NEXT_PUBLIC_CLOUDINARY_BASE_URL?.trim().replace(/\/+$/, "");
-                          if (!cloudBase) {
-                            console.error("NEXT_PUBLIC_CLOUDINARY_BASE_URL is required for logo fallback URLs");
-                            return;
-                          }
-                          target.src = `${cloudBase}/image/upload/ips-education/assets/Settings/Logos/AakashFoundationLogo.png`;
+                          target.src = imageUrl(DEFAULT_SECONDARY_LOGO);
                         }
                       }}
                     />

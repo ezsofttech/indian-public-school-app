@@ -5,25 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getCloudinaryRootFolder(): string {
-  const folder = process.env.NEXT_PUBLIC_CLOUDINARY_ROOT_FOLDER;
-  if (!folder?.trim()) {
-    console.error('NEXT_PUBLIC_CLOUDINARY_ROOT_FOLDER is required to build Cloudinary asset URLs');
-    return '';
-  }
-  return folder.replace(/^\/+|\/+$/g, '');
-}
-
-export function getCloudinaryBaseUrl(): string {
-  const baseUrl = process.env.NEXT_PUBLIC_CLOUDINARY_BASE_URL?.trim().replace(/\/+$/, '');
-  if (!baseUrl) {
-    console.error('NEXT_PUBLIC_CLOUDINARY_BASE_URL is required to build Cloudinary asset URLs');
-    return '';
-  }
-  return baseUrl;
-}
-
-
 function extractStringUrl(url: any): string | null {
   if (!url) return null;
   if (typeof url === 'string') return url;
@@ -134,7 +115,7 @@ export function formatHref(url?: any, fallback = "/"): string {
 export function toCleanRelativeAssetPath(url?: any): string {
   const str = extractStringUrl(url);
   if (!str) return '';
-  let trimmed = str.trim();
+  const trimmed = str.trim();
   if (!trimmed) return '';
 
   if (trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
@@ -146,29 +127,29 @@ export function toCleanRelativeAssetPath(url?: any): string {
     return formatHref(trimmed);
   }
 
-  // Extract relative path from Cloudinary full URL
+  // Fast direct extraction from Cloudinary full URL
   if (trimmed.includes('cloudinary.com')) {
-    const match = trimmed.match(/\/(?:ips-education\/assets|assets)\/(.+)$/i);
+    const match = trimmed.match(/\/(?:ips-education\/assets|[a-zA-Z0-9_-]+\/assets|assets)\/(.+)$/i);
     if (match && match[1]) {
-      trimmed = match[1];
+      const cleanSub = match[1].replace(/\.pdf\.pdf(?=($|\?|#))/gi, '.pdf').replace(/^\/+/, '');
+      return `/${cleanSub}`;
     }
   }
 
-  let clean = trimmed.replace(/^https?:\/\/[^\/]+/i, '').replace(/^\/+/, '');
-
-  let prev = '';
-  while (prev !== clean) {
-    prev = clean;
-    clean = clean
-      .replace(/^(?:(?:image|video|raw)\/upload\/)+/i, '')
-      .replace(/^(?:(?:f_auto(?:,q_auto)?|q_auto)\/)+/i, '')
-      .replace(/^v\d+\//i, '')
-      .replace(/^(?:ips-education|ips-edu|ips-school)\/(?:assets\/)?/i, '')
-      .replace(/^[a-zA-Z0-9_-]+\/assets\//i, '')
-      .replace(/^assets\//i, '');
+  if (trimmed.startsWith('/')) {
+    return trimmed;
   }
 
-  clean = clean.replace(/\.pdf\.pdf(?=($|\?|#))/gi, '.pdf');
+  let clean = trimmed.replace(/^https?:\/\/[^\/]+/i, '').replace(/^\/+/, '');
+  clean = clean
+    .replace(/^(?:(?:image|video|raw)\/upload\/)+/i, '')
+    .replace(/^(?:[a-z]{1,4}_[a-zA-Z0-9_.-]+(?:,[a-z]{1,4}_[a-zA-Z0-9_.-]+)*\/)+/i, '')
+    .replace(/^v\d+\//i, '')
+    .replace(/^(?:ips-education|ips-edu|ips-school)\/(?:assets\/)?/i, '')
+    .replace(/^[a-zA-Z0-9_-]+\/assets\//i, '')
+    .replace(/^assets\//i, '')
+    .replace(/\.pdf\.pdf(?=($|\?|#))/gi, '.pdf');
+
   return `/${clean}`;
 }
 
@@ -202,51 +183,21 @@ export function getCanonicalAssetKey(url?: any): string {
 export type MediaDeliveryPreset = 'default' | 'cloud';
 
 export function getMediaDeliveryPreset(): MediaDeliveryPreset {
-  const envVal = (process.env.NEXT_PUBLIC_MEDIA_PRESET || 'default').toLowerCase().trim();
-  if (typeof window !== 'undefined' && window.location?.pathname?.startsWith('/admin')) {
-    const local = localStorage.getItem('ips_media_preset');
-    if (local === 'cloud' || local === 'default') return local;
-  }
-  return envVal === 'cloud' ? 'cloud' : 'default';
+  return 'default';
 }
 
-export function setMediaDeliveryPreset(preset: MediaDeliveryPreset): void {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('ips_media_preset', preset);
-    window.dispatchEvent(new Event('ips_media_preset_changed'));
-  }
-}
-
-function isKnownLocalSettingsAsset(path: string): boolean {
-  const lower = path.toLowerCase().replace(/\\/g, '/').replace(/^\/?(assets\/)?/, '');
-  // Any file with Cloudinary generated id 'file_' is an uploaded asset in the cloud
-  if (lower.includes('/file_') || lower.startsWith('file_')) return false;
-
-  return (
-    lower.startsWith('settings/logos/') ||
-    lower.startsWith('settings/icons/') ||
-    lower.startsWith('settings/home/banner_') ||
-    lower.startsWith('settings/home/hero-campus') ||
-    lower.startsWith('settings/home/chairman.jpeg') ||
-    lower.startsWith('settings/home/director.jpeg') ||
-    lower.startsWith('settings/home/principal.jpeg') ||
-    lower.startsWith('settings/mandatory_disclosure')
-  );
-}
+export function setMediaDeliveryPreset(_preset: MediaDeliveryPreset): void {}
 
 /**
  * Normalizes asset URLs:
- * - If preset is 'default': serves local assets (Settings/Logos/Home/Icons) locally from /assets/... first.
- * - If preset is 'cloud': serves from Cloudinary CDN.
- * - Always injects f_auto,q_auto optimization on Cloudinary images to minimize bandwidth.
+ * - Complete URLs (HTTP/HTTPS) from backend API or JSON are preserved directly without discarding user updates.
+ * - Cloudinary images get f_auto,q_auto optimization for maximum performance.
+ * - Relative paths are cleanly formatted with a leading slash.
  */
 export function getAssetUrl(url?: any): string {
   const str = extractStringUrl(url);
   if (!str) return '';
-  let trimmed = str
-    .trim()
-    .replace(/(?:assets\/Videos\/)+assets\/Videos\//gi, 'assets/Videos/')
-    .replace(/(?:Videos\/)+Videos\//gi, 'Videos/');
+  const trimmed = str.trim();
   if (!trimmed) return '';
 
   if (trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
@@ -257,156 +208,32 @@ export function getAssetUrl(url?: any): string {
     return trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
   }
 
-  const preset = getMediaDeliveryPreset();
-
+  // Complete HTTP/HTTPS URL (Cloudinary, external, etc.)
+  // NEVER rewrite or discard the user-updated Cloudinary URL!
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
     if (trimmed.includes('cloudinary.com')) {
-      let fixedUrl = trimmed
-        .replace(/(?:assets\/Videos\/)+assets\/Videos\//gi, 'assets/Videos/')
-        .replace(/(?:Videos\/)+Videos\//gi, 'Videos/');
-
       if (
-        fixedUrl.toLowerCase().includes('aakashhealthfoundation') ||
-        fixedUrl.toLowerCase().includes('aakash_foundation_logo') ||
-        fixedUrl.toLowerCase().includes('aakashfoundationlogo') ||
-        fixedUrl.toLowerCase().includes('file_xpnvia')
+        trimmed.includes('/image/upload/') &&
+        !trimmed.includes('/image/upload/f_auto') &&
+        !trimmed.includes('f_auto') &&
+        !trimmed.includes('/raw/upload/') &&
+        !/\.pdf($|\?|#)/i.test(trimmed) &&
+        !trimmed.includes('pg_') &&
+        !trimmed.includes('f_jpg')
       ) {
-        const cloudinaryBase = getCloudinaryBaseUrl();
-        fixedUrl = `${cloudinaryBase}/image/upload/ips-education/assets/Settings/Logos/AakashFoundationLogo.png`;
+        return trimmed.replace('/image/upload/', '/image/upload/f_auto,q_auto/');
       }
-
-      // If preset is 'default', check if this is a Settings asset that is available locally
-      if (preset === 'default') {
-        const settingsMatch = fixedUrl.match(/\/(Settings\/[^?#]+)/i);
-        if (settingsMatch && settingsMatch[1] && isKnownLocalSettingsAsset(settingsMatch[1])) {
-          return `/assets/${settingsMatch[1]}`;
-        }
-      }
-
-      // Collapse duplicate f_auto,q_auto and rootFolder occurrences
-      const rootFolder = getCloudinaryRootFolder();
-      fixedUrl = fixedUrl
-        .replace(/(?:f_auto(?:,q_auto)?\/)+/gi, 'f_auto,q_auto/')
-        .replace(/(?:ips-education\/assets\/)+/gi, `${rootFolder}/`)
-        .replace(/f_auto,q_auto\/ips-education\/assets\/f_auto,q_auto\/ips-education\/assets\//gi, `f_auto,q_auto/${rootFolder}/`);
-
-      if (!fixedUrl.includes('/upload/')) {
-        const isVideo = fixedUrl.includes('/Videos/') || /\.(mp4|webm|mov|avi|mkv|flv|wmv|m4v)$/i.test(fixedUrl);
-        const isRaw = /\.(doc|docx|xls|xlsx|zip|txt|csv)$/i.test(fixedUrl);
-        const typePrefix = isVideo ? 'video/upload' : isRaw ? 'raw/upload' : 'image/upload';
-        if (rootFolder && fixedUrl.includes(`/${rootFolder}/`)) {
-          fixedUrl = fixedUrl.replace(`/${rootFolder}/`, `/${typePrefix}/${rootFolder}/`);
-        }
-      }
-
-      fixedUrl = fixedUrl.replace(/\.pdf\.pdf(?=($|\?|#))/gi, '.pdf');
-
-      // Inject f_auto,q_auto for standard Cloudinary images to save bandwidth,
-      // avoiding PDFs and explicit transformation chains like pg_ (PDF page preview) or f_jpg
-      if (
-        fixedUrl.includes('/image/upload/') &&
-        !fixedUrl.includes('/image/upload/f_auto') &&
-        !fixedUrl.includes('f_auto') &&
-        !fixedUrl.includes('/raw/upload/') &&
-        !/\.pdf($|\?|#)/i.test(fixedUrl) &&
-        !fixedUrl.includes('pg_') &&
-        !fixedUrl.includes('f_jpg')
-      ) {
-        fixedUrl = fixedUrl.replace('/image/upload/', '/image/upload/f_auto,q_auto/');
-      }
-
-      return fixedUrl;
     }
     return trimmed;
   }
 
+  // Relative path (e.g. /assets/Settings/..., /Videos/...)
   let cleanPath = trimmed.replace(/\\/g, '/').replace(/^\/+/, '');
   if (cleanPath.toLowerCase().startsWith('public/')) {
     cleanPath = cleanPath.slice('public/'.length).replace(/^\/+/, '');
   }
-  if (cleanPath.toLowerCase().startsWith('assets/')) {
-    cleanPath = cleanPath.slice('assets/'.length).replace(/^\/+/, '');
-  }
 
-  cleanPath = cleanPath
-    .replace(/(?:assets\/Videos\/)+assets\/Videos\//gi, 'assets/Videos/')
-    .replace(/(?:Videos\/)+Videos\//gi, 'Videos/');
-
-  // Clean out any duplicate leading transformations, version tags, or root folder from relative paths
-  const rootFolder = getCloudinaryRootFolder();
-  let prevPath = '';
-  while (prevPath !== cleanPath) {
-    prevPath = cleanPath;
-    cleanPath = cleanPath
-      .replace(/^(?:(?:image|video|raw)\/upload\/)+/i, '')
-      .replace(/^(?:(?:f_auto(?:,q_auto)?|q_auto)\/)+/i, '')
-      .replace(/^v\d+\//i, '')
-      .replace(/^(?:ips-education|ips-edu|ips-school)\/(?:assets\/)?/i, '')
-      .replace(/^[a-zA-Z0-9_-]+\/assets\//i, '')
-      .replace(/^assets\//i, '');
-  }
-
-  if (cleanPath.startsWith('Logos/')) {
-    cleanPath = `Settings/${cleanPath}`;
-  }
-
-  if (
-    cleanPath.toLowerCase().includes('aakashhealthfoundation') ||
-    cleanPath.toLowerCase().includes('aakash_foundation_logo') ||
-    cleanPath.toLowerCase().includes('aakashfoundationlogo') ||
-    cleanPath.toLowerCase().includes('file_xpnvia')
-  ) {
-    cleanPath = 'Settings/Logos/AakashFoundationLogo.png';
-  }
-
-  // If preset is 'default', ONLY known bundled static assets are served locally from public/assets/Settings
-  if (preset === 'default') {
-    if (isKnownLocalSettingsAsset(cleanPath)) {
-      return `/assets/${cleanPath}`;
-    }
-
-    if (process.env.NEXT_PUBLIC_SERVE_LOCAL_ASSETS === 'true') {
-      return `/assets/${cleanPath}`;
-    }
-  }
-
-  const lowerPath = cleanPath.toLowerCase();
-  let resourcePrefix = 'image/upload';
-  const cloudinaryBase = getCloudinaryBaseUrl();
-
-  if (
-    lowerPath.startsWith('video/upload/') ||
-    lowerPath.startsWith('image/upload/') ||
-    lowerPath.startsWith('raw/upload/')
-  ) {
-    return cloudinaryBase ? `${cloudinaryBase}/${cleanPath}` : `/${cleanPath}`;
-  }
-
-  if (
-    lowerPath.includes('videos/') ||
-    /\.(mp4|webm|mov|avi|mkv|flv|wmv|m4v)$/i.test(lowerPath)
-  ) {
-    resourcePrefix = 'video/upload';
-  } else if (
-    /\.(doc|docx|xls|xlsx|zip|txt|csv)$/i.test(lowerPath)
-  ) {
-    resourcePrefix = 'raw/upload';
-  }
-
-  cleanPath = cleanPath.replace(/\.pdf\.pdf(?=($|\?|#))/gi, '.pdf');
-
-  let finalCloudPath = cleanPath;
-  if (rootFolder && !cleanPath.startsWith(`${rootFolder}/`)) {
-    finalCloudPath = `${rootFolder}/${cleanPath}`;
-  }
-
-  // Auto-optimize image delivery via f_auto,q_auto
-  const finalPrefix =
-    resourcePrefix === 'image/upload' && !finalCloudPath.toLowerCase().endsWith('.pdf')
-      ? 'image/upload/f_auto,q_auto'
-      : resourcePrefix;
-
-  return cloudinaryBase ? `${cloudinaryBase}/${finalPrefix}/${finalCloudPath}` : `/${finalPrefix}/${finalCloudPath}`;
+  return `/${cleanPath}`;
 }
 
 /**

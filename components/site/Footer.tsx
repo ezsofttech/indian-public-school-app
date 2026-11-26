@@ -122,7 +122,7 @@ export function Footer() {
   useEffect(() => {
     let isMounted = true;
     const verifyHealth = async () => {
-      const online = await checkBackendHealth(2500, true);
+      const online = await checkBackendHealth(2500, false);
       if (isMounted) {
         setIsBackendOnline(online);
       }
@@ -130,13 +130,8 @@ export function Footer() {
 
     verifyHealth();
 
-    const interval = setInterval(verifyHealth, 15000);
-    window.addEventListener("focus", verifyHealth);
-
     return () => {
       isMounted = false;
-      clearInterval(interval);
-      window.removeEventListener("focus", verifyHealth);
     };
   }, []);
 

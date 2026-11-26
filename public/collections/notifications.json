@@ -1,0 +1,325 @@
+[
+  {
+    "_id": "6ac8a96cf748017fd3da7940",
+    "title": "New Inquiry (Feedback (General Feedback))",
+    "message": "Inquiry from Om Rathod (om.r@ezglobaltechnologies.com): \"Rating: 5/5 Stars\nCategory: General Feedback\nFeedback: nice school\"",
+    "type": "INQUIRY",
+    "referenceId": "6ac8a96bf748017fd3da793f",
+    "referenceType": "Inquiry",
+    "metadata": {
+      "inquiryId": "6ac8a96bf748017fd3da793f",
+      "name": "Om Rathod",
+      "email": "om.r@ezglobaltechnologies.com",
+      "contact": "9826465718",
+      "inquiryType": "Feedback (General Feedback)",
+      "message": "Rating: 5/5 Stars\nCategory: General Feedback\nFeedback: nice school"
+    },
+    "isRead": true,
+    "createdAt": "2026-10-09T08:44:28.034Z",
+    "updatedAt": "2026-10-09T12:12:22.756Z"
+  },
+  {
+    "_id": "6ac8befd549fa357d388fbe9",
+    "title": "New Inquiry (Feedback (General Feedback))",
+    "message": "Inquiry from Om Rathod (om.r@ezglobaltechnologies.com): \"Rating: 5/5 Stars\nCategory: General Feedback\nFeedback: Nice school\"",
+    "type": "INQUIRY",
+    "referenceId": "6ac8befc549fa357d388fbe8",
+    "referenceType": "Inquiry",
+    "metadata": {
+      "inquiryId": "6ac8befc549fa357d388fbe8",
+      "name": "Om Rathod",
+      "email": "om.r@ezglobaltechnologies.com",
+      "contact": "9826465718",
+      "inquiryType": "Feedback (General Feedback)",
+      "message": "Rating: 5/5 Stars\nCategory: General Feedback\nFeedback: Nice school"
+    },
+    "isRead": true,
+    "createdAt": "2026-10-09T10:16:29.391Z",
+    "updatedAt": "2026-10-09T12:12:22.756Z"
+  },
+  {
+    "_id": "6ac8bf99549fa357d388fbeb",
+    "title": "New Inquiry (Feedback (General Feedback))",
+    "message": "Inquiry from Om Rathod (om.r@ezglobaltechnologies.com): \"Rating: 5/5 Stars\nCategory: General Feedback\nFeedback: Awesome school\"",
+    "type": "INQUIRY",
+    "referenceId": "6ac8bf99549fa357d388fbea",
+    "referenceType": "Inquiry",
+    "metadata": {
+      "inquiryId": "6ac8bf99549fa357d388fbea",
+      "name": "Om Rathod",
+      "email": "om.r@ezglobaltechnologies.com",
+      "contact": "9826475718",
+      "inquiryType": "Feedback (General Feedback)",
+      "message": "Rating: 5/5 Stars\nCategory: General Feedback\nFeedback: Awesome school"
+    },
+    "isRead": true,
+    "createdAt": "2026-10-09T10:19:05.819Z",
+    "updatedAt": "2026-10-09T12:12:14.736Z"
+  },
+  {
+    "_id": "6ac8c089549fa357d388fbed",
+    "title": "New Inquiry (Feedback (General Feedback))",
+    "message": "Inquiry from Om Rathod (om.r@ezglobaltechnologies.com): \"Rating: 5/5 Stars\nCategory: General Feedback\nFeedback: good school\"",
+    "type": "INQUIRY",
+    "referenceId": "6ac8c089549fa357d388fbec",
+    "referenceType": "Inquiry",
+    "metadata": {
+      "inquiryId": "6ac8c089549fa357d388fbec",
+      "name": "Om Rathod",
+      "email": "om.r@ezglobaltechnologies.com",
+      "contact": "9826465718",
+      "inquiryType": "Feedback (General Feedback)",
+      "message": "Rating: 5/5 Stars\nCategory: General Feedback\nFeedback: good school"
+    },
+    "isRead": true,
+    "createdAt": "2026-10-09T10:23:05.789Z",
+    "updatedAt": "2026-10-09T12:12:19.423Z"
+  },
+  {
+    "_id": "6ac9494821559962d4a19574",
+    "title": "New Inquiry (Admission)",
+    "message": "Inquiry from Abhinav (ravi@gmail.com): \"Admission inquiry from website form (Ref: IPS-ENQ-2026-1571)\"",
+    "type": "INQUIRY",
+    "referenceId": "6ac9494821559962d4a19573",
+    "referenceType": "Inquiry",
+    "metadata": {
+      "inquiryId": "6ac9494821559962d4a19573",
+      "name": "Abhinav",
+      "email": "ravi@gmail.com",
+      "contact": "9826465718",
+      "inquiryType": "Admission",
+      "message": "Admission inquiry from website form (Ref: IPS-ENQ-2026-1571)"
+    },
+    "isRead": true,
+    "createdAt": "2026-10-09T20:06:32.596Z",
+    "updatedAt": "2026-10-16T14:50:18.080Z"
+  },
+  {
+    "_id": "6ac94be621559962d4a19576",
+    "title": "New Inquiry (Admission)",
+    "message": "Inquiry from Abhinav (om@gmail.com): \"Admission inquiry from website form (Ref: IPS-ENQ-2026-5185)\"",
+    "type": "INQUIRY",
+    "referenceId": "6ac94be621559962d4a19575",
+    "referenceType": "Inquiry",
+    "metadata": {
+      "inquiryId": "6ac94be621559962d4a19575",
+      "name": "Abhinav",
+      "email": "om@gmail.com",
+      "contact": "9826465718",
+      "inquiryType": "Admission",
+      "message": "Admission inquiry from website form (Ref: IPS-ENQ-2026-5185)"
+    },
+    "isRead": true,
+    "createdAt": "2026-10-09T20:17:42.175Z",
+    "updatedAt": "2026-10-26T10:36:23.333Z"
+  },
+  {
+    "_id": "6acde5c7dbaf5fdc1063c8ae",
+    "title": "New Inquiry (Admission)",
+    "message": "Inquiry from Om Rathod (om.r@ezglobaltechnologies.com): \"Admission inquiry from website form (Ref: IPS-ENQ-2026-9387)\"",
+    "type": "INQUIRY",
+    "referenceId": "6acde5c7dbaf5fdc1063c8ad",
+    "referenceType": "Inquiry",
+    "metadata": {
+      "inquiryId": "6acde5c7dbaf5fdc1063c8ad",
+      "name": "Om Rathod",
+      "email": "om.r@ezglobaltechnologies.com",
+      "contact": "9826465718",
+      "inquiryType": "Admission",
+      "message": "Admission inquiry from website form (Ref: IPS-ENQ-2026-9387)"
+    },
+    "isRead": true,
+    "createdAt": "2026-10-13T08:03:19.617Z",
+    "updatedAt": "2026-10-26T10:36:23.333Z"
+  },
+  {
+    "_id": "6ace0e1fdbaf5fdc1063c8b0",
+    "title": "New Inquiry (Admission)",
+    "message": "Inquiry from Samay (om@gmail.com): \"Admission inquiry from website form (Ref: IPS-ENQ-2026-2735)\"",
+    "type": "INQUIRY",
+    "referenceId": "6ace0e1fdbaf5fdc1063c8af",
+    "referenceType": "Inquiry",
+    "metadata": {
+      "inquiryId": "6ace0e1fdbaf5fdc1063c8af",
+      "name": "Samay",
+      "email": "om@gmail.com",
+      "contact": "9826463718",
+      "inquiryType": "Admission",
+      "message": "Admission inquiry from website form (Ref: IPS-ENQ-2026-2735)"
+    },
+    "isRead": true,
+    "createdAt": "2026-10-13T10:55:27.245Z",
+    "updatedAt": "2026-10-26T10:36:23.333Z"
+  },
+  {
+    "_id": "6ace0e6fdbaf5fdc1063c8b2",
+    "title": "New Inquiry (Admission)",
+    "message": "Inquiry from Sam (om@gmail.com): \"Admission inquiry from website form (Ref: IPS-ENQ-2026-7342)\"",
+    "type": "INQUIRY",
+    "referenceId": "6ace0e6edbaf5fdc1063c8b1",
+    "referenceType": "Inquiry",
+    "metadata": {
+      "inquiryId": "6ace0e6edbaf5fdc1063c8b1",
+      "name": "Sam",
+      "email": "om@gmail.com",
+      "contact": "9826252282",
+      "inquiryType": "Admission",
+      "message": "Admission inquiry from website form (Ref: IPS-ENQ-2026-7342)"
+    },
+    "isRead": true,
+    "createdAt": "2026-10-13T10:56:47.128Z",
+    "updatedAt": "2026-10-26T10:36:23.333Z"
+  },
+  {
+    "_id": "6acf261a284dd2678a69b855",
+    "title": "New Inquiry (Admission)",
+    "message": "Inquiry from Abhinav (abhinav@gmail.com): \"Admission inquiry from website form (Ref: IPS-ENQ-2026-5561)\"",
+    "type": "INQUIRY",
+    "referenceId": "6acf261a284dd2678a69b854",
+    "referenceType": "Inquiry",
+    "metadata": {
+      "inquiryId": "6acf261a284dd2678a69b854",
+      "name": "Abhinav",
+      "email": "abhinav@gmail.com",
+      "contact": "9826465718",
+      "inquiryType": "Admission",
+      "message": "Admission inquiry from website form (Ref: IPS-ENQ-2026-5561)"
+    },
+    "isRead": true,
+    "createdAt": "2026-10-14T06:50:02.817Z",
+    "updatedAt": "2026-10-26T10:36:23.333Z"
+  },
+  {
+    "_id": "6acf268e284dd2678a69b857",
+    "title": "New Inquiry (Admission)",
+    "message": "Inquiry from Abhinav (abhinav@gmail.com): \"Admission inquiry from website form (Ref: IPS-ENQ-2026-4909)\"",
+    "type": "INQUIRY",
+    "referenceId": "6acf268e284dd2678a69b856",
+    "referenceType": "Inquiry",
+    "metadata": {
+      "inquiryId": "6acf268e284dd2678a69b856",
+      "name": "Abhinav",
+      "email": "abhinav@gmail.com",
+      "contact": "9826465718",
+      "inquiryType": "Admission",
+      "message": "Admission inquiry from website form (Ref: IPS-ENQ-2026-4909)"
+    },
+    "isRead": true,
+    "createdAt": "2026-10-14T06:51:58.960Z",
+    "updatedAt": "2026-10-26T10:36:23.333Z"
+  },
+  {
+    "_id": "6acf3f31b26b11b614918951",
+    "title": "New Inquiry (Admission)",
+    "message": "Inquiry from Abhinav (omrathaure1@gmail.com): \"Admission inquiry from website form (Ref: IPS-ENQ-2026-9105)\"",
+    "type": "INQUIRY",
+    "referenceId": "6acf3f31b26b11b614918950",
+    "referenceType": "Inquiry",
+    "metadata": {
+      "inquiryId": "6acf3f31b26b11b614918950",
+      "name": "Abhinav",
+      "email": "omrathaure1@gmail.com",
+      "contact": "9826465718",
+      "inquiryType": "Admission",
+      "message": "Admission inquiry from website form (Ref: IPS-ENQ-2026-9105)"
+    },
+    "isRead": true,
+    "createdAt": "2026-10-14T08:37:05.581Z",
+    "updatedAt": "2026-10-26T10:36:23.333Z"
+  },
+  {
+    "_id": "6ae584a3dc6f2a58df18ef65",
+    "title": "New Inquiry (Admission)",
+    "message": "Inquiry from Karan singh (karansingh97842@gmail.com): \"Admission inquiry from website form (Ref: INQ-MVVZW2B8-R0K62)\"",
+    "type": "INQUIRY",
+    "referenceId": "INQ-MVVZW12S-U0CIX",
+    "referenceType": "Inquiry",
+    "metadata": {
+      "inquiryId": "INQ-MVVZW12S-U0CIX",
+      "name": "Karan singh",
+      "email": "karansingh97842@gmail.com",
+      "contact": "9040057811",
+      "inquiryType": "Admission",
+      "message": "Admission inquiry from website form (Ref: INQ-MVVZW2B8-R0K62)"
+    },
+    "isRead": false,
+    "createdAt": "2026-10-31T06:03:15.173Z",
+    "updatedAt": "2026-10-31T06:03:15.173Z"
+  },
+  {
+    "_id": "6ae88c72dc6f2a58df18ef6f",
+    "title": "New Application for Physics Teacher",
+    "message": "Candidate Vijay (vijay@gmail.com) submitted application #APP-2026-6C3A17",
+    "type": "CAREER_APPLICATION",
+    "referenceId": "6ae88c72dc6f2a58df18ef6e",
+    "referenceType": "CareerApplication",
+    "metadata": {
+      "applicationId": "6ae88c72dc6f2a58df18ef6e",
+      "applicationNo": "APP-2026-6C3A17",
+      "postTitle": "Physics Teacher",
+      "fullName": "Vijay",
+      "email": "vijay@gmail.com",
+      "phone": "9826465718"
+    },
+    "isRead": true,
+    "createdAt": "2026-11-02T13:13:22.906Z",
+    "updatedAt": "2026-11-02T13:18:19.106Z"
+  },
+  {
+    "_id": "6ae8944ddc6f2a58df18ef76",
+    "title": "New Application for Physics Teacher",
+    "message": "Candidate Vinay (vinay@gmail.com) submitted application #APP-2026-24D32C",
+    "type": "CAREER_APPLICATION",
+    "referenceId": "6ae8944ddc6f2a58df18ef75",
+    "referenceType": "CareerApplication",
+    "metadata": {
+      "applicationId": "6ae8944ddc6f2a58df18ef75",
+      "applicationNo": "APP-2026-24D32C",
+      "postTitle": "Physics Teacher",
+      "fullName": "Vinay",
+      "email": "vinay@gmail.com",
+      "phone": "98262465718"
+    },
+    "isRead": false,
+    "createdAt": "2026-11-02T13:46:53.998Z",
+    "updatedAt": "2026-11-02T13:46:53.998Z"
+  },
+  {
+    "_id": "6ae8c310d34c7eeea1ab0c78",
+    "title": "New Application for Hindi Teacher",
+    "message": "Candidate Ishwari (isha@gmai.com) submitted application #APP-2026-0E66C3",
+    "type": "CAREER_APPLICATION",
+    "referenceId": "6ae8c310d34c7eeea1ab0c77",
+    "referenceType": "CareerApplication",
+    "metadata": {
+      "applicationId": "6ae8c310d34c7eeea1ab0c77",
+      "applicationNo": "APP-2026-0E66C3",
+      "postTitle": "Hindi Teacher",
+      "fullName": "Ishwari",
+      "email": "isha@gmai.com",
+      "phone": "9826465718"
+    },
+    "isRead": true,
+    "createdAt": "2026-11-02T17:06:24.991Z",
+    "updatedAt": "2026-11-02T17:06:35.349Z"
+  },
+  {
+    "_id": "6ae95987b9c5922ef26e53e1",
+    "title": "New Application for Physics Teacher",
+    "message": "Candidate Ishwar (isha@gmai.com) submitted application #APP-2026-C45A3F",
+    "type": "CAREER_APPLICATION",
+    "referenceId": "6ae95987b9c5922ef26e53e0",
+    "referenceType": "CareerApplication",
+    "metadata": {
+      "applicationId": "6ae95987b9c5922ef26e53e0",
+      "applicationNo": "APP-2026-C45A3F",
+      "postTitle": "Physics Teacher",
+      "fullName": "Ishwar",
+      "email": "isha@gmai.com",
+      "phone": "9826465718"
+    },
+    "isRead": false,
+    "createdAt": "2026-11-03T03:48:23.890Z",
+    "updatedAt": "2026-11-03T03:48:23.890Z"
+  }
+]

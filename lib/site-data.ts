@@ -1,8 +1,7 @@
 import { checkBackendHealth, getOptionalApi, unwrapCollection, unwrapSetting, type ApiRecord, type PaginatedData } from "@/lib/api-client";
-import { formatHref, getAssetUrl, getCloudinaryRootFolder } from "@/lib/utils";
-import fallbackSiteData from "@/public/cloud-datasource.json";
+import { formatHref, getAssetUrl } from "@/lib/utils";
+import fallbackSiteData from "@/public/collections/schoolsettings.json";
 
-export const CLOUDINARY_ROOT_FOLDER = getCloudinaryRootFolder();
 export const DEFAULT_HERO_IMAGE = "/assets/Settings/Home/Hero-5.png";
 export const DEFAULT_LOGO = "/assets/Settings/Logos/IPSLogo.png";
 export const DEFAULT_SECONDARY_LOGO = "/assets/Settings/Logos/AakashFoundationLogo.png";

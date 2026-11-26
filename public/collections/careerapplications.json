@@ -1,0 +1,40 @@
+[
+  {
+    "_id": "6ae88c72dc6f2a58df18ef6e",
+    "postId": "6ae830d6dc6f2a58df18ef66",
+    "postTitle": "Physics Teacher",
+    "applicationNo": "APP-2026-6C3A17",
+    "fullName": "Vijay",
+    "email": "vijay@gmail.com",
+    "phone": "9826465718",
+    "coverNote": "",
+    "resumeUrl": "/Resumes/1793625163630_IPS_Document.pdf",
+    "photoUrl": "/CareerApplications/file_xhmjiu.jpg",
+    "customAnswers": {
+      "applicant_photo": "/CareerApplications/file_xhmjiu.jpg"
+    },
+    "isRead": false,
+    "status": "PENDING",
+    "createdAt": "2026-11-02T13:13:22.834Z",
+    "updatedAt": "2026-11-02T13:13:22.834Z"
+  },
+  {
+    "_id": "6ae8944ddc6f2a58df18ef75",
+    "postId": "6ae830d6dc6f2a58df18ef66",
+    "postTitle": "Physics Teacher",
+    "applicationNo": "APP-2026-24D32C",
+    "fullName": "Vinay",
+    "email": "vinay@gmail.com",
+    "phone": "98262465718",
+    "coverNote": "",
+    "resumeUrl": "/Resumes/1793627205904_IPS_Document.pdf",
+    "photoUrl": "/CareerApplications/file_vkxqk3.png",
+    "customAnswers": {
+      "applicant_photo": "/CareerApplications/file_vkxqk3.png"
+    },
+    "isRead": false,
+    "status": "PENDING",
+    "createdAt": "2026-11-02T13:46:53.899Z",
+    "updatedAt": "2026-11-02T13:46:53.899Z"
+  }
+]
