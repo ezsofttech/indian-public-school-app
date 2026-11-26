@@ -1,41 +1,39 @@
 /**
  * Centralized Application & Environment Configuration
- * Consolidates all environment variables, API endpoints, timeouts, and default site constants.
+ * Directly maps .env variables with single canonical fallbacks.
  */
 
-// 1. Backend API Endpoint
-const rawApiUrl = (
-  process.env.NEXT_PUBLIC_BASE_URL ||
-  process.env.API_BASE_URL ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000/api/v1"
+// 1. Backend API Endpoint (Exact env: NEXT_PUBLIC_BASE_URL)
+export const API_URL = (
+  process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1"
 ).replace(/\/+$/, "");
 
-export const API_URL = rawApiUrl.replace(/([^:]\/)\/+/g, "$1");
-
-// On server-side (Node.js SSR), resolve localhost to 127.0.0.1 to avoid Windows IPv6 (::1) lookup timeouts
-export const API_SSR_BASE_URL = typeof window === "undefined"
-  ? API_URL.replace("://localhost:5000", "://127.0.0.1:5000")
-  : API_URL;
+// Server-side (Node.js SSR): resolve localhost to 127.0.0.1 to avoid Windows IPv6 (::1) lookup delays
+export const API_SSR_BASE_URL =
+  typeof window === "undefined"
+    ? API_URL.replace("://localhost:5000", "://127.0.0.1:5000")
+    : API_URL;
 
 export const API_ROOT_URL = API_URL.replace(/\/v1\/?$/, "");
 
-// 2. Client Website Domain
+// 2. Client Domain (Exact env: NEXT_PUBLIC_CLIENT_URL)
 export const DOMAIN = (
-  process.env.NEXT_PUBLIC_CLIENT_URL ||
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  "https://indian-public-school-app.vercel.app"
+  process.env.NEXT_PUBLIC_CLIENT_URL || "https://ips-web.ezsoftapp.in"
 ).replace(/\/+$/, "");
 
 // 3. Application Metadata & Defaults
 export const SITE_CONFIG = {
   name: "Indian Public School",
   shortName: "IPS",
-  tagline: "Quality Education for a Brighter Future",
-  description: "Official portal of Indian Public School, Sambalpur. School operations, admissions, and content management.",
+  tagline: "Learn · Lead · Inspire",
+  description:
+    "Indian Public School is a CBSE co-educational school in Sambalpur, Odisha, offering education from Pre-Primary to Class XII.",
   email: "info@indianpublicschool.in",
   phone: "+91 8114320555",
+  secondaryPhone: "+91 97351 81684",
   address: "Main Road, Near RMC, Khetrajpur, Sambalpur, Odisha - 768006",
+  affiliationNo: "530152",
+  schoolCode: "15389",
 } as const;
 
 // 4. Default Asset Paths
@@ -51,7 +49,7 @@ export const DEFAULT_ASSETS = {
   campusImage: "/assets/Settings/Home/hero-campus.png",
 } as const;
 
-// 5. Timeouts & Polling (in milliseconds)
+// 5. Timeouts (in milliseconds)
 export const TIMEOUTS = {
   api: Number(process.env.NEXT_PUBLIC_API_TIMEOUT_MS) || 6000,
   healthCheck: 3000,
@@ -65,9 +63,9 @@ export const AUTH_CONFIG = {
   cookieMaxAge: 604800, // 7 days in seconds
 } as const;
 
-// 7. SEO & Verification
+// 7. SEO Verification (Exact env: NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION)
 export const SEO_CONFIG = {
-  googleSiteVerification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "MEu__f_ieLX2bOc3aeCCHfzqtqwygpWDOGnq",
+  googleSiteVerification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
 } as const;
 
 export default {
