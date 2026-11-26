@@ -245,7 +245,7 @@ export async function getSiteData(): Promise<SiteData> {
     reviewsResponse,
     menuItemsResponse,
   ] = await Promise.all([
-    getOptionalApi<SiteData | { value?: SiteData; _doc?: { value?: SiteData } }>("/regarding/datasource"),
+    getOptionalApi<SiteData | { value?: SiteData; _doc?: { value?: SiteData } }>("/school-settings/datasource"),
     getOptionalApi<SiteLogoSetting | { value?: SiteLogoSetting }>("/school-settings/key/site_logo"),
     getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/news", { limit: 20, page: 1, sortOrder: "desc" }),
     getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/gallery", { limit: 500, page: 1, sortOrder: "desc" }),

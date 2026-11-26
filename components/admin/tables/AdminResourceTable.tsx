@@ -873,7 +873,7 @@ export function HeaderFooterSettingsCard({
           }
         } catch {
           try {
-            const res2 = await axios.get(`${API_URL}/regarding/datasource?t=${Date.now()}`);
+            const res2 = await axios.get(`${API_URL}/school-settings/datasource?t=${Date.now()}`);
             rawDsVal = res2.data?.data ?? res2.data;
           } catch {
             // Keep default fallback

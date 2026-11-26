@@ -165,7 +165,7 @@ export function HomeLayoutEditorModal({
         return;
       }
       try {
-        const res = await axios.get(`${API_URL}/regarding/datasource`);
+        const res = await axios.get(`${API_URL}/school-settings/datasource`);
         const data = res.data?.data ?? res.data;
         const cleanData = data?.value ?? data;
         if (isMounted && cleanData && typeof cleanData === "object" && "home" in cleanData && Array.isArray(cleanData.home)) {
