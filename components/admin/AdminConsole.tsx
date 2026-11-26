@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import axios from "axios";
-import fallbackSiteData from "@/public/collections/schoolsettings.json";
+import { API_ROOT_URL } from "@/lib/config";
 import {
   AlertCircle,
   Bell,
@@ -318,7 +318,7 @@ export function AdminConsole({ initialSection = "" }: { initialSection?: string 
       (result) => result.status === "rejected" && (!axios.isAxiosError(result.reason) || !result.reason.response)
     ).length;
     if (readable.length > 0 && networkFailures === readable.length) {
-      setError("Cannot connect to backend API server. Check that the API is running on http://localhost:5000.");
+      setError(`Cannot connect to backend API server. Check that the API is running on ${API_ROOT_URL}.`);
     }
     setLoading(false);
     isRefreshingRef.current = false;
@@ -355,10 +355,6 @@ export function AdminConsole({ initialSection = "" }: { initialSection?: string 
 
   const combinedPages = useMemo(() => {
     const pageMap = new Map<string, RecordItem>();
-    (((fallbackSiteData as any).pages as RecordItem[]) || []).forEach((p) => {
-      const id = String(p.slug || p.targetUrl || p._id || p.publicId || "");
-      if (id) pageMap.set(id, { ...p, isPublished: true });
-    });
     (data.pages || []).forEach((p) => {
       const id = String(p.slug || p.targetUrl || p._id || p.publicId || "");
       if (id) pageMap.set(id, p);

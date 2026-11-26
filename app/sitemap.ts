@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { DOMAIN } from "@/lib/config";
 import schoolsettings from "@/public/collections/schoolsettings.json";
 import pagesCollection from "@/public/collections/pages.json";
 
@@ -29,7 +30,7 @@ function extractInternalRoutes(obj: unknown, foundRoutes = new Set<string>()): S
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_CLIENT_URL || "https://indian-public-school-app.vercel.app";
+  const baseUrl = DOMAIN;
 
   const staticRoutes: { path: string; priority: number; changeFrequency: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never" }[] = [
     { path: "", priority: 1.0, changeFrequency: "daily" },

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { checkBackendHealth } from "@/lib/api/health";
+import { API_URL } from "@/lib/config";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -103,13 +104,7 @@ export function AdmissionEnquiryForm({
     setInquiryId(clientRefId);
 
     try {
-      const baseUrl = (
-        process.env.NEXT_PUBLIC_BASE_URL ||
-        process.env.API_BASE_URL ||
-        "http://localhost:5000/api/v1"
-      ).replace(/\/$/, "");
-
-      const res = await axios.post(`${baseUrl}/inquiries`, {
+      const res = await axios.post(`${API_URL}/inquiries`, {
         name: values.fullName,
         contact: values.phone,
         email: values.email,

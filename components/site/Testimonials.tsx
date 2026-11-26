@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { API_URL } from "@/lib/config";
 import { AnimatePresence, motion } from "motion/react";
 import {
   ChevronLeft,
@@ -13,7 +15,6 @@ import {
   Loader2,
   MessageSquarePlus,
 } from "lucide-react";
-import axios from "axios";
 import { SectionHeading } from "@/components/site/Reveal";
 import { EASE } from "@/lib/motion-presets";
 import { homeData, text } from "@/lib/site-data";
@@ -117,12 +118,6 @@ export function Testimonials() {
     setIsSubmittingReview(true);
     setReviewError("");
 
-    const baseUrl = (
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      process.env.API_BASE_URL ||
-      "http://localhost:5000/api/v1"
-    ).replace(/\/$/, "");
-
     const payload = {
       name: reviewName.trim(),
       batch: reviewBatch.trim() || "School Community",
@@ -132,7 +127,7 @@ export function Testimonials() {
     };
 
     try {
-      const res = await axios.post(`${baseUrl}/reviews`, payload);
+      const res = await axios.post(`${API_URL}/reviews`, payload);
       const created = res.data?.data || res.data || payload;
 
       setReviewsList((prev) => [

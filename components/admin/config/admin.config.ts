@@ -13,8 +13,9 @@ import {
   FileCheck,
 } from "lucide-react";
 import { Resource, ResourceKey, QueryParamsState } from "../types/admin.types";
+import { API_URL } from "@/lib/config";
 
-export const API_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
+export { API_URL };
 
 export const resourcePath: Record<ResourceKey, string> = {
   students: "students",

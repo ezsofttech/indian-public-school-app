@@ -1,4 +1,5 @@
-import { API_URL, apiClient } from "@/lib/api-client";
+import { apiClient } from "@/lib/api-client";
+import { API_ROOT_URL, TIMEOUTS } from "@/lib/config";
 import axios from "axios";
 
 export interface HealthVisitorData {
@@ -33,8 +34,8 @@ let cachedHealth: { result: BackendHealthResult; expiresAt: number } | null = nu
  */
 export async function checkBackendHealth(
   customSource?: string,
-  timeoutMs = 3000,
-  forceCheck = false,
+  timeoutMs: number = TIMEOUTS.healthCheck,
+  forceCheck: boolean = false,
 ): Promise<BackendHealthResult> {
   const now = Date.now();
   if (!forceCheck && cachedHealth && cachedHealth.expiresAt > now) {
@@ -55,8 +56,7 @@ export async function checkBackendHealth(
     responseData = typeof res.data === "object" ? res.data : undefined;
   } catch {
     try {
-      const rootUrl = API_URL.replace(/\/v1\/?$/, "");
-      const res = await axios.get<any>(`${rootUrl}/health${query}`, {
+      const res = await axios.get<any>(`${API_ROOT_URL}/health${query}`, {
         timeout: timeoutMs,
         headers: { Accept: "application/json" },
       });

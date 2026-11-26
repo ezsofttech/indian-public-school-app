@@ -6,8 +6,7 @@ import axios from "axios";
 import { LoaderCircle, LockKeyhole } from "lucide-react";
 import { DEFAULT_CREST_LOGO, imageUrl } from "@/lib/site-data";
 import { CloudStatusIcon } from "@/components/ui/CloudStatusIcon";
-
-const API_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
+import { API_URL, AUTH_CONFIG } from "@/lib/config";
 
 export function AdminLogin() {
   const router = useRouter();
@@ -26,8 +25,8 @@ export function AdminLogin() {
       const payload = response.data?.data ?? response.data;
       if (!payload.accessToken) throw new Error("The API did not return an access token.");
 
-      window.localStorage.setItem("ips_admin_token", payload.accessToken);
-      document.cookie = `ips_admin_session=${encodeURIComponent(payload.accessToken)}; Path=/; SameSite=Lax; Max-Age=604800${location.protocol === "https:" ? "; Secure" : ""}`;
+      window.localStorage.setItem(AUTH_CONFIG.tokenStorageKey, payload.accessToken);
+      document.cookie = `${AUTH_CONFIG.sessionCookieName}=${encodeURIComponent(payload.accessToken)}; Path=/; SameSite=Lax; Max-Age=${AUTH_CONFIG.cookieMaxAge}${location.protocol === "https:" ? "; Secure" : ""}`;
       const next = searchParams.get("next");
       router.replace(next?.startsWith("/admin") ? next : "/admin");
       router.refresh();

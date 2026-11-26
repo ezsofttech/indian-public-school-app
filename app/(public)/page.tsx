@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { HomeClient } from "@/components/site/HomeClient";
 import { getPageSeoMetadata } from "@/lib/seo";
-
-const API_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
+import { API_URL } from "@/lib/config";
 
 export const metadata: Metadata = getPageSeoMetadata("home", "/");
 

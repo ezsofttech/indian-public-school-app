@@ -5,6 +5,7 @@ import { Award, BookOpen, ChevronRight, Download, ExternalLink, FileText, Gradua
 import pagesCollection from "@/public/collections/pages.json";
 import { DEFAULT_HERO_IMAGE, imageUrl, processHtmlAssetUrls } from "@/lib/site-data";
 import { getAssetUrl, formatHref, isExternalUrl } from "@/lib/utils";
+import { API_URL } from "@/lib/config";
 
 type Content = Record<string, unknown>;
 
@@ -172,8 +173,6 @@ function stringList(value: unknown): string[] {
   }
   return [];
 }
-
-const API_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
 
 export const dynamic = "force-dynamic";
 

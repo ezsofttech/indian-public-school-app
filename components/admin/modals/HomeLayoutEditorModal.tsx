@@ -18,8 +18,6 @@ import {
   Lock,
   ChevronDown,
 } from "lucide-react";
-import fallbackSiteData from "@/public/collections/schoolsettings.json";
-import fallbackMenuItemsList from "@/public/collections/menuitems.json";
 import { RecordItem } from "../types/admin.types";
 import { API_URL } from "../config/admin.config";
 import { HomeHeroTab } from "./home-layout/HomeHeroTab";
@@ -149,7 +147,7 @@ export function HomeLayoutEditorModal({
     if (val && typeof val === "object" && "home" in val && Array.isArray((val as any).home)) {
       return val as any;
     }
-    return fallbackSiteData as any;
+    return { home: [] } as any;
   }, [record]);
 
   const [datasource, setDatasource] = useState<any>(initialValue);
@@ -244,7 +242,7 @@ export function HomeLayoutEditorModal({
       { title: "Brochures", url: "/brochures" },
     ];
 
-    const rawMenu = (dbMenuItems && dbMenuItems.length > 0 ? dbMenuItems : (fallbackMenuItemsList as RecordItem[])) || [];
+    const rawMenu = (dbMenuItems && dbMenuItems.length > 0 ? dbMenuItems : []) as RecordItem[];
 
     // Map items by id to build full hierarchical paths
     const itemMap = new Map<string, RecordItem>();

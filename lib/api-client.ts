@@ -1,4 +1,5 @@
 import axios, { type AxiosInstance, type AxiosResponse } from "axios";
+import { API_URL, API_SSR_BASE_URL as baseURL, TIMEOUTS } from "@/lib/config";
 import {
   checkBackendHealth as checkHealthResult,
   getClientSource,
@@ -6,6 +7,7 @@ import {
   type HealthVisitorData,
 } from "@/lib/api/health";
 
+export { API_URL, baseURL };
 export type { BackendHealthResult, HealthVisitorData };
 export { getClientSource };
 
@@ -31,24 +33,13 @@ export interface PaginatedData<T> {
   hasPrevPage: boolean;
 }
 
-export const API_URL = (
-  process.env.API_BASE_URL ||
-  process.env.NEXT_PUBLIC_BASE_URL ||
-  "http://localhost:5000/api/v1"
-).replace(/\/$/, "");
-
-// On server-side (Node.js SSR), resolve localhost to 127.0.0.1 to avoid Windows IPv6 (::1) lookup timeouts
-const baseURL = typeof window === "undefined"
-  ? API_URL.replace("://localhost:5000", "://127.0.0.1:5000")
-  : API_URL;
-
 export const apiClient: AxiosInstance = axios.create({
   baseURL,
-  timeout: 30000,
+  timeout: TIMEOUTS.api,
   headers: { Accept: "application/json" },
 });
 
-export async function checkBackendHealth(timeoutMs = 3000, forceCheck = false): Promise<boolean> {
+export async function checkBackendHealth(timeoutMs: number = TIMEOUTS.healthCheck, forceCheck: boolean = false): Promise<boolean> {
   const result = await checkHealthResult(undefined, timeoutMs, forceCheck);
   return result.online;
 }

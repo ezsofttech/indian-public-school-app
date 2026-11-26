@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import { API_URL } from "@/lib/config";
 
 export interface ThemeColors {
   primary: string;
@@ -128,8 +129,6 @@ const ThemeContext = createContext<ThemeContextType>({
   applyThemeToDocument: () => {},
   isLoading: false,
 });
-
-const API_BASE = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
 
 export function applyCssVars(theme: ThemeConfig, persist: boolean = true) {
   if (typeof document === "undefined") return;
@@ -285,7 +284,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
       if (previewId && !isAdminPage) {
         try {
-          const previewRes = await axios.get(`${API_BASE}/theme/${previewId}`, { timeout: 4000 });
+          const previewRes = await axios.get(`${API_URL}/theme/${previewId}`, { timeout: 4000 });
           if (previewRes.data) {
             themeData = previewRes.data.data || previewRes.data;
           }
@@ -295,7 +294,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (!themeData) {
-        const res = await axios.get(`${API_BASE}/theme/active?portal=web`, { timeout: 4000 });
+        const res = await axios.get(`${API_URL}/theme/active?portal=web`, { timeout: 4000 });
         if (res.data) {
           themeData = res.data.data || res.data;
         }

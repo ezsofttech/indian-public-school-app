@@ -51,8 +51,7 @@ import { EASE } from "@/lib/motion-presets";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { DEFAULT_HERO_IMAGE, DEFAULT_MAP_DIRECTIONS_URL, getMapDirectionsUrl, getMapEmbedUrl, getOfficeTimingsList, text, type OfficeTimingItem } from "@/lib/site-data";
 import { formatHref, isExternalUrl, formatPhoneNumber, handlePhoneKeyDown } from "@/lib/utils";
-
-const API_BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
+import { API_URL } from "@/lib/config";
 
 function generatePublicInquiryId(): string {
   const timestamp = Date.now().toString(36).toUpperCase();
@@ -210,7 +209,7 @@ export function ContactUsView() {
       const trimmedEmail = values.email?.trim() || "";
       const trimmedContact = values.contact?.trim() || "";
 
-      const res = await axios.post(`${API_BASE_URL}/inquiries`, {
+      const res = await axios.post(`${API_URL}/inquiries`, {
         name: values.name.trim(),
         contact: trimmedContact,
         email: trimmedEmail,
@@ -229,13 +228,7 @@ export function ContactUsView() {
       });
     } catch (err: any) {
       console.error("Inquiry submission error:", err);
-      // Fallback optimistic submission indicator if server is unreachable
-      setSubmittedResult({
-        id: generatePublicInquiryId(),
-        type: values.inquiryType,
-        email: values.email?.trim() || values.contact?.trim() || values.name,
-        timestamp: new Date().toLocaleString(),
-      });
+      alert(err?.response?.data?.message || "Unable to submit inquiry at this moment. Please check your connection and try again.");
     }
   };
 
@@ -246,7 +239,7 @@ export function ContactUsView() {
       return;
     }
     try {
-      const res = await axios.post(`${API_BASE_URL}/reviews`, {
+      const res = await axios.post(`${API_URL}/reviews`, {
         name: values.name,
         batch: values.batch || "School Community",
         rating: Number(values.rating) || 5,
@@ -265,12 +258,7 @@ export function ContactUsView() {
       });
     } catch (err: any) {
       console.error("Feedback submission error:", err);
-      setSubmittedResult({
-        id: generatePublicReviewId(),
-        type: `Testimonial Review`,
-        email: values.name,
-        timestamp: new Date().toLocaleString(),
-      });
+      alert(err?.response?.data?.message || "Unable to submit feedback at this moment. Please check your connection and try again.");
     }
   };
 
@@ -284,7 +272,7 @@ export function ContactUsView() {
     setTrackedResults(null);
 
     try {
-      const res = await axios.get(`${API_BASE_URL}/inquiries/track`, {
+      const res = await axios.get(`${API_URL}/inquiries/track`, {
         params: { query: trackQuery.trim() },
       });
       const data = res.data?.items || res.data?.data || (Array.isArray(res.data) ? res.data : []);

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SEO_CONFIG } from "@/lib/config";
 import "./globals.css";
 import { getBaseUrl, getSchoolJsonLd, getSeoSourceData } from "@/lib/seo";
 import { getAssetUrl } from "@/lib/utils";
@@ -71,7 +72,7 @@ export const metadata: Metadata = {
   },
   verification: {
     google: [
-      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "MEu__f_ieLX2bOc3aeCCHfzqtqwygpWDOGnq"
+      SEO_CONFIG.googleSiteVerification,
     ]
   },
 };

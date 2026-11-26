@@ -1,12 +1,13 @@
 import { checkBackendHealth, getOptionalApi, unwrapCollection, unwrapSetting, type ApiRecord, type PaginatedData } from "@/lib/api-client";
 import { formatHref, getAssetUrl } from "@/lib/utils";
+import { DEFAULT_ASSETS } from "@/lib/config";
 import fallbackSiteData from "@/public/collections/schoolsettings.json";
 
-export const DEFAULT_HERO_IMAGE = "/assets/Settings/Home/Hero-5.png";
-export const DEFAULT_LOGO = "/assets/Settings/Logos/IPSLogo.png";
-export const DEFAULT_SECONDARY_LOGO = "/assets/Settings/Logos/AakashFoundationLogo.png";
-export const DEFAULT_CREST_LOGO = "/assets/Settings/Logos/IPSStandardLogo.png";
-export const DEFAULT_INTRO_VIDEO = "/Videos/file_feszan.mp4";
+export const DEFAULT_HERO_IMAGE = DEFAULT_ASSETS.heroImage;
+export const DEFAULT_LOGO = DEFAULT_ASSETS.logo;
+export const DEFAULT_SECONDARY_LOGO = DEFAULT_ASSETS.secondaryLogo;
+export const DEFAULT_CREST_LOGO = DEFAULT_ASSETS.crestLogo;
+export const DEFAULT_INTRO_VIDEO = DEFAULT_ASSETS.introVideo;
 
 export type SiteRecord = ApiRecord;
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import seoSource from "@/public/seo-source.json";
 import { getAssetUrl } from "@/lib/utils";
 import { DEFAULT_LOGO } from "@/lib/site-data";
+import { DOMAIN } from "@/lib/config";
 
 export interface SeoPageConfig {
   title: string;
@@ -11,7 +12,7 @@ export interface SeoPageConfig {
 }
 
 export const getBaseUrl = () => {
-  return process.env.NEXT_PUBLIC_CLIENT_URL || seoSource.url || "https://indian-public-school-app.vercel.app";
+  return DOMAIN || seoSource.url || "https://indian-public-school-app.vercel.app";
 };
 
 export const getSeoSourceData = () => {

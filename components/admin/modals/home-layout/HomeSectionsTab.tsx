@@ -16,7 +16,6 @@ import {
   Lock,
   ChevronDown,
 } from "lucide-react";
-import fallbackMenuItemsList from "@/public/collections/menuitems.json";
 import { getAssetUrl, formatHref } from "@/lib/utils";
 
 interface HomeSectionsTabProps {
@@ -55,7 +54,7 @@ export function HomeSectionsTab({
   const [uploadingCard, setUploadingCard] = useState<string | null>(null);
 
   const { webMenuGroups, allMenuUrls } = useMemo(() => {
-    const rawMenu = (allMenuItems && allMenuItems.length > 0 ? allMenuItems : (fallbackMenuItemsList as any[])) || [];
+    const rawMenu = allMenuItems || [];
 
     const itemMap = new Map<string, any>();
     rawMenu.forEach((item) => {
