@@ -750,9 +750,12 @@ export function CloudinaryGalleryModal({
     setPreviewFileUrl(url);
   }, []);
 
+  const [deletingItem, setDeletingItem] = useState<string | null>(null);
+
   const handleDeleteCard = useCallback(
     async (item: MediaItem) => {
       if (!window.confirm(`Permanently delete "${item.title}" from Gallery and Cloudinary?`)) return;
+      setDeletingItem(item.title || item.id);
       try {
         const token =
           typeof window !== "undefined"
@@ -773,6 +776,8 @@ export function CloudinaryGalleryModal({
       } catch (err: any) {
         console.error("Failed to delete file from gallery:", err);
         alert(err?.response?.data?.message || "Failed to delete file from gallery.");
+      } finally {
+        setDeletingItem(null);
       }
     },
     [selectedUrl]
@@ -790,7 +795,18 @@ export function CloudinaryGalleryModal({
 
   return (
     <div className="fixed inset-0 z-[150] grid place-items-center bg-slate-950/70 p-4 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl border border-slate-100 flex flex-col">
+      <div className="relative max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl border border-slate-100 flex flex-col">
+        {/* Deleting Process Loader Overlay */}
+        {deletingItem && (
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/85 backdrop-blur-xs animate-in fade-in duration-150">
+            <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-white border border-slate-200 shadow-2xl">
+              <LoaderCircle className="animate-spin text-red-500" size={32} />
+              <span className="text-sm font-bold text-slate-800">Removing from Cloudinary…</span>
+              <span className="text-xs text-slate-500 font-medium">Please wait while &ldquo;{deletingItem}&rdquo; is permanently deleted.</span>
+            </div>
+          </div>
+        )}
+
         {/* Modal Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 bg-white px-6 py-3.5 gap-2">
           <div>

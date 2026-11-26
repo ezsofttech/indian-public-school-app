@@ -100,6 +100,8 @@ export function RecordDialog({
 
   const [values, setValues] = useState<Record<string, unknown>>(initial);
   const [uploading, setUploading] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [pendingFiles, setPendingFiles] = useState<Record<string, Array<{ file: File; previewUrl: string }>>>({});
   const [uploadError, setUploadError] = useState<string>("");
   const [uploadStatus, setUploadStatus] = useState<FileUploadStatus>({
     isUploading: false,
@@ -107,6 +109,19 @@ export function RecordDialog({
     step: "preparing",
   });
   const [galleryPickerField, setGalleryPickerField] = useState<string | null>(null);
+
+  // Clean up blob URLs on unmount
+  React.useEffect(() => {
+    return () => {
+      Object.values(pendingFiles).forEach((items) => {
+        items.forEach((item) => {
+          if (item.previewUrl && item.previewUrl.startsWith("blob:")) {
+            URL.revokeObjectURL(item.previewUrl);
+          }
+        });
+      });
+    };
+  }, [pendingFiles]);
 
   const [publishedPagesState, setPublishedPagesState] = useState<RecordItem[]>([]);
 
@@ -147,12 +162,44 @@ export function RecordDialog({
     setValues((previous) => ({ ...previous, [field]: value }));
   };
 
-  const handleFilesUpload = async (field: string, files: File[]) => {
+  // Stage local files for upload - DOES NOT upload until user clicks "Save"
+  const handleSelectFiles = (field: string, files: File[]) => {
     if (!files || files.length === 0) return;
+    setUploadError("");
+    const isMulti = field === "fileUrl" || field === "document" || Array.isArray(values[field]);
+    const newItems = files.map((file) => ({
+      file,
+      previewUrl: file.type.startsWith("image/") ? URL.createObjectURL(file) : "",
+    }));
+
+    setPendingFiles((prev) => {
+      const existing = prev[field] || [];
+      return {
+        ...prev,
+        [field]: isMulti ? [...existing, ...newItems] : newItems,
+      };
+    });
+  };
+
+  const handleFileUpload = (field: string, file: File) => handleSelectFiles(field, [file]);
+
+  const removePendingFile = (field: string, indexToRemove: number) => {
+    setPendingFiles((prev) => {
+      const list = prev[field] || [];
+      const item = list[indexToRemove];
+      if (item?.previewUrl && item.previewUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(item.previewUrl);
+      }
+      const updated = list.filter((_, i) => i !== indexToRemove);
+      return { ...prev, [field]: updated };
+    });
+  };
+
+  const uploadFilesDirectly = async (field: string, files: File[]): Promise<string[]> => {
+    if (!files || files.length === 0) return [];
     setUploading(field);
     setUploadError("");
 
-    const isMulti = field === "fileUrl" || field === "document" || Array.isArray(values[field]);
     const uploadedUrls: string[] = [];
 
     for (let i = 0; i < files.length; i++) {
@@ -246,55 +293,79 @@ export function RecordDialog({
           errorMessage: errMsg,
           stageMessage: `Upload failed.`,
         }));
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        break;
+        setUploading(null);
+        throw new Error(errMsg);
       }
     }
 
-    if (uploadedUrls.length > 0) {
-      if (isMulti) {
-        const existingList = Array.isArray(values[field])
+    setUploadStatus((prev) => ({
+      ...prev,
+      progress: 100,
+      step: "done",
+      stageMessage: files.length > 1 ? `${uploadedUrls.length} files uploaded!` : "Upload complete!",
+    }));
+    setUploading(null);
+    return uploadedUrls;
+  };
+
+  const removeImage = async (field: string, urlToRemove?: string) => {
+    // Clear any pending staged files for this field
+    if (pendingFiles[field]) {
+      pendingFiles[field].forEach((item) => {
+        if (item.previewUrl && item.previewUrl.startsWith("blob:")) {
+          URL.revokeObjectURL(item.previewUrl);
+        }
+      });
+      setPendingFiles((prev) => ({ ...prev, [field]: [] }));
+    }
+
+    if (urlToRemove) {
+      setUploading(field);
+      setUploadStatus({
+        isUploading: true,
+        field,
+        fileName: urlToRemove.split("/").pop() || "asset",
+        progress: 40,
+        step: "processing",
+        stageMessage: "Removing file from Cloudinary…",
+      });
+
+      try {
+        const token =
+          typeof window !== "undefined"
+            ? localStorage.getItem("ips_admin_token") ||
+              localStorage.getItem("admin_token") ||
+              localStorage.getItem("token") ||
+              ""
+            : "";
+        const headers: Record<string, string> = {};
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        // Wait with process loader until the file is removed from storage
+        await axios.delete(`${API_URL}/uploads/${encodeURIComponent(urlToRemove)}`, { headers }).catch(() => {});
+
+        const currentList = Array.isArray(values[field])
           ? (values[field] as string[])
           : typeof values[field] === "string" && values[field]
           ? [values[field] as string]
           : [];
-        setValue(field, [...existingList, ...uploadedUrls]);
-      } else {
-        setValue(field, uploadedUrls[0]);
+        const updated = currentList.filter((url) => url !== urlToRemove);
+        setValue(field, updated);
+
+        setUploadStatus({
+          isUploading: false,
+          progress: 100,
+          step: "done",
+          stageMessage: "File removed!",
+        });
+      } catch (err: any) {
+        console.error("Failed to remove file:", err);
+      } finally {
+        setUploading(null);
+        setTimeout(() => {
+          setUploadStatus({ isUploading: false, progress: 0, step: "preparing" });
+        }, 800);
       }
-
-      setValues((prev) => {
-        const curRedirect = String(prev.redirectUrl || prev.targetUrl || "").trim();
-        if (!curRedirect) {
-          return { ...prev, redirectUrl: uploadedUrls[0] };
-        }
-        return prev;
-      });
-
-      setUploadStatus((prev) => ({
-        ...prev,
-        progress: 100,
-        step: "done",
-        stageMessage: files.length > 1 ? `${uploadedUrls.length} files uploaded!` : "Upload complete!",
-      }));
-      await new Promise((resolve) => setTimeout(resolve, 800));
-    }
-
-    setUploading(null);
-    setUploadStatus({ isUploading: false, progress: 0, step: "preparing" });
-  };
-
-  const handleFileUpload = (field: string, file: File) => handleFilesUpload(field, [file]);
-
-  const removeImage = (field: string, urlToRemove?: string) => {
-    if (urlToRemove) {
-      const currentList = Array.isArray(values[field])
-        ? (values[field] as string[])
-        : typeof values[field] === "string" && values[field]
-        ? [values[field] as string]
-        : [];
-      const updated = currentList.filter((url) => url !== urlToRemove);
-      setValue(field, updated);
     } else {
       if (field === "document" || field === "fileUrl" || Array.isArray(values[field])) {
         setValue(field, []);
@@ -304,9 +375,52 @@ export function RecordDialog({
     }
   };
 
-  const submit = (event: React.FormEvent) => {
+  const submit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    const pendingKeys = Object.keys(pendingFiles).filter(
+      (k) => pendingFiles[k] && pendingFiles[k].length > 0
+    );
+
     const payload = { ...values };
+
+    // Upload staged pending files ONLY upon user clicking Save
+    if (pendingKeys.length > 0) {
+      setIsSubmitting(true);
+      try {
+        for (const field of pendingKeys) {
+          const items = pendingFiles[field] || [];
+          if (items.length === 0) continue;
+          const files = items.map((i) => i.file);
+          const uploadedUrls = await uploadFilesDirectly(field, files);
+          const isMulti = field === "fileUrl" || field === "document" || Array.isArray(values[field]);
+          if (isMulti) {
+            const existingList = Array.isArray(payload[field])
+              ? (payload[field] as string[])
+              : typeof payload[field] === "string" && payload[field]
+              ? [payload[field] as string]
+              : [];
+            payload[field] = [...existingList, ...uploadedUrls];
+          } else {
+            payload[field] = uploadedUrls[0];
+          }
+
+          // Revoke blob URLs after successful upload
+          items.forEach((item) => {
+            if (item.previewUrl && item.previewUrl.startsWith("blob:")) {
+              URL.revokeObjectURL(item.previewUrl);
+            }
+          });
+        }
+        // Clear pending files state
+        setPendingFiles({});
+      } catch (err) {
+        setIsSubmitting(false);
+        return;
+      }
+      setIsSubmitting(false);
+    }
+
     if (resource.key === "pages" || resource.key === "menu-items") {
       if (record && record.isPublished !== undefined && payload.isPublished === undefined) {
         payload.isPublished = record.isPublished;
@@ -404,8 +518,11 @@ export function RecordDialog({
                       ? [rawVal.trim()]
                       : [];
 
+                    const pendingItems = pendingFiles[field] || [];
                     const displayVal =
-                      fileUrls.length > 0
+                      pendingItems.length > 0
+                        ? `${pendingItems.length} file(s) selected: ${pendingItems.map((p) => p.file.name).join(", ")} (Ready to upload on Save)`
+                        : fileUrls.length > 0
                         ? isMultiFile && fileUrls.length > 1
                           ? `${fileUrls.length} files attached: ${fileUrls.join(", ")}`
                           : fileUrls[0]
@@ -430,8 +547,8 @@ export function RecordDialog({
                               uploading === field
                                 ? "Uploading to Cloudinary…"
                                 : isMultiFile
-                                ? `Upload ${titleCase(field)} (Multiple Supported)`
-                                : `Upload ${titleCase(field)} to Cloudinary`
+                                ? `Choose ${titleCase(field)} (Multiple Supported)`
+                                : `Choose ${titleCase(field)} from computer`
                             }
                             className="inline-flex h-9.5 w-9.5 shrink-0 cursor-pointer items-center justify-center rounded-xl bg-[#1a5d9c] text-white hover:bg-[#102a4c] transition shadow-2xs"
                           >
@@ -453,7 +570,7 @@ export function RecordDialog({
                               onChange={(event) => {
                                 const fileList = event.target.files;
                                 if (fileList && fileList.length > 0) {
-                                  void handleFilesUpload(field, Array.from(fileList));
+                                  handleSelectFiles(field, Array.from(fileList));
                                 }
                                 event.target.value = "";
                               }}
@@ -472,11 +589,11 @@ export function RecordDialog({
                           </button>
 
                           {/* Clear Button - Icon Only */}
-                          {fileUrls.length > 0 && (
+                          {(fileUrls.length > 0 || pendingItems.length > 0) && (
                             <button
                               type="button"
                               onClick={() => removeImage(field)}
-                              title={isMultiFile && fileUrls.length > 1 ? `Clear all ${fileUrls.length} assets` : "Clear attached asset"}
+                              title={isMultiFile && (fileUrls.length + pendingItems.length) > 1 ? `Clear all assets` : "Clear attached asset"}
                               className="inline-flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-xl border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition shadow-2xs cursor-pointer"
                             >
                               <X size={16} />
@@ -488,8 +605,51 @@ export function RecordDialog({
                           <FileUploadProgressLoader status={uploadStatus} />
                         )}
 
-                        {fileUrls.length > 0 && (
+                        {(pendingItems.length > 0 || fileUrls.length > 0) && (
                           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-2">
+                            {/* Render local pending files staged for upload */}
+                            {pendingItems.map((item, pIdx) => {
+                              const filename = item.file.name;
+                              const isImage = item.file.type.startsWith("image/");
+                              return (
+                                <div
+                                  key={`pending-${filename}-${pIdx}`}
+                                  className="group relative flex flex-col overflow-hidden rounded-2xl border-2 border-dashed border-amber-300 bg-amber-50/40 shadow-2xs transition hover:shadow-md"
+                                >
+                                  <div className="relative h-32 w-full overflow-hidden bg-slate-950 flex items-center justify-center">
+                                    {isImage && item.previewUrl ? (
+                                      <img
+                                        src={item.previewUrl}
+                                        alt={filename}
+                                        className="h-full w-full object-cover"
+                                      />
+                                    ) : (
+                                      <div className="flex flex-col items-center justify-center p-3 text-white text-center">
+                                        <FileText size={32} className="text-amber-400 mb-1" />
+                                        <span className="text-[11px] font-bold text-slate-200 truncate w-full px-2">{filename}</span>
+                                      </div>
+                                    )}
+                                    <span className="absolute top-2 left-2 rounded-md bg-amber-500/90 border border-amber-300 px-1.5 py-0.5 text-[9px] font-extrabold uppercase text-white shadow-md">
+                                      Ready to Save
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => removePendingFile(field, pIdx)}
+                                      title="Remove selected file"
+                                      className="absolute top-2 right-2 rounded-lg bg-red-600/90 text-white p-1 hover:bg-red-700 transition cursor-pointer shadow-md"
+                                    >
+                                      <X size={14} />
+                                    </button>
+                                  </div>
+                                  <div className="flex items-center justify-between px-3 py-1.5 bg-amber-50 border-t border-amber-200/60 text-[10px] text-amber-800 font-medium">
+                                    <span className="truncate">{filename}</span>
+                                    <span>{(item.file.size / (1024 * 1024)).toFixed(2)} MB</span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+
+                            {/* Render already saved Cloudinary assets */}
                             {fileUrls.map((url, idx) => {
                               const filename = url.split("/").pop() || "Media Asset";
                               const fType = getFileType(url, filename);
@@ -1025,6 +1185,21 @@ export function RecordDialog({
                           </button>
                         </div>
 
+                        {pendingFiles[field] && pendingFiles[field].length > 0 && (
+                          <div className="flex items-center gap-2 p-2 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800">
+                            <span className="font-semibold truncate flex-1">
+                              Selected: {pendingFiles[field][0]?.file.name} (Ready to upload on Save)
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removePendingFile(field, 0)}
+                              className="text-red-500 hover:text-red-700 text-xs font-bold cursor-pointer"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        )}
+
                         {uploadStatus.field === field && (uploadStatus.isUploading || uploadStatus.step === "done" || uploadStatus.step === "error") && (
                           <FileUploadProgressLoader status={uploadStatus} />
                         )}
@@ -1057,7 +1232,7 @@ export function RecordDialog({
         <div className="flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/80 px-6 py-4 shrink-0 rounded-b-3xl z-10">
           <button
             type="button"
-            disabled={saving || Boolean(uploading)}
+            disabled={saving || isSubmitting || Boolean(uploading)}
             onClick={onClose}
             className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
@@ -1065,13 +1240,15 @@ export function RecordDialog({
           </button>
           <button
             type="submit"
-            disabled={saving || Boolean(uploading)}
+            disabled={saving || isSubmitting || Boolean(uploading)}
             className="inline-flex items-center gap-2 rounded-xl bg-[#1a5d9c] px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer transition"
           >
-            {saving && <LoaderCircle size={16} className="animate-spin text-white" />}
+            {(saving || isSubmitting) && <LoaderCircle size={16} className="animate-spin text-white" />}
             <span>
-              {saving
-                ? record
+              {saving || isSubmitting
+                ? uploading
+                  ? "Uploading to Cloudinary…"
+                  : record
                   ? "Updating record…"
                   : "Adding record…"
                 : record
@@ -1087,6 +1264,14 @@ export function RecordDialog({
         onClose={() => setGalleryPickerField(null)}
         onSelectImage={(url) => {
           if (galleryPickerField) {
+            if (pendingFiles[galleryPickerField]) {
+              pendingFiles[galleryPickerField].forEach((item) => {
+                if (item.previewUrl && item.previewUrl.startsWith("blob:")) {
+                  URL.revokeObjectURL(item.previewUrl);
+                }
+              });
+              setPendingFiles((prev) => ({ ...prev, [galleryPickerField]: [] }));
+            }
             const isMulti =
               galleryPickerField === "document" ||
               galleryPickerField === "fileUrl" ||
