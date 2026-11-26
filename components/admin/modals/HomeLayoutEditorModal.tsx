@@ -786,13 +786,13 @@ export function HomeLayoutEditorModal({
       {
         heading: raw[0]?.heading ?? "Our Mission",
         description: raw[0]?.description ?? "",
-        icoUrl: raw[0]?.icoUrl ?? raw[0]?.imageUrl ?? raw[0]?.fileUrl ?? raw[0]?.icon ?? "",
+        icoUrl: raw[0]?.icoUrl ?? "",
         redirectUrl: raw[0]?.redirectUrl ?? "",
       },
       {
         heading: raw[1]?.heading ?? "Our Vision",
         description: raw[1]?.description ?? "",
-        icoUrl: raw[1]?.icoUrl ?? raw[1]?.imageUrl ?? raw[1]?.fileUrl ?? raw[1]?.icon ?? "",
+        icoUrl: raw[1]?.icoUrl ?? "",
         redirectUrl: raw[1]?.redirectUrl ?? "",
       },
     ];
@@ -805,13 +805,13 @@ export function HomeLayoutEditorModal({
       {
         heading: raw[0]?.heading ?? "Our Mission",
         description: raw[0]?.description ?? "",
-        icoUrl: raw[0]?.icoUrl ?? raw[0]?.imageUrl ?? raw[0]?.fileUrl ?? raw[0]?.icon ?? "",
+        icoUrl: raw[0]?.icoUrl ?? "",
         redirectUrl: raw[0]?.redirectUrl ?? "",
       },
       {
         heading: raw[1]?.heading ?? "Our Vision",
         description: raw[1]?.description ?? "",
-        icoUrl: raw[1]?.icoUrl ?? raw[1]?.imageUrl ?? raw[1]?.fileUrl ?? raw[1]?.icon ?? "",
+        icoUrl: raw[1]?.icoUrl ?? "",
         redirectUrl: raw[1]?.redirectUrl ?? "",
       },
     ];
@@ -1941,7 +1941,7 @@ export function HomeLayoutEditorModal({
 
                   <div className="grid gap-3.5 sm:grid-cols-2">
                     {sec1Cards.map((card: any, idx: number) => {
-                      const iconUrl = card.icoUrl || card.imageUrl || card.fileUrl || card.icon || "";
+                      const iconUrl = card.icoUrl || "";
                       const isUploading = uploadingCard === `sec1-${idx}`;
 
                       return (
@@ -1989,7 +1989,7 @@ export function HomeLayoutEditorModal({
                               {iconUrl && (
                                 <button
                                   type="button"
-                                  onClick={() => updateSec1Card(idx, { icoUrl: "", imageUrl: "", fileUrl: "", icon: "" })}
+                                  onClick={() => updateSec1Card(idx, { icoUrl: "" })}
                                   className="text-[10px] text-red-500 hover:text-red-700 flex items-center gap-0.5 font-medium"
                                 >
                                   <X size={11} /> Clear Icon
@@ -2049,7 +2049,7 @@ export function HomeLayoutEditorModal({
                                       try {
                                         const url = await uploadImage(file, "Home", "mission-vision");
                                         if (url) {
-                                          updateSec1Card(idx, { icoUrl: url, imageUrl: url, fileUrl: url, icon: url });
+                                          updateSec1Card(idx, { icoUrl: url });
                                         }
                                       } catch (err) {
                                         console.error("Failed to upload icon:", err);
@@ -2068,7 +2068,7 @@ export function HomeLayoutEditorModal({
                                 type="button"
                                 onClick={() => {
                                   openGalleryPicker((url) => {
-                                    updateSec1Card(idx, { icoUrl: url, imageUrl: url, fileUrl: url, icon: url });
+                                    updateSec1Card(idx, { icoUrl: url });
                                   }, `Choose Icon for ${card.heading || "Card"}`);
                                 }}
                                 className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer shrink-0 shadow-2xs"
@@ -2362,7 +2362,7 @@ export function HomeLayoutEditorModal({
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   {(Array.isArray(homeObj["section-3"]?.[0]?.cardItem) ? homeObj["section-3"][0].cardItem : []).map((card: any, idx: number) => {
-                    const currentIcon = card.icoUrl || card.icon || card.iconName || "";
+                    const currentIcon = card.icoUrl || "";
 
                     return (
                       <div key={idx} className="rounded-xl border border-slate-200 bg-white p-3 space-y-2.5 shadow-2xs">
@@ -2442,7 +2442,11 @@ export function HomeLayoutEditorModal({
                                 onClick={() => {
                                   const sec3 = [...(homeObj["section-3"] || [{}])];
                                   const cards = [...(sec3[0].cardItem || [])];
-                                  cards[idx] = { ...cards[idx], icoUrl: "", icon: "", imageUrl: "", fileUrl: "" };
+                                  const nextCard = { ...cards[idx], icoUrl: "" };
+                                  delete nextCard.icon;
+                                  delete nextCard.imageUrl;
+                                  delete nextCard.fileUrl;
+                                  cards[idx] = nextCard;
                                   sec3[0] = { ...sec3[0], cardItem: cards };
                                   updateHome((prev) => ({ ...prev, "section-3": sec3 }));
                                 }}
@@ -2478,7 +2482,11 @@ export function HomeLayoutEditorModal({
                                   openGalleryPicker((url) => {
                                     const sec3 = [...(homeObj["section-3"] || [{}])];
                                     const cards = [...(sec3[0].cardItem || [])];
-                                    cards[idx] = { ...cards[idx], icoUrl: url, icon: url, imageUrl: url, fileUrl: url };
+                                    const nextCard = { ...cards[idx], icoUrl: url };
+                                    delete nextCard.icon;
+                                    delete nextCard.imageUrl;
+                                    delete nextCard.fileUrl;
+                                    cards[idx] = nextCard;
                                     sec3[0] = { ...sec3[0], cardItem: cards };
                                     updateHome((prev) => ({ ...prev, "section-3": sec3 }));
                                   }, "Choose Card Icon from Gallery");
@@ -2506,7 +2514,11 @@ export function HomeLayoutEditorModal({
                                         if (url) {
                                           const sec3 = [...(homeObj["section-3"] || [{}])];
                                           const cards = [...(sec3[0].cardItem || [])];
-                                          cards[idx] = { ...cards[idx], icoUrl: url, icon: url, imageUrl: url, fileUrl: url };
+                                          const nextCard = { ...cards[idx], icoUrl: url };
+                                          delete nextCard.icon;
+                                          delete nextCard.imageUrl;
+                                          delete nextCard.fileUrl;
+                                          cards[idx] = nextCard;
                                           sec3[0] = { ...sec3[0], cardItem: cards };
                                           updateHome((prev) => ({ ...prev, "section-3": sec3 }));
                                         }
@@ -2671,7 +2683,7 @@ export function HomeLayoutEditorModal({
                   </h3>
                   <button
                     type="button"
-                    onClick={() => addItemToSection("section-6", { title: "New Facility", heading: "New Facility", "sub-title": "Facility features", description: "Facility features", fileUrl: "", imageUrl: "" })}
+                    onClick={() => addItemToSection("section-6", { title: "New Facility", description: "Facility features", fileUrl: "" })}
                     className="flex items-center gap-1 rounded-xl bg-[#1a5d9c] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#102a4c]"
                   >
                     <Plus size={14} /> Add Facility Card
@@ -2728,7 +2740,7 @@ export function HomeLayoutEditorModal({
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   {(Array.isArray(homeObj["section-6"]?.[0]?.cardItem) ? homeObj["section-6"][0].cardItem : []).map((infra: any, idx: number) => {
-                    const cardImgUrl = infra.fileUrl || infra.imageUrl || infra.icoUrl || "";
+                    const cardImgUrl = infra.fileUrl || "";
                     const displayImgUrl = cardImgUrl ? getAssetUrl(cardImgUrl) : "";
                     const isCardUploading = uploadingCard === `sec6-${idx}`;
 
@@ -2839,7 +2851,10 @@ export function HomeLayoutEditorModal({
                                     openGalleryPicker((url) => {
                                       const sec6 = [...(homeObj["section-6"] || [{}])];
                                       const cards = [...(sec6[0].cardItem || [])];
-                                      cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                      const nextCard = { ...cards[idx], fileUrl: url };
+                                      delete nextCard.imageUrl;
+                                      delete nextCard.icoUrl;
+                                      cards[idx] = nextCard;
                                       sec6[0] = { ...sec6[0], cardItem: cards };
                                       updateHome((prev) => ({ ...prev, "section-6": sec6 }));
                                     }, `Choose Image for ${infra.title || "Facility"}`);
@@ -2853,7 +2868,10 @@ export function HomeLayoutEditorModal({
                                   onClick={() => {
                                     const sec6 = [...(homeObj["section-6"] || [{}])];
                                     const cards = [...(sec6[0].cardItem || [])];
-                                    cards[idx] = { ...cards[idx], fileUrl: "", imageUrl: "", icoUrl: "" };
+                                    const nextCard = { ...cards[idx], fileUrl: "" };
+                                    delete nextCard.imageUrl;
+                                    delete nextCard.icoUrl;
+                                    cards[idx] = nextCard;
                                     sec6[0] = { ...sec6[0], cardItem: cards };
                                     updateHome((prev) => ({ ...prev, "section-6": sec6 }));
                                   }}
@@ -2877,7 +2895,10 @@ export function HomeLayoutEditorModal({
                                 openGalleryPicker((url) => {
                                   const sec6 = [...(homeObj["section-6"] || [{}])];
                                   const cards = [...(sec6[0].cardItem || [])];
-                                  cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                  const nextCard = { ...cards[idx], fileUrl: url };
+                                  delete nextCard.imageUrl;
+                                  delete nextCard.icoUrl;
+                                  cards[idx] = nextCard;
                                   sec6[0] = { ...sec6[0], cardItem: cards };
                                   updateHome((prev) => ({ ...prev, "section-6": sec6 }));
                                 }, `Choose Image for ${infra.title || "Facility"}`);
@@ -2911,7 +2932,10 @@ export function HomeLayoutEditorModal({
                                       if (url) {
                                         const sec6 = [...(homeObj["section-6"] || [{}])];
                                         const cards = [...(sec6[0].cardItem || [])];
-                                        cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                        const nextCard = { ...cards[idx], fileUrl: url };
+                                        delete nextCard.imageUrl;
+                                        delete nextCard.icoUrl;
+                                        cards[idx] = nextCard;
                                         sec6[0] = { ...sec6[0], cardItem: cards };
                                         updateHome((prev) => ({ ...prev, "section-6": sec6 }));
                                       }
@@ -3181,7 +3205,7 @@ export function HomeLayoutEditorModal({
                   const secVid = homeObj["section-video"]?.[0] || {};
                   const sec8 = homeObj["section-8"]?.[0] || {};
                   const DEFAULT_VIDEO = "/Videos/file_feszan.mp4";
-                  let videoUrlVal = secVid.introFileUrl || secVid.videoUrl || sec8.introFileUrl || sec8.videoUrl;
+                  let videoUrlVal = secVid.videoUrl || sec8.videoUrl;
                   if (!videoUrlVal || videoUrlVal === "/IPSIntroVideo.mp4" || videoUrlVal === "/Videos/IPSIntroVideo.mp4") {
                     videoUrlVal = DEFAULT_VIDEO;
                   }
@@ -3191,7 +3215,9 @@ export function HomeLayoutEditorModal({
                       const prevVid = prev["section-video"]?.[0] || {};
                       const prevSec8 = prev["section-8"]?.[0] || {};
                       const newVid = { ...prevVid, ...updates };
+                      delete newVid.introFileUrl;
                       const newSec8 = { ...prevSec8, ...updates };
+                      delete newSec8.introFileUrl;
                       return {
                         ...prev,
                         "section-video": [newVid],
@@ -3250,7 +3276,7 @@ export function HomeLayoutEditorModal({
                             readOnly
                             placeholder="e.g. https://res.cloudinary.com/.../IPSIntroVideo.mp4"
                             value={videoUrlVal}
-                            onChange={(e) => updateVideoData({ introFileUrl: e.target.value, videoUrl: e.target.value })}
+                            onChange={(e) => updateVideoData({ videoUrl: e.target.value })}
                             className="flex-1 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 cursor-not-allowed px-3.5 py-2.5 text-xs font-mono outline-none shadow-2xs select-all"
                           />
 
@@ -3278,7 +3304,7 @@ export function HomeLayoutEditorModal({
                                     try {
                                       const url = await uploadImage(file, "Videos", "indian-public-school/assets/Videos");
                                       if (url) {
-                                        updateVideoData({ introFileUrl: url, videoUrl: url });
+                                        updateVideoData({ videoUrl: url });
                                       }
                                     } catch (err) {
                                       console.error("Video upload failed:", err);
@@ -3297,7 +3323,7 @@ export function HomeLayoutEditorModal({
                                 type="button"
                                 onClick={() => {
                                   if (confirm("Are you sure you want to remove the intro video?")) {
-                                    updateVideoData({ introFileUrl: "", videoUrl: "" });
+                                    updateVideoData({ videoUrl: "" });
                                   }
                                 }}
                                 className="flex items-center justify-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-bold text-red-600 hover:bg-red-100 transition cursor-pointer"
@@ -3358,7 +3384,7 @@ export function HomeLayoutEditorModal({
                       onClick={() => {
                         openGalleryPicker((url) => {
                           const currentCards = [...(homeObj["section-8"]?.[0]?.cardItem || [])];
-                          currentCards.push({ title: "New Level", heading: "New Level", description: "Course level details", fileUrl: url, imageUrl: url });
+                          currentCards.push({ title: "New Level", description: "Course level details", fileUrl: url });
                           const sec8 = [...(homeObj["section-8"] || [{}])];
                           sec8[0] = { ...sec8[0], cardItem: currentCards };
                           updateHome((prev) => ({ ...prev, "section-8": sec8 }));
@@ -3370,7 +3396,7 @@ export function HomeLayoutEditorModal({
                     </button>
                     <button
                       type="button"
-                      onClick={() => addItemToSection("section-8", { title: "New Level", heading: "New Level", description: "Course level details", fileUrl: "", imageUrl: "" })}
+                      onClick={() => addItemToSection("section-8", { title: "New Level", description: "Course level details", fileUrl: "" })}
                       className="flex items-center gap-1 rounded-xl bg-[#1a5d9c] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#102a4c]"
                     >
                       <Plus size={14} /> Add Course Level
@@ -3380,7 +3406,7 @@ export function HomeLayoutEditorModal({
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   {(Array.isArray(homeObj["section-8"]?.[0]?.cardItem) ? homeObj["section-8"][0].cardItem : []).map((course: any, idx: number) => {
-                    const cardImgUrl = course.fileUrl || course.imageUrl || "";
+                    const cardImgUrl = course.fileUrl || "";
                     const isCardUploading = uploadingCard === `sec8-${idx}`;
 
                     return (
@@ -3478,7 +3504,9 @@ export function HomeLayoutEditorModal({
                                     openGalleryPicker((url) => {
                                       const sec8 = [...(homeObj["section-8"] || [{}])];
                                       const cards = [...(sec8[0].cardItem || [])];
-                                      cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                      const nextCard = { ...cards[idx], fileUrl: url };
+                                      delete nextCard.imageUrl;
+                                      cards[idx] = nextCard;
                                       sec8[0] = { ...sec8[0], cardItem: cards };
                                       updateHome((prev) => ({ ...prev, "section-8": sec8 }));
                                     }, `Choose Image for ${course.title || "Course Level"}`);
@@ -3492,7 +3520,9 @@ export function HomeLayoutEditorModal({
                                   onClick={() => {
                                     const sec8 = [...(homeObj["section-8"] || [{}])];
                                     const cards = [...(sec8[0].cardItem || [])];
-                                    cards[idx] = { ...cards[idx], fileUrl: "", imageUrl: "" };
+                                    const nextCard = { ...cards[idx], fileUrl: "" };
+                                    delete nextCard.imageUrl;
+                                    cards[idx] = nextCard;
                                     sec8[0] = { ...sec8[0], cardItem: cards };
                                     updateHome((prev) => ({ ...prev, "section-8": sec8 }));
                                   }}
@@ -3516,7 +3546,9 @@ export function HomeLayoutEditorModal({
                                 openGalleryPicker((url) => {
                                   const sec8 = [...(homeObj["section-8"] || [{}])];
                                   const cards = [...(sec8[0].cardItem || [])];
-                                  cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                  const nextCard = { ...cards[idx], fileUrl: url };
+                                  delete nextCard.imageUrl;
+                                  cards[idx] = nextCard;
                                   sec8[0] = { ...sec8[0], cardItem: cards };
                                   updateHome((prev) => ({ ...prev, "section-8": sec8 }));
                                 }, `Choose Image for ${course.title || "Course Level"}`);
@@ -3550,7 +3582,9 @@ export function HomeLayoutEditorModal({
                                       if (url) {
                                         const sec8 = [...(homeObj["section-8"] || [{}])];
                                         const cards = [...(sec8[0].cardItem || [])];
-                                        cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                        const nextCard = { ...cards[idx], fileUrl: url };
+                                        delete nextCard.imageUrl;
+                                        cards[idx] = nextCard;
                                         sec8[0] = { ...sec8[0], cardItem: cards };
                                         updateHome((prev) => ({ ...prev, "section-8": sec8 }));
                                       }
@@ -3913,11 +3947,15 @@ export function HomeLayoutEditorModal({
               updateHome((prev: any) => {
                 const prevVid = prev["section-video"]?.[0] || {};
                 const prevSec8 = prev["section-8"]?.[0] || {};
-                return {
-                  ...prev,
-                  "section-video": [{ ...prevVid, introFileUrl: url, videoUrl: url }],
-                  "section-8": [{ ...prevSec8, introFileUrl: url, videoUrl: url }],
-                };
+                  const nextVid = { ...prevVid, videoUrl: url };
+                  delete nextVid.introFileUrl;
+                  const nextSec8 = { ...prevSec8, videoUrl: url };
+                  delete nextSec8.introFileUrl;
+                  return {
+                    ...prev,
+                    "section-video": [nextVid],
+                    "section-8": [nextSec8],
+                  };
               });
             } else if (galleryPickerTarget === "videoPoster") {
               updateHome((prev: any) => {

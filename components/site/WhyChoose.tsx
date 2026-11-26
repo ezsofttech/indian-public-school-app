@@ -162,7 +162,7 @@ export function WhyChoose() {
             const fallback = FEATURES[index % FEATURES.length]!;
             const title = text(item.heading, fallback.title);
             const copy = text(item.description, fallback.text);
-            const icoVal = text(item.icoUrl) || text(item.icon) || text(item.iconName) || text(item.fileUrl) || text(item.imageUrl);
+            const icoVal = text(item.icoUrl);
             const span = fallback.span;
             const feature = index === 0;
             return (

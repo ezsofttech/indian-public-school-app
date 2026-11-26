@@ -73,12 +73,11 @@ export function HomeQuickCardsTab({
       }
       if (url) {
         const cards = [...(homeObj.menuCard || [])];
-        cards[idx] = {
-          ...cards[idx],
-          icoUrl: url,
-          iconUrl: url,
-          imageUrl: url,
-        };
+        const nextCard = { ...cards[idx], iconUrl: url };
+        delete nextCard.icoUrl;
+        delete nextCard.imageUrl;
+        delete nextCard.icon;
+        cards[idx] = nextCard;
         updateHome((prev) => ({ ...prev, menuCard: cards }));
       }
     } catch (err) {
@@ -106,7 +105,7 @@ export function HomeQuickCardsTab({
 
         <div className="grid gap-4 sm:grid-cols-2">
           {cardsList.map((card: any, idx: number) => {
-            const iconPath = card.icoUrl || card.iconUrl || card.imageUrl || card.icon || "";
+            const iconPath = card.iconUrl || "";
             const currentRedirect = card.redirectUrl || card.linkUrl || card.href || "";
 
             return (
@@ -187,7 +186,11 @@ export function HomeQuickCardsTab({
                         type="button"
                         onClick={() => {
                           const cards = [...(homeObj.menuCard || [])];
-                          cards[idx] = { ...cards[idx], icoUrl: "", iconUrl: "", imageUrl: "" };
+                          const nextCard = { ...cards[idx], iconUrl: "" };
+                          delete nextCard.icoUrl;
+                          delete nextCard.imageUrl;
+                          delete nextCard.icon;
+                          cards[idx] = nextCard;
                           updateHome((prev) => ({ ...prev, menuCard: cards }));
                         }}
                         className="text-[10px] text-red-500 hover:text-red-700 flex items-center gap-0.5"
@@ -223,7 +226,11 @@ export function HomeQuickCardsTab({
                           onClick={() => {
                             onOpenGallery((url) => {
                               const cards = [...(homeObj.menuCard || [])];
-                              cards[idx] = { ...cards[idx], icoUrl: url, iconUrl: url, imageUrl: url, icon: url };
+                              const nextCard = { ...cards[idx], iconUrl: url };
+                              delete nextCard.icoUrl;
+                              delete nextCard.imageUrl;
+                              delete nextCard.icon;
+                              cards[idx] = nextCard;
                               updateHome((prev) => ({ ...prev, menuCard: cards }));
                             }, "Select Card Icon from Gallery");
                           }}

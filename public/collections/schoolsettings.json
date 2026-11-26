@@ -109,47 +109,32 @@
         {
           "heading": "Admissions Open",
           "subHeading": "Academic Session 2027-28",
-          "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Admission.png",
           "redirectUrl": "/admission",
-          "iconUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Admission.png",
-          "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Admission.png",
-          "icon": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Admission.png"
+          "iconUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Admission.png"
         },
         {
           "heading": "School App",
           "subHeading": "Available on IOS & Android",
-          "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/SchoolApp.png",
           "redirectUrl": "/connectivity/school-app",
-          "iconUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/SchoolApp.png",
-          "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/SchoolApp.png",
-          "icon": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/SchoolApp.png"
+          "iconUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/SchoolApp.png"
         },
         {
           "heading": "Admin Portal",
           "subHeading": "Login Access",
-          "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/file_a6zb7t.png",
           "redirectUrl": "/admin",
-          "iconUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/file_a6zb7t.png",
-          "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/file_a6zb7t.png",
-          "icon": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/file_a6zb7t.png"
+          "iconUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/file_a6zb7t.png"
         },
         {
           "heading": "School Transport",
           "subHeading": "Bus Routes & Transport Information",
-          "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/BusRoutes.png",
           "redirectUrl": "/connectivity/bus-route",
-          "iconUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/BusRoutes.png",
-          "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/BusRoutes.png",
-          "icon": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/BusRoutes.png"
+          "iconUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/BusRoutes.png"
         },
         {
           "heading": "Careers",
           "subHeading": "Join Our Team",
-          "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Career.png",
           "redirectUrl": "/careers",
-          "iconUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Career.png",
-          "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Career.png",
-          "icon": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Career.png"
+          "iconUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Career.png"
         }
       ],
       "banner": {
@@ -247,67 +232,44 @@
             {
               "heading": "CBSE Curriculum",
               "description": "We follow the CBSE curriculum with engaging teaching methods, regular assessments and clear learning goals to help every student succeed academically.",
-              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Curriculam.png",
               "redirectUrl": "/admission/curriculum",
-              "icon": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Curriculam.png",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Curriculam.png",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Curriculam.png"
+              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Curriculam.png"
             },
             {
               "heading": "Experienced Faculty",
               "description": "Dedicated and experienced teachers who guide students, support their learning and help every child reach their full potential.",
-              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Teacher.png",
               "redirectUrl": "/about-us/mission-vision",
-              "icon": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Teacher.png",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Teacher.png",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Teacher.png"
+              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Teacher.png"
             },
             {
               "heading": "Technology-Enabled Learning",
               "description": "Modern teaching tools, digital resources and interactive learning methods make lessons engaging, effective and easy to understand.",
-              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Cpu.png",
               "redirectUrl": "/connectivity/school-app",
-              "icon": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Cpu.png",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Cpu.png",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Cpu.png",
-              "title": "Technology-Enabled Learning"
+              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Cpu.png"
             },
             {
               "heading": "Sports & Fitness",
               "description": "We encourage healthy and active lifestyles through sports, games, yoga and regular physical education activities that build fitness, teamwork and confidence.",
-              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Sport.png",
               "redirectUrl": "/infrastructure/sport-room",
-              "icon": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Sport.png",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Sport.png",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Sport.png"
+              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Sport.png"
             },
             {
               "heading": "Arts & Culture",
               "description": "We encourage creativity and self-expression through music, dance, drama and art activities that help students discover and develop their talents.",
-              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Art.png",
               "redirectUrl": "/infrastructure/craft-room",
-              "icon": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Art.png",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Art.png",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Art.png"
+              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Art.png"
             },
             {
               "heading": "Safe & Secure Campus",
               "description": "We prioritize student safety with a secure campus, CCTV surveillance, trained staff, first-aid facilities and safe transport arrangements.",
-              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/SafeCampus.png",
               "redirectUrl": "/infrastructure/infirmary-medical",
-              "icon": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/SafeCampus.png",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/SafeCampus.png",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/SafeCampus.png",
-              "title": "Safe & Secure Campus"
+              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/SafeCampus.png"
             },
             {
               "heading": "Modern Infrastructure",
               "description": "Our school provides spacious classrooms, well-equipped laboratories, a library and activity areas to support effective learning and overall student development.",
-              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Infrastructure.png",
               "redirectUrl": "/infrastructure/school-building",
-              "icon": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Infrastructure.png",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Infrastructure.png",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Infrastructure.png"
+              "icoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Infrastructure.png"
             }
           ]
         }
@@ -422,60 +384,43 @@
           "cardItem": [
             {
               "title": "Smart Classrooms",
-              "sub-title": "Spacious, well-lit classrooms with digital boards to make learning interactive, engaging and easy to understand.",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Home/file_xgmvs3.jpg",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Home/file_xgmvs3.jpg",
-              "description": "Spacious, well-lit classrooms with digital boards to make learning interactive, engaging and easy to understand."
+              "description": "Spacious, well-lit classrooms with digital boards to make learning interactive, engaging and easy to understand.",
+              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Home/file_xgmvs3.jpg"
             },
             {
               "title": "Science Laboratories",
-              "sub-title": "Well-equipped physics, chemistry and biology labs for practical learning and scientific exploration.",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/ScienceLab.webp",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/ScienceLab.webp",
               "description": "Well-equipped physics, chemistry and biology labs for practical learning and scientific exploration.",
-              "heading": "Science Laboratories"
+              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/ScienceLab.webp"
             },
             {
               "title": "Computer Lab",
-              "sub-title": "Modern computers that help students develop coding, digital and design skills through hands-on learning.",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/ComputerLab.webp",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/ComputerLab.webp",
-              "description": "Modern computers that help students develop coding, digital and design skills through hands-on learning."
+              "description": "Modern computers that help students develop coding, digital and design skills through hands-on learning.",
+              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/ComputerLab.webp"
             },
             {
               "title": "Library",
-              "sub-title": "A peaceful reading space with a growing collection of books to encourage reading, creativity and a love for learning.",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_uunir2.png",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_uunir2.png",
-              "description": "A peaceful reading space with a growing collection of books to encourage reading, creativity and a love for learning."
+              "description": "A peaceful reading space with a growing collection of books to encourage reading, creativity and a love for learning.",
+              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_uunir2.png"
             },
             {
               "title": "Sports Facilities",
-              "sub-title": "Well-maintained sports areas for games, physical fitness and team practice under the guidance of coaches.",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_drnjj0.jpg",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_drnjj0.jpg",
-              "description": "Well-maintained sports areas for games, physical fitness and team practice under the guidance of coaches."
+              "description": "Well-maintained sports areas for games, physical fitness and team practice under the guidance of coaches.",
+              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_drnjj0.jpg"
             },
             {
               "title": "Playground",
-              "sub-title": "Safe and child-friendly play areas where students can enjoy outdoor activities, develop physical skills and have fun with friends.",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/Banner_4.jpg",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/Banner_4.jpg",
-              "description": "Safe and child-friendly play areas where students can enjoy outdoor activities, develop physical skills and have fun with friends."
+              "description": "Safe and child-friendly play areas where students can enjoy outdoor activities, develop physical skills and have fun with friends.",
+              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/Banner_4.jpg"
             },
             {
               "title": "Hostel & Mess",
-              "sub-title": "A comfortable and supervised residential environment with nutritious meals to support students’ health, safety and well-being.",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Hostel_1.jpg",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Hostel_1.jpg",
-              "description": "A comfortable and supervised residential environment with nutritious meals to support students’ health, safety and well-being."
+              "description": "A comfortable and supervised residential environment with nutritious meals to support students’ health, safety and well-being.",
+              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Hostel_1.jpg"
             },
             {
               "title": "Art & Music Rooms",
-              "sub-title": "Dedicated spaces where students can explore their creativity and develop their artistic and musical talents.",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Music_Dance_Room_4.jpg",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Music_Dance_Room_4.jpg",
-              "description": "Dedicated spaces where students can explore their creativity and develop their artistic and musical talents."
+              "description": "Dedicated spaces where students can explore their creativity and develop their artistic and musical talents.",
+              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Music_Dance_Room_4.jpg"
             }
           ]
         }
@@ -523,40 +468,29 @@
             {
               "title": "Pre-Primary School",
               "description": "Play-based learning that develops early communication, creativity, basic skills and social confidence.",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_etyb2c.jpg",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_etyb2c.jpg",
-              "heading": "Pre-Primary School"
+              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_etyb2c.jpg"
             },
             {
               "title": "Primary School",
               "description": "Building strong foundations in language, mathematics, science and essential life skills through engaging activities.",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_mkhxpc.jpg",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_mkhxpc.jpg",
-              "heading": "Primary School"
+              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_mkhxpc.jpg"
             },
             {
               "title": "Middle School",
               "description": "Encouraging critical thinking, practical learning, and subject knowledge through projects, experiments and teamwork.",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_dwcowi.jpg",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_dwcowi.jpg",
-              "heading": "Middle School"
+              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_dwcowi.jpg"
             },
             {
               "title": "Secondary School",
               "description": "Focused academic learning, regular assessments, and exam preparation to help students achieve their goals.",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_q8zwil.jpg",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_q8zwil.jpg",
-              "heading": "Secondary School"
+              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_q8zwil.jpg"
             },
             {
               "title": "Senior Secondary School",
-              "heading": "Senior Secondary School",
               "description": "Advanced subject learning, career guidance and preparation for higher education and future opportunities.",
-              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_fetidq.jpg",
-              "imageUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_fetidq.jpg"
+              "fileUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_fetidq.jpg"
             }
           ],
-          "introFileUrl": "https://res.cloudinary.com/ctpyyyuj/video/upload/ips-education/assets/Videos/file_feszan.mp4",
           "videoUrl": "https://res.cloudinary.com/ctpyyyuj/video/upload/ips-education/assets/Videos/file_feszan.mp4",
           "title": "A Legacy of Excellence. A Future of Possibilities.",
           "videoTitle": "A Legacy of Excellence. A Future of Possibilities."
@@ -735,7 +669,6 @@
       },
       "section-video": [
         {
-          "introFileUrl": "https://res.cloudinary.com/ctpyyyuj/video/upload/ips-education/assets/Videos/file_feszan.mp4",
           "videoUrl": "https://res.cloudinary.com/ctpyyyuj/video/upload/ips-education/assets/Videos/file_feszan.mp4",
           "title": "A Legacy of Excellence. A Future of Possibilities.",
           "heading": "A Legacy of Excellence. A Future of Possibilities.",
