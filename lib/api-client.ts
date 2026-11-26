@@ -80,13 +80,23 @@ export async function getApi<T>(
 
 export async function getOptionalApi<T>(
   path: string,
-  params?: PaginationParams | Record<string, unknown>
+  params?: PaginationParams | Record<string, unknown>,
+  timeoutOverride?: number
 ): Promise<ApiEnvelope<T> | null> {
   try {
-    return await getApi<T>(path, params);
+    const response = await apiClient.get<ApiEnvelope<T>>(path, {
+      params: buildQueryParams(params),
+      timeout: timeoutOverride || TIMEOUTS.api,
+    });
+    return response.data;
   } catch (err: any) {
-    // Suppress noisy network error warnings when backend is intentionally offline/unattached
-    if (err?.code === "ERR_NETWORK" || err?.message?.includes("Network Error")) {
+    // Suppress noisy network error warnings when backend is intentionally offline/unattached or times out
+    if (
+      err?.code === "ERR_NETWORK" ||
+      err?.code === "ECONNABORTED" ||
+      err?.message?.includes("Network Error") ||
+      err?.message?.includes("timeout")
+    ) {
       return null;
     }
     console.warn(`[getOptionalApi] Warning for ${path}:`, err?.message || err);

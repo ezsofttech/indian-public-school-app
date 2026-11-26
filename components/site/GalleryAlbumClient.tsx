@@ -10,6 +10,7 @@ import { cn, getAssetUrl, getCanonicalAssetKey } from "@/lib/utils";
 import { homeData, imageUrls, imageUrl, text, DEFAULT_HERO_IMAGE } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { getOptionalApi, unwrapCollection } from "@/lib/api-client";
+import { staticGalleryItems } from "@/data/gallery";
 import { UniversalMedia, detectMediaType } from "@/components/ui/UniversalMedia";
 
 type Category =
@@ -494,7 +495,11 @@ export function GalleryAlbumClient({
 
   // Base gallery images from siteData (cloud-datasource fallback)
   const datasourceImages = useMemo(() => {
-    const rawGallery = siteData.galleryItems?.length ? siteData.galleryItems : (home.gallery as Record<string, unknown>[]);
+    const rawGallery = siteData.galleryItems?.length
+      ? siteData.galleryItems
+      : ((home.gallery as Record<string, unknown>[])?.length
+          ? (home.gallery as Record<string, unknown>[])
+          : (staticGalleryItems as unknown as Record<string, unknown>[]));
     const list = Array.isArray(rawGallery) ? (rawGallery as Record<string, unknown>[]) : [];
 
     const galleryMapped = list

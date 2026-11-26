@@ -1,0 +1,434 @@
+export interface StaticSeoPage {
+  url?: string;
+  title: string;
+  description: string;
+  keywords?: string[];
+  image?: string;
+  [key: string]: unknown;
+}
+
+export interface StaticSeoSource {
+  "@context": string;
+  "@type": string;
+  "@id"?: string;
+  name: string;
+  alternateName?: string;
+  legalName?: string;
+  url?: string;
+  logo?: string;
+  image?: string[];
+  description: string;
+  slogan?: string;
+  foundingDate?: string;
+  founder?: Record<string, unknown>;
+  principal?: Record<string, unknown>;
+  address?: Record<string, unknown>;
+  geo?: Record<string, unknown>;
+  telephone?: string;
+  email?: string;
+  contactPoint?: any[];
+  sameAs?: string[];
+  educationalCredentialAwarded?: string;
+  hasCredential?: Record<string, unknown>;
+  additionalProperty?: any[];
+  areaServed?: Record<string, unknown>;
+  knowsAbout?: string[];
+  amenityFeature?: any[];
+  openingHoursSpecification?: any[];
+  offers?: Record<string, unknown>;
+  hasOfferCatalog?: Record<string, unknown>;
+  publishingPrinciples?: string;
+  potentialAction?: Record<string, unknown>;
+  pages: Record<string, StaticSeoPage>;
+  [key: string]: unknown;
+}
+
+export const staticSeoSource: StaticSeoSource = {
+  "@context": "https://schema.org",
+  "@type": "School",
+  "@id": "https://ips-web.ezsoftapp.in/#school",
+  name: "Indian Public School",
+  alternateName: "IPS Sambalpur",
+  legalName: "Indian Public School",
+  url: "https://ips-web.ezsoftapp.in/",
+  logo: "https://res.cloudinary.com/dnw7mgysa/image/upload/ips-education/assets/Settings/Logos/BannerLogo.png",
+  image: [
+    "https://ips-web.ezsoftapp.in/assets/campus-aerial.jpg",
+    "https://ips-web.ezsoftapp.in/assets/hero-campus.jpg",
+    "https://ips-web.ezsoftapp.in/assets/about-classroom.jpg",
+    "https://ips-web.ezsoftapp.in/assets/facility-lab.jpg",
+    "https://ips-web.ezsoftapp.in/assets/facility-computer.jpg",
+    "https://ips-web.ezsoftapp.in/assets/facility-library.jpg",
+    "https://ips-web.ezsoftapp.in/assets/facility-sports.jpg",
+    "https://ips-web.ezsoftapp.in/assets/achievements.jpg",
+    "https://ips-web.ezsoftapp.in/assets/life-arts.jpg",
+    "https://ips-web.ezsoftapp.in/assets/life-kids.jpg",
+  ],
+  description:
+    "Indian Public School is a CBSE co-educational school in Sambalpur, Odisha, offering school education from Pre-Primary to Class XII with academic learning, digital classrooms, science and computer laboratories, library, sports, arts and student development programs.",
+  slogan: "Learn · Lead · Inspire",
+  foundingDate: "2009",
+  founder: {
+    "@type": "Organization",
+    name: "K.S. Dalmia Education Trust",
+  },
+  principal: {
+    "@type": "Person",
+    name: "Mr. Sachin Pathak",
+    jobTitle: "Principal",
+  },
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Main Road, Near RMC, Khetrajpur",
+    addressLocality: "Sambalpur",
+    addressRegion: "Odisha",
+    postalCode: "768006",
+    addressCountry: "IN",
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: 21.476946986809288,
+    longitude: 83.93178495935465,
+  },
+  telephone: "+91 8114320555",
+  email: "info@indianpublicschool.in",
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      telephone: "+91 8114320555",
+      contactType: "Admissions Desk",
+      areaServed: "IN",
+      availableLanguage: ["English", "Hindi", "Odia"],
+    },
+    {
+      "@type": "ContactPoint",
+      telephone: "+91 97351 81684",
+      contactType: "General Enquiry",
+      areaServed: "IN",
+      availableLanguage: ["English", "Hindi", "Odia"],
+    },
+  ],
+  sameAs: [
+    "https://www.facebook.com/IPSSBP",
+    "https://www.instagram.com/indian_public_school_sambalpur",
+    "https://www.youtube.com/@ipssbp",
+  ],
+  educationalCredentialAwarded: "CBSE School Education",
+  hasCredential: {
+    "@type": "EducationalOccupationalCredential",
+    credentialCategory: "CBSE Affiliation",
+    educationalLevel: "School Education (K-12)",
+    recognizedBy: {
+      "@type": "Organization",
+      name: "Central Board of Secondary Education",
+      alternateName: "CBSE",
+    },
+    identifier: "530152",
+  },
+  additionalProperty: [
+    {
+      "@type": "PropertyValue",
+      name: "CBSE Affiliation Number",
+      value: "530152",
+    },
+    {
+      "@type": "PropertyValue",
+      name: "School Code",
+      value: "15389",
+    },
+  ],
+  areaServed: {
+    "@type": "City",
+    name: "Sambalpur",
+  },
+  knowsAbout: [
+    "School Education",
+    "CBSE Curriculum",
+    "Primary Education",
+    "Secondary Education",
+    "Senior Secondary Education",
+    "Science Education",
+    "Commerce Education",
+    "Sports Education",
+    "Arts Education",
+  ],
+  amenityFeature: [
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Digital Smart Classrooms",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Science Laboratories",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Computer Laboratories",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Library and Reading Room",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Sports Infrastructure",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Arts and Cultural Activities",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "School Bus Transportation",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Infirmary and First Aid",
+      value: true,
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "CCTV Security",
+      value: true,
+    },
+  ],
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      opens: "07:30",
+      closes: "17:00",
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: "Sunday",
+      opens: "08:00",
+      closes: "14:00",
+    },
+  ],
+  offers: {
+    "@type": "Offer",
+    name: "Admissions 2026-27",
+    url: "https://ips-web.ezsoftapp.in/admission",
+    availability: "https://schema.org/InStock",
+  },
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "School Education Programs",
+    itemListElement: [
+      {
+        "@type": "Offer",
+        name: "Pre-Primary to Class VIII",
+        category: "School Education",
+      },
+      {
+        "@type": "Offer",
+        name: "Classes IX-X CBSE Secondary Education",
+        category: "Secondary Education",
+      },
+      {
+        "@type": "Offer",
+        name: "Classes XI-XII Science and Commerce",
+        category: "Senior Secondary Education",
+      },
+    ],
+  },
+  publishingPrinciples: "https://ips-web.ezsoftapp.in/about",
+  potentialAction: {
+    "@type": "ApplyAction",
+    name: "Apply for Admission",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: "https://ips-web.ezsoftapp.in/admission",
+    },
+  },
+  pages: {
+    home: {
+      url: "https://ips-web.ezsoftapp.in/",
+      title: "Indian Public School Sambalpur | CBSE School in Odisha",
+      description:
+        "Indian Public School is a CBSE co-educational school in Sambalpur, Odisha, offering education from Pre-Primary to Class XII with modern learning facilities, academics, sports and student development.",
+      keywords: [
+        "Indian Public School",
+        "Indian Public School Sambalpur",
+        "IPS Sambalpur",
+        "Indian Public School Odisha",
+        "CBSE School Sambalpur",
+        "CBSE school in Sambalpur",
+        "CBSE schools in Sambalpur Odisha",
+        "school in Sambalpur Odisha",
+        "CBSE affiliated school Sambalpur",
+        "English Medium School in Sambalpur",
+        "Best CBSE School in Sambalpur",
+        "Best School in Sambalpur",
+        "Best CBSE School in Odisha",
+        "Best Co-educational School in Sambalpur",
+        "K-12 Education Sambalpur",
+        "Indian Public School Khetrajpur",
+        "CBSE School near Khetrajpur Sambalpur",
+        "Top Schools in Western Odisha",
+      ],
+      image: "https://ips-web.ezsoftapp.in/assets/hero-campus.jpg",
+    },
+    admission: {
+      url: "https://ips-web.ezsoftapp.in/admission",
+      title: "School Admission 2026-27 | Indian Public School Sambalpur",
+      description:
+        "Apply for admission at Indian Public School, Sambalpur for the 2026-27 academic session. Find admission information, eligibility, documents, registration details and contact information.",
+      keywords: [
+        "Indian Public School Sambalpur admission",
+        "IPS Sambalpur admission",
+        "Indian Public School Admission",
+        "School Admission 2026-27",
+        "School Admission 2026-27 Sambalpur",
+        "CBSE School Admission 2026-27",
+        "CBSE school admission Sambalpur",
+        "CBSE admission Sambalpur",
+        "school admission in Sambalpur",
+        "school admission Sambalpur Odisha",
+        "Online School Admission Form",
+        "Online School Registration Odisha",
+        "School Registration 2026-27 Sambalpur",
+        "admission open Sambalpur school",
+        "Nursery admission Sambalpur",
+        "Pre Primary admission Sambalpur",
+        "Class 1 admission Sambalpur",
+        "Class 10 admission Sambalpur",
+        "Class 11 admission Sambalpur",
+        "Class 12 admission Sambalpur",
+        "Class 11 Science Commerce Admission",
+        "Nursery to Class 12 Admission Sambalpur",
+      ],
+      image: "https://ips-web.ezsoftapp.in/assets/about-classroom.jpg",
+    },
+    academics: {
+      url: "https://ips-web.ezsoftapp.in/academics",
+      title: "Academics | CBSE School Education from Pre-Primary to Class XII",
+      description:
+        "Explore the academic programs at Indian Public School, Sambalpur, covering Pre-Primary, Primary, Middle, Secondary and Senior Secondary CBSE education.",
+      keywords: [
+        "CBSE curriculum Sambalpur",
+        "CBSE education Sambalpur",
+        "Pre Primary school Sambalpur",
+        "primary school Sambalpur",
+        "middle school Sambalpur",
+        "secondary school Sambalpur",
+        "senior secondary school Sambalpur",
+        "CBSE primary school Sambalpur",
+        "CBSE senior secondary school Sambalpur",
+        "Class 1 to 12 school Sambalpur",
+        "CBSE school for Class 10 Sambalpur",
+        "CBSE school for Class 12 Sambalpur",
+        "K-12 school Sambalpur",
+        "Science school Sambalpur",
+        "Commerce school Sambalpur",
+      ],
+      image: "https://ips-web.ezsoftapp.in/assets/about-classroom.jpg",
+    },
+    infrastructure: {
+      url: "https://ips-web.ezsoftapp.in/infrastructure",
+      title: "School Infrastructure & Facilities | Indian Public School Sambalpur",
+      description:
+        "Explore the campus infrastructure and learning facilities at Indian Public School, Sambalpur, including classrooms, laboratories, library, sports and student facilities.",
+      keywords: [
+        "school infrastructure Sambalpur",
+        "school facilities Sambalpur",
+        "school campus Sambalpur",
+        "modern school campus Sambalpur",
+        "digital smart classroom school Sambalpur",
+        "science lab school Sambalpur",
+        "computer lab school Sambalpur",
+        "school library Sambalpur",
+        "school sports facilities Sambalpur",
+        "sports infrastructure Sambalpur school",
+        "school playground Sambalpur",
+        "school bus transportation Sambalpur",
+        "safe school transport Sambalpur",
+        "CCTV school security Sambalpur",
+      ],
+      image: "https://ips-web.ezsoftapp.in/assets/campus-aerial.jpg",
+    },
+    contact: {
+      url: "https://ips-web.ezsoftapp.in/contact",
+      title: "Contact Indian Public School Sambalpur | Address & Phone",
+      description:
+        "Contact Indian Public School in Sambalpur, Odisha. Find the school address, phone numbers, email and admission enquiry information.",
+      keywords: [
+        "Indian Public School Contact",
+        "Indian Public School Sambalpur Address",
+        "Indian Public School Phone Number",
+        "Indian Public School Khetrajpur",
+        "school in Khetrajpur Sambalpur",
+        "CBSE school in Khetrajpur",
+        "CBSE School near Khetrajpur Sambalpur",
+        "school near Sambalpur",
+        "CBSE school near Sambalpur",
+        "schools in Sambalpur Odisha",
+      ],
+      image: "https://ips-web.ezsoftapp.in/assets/campus-aerial.jpg",
+    },
+    careers: {
+      url: "https://ips-web.ezsoftapp.in/careers",
+      title: "Teacher Jobs & Careers | Indian Public School Sambalpur",
+      description:
+        "Explore teaching and non-teaching career opportunities at Indian Public School, Sambalpur, and learn how to apply for available positions.",
+      keywords: [
+        "Indian Public School Careers",
+        "Indian Public School jobs",
+        "Indian Public School teacher jobs",
+        "School Teaching Jobs Sambalpur",
+        "Teacher Recruitment CBSE School",
+        "CBSE school teacher vacancy Sambalpur",
+        "school jobs Sambalpur",
+        "teaching jobs Sambalpur",
+        "non teaching jobs Sambalpur school",
+      ],
+      image: "https://ips-web.ezsoftapp.in/assets/achievements.jpg",
+    },
+    gallery: {
+      url: "https://ips-web.ezsoftapp.in/gallery",
+      title: "School Campus, Events & Photo Gallery | Indian Public School",
+      description:
+        "Explore campus photographs, school events, sports activities, science exhibitions, annual functions and student activities at Indian Public School, Sambalpur.",
+      keywords: [
+        "Indian Public School Gallery",
+        "Indian Public School Sambalpur photos",
+        "Indian Public School campus photos",
+        "School Campus Photos Sambalpur",
+        "School Event Photos Odisha",
+        "Indian Public School events",
+        "school annual function Sambalpur",
+        "school sports events Sambalpur",
+        "school science exhibition Sambalpur",
+      ],
+      image: "https://ips-web.ezsoftapp.in/assets/facility-sports.jpg",
+    },
+    pressRelease: {
+      url: "https://ips-web.ezsoftapp.in/press-release",
+      title: "News & Press Releases | Indian Public School Sambalpur",
+      description:
+        "Read official news, announcements, press releases, student achievements and school updates from Indian Public School, Sambalpur.",
+      keywords: [
+        "Indian Public School News",
+        "Indian Public School Sambalpur news",
+        "School Press Release Sambalpur",
+        "CBSE school news Sambalpur",
+        "school achievements Sambalpur",
+        "student achievements Sambalpur",
+        "school announcements Sambalpur",
+        "CBSE achievements Sambalpur",
+      ],
+      image: "https://ips-web.ezsoftapp.in/assets/achievements.jpg",
+    },
+  },
+};
+
+export const seoSource = staticSeoSource;
+export default staticSeoSource;

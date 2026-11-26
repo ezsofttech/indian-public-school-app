@@ -53,7 +53,7 @@ export const DEFAULT_ASSETS = {
 
 // 5. Timeouts & Polling (in milliseconds)
 export const TIMEOUTS = {
-  api: Number(process.env.NEXT_PUBLIC_API_TIMEOUT_MS) || 30000,
+  api: Number(process.env.NEXT_PUBLIC_API_TIMEOUT_MS) || 6000,
   healthCheck: 3000,
   healthPollingInterval: 60000,
 } as const;

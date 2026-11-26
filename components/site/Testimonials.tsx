@@ -21,6 +21,7 @@ import { homeData, text } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { getOptionalApi, unwrapCollection } from "@/lib/api-client";
 import { getAssetUrl } from "@/lib/utils";
+import { staticReviews } from "@/data/reviews";
 
 function TestimonialAvatar({ src, name }: { src?: string; name: string }) {
   const [failed, setFailed] = useState(false);
@@ -73,7 +74,9 @@ export function Testimonials() {
   const siteData = useSiteData();
   const initialReviews = (siteData.reviewsItems?.length
     ? siteData.reviewsItems
-    : (Array.isArray(homeData(siteData).reviews) ? homeData(siteData).reviews as Record<string, unknown>[] : [])) || [];
+    : (Array.isArray(homeData(siteData).reviews) && (homeData(siteData).reviews as any[]).length > 0
+        ? homeData(siteData).reviews as Record<string, unknown>[]
+        : (staticReviews as unknown as Record<string, unknown>[]))) || [];
 
   const [reviewsList, setReviewsList] = useState<Record<string, unknown>[]>(initialReviews);
   const [isPaused, setIsPaused] = useState(false);

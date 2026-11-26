@@ -1,7 +1,13 @@
 import { checkBackendHealth, getOptionalApi, unwrapCollection, unwrapSetting, type ApiRecord, type PaginatedData } from "@/lib/api-client";
 import { formatHref, getAssetUrl } from "@/lib/utils";
 import { DEFAULT_ASSETS } from "@/lib/config";
-import fallbackSiteData from "@/public/collections/schoolsettings.json";
+import {
+  staticSchoolSettings,
+  staticMenuItems,
+  staticGalleryItems,
+  staticReviews,
+  staticNews,
+} from "@/data";
 
 export const DEFAULT_HERO_IMAGE = DEFAULT_ASSETS.heroImage;
 export const DEFAULT_LOGO = DEFAULT_ASSETS.logo;
@@ -203,20 +209,31 @@ export async function getSiteData(): Promise<SiteData> {
   const isHealthy = await checkBackendHealth();
 
   if (!isHealthy) {
-    // Backend NOT attached -> apply fallback
-    const fallback = fallbackSiteData as SiteData;
-    const rawFallbackMenuitems = Array.isArray(fallback.menuItems)
-      ? fallback.menuItems
-      : Array.isArray(fallback.menuitems)
-        ? fallback.menuitems
-        : [];
-    const fallbackMenuitemsTree = buildMenuHierarchy(rawFallbackMenuitems as SiteRecord[]);
-    const fallbackGallery = Array.isArray(fallback.gallery)
-      ? (fallback.gallery as SiteRecord[])
-      : [];
-    const fallbackReviews = Array.isArray(fallback.reviews)
-      ? (fallback.reviews as SiteRecord[])
-      : [];
+    // Backend NOT attached -> apply fallback from @/data
+    const fallback = staticSchoolSettings as unknown as SiteData;
+    const rawFallbackMenuitems = (staticMenuItems.length > 0
+      ? staticMenuItems
+      : Array.isArray(fallback.menuItems)
+        ? fallback.menuItems
+        : Array.isArray(fallback.menuitems)
+          ? fallback.menuitems
+          : []) as SiteRecord[];
+    const fallbackMenuitemsTree = buildMenuHierarchy(rawFallbackMenuitems);
+    const fallbackGallery = (staticGalleryItems.length > 0
+      ? staticGalleryItems
+      : Array.isArray(fallback.gallery)
+        ? (fallback.gallery as SiteRecord[])
+        : []) as SiteRecord[];
+    const fallbackReviews = (staticReviews.length > 0
+      ? staticReviews
+      : Array.isArray(fallback.reviews)
+        ? (fallback.reviews as SiteRecord[])
+        : []) as SiteRecord[];
+    const fallbackNews = (staticNews.length > 0
+      ? staticNews
+      : Array.isArray(fallback.news)
+        ? (fallback.news as SiteRecord[])
+        : []) as SiteRecord[];
 
     return {
       ...fallback,
@@ -229,15 +246,15 @@ export async function getSiteData(): Promise<SiteData> {
       },
       site_logo: fallback.site_logo,
       home: fallback.home || [],
-      news: fallback.news || [],
+      news: fallbackNews,
       galleryItems: fallbackGallery,
       reviewsItems: fallbackReviews,
       menuItems: fallbackMenuitemsTree,
-      menuitems: rawFallbackMenuitems as SiteRecord[],
+      menuitems: rawFallbackMenuitems,
     };
   }
 
-  // Backend IS attached -> DO NOT apply fallback!
+  // Backend IS attached -> attempt to load live data, with graceful fallback to @/data if calls fail or time out
   const [
     siteResponse,
     logoSettingResponse,
@@ -254,23 +271,43 @@ export async function getSiteData(): Promise<SiteData> {
     getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/menu-items", { publishedOnly: "true" }),
   ]);
 
-  const siteData = siteResponse ? unwrapSetting<SiteData>(siteResponse) : ({} as SiteData);
-  const dbLogoSetting = logoSettingResponse ? unwrapSetting<SiteLogoSetting>(logoSettingResponse) : null;
-  const apiNews = unwrapCollection(newsResponse);
-  const apiGallery = unwrapCollection(galleryResponse);
-  const apiReviews = unwrapCollection(reviewsResponse);
-  const apiMenuItems = unwrapCollection(menuItemsResponse);
+  const rawSite = siteResponse ? unwrapSetting<SiteData>(siteResponse) : null;
+  const siteData = (rawSite && Object.keys(rawSite).length > 0)
+    ? rawSite
+    : (staticSchoolSettings as unknown as SiteData);
 
+  const dbLogoSetting = logoSettingResponse ? unwrapSetting<SiteLogoSetting>(logoSettingResponse) : null;
+  
+  const apiNews = unwrapCollection(newsResponse);
+  const finalNews = apiNews.length > 0
+    ? apiNews
+    : (staticNews.length > 0 ? (staticNews as SiteRecord[]) : (siteData.news || []));
+
+  const apiGallery = unwrapCollection(galleryResponse);
+  const finalGallery = apiGallery.length > 0
+    ? apiGallery
+    : (staticGalleryItems.length > 0 ? (staticGalleryItems as SiteRecord[]) : (siteData.gallery || []));
+
+  const apiReviews = unwrapCollection(reviewsResponse);
+  const finalReviews = apiReviews.length > 0
+    ? apiReviews
+    : (staticReviews.length > 0 ? (staticReviews as SiteRecord[]) : (siteData.reviews || []));
+
+  const apiMenuItems = unwrapCollection(menuItemsResponse);
   const menuList = apiMenuItems.length > 0
     ? apiMenuItems
-    : (Array.isArray(siteData.menuitems) ? siteData.menuitems : []);
-  const finalMenuItems = buildMenuHierarchy(menuList);
+    : (Array.isArray(siteData.menuitems) && siteData.menuitems.length > 0
+        ? siteData.menuitems
+        : (staticMenuItems as SiteRecord[]));
+  const finalMenuItems = buildMenuHierarchy(menuList as SiteRecord[]);
 
   const siteLogoFromDb = (dbLogoSetting && typeof dbLogoSetting === "object" && dbLogoSetting.logoUrl)
     ? dbLogoSetting
     : (siteData.site_logo || (siteData.home?.[0]?.identity as any)?.site_logo);
 
-  const homeList = Array.isArray(siteData.home) ? siteData.home : [];
+  const homeList = (Array.isArray(siteData.home) && siteData.home.length > 0)
+    ? siteData.home
+    : (staticSchoolSettings.home || []);
   const updatedHome = homeList.map((item, idx) => {
     if (idx === 0 && siteLogoFromDb) {
       const currentIdentity = (item.identity as Record<string, unknown>) || {};
@@ -301,7 +338,7 @@ export async function getSiteData(): Promise<SiteData> {
 
   return {
     ...siteData,
-    backendConnected: true,
+    backendConnected: Boolean(siteResponse),
     developer: (siteData.developer as DeveloperSetting) || {
       name: "EZ Softech",
       url: "https://ezsoftapp.in",
@@ -310,9 +347,9 @@ export async function getSiteData(): Promise<SiteData> {
     },
     site_logo: siteLogoFromDb || siteData.site_logo,
     home: updatedHome,
-    news: apiNews,
-    galleryItems: apiGallery,
-    reviewsItems: apiReviews,
+    news: finalNews as SiteRecord[],
+    galleryItems: finalGallery as SiteRecord[],
+    reviewsItems: finalReviews as SiteRecord[],
     menuItems: finalMenuItems,
     menuitems: menuList as SiteRecord[],
   };

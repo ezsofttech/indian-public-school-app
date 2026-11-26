@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import seoSource from "@/public/seo-source.json";
+import { staticSeoSource as seoSource } from "@/data/seo";
 import { getAssetUrl } from "@/lib/utils";
 import { DEFAULT_LOGO } from "@/lib/site-data";
 import { DOMAIN } from "@/lib/config";

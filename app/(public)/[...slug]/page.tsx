@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Award, BookOpen, ChevronRight, Download, ExternalLink, FileText, GraduationCap, Lock } from "lucide-react";
-import pagesCollection from "@/public/collections/pages.json";
+import { staticPages, getStaticPageBySlug } from "@/data/pages";
 import { DEFAULT_HERO_IMAGE, imageUrl, processHtmlAssetUrls } from "@/lib/site-data";
 import { getAssetUrl, formatHref, isExternalUrl } from "@/lib/utils";
 import { API_URL } from "@/lib/config";
@@ -117,8 +117,8 @@ function resolvePageFromDatasource(slugArray: string[]): Content | null {
   const normLastSeg = normalizeKey(lastSegment);
 
   // Check top-level "pages" collection first (matches database format with textContent)
-  if (Array.isArray(pagesCollection)) {
-    const pagesList = pagesCollection as Content[];
+  if (Array.isArray(staticPages)) {
+    const pagesList = staticPages as unknown as Content[];
     const match = pagesList.find((p) => {
       if (!p || typeof p !== "object") return false;
       const s = normalizeKey(String(p.slug || ""));
@@ -186,6 +186,7 @@ async function fetchDbPage(slugArray: string[]): Promise<Content | null> {
     try {
       const res = await fetch(`${API_URL}/pages/slug/${encodeURIComponent(candidate)}`, {
         cache: "no-store",
+        signal: AbortSignal.timeout(5000),
       });
       if (res.ok) {
         const json = await res.json();
@@ -193,9 +194,14 @@ async function fetchDbPage(slugArray: string[]): Promise<Content | null> {
         if (doc && doc.title) return doc as Content;
       }
     } catch {
-      // fallback cleanly
+      // fallback cleanly on timeout or network error
     }
   }
+
+  // Fallback to static collection data from @/data/pages
+  const staticMatch = getStaticPageBySlug(slugArray);
+  if (staticMatch) return staticMatch as Content;
+
   return null;
 }
 

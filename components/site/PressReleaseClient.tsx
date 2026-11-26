@@ -20,6 +20,7 @@ import { EASE } from "@/lib/motion-presets";
 import { cn, getAssetUrl, getCanonicalAssetKey } from "@/lib/utils";
 import { getOptionalApi, unwrapCollection } from "@/lib/api-client";
 import { DEFAULT_HERO_IMAGE } from "@/lib/site-data";
+import { staticGalleryItems } from "@/data/gallery";
 
 function text(value: unknown, fallback = ""): string {
   return typeof value === "string" ? value : fallback;
@@ -96,10 +97,32 @@ export function PressReleaseClient() {
           .filter((img) => Boolean(img.src) && !img.src.toLowerCase().includes("press_13"));
 
         if (isMounted) {
+          const staticPress: PressReleaseImage[] = staticGalleryItems
+            .filter((i) => (i.directory && String(i.directory).toLowerCase().includes("press")) || (i.eventType && String(i.eventType).toLowerCase().includes("press")))
+            .map((item: any) => {
+              const rawTitle = text(item.eventName || item.title, "Press Release Media");
+              const formattedTitle = cleanTitle(rawTitle);
+              const urls = Array.isArray(item.fileUrl)
+                ? item.fileUrl
+                : typeof item.fileUrl === "string" && item.fileUrl.trim()
+                ? [item.fileUrl]
+                : [];
+              const validUrl = urls.find((u: string) => !u.toLowerCase().includes("press_13")) || urls[0] || "";
+              return {
+                src: validUrl,
+                alt: formattedTitle,
+                title: formattedTitle,
+                date: item.createdAt ? new Date(item.createdAt).toISOString().split("T")[0] : undefined,
+                source: "database" as const,
+              };
+            })
+            .filter((img) => Boolean(img.src) && !img.src.toLowerCase().includes("press_13"));
+
+          const primaryList = fetchedFromDb.length > 0 ? fetchedFromDb : staticPress;
           const combined: PressReleaseImage[] = [];
           const seenKeys = new Set<string>();
 
-          for (const img of fetchedFromDb) {
+          for (const img of primaryList) {
             const key = getCanonicalAssetKey(img.src);
             if (!key || seenKeys.has(key)) continue;
             seenKeys.add(key);

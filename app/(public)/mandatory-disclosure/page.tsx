@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getOptionalApi, unwrapCollection } from "@/lib/api-client";
 import { PublicDisclosureView, DisclosureSectionData } from "@/components/site/PublicDisclosureView";
 import { getPageSeoMetadata } from "@/lib/seo";
+import { staticDisclosureSections, staticDisclosureConfig } from "@/data/public-disclosure";
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
@@ -36,8 +37,9 @@ export default async function MandatoryDisclosurePage() {
       getOptionalApi<DisclosureSectionData[] | { items: DisclosureSectionData[] }>(
         "/public-disclosure/sections",
         { publishedOnly: true },
+        5000
       ),
-      getOptionalApi<any>("/public-disclosure/config"),
+      getOptionalApi<any>("/public-disclosure/config", undefined, 5000),
     ]);
 
     if (sectionsRes) {
@@ -48,6 +50,14 @@ export default async function MandatoryDisclosurePage() {
     }
   } catch (err) {
     console.warn("[MandatoryDisclosurePage] Could not fetch disclosure data:", err);
+  }
+
+  // Gracefully fallback to static collection data from @/data if backend is offline, crashes, or times out
+  if (sections.length === 0 && staticDisclosureSections.length > 0) {
+    sections = staticDisclosureSections as unknown as DisclosureSectionData[];
+  }
+  if (!config && staticDisclosureConfig) {
+    config = staticDisclosureConfig;
   }
 
   return (

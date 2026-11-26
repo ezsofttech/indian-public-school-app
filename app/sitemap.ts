@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { DOMAIN } from "@/lib/config";
-import schoolsettings from "@/public/collections/schoolsettings.json";
-import pagesCollection from "@/public/collections/pages.json";
+import { staticSchoolSettings as schoolsettings } from "@/data/school-settings";
+import { staticPages as pagesCollection } from "@/data/pages";
 
 function extractInternalRoutes(obj: unknown, foundRoutes = new Set<string>()): Set<string> {
   if (!obj || typeof obj !== "object") return foundRoutes;

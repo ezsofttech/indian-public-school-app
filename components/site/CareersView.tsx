@@ -20,8 +20,10 @@ import {
   ChevronRight,
   Copy,
   Info,
+  AlertCircle,
 } from "lucide-react";
 import { API_URL } from "@/lib/api-client";
+import { checkBackendHealth } from "@/lib/api/health";
 import { FileUploadProgressLoader, FileUploadStatus } from "@/components/ui/FileUploadProgressLoader";
 import { getAssetUrl, formatPhoneNumber, handlePhoneKeyDown, isPhoneField } from "@/lib/utils";
 import { DEFAULT_HERO_IMAGE } from "@/lib/site-data";
@@ -57,6 +59,7 @@ export interface CareerPost {
 export function CareersView() {
   const [posts, setPosts] = useState<CareerPost[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isOffline, setIsOffline] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Apply Modal State
@@ -89,11 +92,19 @@ export function CareersView() {
   const [successAppNo, setSuccessAppNo] = useState<string | null>(null);
   const [copiedRef, setCopiedRef] = useState<boolean>(false);
 
-  // Fetch Career Openings
+  // Fetch Career Openings with health check
   const fetchOpenings = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/careers?isActive=true`);
+      const health = await checkBackendHealth();
+      if (!health.online) {
+        setIsOffline(true);
+        setPosts([]);
+        setLoading(false);
+        return;
+      }
+
+      const res = await axios.get(`${API_URL}/careers?isActive=true`, { timeout: 5000 });
       const body = res.data;
       const list = Array.isArray(body.data)
         ? body.data
@@ -102,9 +113,11 @@ export function CareersView() {
           : Array.isArray(body)
             ? body
             : [];
+      setIsOffline(false);
       setPosts(list);
-    } catch (err) {
-      console.error("Failed to load active career openings:", err);
+    } catch {
+      setIsOffline(true);
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -131,6 +144,10 @@ export function CareersView() {
 
   // Open Apply Modal
   const handleOpenApplyModal = (post: CareerPost) => {
+    if (isOffline) {
+      alert("Server is currently unavailable. Please try again later.");
+      return;
+    }
     setSelectedPost(post);
     setFullName("");
     setEmail("");
@@ -363,6 +380,11 @@ export function CareersView() {
     e.preventDefault();
     if (!selectedPost) return;
 
+    if (isOffline) {
+      setErrorMsg("Server is currently unavailable. Please try again later.");
+      return;
+    }
+
     const postId = selectedPost._id || selectedPost.id;
     if (!postId) return;
 
@@ -528,6 +550,14 @@ export function CareersView() {
           </div>
         </div>
 
+        {isOffline && (
+          <div className="rounded-xl border border-rose-300 bg-rose-50/90 dark:bg-rose-950/40 p-3.5 text-center">
+            <p className="text-xs sm:text-sm font-semibold text-rose-700 dark:text-rose-300">
+              Server is currently unavailable. Please try again later.
+            </p>
+          </div>
+        )}
+
         {/* Dynamic Table Card */}
         <div
           className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md overflow-hidden"
@@ -537,6 +567,25 @@ export function CareersView() {
             <div className="p-16 text-center text-slate-500 flex flex-col items-center justify-center gap-3">
               <LoaderCircle className="w-8 h-8 animate-spin text-[var(--primary)]" />
               <span className="text-sm font-medium">Fetching current career openings...</span>
+            </div>
+          ) : isOffline ? (
+            <div className="p-16 text-center space-y-3">
+              <div className="w-12 h-12 mx-auto rounded-full bg-rose-100 dark:bg-rose-950/60 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                <AlertCircle className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-slate-700 dark:text-slate-300 font-[var(--font-display)]">
+                Server is currently unavailable
+              </h3>
+              <p className="text-xs text-rose-600 dark:text-rose-400 font-medium max-w-sm mx-auto">
+                Unable to load career openings at this moment. Please try again later.
+              </p>
+              <button
+                type="button"
+                onClick={() => fetchOpenings()}
+                className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--navy)] text-[var(--gold)] hover:text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
+              >
+                Retry
+              </button>
             </div>
           ) : filteredPosts.length === 0 ? (
             <div className="p-16 text-center text-slate-500 space-y-3">
@@ -692,6 +741,11 @@ export function CareersView() {
             {/* Scrollable Form Body */}
             <form onSubmit={handleSubmitApplication} className="flex flex-col flex-1 min-h-0 overflow-hidden">
               <div className="flex-1 overflow-y-auto custom-scrollbar px-6 sm:px-8 py-6 space-y-4 text-xs text-slate-700 dark:text-slate-300">
+                {isOffline && (
+                  <div className="p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold rounded-xl text-center">
+                    Server is currently unavailable. Please try again later.
+                  </div>
+                )}
                 {errorMsg && (
                   <div
                     className="p-3.5 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-300 text-xs"
@@ -700,6 +754,12 @@ export function CareersView() {
                     {errorMsg}
                   </div>
                 )}
+                <fieldset
+                  disabled={isOffline || submitting}
+                  className={`contents space-y-4 border-none p-0 m-0 ${
+                    isOffline || submitting ? "cursor-not-allowed opacity-60 [&_*]:cursor-not-allowed" : ""
+                  }`}
+                >
 
                 {/* Applying for Position (Readonly / Disabled Input Field) */}
                 <div>
@@ -1065,6 +1125,7 @@ export function CareersView() {
                     </div>
                   )}
                 </div>
+                </fieldset>
               </div>
 
               {/* Action buttons (Stable / Fixed footer) */}
@@ -1079,7 +1140,7 @@ export function CareersView() {
                 </button>
                 <button
                   type="submit"
-                  disabled={submitting}
+                  disabled={submitting || isOffline}
                   className="px-6 py-2.5 font-bold bg-[var(--primary)] hover:bg-[var(--navy)] text-[var(--gold)] hover:text-white shadow-md flex items-center gap-2 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                   style={{ borderRadius: "var(--btn-radius, 0.75rem)" }}
                 >
