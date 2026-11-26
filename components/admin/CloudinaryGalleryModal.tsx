@@ -356,14 +356,6 @@ export function CloudinaryGalleryModal({
               if (Array.isArray(fallbackJson) && fallbackJson.length > 0) {
                 dbItems = fallbackJson;
               }
-            } else {
-              const altFallbackRes = await fetch("/collections/gallery.json");
-              if (altFallbackRes.ok) {
-                const altJson = await altFallbackRes.json();
-                if (Array.isArray(altJson) && altJson.length > 0) {
-                  dbItems = altJson;
-                }
-              }
             }
           } catch {}
         }

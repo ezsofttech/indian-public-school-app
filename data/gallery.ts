@@ -1,4 +1,4 @@
-import rawGallery from "@/public/collections/gallery.json";
+import rawGallery from "@/public/collections/galleries.json";
 
 export interface StaticGalleryItem {
   _id?: string;
