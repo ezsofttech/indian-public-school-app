@@ -1,5 +1,19 @@
 [
   {
+    "_id": "6ad9bd777c71b111d6a9ca1f",
+    "eventName": "Home",
+    "eventType": "Home",
+    "directory": "ips-education/assets/Settings/Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_bse0dx.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "deletedAt": null,
+    "publicId": "GAL-MVJ8BW6C-0QZPN",
+    "createdAt": "2026-10-22T07:38:31.726Z",
+    "updatedAt": "2026-10-22T07:38:31.726Z"
+  },
+  {
     "_id": "6acafeb9f97392acdce8e0ee",
     "publicId": "GAL-MV39003P-ACI8A",
     "createdAt": "2026-10-11T03:12:57.734Z",
@@ -8,7 +22,7 @@
     "eventName": "Admission",
     "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/Admission.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Admission.png"
     ],
     "mimeType": "image/png",
     "parentId": null,
@@ -23,11 +37,26 @@
     "eventName": "Art",
     "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/Art.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Art.png"
     ],
     "mimeType": "image/png",
     "parentId": null,
     "updatedAt": "2026-10-11T03:13:10.918Z"
+  },
+  {
+    "_id": "6acaffd178c830b9464513ac",
+    "publicId": "GAL-MV396007-5TM1U",
+    "createdAt": "2026-10-11T03:17:37.543Z",
+    "deletedAt": null,
+    "directory": "Settings/Icons",
+    "eventName": "Parent Portal",
+    "eventType": "Icons",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/file_a6zb7t.png"
+    ],
+    "mimeType": "image/png",
+    "parentId": null,
+    "updatedAt": "2026-10-22T06:01:10.575Z"
   },
   {
     "_id": "6acb004a78c830b9464513ad",
@@ -38,26 +67,11 @@
     "eventName": "Bus Routes",
     "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/BusRoutes.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/BusRoutes.png"
     ],
     "mimeType": "image/png",
     "parentId": null,
     "updatedAt": "2026-10-11T03:19:38.563Z"
-  },
-  {
-    "_id": "6acb005478c830b9464513ae",
-    "publicId": "GAL-MV398STS-M31LP",
-    "createdAt": "2026-10-11T03:19:48.208Z",
-    "deletedAt": null,
-    "directory": "Settings/Icons",
-    "eventName": "Career",
-    "eventType": "Icons",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/Career.png"
-    ],
-    "mimeType": "image/png",
-    "parentId": null,
-    "updatedAt": "2026-10-11T03:19:48.208Z"
   },
   {
     "_id": "6acb005c78c830b9464513af",
@@ -68,7 +82,7 @@
     "eventName": "Cpu",
     "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/Cpu.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Cpu.png"
     ],
     "mimeType": "image/png",
     "parentId": null,
@@ -83,7 +97,7 @@
     "eventName": "Culture",
     "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/Culture.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Culture.png"
     ],
     "mimeType": "image/png",
     "parentId": null,
@@ -98,7 +112,7 @@
     "eventName": "Curriculam",
     "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/Curriculam.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Curriculam.png"
     ],
     "mimeType": "image/png",
     "parentId": null,
@@ -113,7 +127,7 @@
     "eventName": "Infrastructure",
     "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/Infrastructure.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Infrastructure.png"
     ],
     "mimeType": "image/png",
     "parentId": null,
@@ -128,7 +142,7 @@
     "eventName": "Mission",
     "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/Mission.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Mission.png"
     ],
     "mimeType": "image/png",
     "parentId": null,
@@ -143,7 +157,7 @@
     "eventName": "Safe Campus",
     "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/SafeCampus.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/SafeCampus.png"
     ],
     "mimeType": "image/png",
     "parentId": null,
@@ -158,7 +172,7 @@
     "eventName": "School App",
     "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/SchoolApp.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/SchoolApp.png"
     ],
     "mimeType": "image/png",
     "parentId": null,
@@ -173,7 +187,7 @@
     "eventName": "Sport",
     "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/Sport.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Sport.png"
     ],
     "mimeType": "image/png",
     "parentId": null,
@@ -188,7 +202,7 @@
     "eventName": "Teacher",
     "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/Teacher.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Teacher.png"
     ],
     "mimeType": "image/png",
     "parentId": null,
@@ -203,1027 +217,1336 @@
     "eventName": "Vision",
     "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Icons/Vision.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/Vision.png"
     ],
     "mimeType": "image/png",
     "parentId": null,
     "updatedAt": "2026-10-11T03:21:50.581Z"
   },
   {
-    "_id": "6acb0cbd78c830b9464513ba",
-    "publicId": "GAL-MV3B4WLC-TID4G",
-    "createdAt": "2026-10-11T04:12:45.697Z",
-    "deletedAt": null,
-    "directory": "ips-education/assets/album",
-    "eventName": "Gallery",
-    "eventType": "Gallery",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/album/file_yohayu.png"
-    ],
-    "mimeType": "image/png",
-    "parentId": null,
-    "updatedAt": "2026-10-11T04:12:45.697Z"
-  },
-  {
-    "_id": "6acb5217f97392acdce8e0f0",
-    "publicId": "GAL-MV3LPF8A-26WFN",
-    "createdAt": "2026-10-11T09:08:39.132Z",
-    "deletedAt": null,
-    "directory": "ips-education/assets/Settings/Home",
-    "eventName": "Settings",
-    "eventType": "Settings",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Home/file_ku9xfa.jpg"
-    ],
-    "mimeType": "image/jpeg",
-    "parentId": null,
-    "updatedAt": "2026-10-11T09:08:39.132Z"
-  },
-  {
-    "_id": "6acb861df97392acdce8e0f2",
-    "publicId": "GAL-MV3TMVJ4-DY3A3",
-    "createdAt": "2026-10-11T12:50:37.217Z",
-    "deletedAt": null,
-    "directory": "ips-education/assets/Student",
-    "eventName": "Students",
-    "eventType": "Students",
-    "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Student/file_vdx0yd.png"
-    ],
-    "mimeType": "image/png",
-    "parentId": null,
-    "updatedAt": "2026-10-11T12:50:37.217Z"
-  },
-  {
-    "_id": "6acb8677f97392acdce8e0f3",
-    "publicId": "GAL-MV3TOT9R-8VH04",
-    "createdAt": "2026-10-11T12:52:07.600Z",
+    "_id": "6ace7515a6ac050560bd4c87",
+    "publicId": "GAL-MV703F2W-WNYQ3",
+    "createdAt": "2026-10-13T18:14:45.273Z",
     "deletedAt": null,
     "directory": "ips-education/assets/Album/Home",
     "eventName": "Home",
     "eventType": "Home",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Album/Home/file_ij9xsm.jpg"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Home/file_fg2fmz.webp"
+    ],
+    "mimeType": "image/webp",
+    "updatedAt": "2026-10-13T18:14:45.273Z"
+  },
+  {
+    "_id": "6acf2596284dd2678a69b853",
+    "publicId": "GAL-MV7QZVY1-ULYZY",
+    "createdAt": "2026-10-14T06:47:50.143Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Settings/Icons",
+    "eventName": "Icons",
+    "eventType": "Icons",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/file_gkp1jc.jpg"
     ],
     "mimeType": "image/jpeg",
-    "parentId": null,
-    "updatedAt": "2026-10-11T12:52:07.600Z"
+    "updatedAt": "2026-10-14T06:47:50.143Z"
   },
   {
-    "_id": "6acc7fd0f97392acdce8e0f4",
-    "publicId": "GAL-MV4VOYZX-8RV9L",
-    "createdAt": "2026-10-12T06:36:00.430Z",
+    "_id": "6acf26f9284dd2678a69b858",
+    "publicId": "GAL-MV7R7I93-PVYWX",
+    "createdAt": "2026-10-14T06:53:45.640Z",
     "deletedAt": null,
-    "directory": "Settings/Home",
-    "eventName": "Banner",
-    "eventType": "Home",
+    "directory": "Settings/Icons",
+    "eventName": "Home",
+    "eventType": "Icons",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/image/upload/ips-education/assets/Settings/Home/file_pepq36.jpg"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Home/file_saybxd.png"
     ],
-    "mimeType": "image/jpeg",
-    "parentId": null,
-    "updatedAt": "2026-10-12T06:36:03.262Z"
+    "mimeType": "image/png",
+    "updatedAt": "2026-10-28T11:02:57.837Z"
   },
   {
-    "_id": "6acc8bbaf97392acdce8e0f6",
-    "publicId": "GAL-MV4XICK1-6BD5T",
-    "createdAt": "2026-10-12T07:26:50.642Z",
+    "_id": "6ad99d2b671927df5d8b8da1",
+    "publicId": "GAL-MVJ3EOH3-SQ7NX",
+    "createdAt": "2026-10-22T05:20:43.639Z",
     "deletedAt": null,
-    "directory": "Documents/General",
-    "eventName": "Temp PDF",
-    "eventType": "Documents",
+    "directory": "Videos",
+    "eventName": "Intro Video",
+    "eventType": "Videos",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/raw/upload/ips-education/assets/Documents/General/1791790008925_food_menu.pdf.pdf"
+      "https://res.cloudinary.com/ctpyyyuj/video/upload/ips-education/assets/Videos/file_feszan.mp4"
     ],
-    "mimeType": "application/pdf",
-    "parentId": null,
-    "updatedAt": "2026-10-12T07:27:13.109Z"
+    "mimeType": "video/mp4",
+    "updatedAt": "2026-10-22T05:20:49.853Z"
   },
   {
-    "_id": "6acccb7da760f771c1f91ea2",
-    "publicId": "GAL-MV5787NU-6FXSF",
-    "createdAt": "2026-10-12T11:58:53.901Z",
+    "_id": "6ad99e747effffe6039bacc5",
+    "publicId": "GAL-MVJ3LQ6M-BJAPV",
+    "createdAt": "2026-10-22T05:26:12.436Z",
     "deletedAt": null,
-    "directory": "ips-education/assets/Documents/General",
+    "directory": "ips-education/assets/Staff",
     "eventName": "Gallery",
     "eventType": "Gallery",
     "fileUrl": [
-      "https://res.cloudinary.com/niefrrkx/raw/upload/ips-education/assets/Documents/General/1791806332838_Om_Rathore.pdf"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Staff/file_imn2vs.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-22T05:26:12.436Z"
+  },
+  {
+    "_id": "6ad9a6a0be6371f86a5ca1ff",
+    "publicId": "GAL-MVJ4UKJY-67NNS",
+    "createdAt": "2026-10-22T06:01:04.655Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Settings/Icons",
+    "eventName": "Icons",
+    "eventType": "Icons",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Icons/file_a6zb7t.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-10-22T06:01:04.655Z"
+  },
+  {
+    "_id": "6ad9bf2251a616a50003a0e9",
+    "publicId": "GAL-MVJ8L1G2-NE33B",
+    "album": "Settings/Home",
+    "createdAt": "2026-10-22T07:45:38.455Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Chairman IPS",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_hmzn6g.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-11-12T07:35:27.777Z"
+  },
+  {
+    "_id": "6ad9c2f551a616a50003a0eb",
+    "publicId": "GAL-MVJ960MP-W14QL",
+    "createdAt": "2026-10-22T08:01:57.172Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Director IPS",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_rubnjp.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-22T08:02:01.451Z"
+  },
+  {
+    "_id": "6ad9cac819b647dc01877b6c",
+    "publicId": "GAL-MVJACYO6-59JS8",
+    "album": "Settings/Home",
+    "createdAt": "2026-10-22T08:35:20.867Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Principal IPS",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_biuyjd.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-11-12T07:36:38.770Z"
+  },
+  {
+    "_id": "6adef2be8efe70f63a3ff932",
+    "publicId": "GAL-MVOVJJ6Z-GGD3H",
+    "createdAt": "2026-10-26T06:27:10.193Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Pop Up Banner",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/PopUpBanner/file_cmuduq.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-28T11:07:18.711Z"
+  },
+  {
+    "_id": "6adf0eb55a54e230e43a0e19",
+    "publicId": "GAL-MVOZSZ74-MKI48",
+    "createdAt": "2026-10-26T08:26:29.304Z",
+    "deletedAt": null,
+    "directory": "Videos",
+    "eventName": "Demo Video",
+    "eventType": "Videos",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/video/upload/ips-education/assets/Videos/file_wxnxzw.mp4"
+    ],
+    "mimeType": "video/mp4",
+    "updatedAt": "2026-10-26T08:26:31.613Z"
+  },
+  {
+    "_id": "6adf10a98efe70f63a3ff933",
+    "publicId": "GAL-MVP03PD2-58PG1",
+    "createdAt": "2026-10-26T08:34:49.771Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Home",
+    "eventName": "Home",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Home/file_xgmvs3.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-26T08:34:49.771Z"
+  },
+  {
+    "_id": "6adf125e8efe70f63a3ff934",
+    "publicId": "GAL-MVP0D2PF-QU8RV",
+    "createdAt": "2026-10-26T08:42:06.965Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Visual Editor Picked",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_uunir2.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-10-26T08:42:06.965Z"
+  },
+  {
+    "_id": "6adf13c58efe70f63a3ff935",
+    "publicId": "GAL-MVP0KR69-XUTPW",
+    "createdAt": "2026-10-26T08:48:05.266Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Visual Editor Picked",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_drnjj0.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-26T08:48:05.266Z"
+  },
+  {
+    "_id": "6adf1f698efe70f63a3ff936",
+    "publicId": "GAL-MVP2CN31-WGBQS",
+    "createdAt": "2026-10-26T09:37:45.950Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Visual Editor Picked",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_etyb2c.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-26T09:37:45.950Z"
+  },
+  {
+    "_id": "6adf20668efe70f63a3ff937",
+    "publicId": "GAL-MVP2I1OE-UNZXS",
+    "createdAt": "2026-10-26T09:41:58.143Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Visual Editor Picked",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_lqt2eb.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-26T09:41:58.143Z"
+  },
+  {
+    "_id": "6adf20e78efe70f63a3ff938",
+    "publicId": "GAL-MVP2KTLU-9KW2C",
+    "createdAt": "2026-10-26T09:44:07.654Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Visual Editor Picked",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_dwcowi.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-26T09:44:07.654Z"
+  },
+  {
+    "_id": "6adf21288efe70f63a3ff939",
+    "publicId": "GAL-MVP2M7J2-F3DTW",
+    "createdAt": "2026-10-26T09:45:12.350Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Visual Editor Picked",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_q8zwil.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-26T09:45:12.350Z"
+  },
+  {
+    "_id": "6adf21898efe70f63a3ff93a",
+    "publicId": "GAL-MVP2OAEA-MJPNI",
+    "createdAt": "2026-10-26T09:46:49.378Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Visual Editor Picked",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_mkhxpc.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-26T09:46:49.378Z"
+  },
+  {
+    "_id": "6adf22e78efe70f63a3ff93b",
+    "publicId": "GAL-MVP2VSW7-0I4PB",
+    "createdAt": "2026-10-26T09:52:39.946Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Visual Editor Picked",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_fetidq.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-26T09:52:39.946Z"
+  },
+  {
+    "_id": "6adf27938efe70f63a3ff93c",
+    "publicId": "GAL-MVP3LFRE-CPFCI",
+    "createdAt": "2026-10-26T10:12:35.980Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Visual Editor Picked",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_ioapbj.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-10-26T10:12:35.980Z"
+  },
+  {
+    "_id": "6adf45528efe70f63a3ff946",
+    "publicId": "GAL-MVP84MXV-NSSFB",
+    "createdAt": "2026-10-26T12:19:30.212Z",
+    "deletedAt": null,
+    "directory": "Documents/General",
+    "eventName": "School Prospectus",
+    "eventType": "Documents",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/ips-education/assets/Documents/General/1793017158028_School_Prospectus__IPS__Sambalpur_-compressed.pdf"
     ],
     "mimeType": "application/pdf",
-    "parentId": null,
-    "updatedAt": "2026-10-12T11:58:53.901Z"
+    "updatedAt": "2026-10-26T12:19:35.509Z"
   },
   {
-    "_id": "6acddc532658d6addf24c0d1",
-    "publicId": "GAL-MV6CT8UG-BM8FK",
-    "createdAt": "2026-10-13T07:22:59.467Z",
+    "_id": "6ae057a5156864124ca1c5e4",
+    "publicId": "GAL-MVQDXUKD-9266I",
+    "createdAt": "2026-10-27T07:49:57.375Z",
     "deletedAt": null,
-    "directory": "Settings/Home",
-    "eventName": "Home",
-    "eventType": "Home",
+    "directory": "Others",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Others",
     "fileUrl": [
-      "/Settings/Home/file_jjyv9j.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/file_f2gp0y.jpg"
     ],
-    "mimeType": "image/png",
-    "updatedAt": "2026-10-13T07:23:05.882Z"
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-28T11:27:25.187Z"
   },
   {
-    "_id": "6acddc8c2658d6addf24c0d2",
-    "publicId": "GAL-MV6CUGLP-WZLOV",
-    "createdAt": "2026-10-13T07:23:56.174Z",
+    "_id": "6ae05b90156864124ca1c5e5",
+    "publicId": "GAL-MVQEJCHL-ZN85W",
+    "createdAt": "2026-10-27T08:06:40.383Z",
     "deletedAt": null,
-    "directory": "Settings/Home",
-    "eventName": "Home",
-    "eventType": "Home",
+    "directory": "ips-education/assets/Home",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
     "fileUrl": [
-      "/Settings/Home/file_x9pn7q.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Home/file_h6nlfz.jpg"
     ],
-    "mimeType": "image/png",
-    "updatedAt": "2026-10-13T07:24:01.673Z"
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-27T08:06:40.383Z"
   },
   {
-    "_id": "6ace8dfdfc9989a27d87a915",
-    "publicId": "GAL-MV73W30H-A6MB8",
-    "createdAt": "2026-10-13T20:01:01.505Z",
+    "_id": "6ae05bf8156864124ca1c5e6",
+    "publicId": "GAL-MVQELKQX-ZCO7S",
+    "createdAt": "2026-10-27T08:08:24.394Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Home",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Home/file_dgjpiu.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-27T08:08:24.394Z"
+  },
+  {
+    "_id": "6ae06303156864124ca1c5e7",
+    "publicId": "GAL-MVQFO89G-PT9OR",
+    "album": "Documents/General",
+    "createdAt": "2026-10-27T08:38:27.855Z",
+    "deletedAt": null,
+    "directory": "Documents/General",
+    "eventName": "Hostel",
+    "eventType": "Documents",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/ips-education/assets/Documents/General/1793090304472_Hostel_Brouchure.pdf"
+    ],
+    "mimeType": "application/pdf",
+    "updatedAt": "2026-11-12T08:09:57.808Z"
+  },
+  {
+    "_id": "6ae0a7c3156864124ca1c5f0",
+    "publicId": "GAL-MVQQ5GCR-403X9",
+    "createdAt": "2026-10-27T13:31:47.597Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "News",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/News/file_fvbnfx.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-28T11:01:17.217Z"
+  },
+  {
+    "_id": "6ae0ae47156864124ca1c5f6",
+    "publicId": "GAL-MVQR57B2-I88ED",
+    "createdAt": "2026-10-27T13:59:35.488Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Visual Editor Picked",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_p5breh.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-27T13:59:35.488Z"
+  },
+  {
+    "_id": "6ae0ae64156864124ca1c5f7",
+    "publicId": "GAL-MVQR5TH6-LSROU",
+    "createdAt": "2026-10-27T14:00:04.218Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Visual Editor Picked",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_dhmrmm.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-27T14:00:04.218Z"
+  },
+  {
+    "_id": "6ae0ae77156864124ca1c5f8",
+    "publicId": "GAL-MVQR68F8-EVC16",
+    "createdAt": "2026-10-27T14:00:23.588Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Visual Editor Picked",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_okddht.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-27T14:00:23.588Z"
+  },
+  {
+    "_id": "6ae0ae95156864124ca1c5f9",
+    "publicId": "GAL-MVQR6VTD-ENRCK",
+    "createdAt": "2026-10-27T14:00:53.905Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Album/Visual Editor Picked",
+    "eventName": "Visual Editor Picked",
+    "eventType": "Visual Editor Picked",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_gw8qnk.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-27T14:00:53.905Z"
+  },
+  {
+    "_id": "6ae0aea6156864124ca1c5fa",
+    "publicId": "GAL-MVQR78YG-KP46O",
+    "createdAt": "2026-10-27T14:01:10.936Z",
+    "deletedAt": null,
+    "directory": "Album",
+    "eventName": "Navratri Celebration",
+    "eventType": "General",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_p5breh.jpg",
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_dhmrmm.jpg",
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_okddht.jpg",
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_gw8qnk.jpg",
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_cwxcgc.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-27T14:02:24.386Z"
+  },
+  {
+    "_id": "6ae0b010156864124ca1c5fc",
+    "publicId": "GAL-MVQREZUW-TM61Z",
+    "album": "PressRelease",
+    "createdAt": "2026-10-27T14:07:12.393Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_gcz4ip.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-28T12:17:13.300Z"
+  },
+  {
+    "_id": "6ae0bf01156864124ca1c60b",
+    "publicId": "GAL-MVQTOZP6-92NPI",
+    "createdAt": "2026-10-27T15:10:57.979Z",
     "deletedAt": null,
     "directory": "Settings/Logos",
-    "eventName": "Aakash Foundation Logo",
-    "eventType": "Settings",
-    "fileUrl": [
-      "/Settings/Logos/file_vnqlcj.png"
-    ],
-    "updatedAt": "2026-10-13T20:01:01.505Z"
-  },
-  {
-    "_id": "6aab59652c4c3ab7c6169ff7",
-    "publicId": "GAL-MU4Y89IV-GJSJI",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/videos",
-    "eventName": "IPS Introduction",
-    "eventType": "General",
-    "fileUrl": [
-      "/Videos/IPSIntroVideo.mp4"
-    ],
-    "isPublished": true,
-    "mimeType": "video/mp4",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aab628c57ac46acecbf8365",
-    "publicId": "GAL-MU4ZMIGO-CPLN0",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/general",
-    "eventName": "Youth Awareness",
-    "eventType": "General",
-    "fileUrl": [
-      "/Album/Awareness.png"
-    ],
-    "isPublished": true,
-    "mimeType": "image/png",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aabbe57e07d684cba87f012",
-    "publicId": "GAL-MU5DM5EP-A1PAZ",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Self Certification",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/SEL_CERTIFICATION.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aabc2ca3b6e83bee4ade7bb",
-    "publicId": "GAL-MU5EAK4I-U0MA3",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Water Testing",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/WATER_TESTING.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aabc4b17e211514ae9dfd91",
-    "publicId": "GAL-MU5EKZUZ-K09DR",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "CBSE Affiliation",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/CBSE_AFFILIATION.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aabc7047e211514ae9dfd93",
-    "publicId": "GAL-MU5EXQRZ-AVVW2",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Transfer Certificate",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/TRANSFER_CERTIFICATE.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aabc94d7e211514ae9dfd94",
-    "publicId": "GAL-MU5FAAEF-VEAXA",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Emergency Contacts",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/EMERGENCY_CONTACT_DETAILS.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aabc97b7e211514ae9dfd95",
-    "publicId": "GAL-MU5FBA51-3L09O",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "General Information",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/GENERAL_INFORMATION.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aabe63bd3c16d5c8221ebb3",
-    "publicId": "GAL-MU5JP1CS-O50ZD",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Trustee",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/TRUSTEE.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aabea77d3c16d5c8221ebb4",
-    "publicId": "GAL-MU5KC92K-QF3L9",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Fire Safety",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/FIRE_SAFETY_CERTIFICATE.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aabeefbd3c16d5c8221ebb5",
-    "publicId": "GAL-MU5L11HZ-GZJDL",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Staff Directory",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/STAFF_DIRECTORY.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aacae55d3c16d5c8221ebb6",
-    "publicId": "GAL-MU6E6YYO-7C357",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Population Certificate",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/POPULATION_CERTIFICATE.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aacb30bd3c16d5c8221ebb7",
-    "publicId": "GAL-MU6EWU50-092RX",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Safe Drinking",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/SAFE_DRINKING_AND_SANITATION_CERTIFICATE.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aacb61bd3c16d5c8221ebb8",
-    "publicId": "GAL-MU6FDMNA-VWBB3",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Certificate Of Recognition",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/CERTIFICATE_OF_RECOGNITION.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aacb8bcd3c16d5c8221ebb9",
-    "publicId": "GAL-MU6FS2CV-3PMBI",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "NOC",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/NO_OBJECTION_CERTIFICATE.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aacd56d3f29e00020aec9e7",
-    "publicId": "GAL-MU6K5HDS-YOJOU",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Building Certificate",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/BUILDING_SAFETY_CERTIFICATE.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6ab0d094872e2434c5f77060",
-    "publicId": "GAL-MUAVHJGJ-XI86N",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Land Certificate",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/CERTIFICATE_OF_LAND.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6ab0d0d6872e2434c5f77061",
-    "publicId": "GAL-MUAVIYGS-76S6S",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Parent Teacher Association",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/PARENT_TEACHERS_ASSOCIATION.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6ab0d15b872e2434c5f77062",
-    "publicId": "GAL-MUAVLSVO-9CCGY",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Mandatory Public Disclosure",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/MANDATORY_PUBLIC_DISCLOSURE.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6ab3412021b7929b7d0bc2a2",
-    "publicId": "GAL-MUDIOERO-8BEAN",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Career Counselling Guide Book",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/CAREERE_GUID.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6ab34a188753a95225bcffd8",
-    "publicId": "GAL-MUDK1MAZ-I55E9",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Brochures",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/BROCHURE.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6ab3503a8753a95225bcffda",
-    "publicId": "GAL-MUDKZ9N2-61MAG",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Food Menu",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/FOOD_MENU.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6ab379e2058d1ea354ede5b5",
-    "publicId": "GAL-MUDRBU5H-K1G1N",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/documents",
-    "eventName": "Registration Form",
-    "eventType": "Documents",
-    "fileUrl": [
-      "/Documents/ADMISSION_FORM.pdf"
-    ],
-    "isPublished": true,
-    "mimeType": "application/pdf",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6aba0db70112573f9a2af276",
-    "publicId": "GAL-MUKVYYQ7-QGTZS",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/Settings/Logos",
-    "eventName": "Logo",
-    "eventType": "Campus",
-    "fileUrl": [
-      "/Settings/Logos/BannerLogo.png"
-    ],
-    "isPublished": true,
-    "mimeType": "image/png",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abac6b75ed4b24bf5141cb0",
-    "publicId": "GAL-MULO621C-MEJIH",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/general",
-    "eventName": "IPS Academic & Sports Achievements",
-    "eventType": "General",
-    "fileUrl": [
-      "/Album/Achievements.png"
-    ],
-    "isPublished": true,
-    "mimeType": "image/png",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb573b069c4e2fc9cb5cef",
-    "publicId": "GAL-MUMA70MH-37N0K",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/Settings/Home",
-    "eventName": "School Admission Announcement Banner",
-    "eventType": "Campus",
-    "fileUrl": [
-      "/Settings/Home/POP_UP_IMAGE.jpeg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb7a84c7fa511c1a50d4e4",
-    "publicId": "GAL-MUMFKM2X-GV4X0",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/reviews",
-    "eventName": "Smay Patla Singh",
-    "eventType": "Review",
-    "fileUrl": [
-      "/Review/SmayPatlaSingh.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb7a91c7fa511c1a50d4e5",
-    "publicId": "GAL-MUMFKWLG-B9XH1",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/reviews",
-    "eventName": "Shreyansh Sekhar Jha",
-    "eventType": "Review",
-    "fileUrl": [
-      "/Review/ShreyanshSekharJha.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb7aa2c7fa511c1a50d4e6",
-    "publicId": "GAL-MUMFL9YP-8NLRI",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/reviews",
-    "eventName": "Ansh Singh",
-    "eventType": "Review",
-    "fileUrl": [
-      "/Review/AnshSingh.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb7ab1c7fa511c1a50d4e7",
-    "publicId": "GAL-MUMFLKSX-56QXM",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/reviews",
-    "eventName": "Abhishek Prakash Jha",
-    "eventType": "Review",
-    "fileUrl": [
-      "/Review/AbhishekPrakashJha.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9b28c3a20d57b82a348c",
-    "publicId": "GAL-MUMKJPSP-9NJCU",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "Annual Academic Merit Announcement",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_1.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9b35c3a20d57b82a348d",
-    "publicId": "GAL-MUMKK00B-NCVM3",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "CBSE Board Results Merit Feature",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_2.png"
-    ],
-    "isPublished": true,
-    "mimeType": "image/png",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9b52c3a20d57b82a348e",
-    "publicId": "GAL-MUMKKMIY-N3AT6",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/empowerment",
-    "eventName": "Student Leadership & Empowerment",
-    "eventType": "Activities",
-    "fileUrl": [
-      "/Album/Empowerment_5.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9b5dc3a20d57b82a348f",
-    "publicId": "GAL-MUMKKV6S-D66VE",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/competitions",
-    "eventName": "Annual Inter School Competition",
-    "eventType": "Events",
-    "fileUrl": [
-      "/Album/Competition_2.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9b69c3a20d57b82a3490",
-    "publicId": "GAL-MUMKL46P-K8VBW",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/Settings/Partners",
-    "eventName": "Our Educational Learning Partners",
-    "eventType": "Academic",
-    "fileUrl": [
-      "/Settings/Logos/LearningPartner_2.png"
-    ],
-    "isPublished": true,
-    "mimeType": "image/png",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9bb0c3a20d57b82a3491",
-    "publicId": "GAL-MUMKMN1E-0WSQP",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/campus",
-    "eventName": "Student Dining Hall & Mess",
-    "eventType": "Campus",
-    "fileUrl": [
-      "/Album/Mess_1.jpg",
-      "/Album/Mess_2.jpg",
-      "/Album/Mess_3.jpg",
-      "/Album/Mess_4.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9c2ac3a20d57b82a3492",
-    "publicId": "GAL-MUMKP905-2FONW",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/Settings/Logos",
-    "eventName": "Aakash Health Foundation",
-    "eventType": "Campus",
-    "fileUrl": [
-      "/Logos/AakashHealthFoundation.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9dc9c3a20d57b82a3493",
-    "publicId": "GAL-MUMKY5CW-DBS2Y",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/competitions",
-    "eventName": "Annual Inter School Competition",
-    "eventType": "Events",
-    "fileUrl": [
-      "/Album/Competition_1.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9ddbc3a20d57b82a3494",
-    "publicId": "GAL-MUMKYJBV-MSVHA",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "Nav Bharat Press Coverage",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_3.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9decc3a20d57b82a3495",
-    "publicId": "GAL-MUMKYWAP-8QMG1",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "State Level Excellence Merit Feature",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_4.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9df5c3a20d57b82a3496",
-    "publicId": "GAL-MUMKZ35D-MFDCY",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "IPS Student Achievements In Media",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_5.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9dffc3a20d57b82a3497",
-    "publicId": "GAL-MUMKZB47-7WC65",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "Daily Newspaper Media Release",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_6.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9e07c3a20d57b82a3498",
-    "publicId": "GAL-MUMKZH7I-LSHOC",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "IPS Academic Recognition Release",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_7.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9e10c3a20d57b82a3499",
-    "publicId": "GAL-MUMKZNQ3-XAQ7H",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "State Education Merit Release",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_8.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9e19c3a20d57b82a349a",
-    "publicId": "GAL-MUMKZV06-DAWD9",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "District Level Merit Feature",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_9.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9e22c3a20d57b82a349b",
-    "publicId": "GAL-MUML01S8-A5QE7",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "CBSE Merit Recognition Announcement",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_10.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9e2ac3a20d57b82a349c",
-    "publicId": "GAL-MUML085T-JCKKI",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "Academic Year Top Performers",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_11.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9e35c3a20d57b82a349d",
-    "publicId": "GAL-MUML0GWE-7ZF64",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "IPS Merit Board Announcement",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_12.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9fe2c3a20d57b82a349e",
-    "publicId": "GAL-MUML9NNS-IIGV8",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "Sambalpur School Merit Feature",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_13.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abb9fedc3a20d57b82a349f",
-    "publicId": "GAL-MUML9W20-88JVZ",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "Nav Bharat Board Examination Feature",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_14.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abba01dc3a20d57b82a34a0",
-    "publicId": "GAL-MUMLAWRE-CWF28",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "Best School Result Of Sambalpur",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_15.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abba027c3a20d57b82a34a1",
-    "publicId": "GAL-MUMLB4RD-SVFS4",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "Nav Bharat Board Examination Feature",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_16.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abba037c3a20d57b82a34a2",
-    "publicId": "GAL-MUMLBGZI-MOGOA",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/hostel",
-    "eventName": "Hostel Facilities & Student Life",
-    "eventType": "Hostel",
-    "fileUrl": [
-      "/Album/LifeInHostel_2.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abba03dc3a20d57b82a34a3",
-    "publicId": "GAL-MUMLBLPN-9Z75H",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/empowerment",
-    "eventName": "Student Leadership & Empowerment",
-    "eventType": "Activities",
-    "fileUrl": [
-      "/Album/Empowerment_1.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abba052c3a20d57b82a34a4",
-    "publicId": "GAL-MUMLC22V-KHHDH",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "CBSE Board Merit Rank Holders",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_17.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abba05ec3a20d57b82a34a5",
-    "publicId": "GAL-MUMLCBEC-1OD87",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "Class 12th Board Results Press Release",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_18.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abba083c3a20d57b82a34a6",
-    "publicId": "GAL-MUMLD45T-W7BRP",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/album/infrastructure",
-    "eventName": "Music Dance Room",
-    "eventType": "Infrastructure",
-    "fileUrl": [
-      "/Music_Dance_Room_4.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abba090c3a20d57b82a34a7",
-    "publicId": "GAL-MUMLDDO5-C3DJJ",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "Official School Press Release",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_19.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6abba0a5c3a20d57b82a34a8",
-    "publicId": "GAL-MUMLDTX4-W52E6",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/PressRelease",
-    "eventName": "Official School Press Release",
-    "eventType": "PressRelease",
-    "fileUrl": [
-      "/PressRelease/PRESS_20.jpg"
-    ],
-    "isPublished": true,
-    "mimeType": "image/jpeg",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6ac35a3692898d35d6610627",
-    "publicId": "GAL-MUUYSOFB-XHFDL",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/ips-education/assets/Student",
-    "eventName": "Students",
-    "eventType": "Students",
-    "fileUrl": [
-      "/Student/file_nkfsck.png"
-    ],
-    "isPublished": true,
-    "mimeType": "image/png",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6ac360f692898d35d6610628",
-    "publicId": "GAL-MUUZTPWG-TI9CV",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/ips-education/assets/Staff",
-    "eventName": "Staff",
-    "eventType": "Staff",
-    "fileUrl": [
-      "/Staff/file_b2klsn.png"
-    ],
-    "isPublished": true,
-    "mimeType": "image/png",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
-  },
-  {
-    "_id": "6ac4cb239a1ae05f6aa479ec",
-    "publicId": "GAL-MUWJ0YZW-2RDUS",
-    "createdAt": "2026-10-06T16:57:07.814Z",
-    "directory": "/ips-education/assets/Album/Visual Editor Picked",
     "eventName": "Visual Editor Picked",
-    "eventType": "Campus",
+    "eventType": "Logos",
     "fileUrl": [
-      "/Album/Visual%20Editor%20Picked/file_wfogwo.png"
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Visual%20Editor%20Picked/file_x5awxs.jpg"
     ],
-    "isPublished": true,
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-28T06:02:11.284Z"
+  },
+  {
+    "_id": "6ae0bf97156864124ca1c60c",
+    "publicId": "GAL-MVQTS7A5-QOIN9",
+    "createdAt": "2026-10-27T15:13:27.774Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Settings/Logos",
+    "eventName": "Logos",
+    "eventType": "Logos",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Logos/file_tkaigo.png"
+    ],
     "mimeType": "image/png",
-    "updatedAt": "2026-10-06T16:57:07.814Z"
+    "updatedAt": "2026-10-27T15:13:27.774Z"
+  },
+  {
+    "_id": "6ae1a678ce7abaef95ad376a",
+    "publicId": "GAL-MVRSZ0M6-UASCK",
+    "createdAt": "2026-10-28T07:38:32.288Z",
+    "deletedAt": null,
+    "directory": "Documents/General",
+    "eventName": "Certificate Of Land",
+    "eventType": "Documents",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/ips-education/assets/Documents/General/1793173110190_1713610964953Certification_Of_Land.pdf"
+    ],
+    "mimeType": "application/pdf",
+    "updatedAt": "2026-10-28T07:38:42.563Z"
+  },
+  {
+    "_id": "6ae1a93ece7abaef95ad376b",
+    "publicId": "GAL-MVRTE8AK-A5F2N",
+    "album": "Documents/General",
+    "createdAt": "2026-10-28T07:50:22.078Z",
+    "deletedAt": null,
+    "directory": "Documents/General",
+    "eventName": "Water Analysis Report",
+    "eventType": "Documents",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/ips-education/assets/Documents/General/1793173819777_WATER_ANALYSIS_REPORT.pdf"
+    ],
+    "mimeType": "application/pdf",
+    "updatedAt": "2026-11-12T08:08:46.759Z"
+  },
+  {
+    "_id": "6ae1a9e2ce7abaef95ad376c",
+    "publicId": "GAL-MVRTHRII-JAFG1",
+    "album": "Documents/General",
+    "createdAt": "2026-10-28T07:53:06.954Z",
+    "deletedAt": null,
+    "directory": "Documents/General",
+    "eventName": "Disclosure",
+    "eventType": "Documents",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/ips-education/assets/Documents/General/1793173985377_1713606172939Mandatory_Disclosure_Details.pdf"
+    ],
+    "mimeType": "application/pdf",
+    "updatedAt": "2026-11-12T08:08:03.108Z"
+  },
+  {
+    "_id": "6ae1e04eb69dde3e3496a9a6",
+    "publicId": "GAL-MVS1SD1T-6PXL6",
+    "createdAt": "2026-10-28T11:45:18.357Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_1.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:45:18.357Z"
+  },
+  {
+    "_id": "6ae1e05eb69dde3e3496a9a7",
+    "publicId": "GAL-MVS1SPHW-KAAGP",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:45:34.485Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_11.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:45:34.485Z"
+  },
+  {
+    "_id": "6ae1e069b69dde3e3496a9a8",
+    "publicId": "GAL-MVS1SYBH-MINGZ",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:45:45.918Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_5.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:45:45.918Z"
+  },
+  {
+    "_id": "6ae1e076b69dde3e3496a9a9",
+    "publicId": "GAL-MVS1T8AZ-H6TF0",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:45:58.859Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_10.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:45:58.859Z"
+  },
+  {
+    "_id": "6ae1e088b69dde3e3496a9aa",
+    "publicId": "GAL-MVS1TM8R-XMETX",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:46:16.923Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_12.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:46:16.923Z"
+  },
+  {
+    "_id": "6ae1e099b69dde3e3496a9ab",
+    "publicId": "GAL-MVS1TZ59-XE2NL",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:46:33.645Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_14.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:46:33.645Z"
+  },
+  {
+    "_id": "6ae1e0a4b69dde3e3496a9ac",
+    "publicId": "GAL-MVS1U7PC-LJHKO",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:46:44.736Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_17.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:46:44.736Z"
+  },
+  {
+    "_id": "6ae1e0b3b69dde3e3496a9ad",
+    "publicId": "GAL-MVS1UJ9X-NCB7V",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:46:59.733Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_15.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:46:59.733Z"
+  },
+  {
+    "_id": "6ae1e0c2b69dde3e3496a9ae",
+    "publicId": "GAL-MVS1UUM1-8K5QG",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:47:14.425Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_16.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:47:14.425Z"
+  },
+  {
+    "_id": "6ae1e0cfb69dde3e3496a9af",
+    "publicId": "GAL-MVS1V4N1-G03YH",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:47:27.421Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_18.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:47:27.421Z"
+  },
+  {
+    "_id": "6ae1e0ddb69dde3e3496a9b0",
+    "publicId": "GAL-MVS1VFKF-VF3JO",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:47:41.583Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_19.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:47:41.583Z"
+  },
+  {
+    "_id": "6ae1e106b69dde3e3496a9b1",
+    "publicId": "GAL-MVS1WATT-399IR",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:48:22.097Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_2.png"
+    ],
+    "updatedAt": "2026-10-28T11:48:22.097Z"
+  },
+  {
+    "_id": "6ae1e117b69dde3e3496a9b2",
+    "publicId": "GAL-MVS1WO9P-O85XQ",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:48:39.517Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_9.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:48:39.517Z"
+  },
+  {
+    "_id": "6ae1e12bb69dde3e3496a9b3",
+    "publicId": "GAL-MVS1X3K1-NN65E",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:48:59.330Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_8.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:48:59.330Z"
+  },
+  {
+    "_id": "6ae1e14db69dde3e3496a9b4",
+    "publicId": "GAL-MVS1XTYY-2ZH13",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:49:33.563Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_7.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:49:33.563Z"
+  },
+  {
+    "_id": "6ae1e15eb69dde3e3496a9b5",
+    "publicId": "GAL-MVS1Y74V-1ZY5B",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T11:49:50.623Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_21.jpg"
+    ],
+    "updatedAt": "2026-10-28T11:49:50.623Z"
+  },
+  {
+    "_id": "6ae1e7d25c4c7de73c37ca11",
+    "publicId": "GAL-MVS2XM1R-8YI2G",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T12:17:22.917Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_20.jpg"
+    ],
+    "updatedAt": "2026-10-28T12:17:22.917Z"
+  },
+  {
+    "_id": "6ae1e7d95c4c7de73c37ca12",
+    "publicId": "GAL-MVS2XRFU-9PW94",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T12:17:29.899Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_22.jpg"
+    ],
+    "updatedAt": "2026-10-28T12:17:29.899Z"
+  },
+  {
+    "_id": "6ae1e7e05c4c7de73c37ca13",
+    "publicId": "GAL-MVS2XW65-K6P6T",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T12:17:36.029Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_23.jpg"
+    ],
+    "updatedAt": "2026-10-28T12:17:36.029Z"
+  },
+  {
+    "_id": "6ae1e7e65c4c7de73c37ca14",
+    "publicId": "GAL-MVS2Y1D1-FYYGZ",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T12:17:42.758Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_24.jpg"
+    ],
+    "updatedAt": "2026-10-28T12:17:42.758Z"
+  },
+  {
+    "_id": "6ae1e7ef5c4c7de73c37ca15",
+    "publicId": "GAL-MVS2Y8H5-2MOWE",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T12:17:51.978Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_25.jpg"
+    ],
+    "updatedAt": "2026-10-28T12:17:51.978Z"
+  },
+  {
+    "_id": "6ae1e7f55c4c7de73c37ca16",
+    "publicId": "GAL-MVS2YCXQ-VZ40I",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T12:17:57.759Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_3.jpg"
+    ],
+    "updatedAt": "2026-10-28T12:17:57.759Z"
+  },
+  {
+    "_id": "6ae1e7fc5c4c7de73c37ca17",
+    "publicId": "GAL-MVS2YI83-0TE7C",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T12:18:04.612Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_4.jpg"
+    ],
+    "updatedAt": "2026-10-28T12:18:04.612Z"
+  },
+  {
+    "_id": "6ae1e8035c4c7de73c37ca18",
+    "publicId": "GAL-MVS2YNFK-NG0TK",
+    "album": "PressRelease",
+    "createdAt": "2026-10-28T12:18:11.361Z",
+    "deletedAt": null,
+    "directory": "PressRelease",
+    "eventName": "Press",
+    "eventType": "PressRelease",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/PressRelease/PRESS_6.jpg"
+    ],
+    "updatedAt": "2026-10-28T12:18:11.361Z"
+  },
+  {
+    "_id": "6ae3289414f7b0116c865030",
+    "publicId": "GAL-MVTFTL93-QG5GW",
+    "album": "Settings/Home",
+    "createdAt": "2026-10-29T11:05:56.444Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Hero",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_nve5e5.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-29T11:27:18.326Z"
+  },
+  {
+    "_id": "6ae32d8b14f7b0116c865032",
+    "publicId": "GAL-MVTGKU45-WKXHJ",
+    "album": "Events",
+    "createdAt": "2026-10-29T11:27:07.639Z",
+    "deletedAt": null,
+    "directory": "ips-education/assets/Settings/Home",
+    "eventName": "Home",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_nve5e5.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-10-29T11:27:07.639Z"
+  },
+  {
+    "_id": "6ae5494a39f66c0140241903",
+    "publicId": "GAL-MVVQUEVP-PESIG",
+    "album": "Settings/Home",
+    "createdAt": "2026-10-31T01:50:02.974Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Hero Banner",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_hmlajb.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-10-31T01:50:12.189Z"
+  },
+  {
+    "_id": "6ae54a8939f66c0140241904",
+    "publicId": "GAL-MVVR18C5-KNS5G",
+    "album": "Settings/Home",
+    "createdAt": "2026-10-31T01:55:21.083Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Hero Banner",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_fp8eua.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-10-31T01:55:25.088Z"
+  },
+  {
+    "_id": "6ae54ebd39f66c0140241905",
+    "publicId": "GAL-MVVROAST-AZWD3",
+    "album": "Settings/Home",
+    "createdAt": "2026-10-31T02:13:17.362Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Hero Banner",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_hyg1qt.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-10-31T02:13:23.785Z"
+  },
+  {
+    "_id": "6ae54f1839f66c0140241906",
+    "publicId": "GAL-MVVRQ9EJ-AXPEI",
+    "album": "Settings/Home",
+    "createdAt": "2026-10-31T02:14:48.862Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Hero Banner",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_rn1cv2.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-10-31T02:15:06.427Z"
+  },
+  {
+    "_id": "6ae54f5a39f66c0140241907",
+    "publicId": "GAL-MVVRRNZR-TYDL2",
+    "album": "Settings/Home",
+    "createdAt": "2026-10-31T02:15:54.424Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Hero Banner",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_oog9bu.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-10-31T02:15:57.160Z"
+  },
+  {
+    "_id": "6ae54f8939f66c0140241908",
+    "publicId": "GAL-MVVRSO7O-QJF6Z",
+    "album": "Settings/Home",
+    "createdAt": "2026-10-31T02:16:41.366Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Hero Banner",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_lrh2ia.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-10-31T02:16:49.287Z"
+  },
+  {
+    "_id": "6ae552ae39f66c0140241909",
+    "publicId": "GAL-MVVS9XSK-U8SS0",
+    "album": "Settings/Home",
+    "createdAt": "2026-10-31T02:30:06.936Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Hero Banner",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_skohvu.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-10-31T02:30:10.973Z"
+  },
+  {
+    "_id": "6ae877b7dc6f2a58df18ef68",
+    "publicId": "GAL-MVZ6Z4UJ-KBYQV",
+    "album": "Settings/Home",
+    "createdAt": "2026-11-02T11:44:55.629Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Admission Procedure",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_dnk6ql.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-11-02T11:44:59.071Z"
+  },
+  {
+    "_id": "6ae87d69dc6f2a58df18ef6a",
+    "publicId": "GAL-MVZ7UDPA-1BWBL",
+    "album": "Documents/General",
+    "createdAt": "2026-11-02T12:09:13.444Z",
+    "deletedAt": null,
+    "directory": "Documents/General",
+    "eventName": "Bus Route Overview",
+    "eventType": "Documents",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/ips-education/assets/Documents/General/1793621349430_Bus_Route_Overview.pdf"
+    ],
+    "mimeType": "application/pdf",
+    "updatedAt": "2026-11-12T08:06:07.360Z"
+  },
+  {
+    "_id": "6aead51e9e03e9c8da8682b1",
+    "publicId": "GAL-MW1R8YN5-I71F2",
+    "album": "Settings/Home",
+    "createdAt": "2026-11-04T06:47:58.977Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Nss",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_hl4qpm.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-11-04T06:48:02.079Z"
+  },
+  {
+    "_id": "6aead9cb9e03e9c8da8682b2",
+    "publicId": "GAL-MW1RYMEA-BHFZC",
+    "album": "Settings/Home",
+    "createdAt": "2026-11-04T07:07:56.003Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Play Kid",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_byvm90.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-11-04T07:07:58.311Z"
+  },
+  {
+    "_id": "6af34cf3051188686b08911c",
+    "publicId": "GAL-MWAXNS9P-G5786",
+    "album": "Sports",
+    "createdAt": "2026-11-10T16:57:23.681Z",
+    "deletedAt": null,
+    "directory": "Album/Sports",
+    "eventName": "Playground",
+    "eventType": "Sports",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Sports/file_z2d9je.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-11-10T16:57:37.844Z"
+  },
+  {
+    "_id": "6af34d2e051188686b08911d",
+    "publicId": "GAL-MWAXP206-VCNK5",
+    "album": "Sports",
+    "createdAt": "2026-11-10T16:58:22.950Z",
+    "deletedAt": null,
+    "directory": "Album/Sports",
+    "eventName": "Playground",
+    "eventType": "Sports",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Sports/file_b5fnoi.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-11-10T16:58:32.972Z"
+  },
+  {
+    "_id": "6af34d62051188686b08911e",
+    "publicId": "GAL-MWAXQ5TA-MJZSQ",
+    "album": "Sports",
+    "createdAt": "2026-11-10T16:59:14.542Z",
+    "deletedAt": null,
+    "directory": "Album/Sports",
+    "eventName": "Playground",
+    "eventType": "Sports",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Album/Sports/file_obzib2.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-11-10T16:59:34.112Z"
+  },
+  {
+    "_id": "6af36c0168d2ef8626eb1d1f",
+    "publicId": "GAL-MWB2E6GL-EDYPG",
+    "album": "Settings/Home",
+    "createdAt": "2026-11-10T19:09:53.594Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Curriculam",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_giovru.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-11-10T19:10:17.794Z"
+  },
+  {
+    "_id": "6af36c3868d2ef8626eb1d20",
+    "publicId": "GAL-MWB2FCJA-RINDG",
+    "album": "Settings/Home",
+    "createdAt": "2026-11-10T19:10:48.119Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Curriculam",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_zgxlpi.png"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-11-10T19:10:51.595Z"
+  },
+  {
+    "_id": "6af4761368d2ef8626eb1d21",
+    "publicId": "GAL-MWC6Y3UN-MUYD7",
+    "album": "Documents/General",
+    "createdAt": "2026-11-11T14:05:07.968Z",
+    "deletedAt": null,
+    "directory": "Documents/General",
+    "eventName": "Admission Form",
+    "eventType": "Documents",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/ips-education/assets/Documents/General/1794405905054_Admission_Form.pdf"
+    ],
+    "mimeType": "application/pdf",
+    "updatedAt": "2026-11-11T14:05:19.396Z"
+  },
+  {
+    "_id": "6af4878d68d2ef8626eb1d22",
+    "publicId": "GAL-MWC9LZUQ-OC3WF",
+    "album": "Documents/General",
+    "createdAt": "2026-11-11T15:19:41.764Z",
+    "deletedAt": null,
+    "directory": "Documents/General",
+    "eventName": "Bus Route",
+    "eventType": "Documents",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/ips-education/assets/Documents/General/1794410379463_Bus_Route.pdf"
+    ],
+    "mimeType": "application/pdf",
+    "updatedAt": "2026-11-11T15:19:47.228Z"
+  },
+  {
+    "_id": "6af4a38168d2ef8626eb1d23",
+    "publicId": "GAL-MWCDVCY9-FCHHK",
+    "album": "Documents/General",
+    "createdAt": "2026-11-11T17:18:57.107Z",
+    "deletedAt": null,
+    "directory": "Documents/General",
+    "eventName": "Association Certification",
+    "eventType": "Documents",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/ips-education/assets/Documents/General/1794417535113_1789972690498_PARENT_TEACHERS_ASSOCIATION.pdf"
+    ],
+    "mimeType": "application/pdf",
+    "updatedAt": "2026-11-11T17:19:00.923Z"
+  },
+  {
+    "_id": "6af570c9e0b9051556f9fcd4",
+    "publicId": "GAL-MWD95R0I-NL8VD",
+    "album": "Documents/General",
+    "createdAt": "2026-11-12T07:54:49.992Z",
+    "deletedAt": null,
+    "directory": "Documents/General",
+    "eventName": "Career Guide",
+    "eventType": "Documents",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/ips-education/assets/Documents/CAREERE_GUID.pdf"
+    ],
+    "updatedAt": "2026-11-12T07:54:49.992Z"
+  },
+  {
+    "_id": "6af592e968d2ef8626eb1d24",
+    "publicId": "GAL-MWDECZKB-MSKD1",
+    "album": "Settings/Logos",
+    "createdAt": "2026-11-12T10:20:25.742Z",
+    "deletedAt": null,
+    "directory": "Settings/Logos",
+    "eventName": "Vidyalaya Logo",
+    "eventType": "Logos",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Logos/file_uqb8fc.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-11-12T10:20:30.928Z"
+  },
+  {
+    "_id": "6af596f768d2ef8626eb1d25",
+    "publicId": "GAL-MWDEZ8HD-16MZA",
+    "album": "Settings/Home",
+    "createdAt": "2026-11-12T10:37:43.735Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Blog",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_zhi5kl.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-11-12T10:37:46.935Z"
+  },
+  {
+    "_id": "6af5a98168d2ef8626eb1d26",
+    "publicId": "GAL-MWDHSY6X-6ODMI",
+    "album": "Settings/Home",
+    "createdAt": "2026-11-12T11:56:49.306Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Lab",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_fz9jv0.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-11-12T11:57:45.015Z"
+  },
+  {
+    "_id": "6af5aa0268d2ef8626eb1d27",
+    "publicId": "GAL-MWDHVQ1B-BLFEE",
+    "album": "Settings/Home",
+    "createdAt": "2026-11-12T11:58:58.704Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Lab",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_rtcfjl.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-11-12T11:59:03.416Z"
+  },
+  {
+    "_id": "6af5aa2968d2ef8626eb1d28",
+    "publicId": "GAL-MWDHWKAJ-LTL13",
+    "album": "Settings/Home",
+    "createdAt": "2026-11-12T11:59:37.916Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Lab",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_abibqw.png"
+    ],
+    "mimeType": "image/png",
+    "updatedAt": "2026-11-12T11:59:40.506Z"
+  },
+  {
+    "_id": "6af5ad6468d2ef8626eb1d29",
+    "publicId": "GAL-MWDIEABK-F7G76",
+    "album": "Settings/Home",
+    "createdAt": "2026-11-12T12:13:24.801Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Labs",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_z1zaic.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-11-12T12:13:27.597Z"
+  },
+  {
+    "_id": "6af5ad7f68d2ef8626eb1d2a",
+    "publicId": "GAL-MWDIEUX5-8DKH5",
+    "album": "Settings/Home",
+    "createdAt": "2026-11-12T12:13:51.504Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Labs",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_saefjn.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-11-12T12:13:53.789Z"
+  },
+  {
+    "_id": "6af5ad9568d2ef8626eb1d2b",
+    "publicId": "GAL-MWDIFBWX-EMG3C",
+    "album": "Settings/Home",
+    "createdAt": "2026-11-12T12:14:13.522Z",
+    "deletedAt": null,
+    "directory": "Settings/Home",
+    "eventName": "Labs",
+    "eventType": "Home",
+    "fileUrl": [
+      "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Home/file_gq4bnk.jpg"
+    ],
+    "mimeType": "image/jpeg",
+    "updatedAt": "2026-11-12T12:14:15.729Z"
   }
 ]

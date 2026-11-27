@@ -10,6 +10,7 @@ import { cn, getCanonicalAssetKey } from "@/lib/utils";
 import { homeData, imageUrls, imageUrl, text } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { getOptionalApi, unwrapCollection } from "@/lib/api-client";
+import { staticGalleryItems } from "@/data/gallery";
 
 type Category =
   | "Campus"
@@ -441,7 +442,11 @@ export function Gallery() {
   }, []);
 
   const datasourceImages = useMemo(() => {
-    const rawGallery = siteData.galleryItems?.length ? siteData.galleryItems : (home.gallery as Record<string, unknown>[]);
+    const rawGallery = siteData.galleryItems?.length
+      ? siteData.galleryItems
+      : ((home.gallery as Record<string, unknown>[])?.length
+          ? (home.gallery as Record<string, unknown>[])
+          : (staticGalleryItems as unknown as Record<string, unknown>[]));
     const list = Array.isArray(rawGallery) ? (rawGallery as Record<string, unknown>[]) : [];
 
     const galleryMapped = list

@@ -56,7 +56,7 @@ export function Achievements() {
 
   const activeCard = cards[activeIndex] || cards[0];
   const activeCardRec = activeCard as Record<string, unknown>;
-  const rawCardFile = (activeCardRec?.fileUrl as string) || (activeCardRec?.image as string) || "";
+  const rawCardFile = (activeCardRec?.fileUrl as string) || "";
   const activeCardImg = rawCardFile ? imageUrl(rawCardFile) : "";
 
   const sectionImg = imageUrl(

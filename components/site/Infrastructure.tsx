@@ -94,7 +94,7 @@ export function Infrastructure() {
 
           {facilityCards.map((f, index) => {
             const fallback = FACILITIES[index % FACILITIES.length]!;
-            const title = text(f.heading, fallback.title);
+            const title = text(f.title || f.heading, fallback.title);
             const redirectUrl = text(f.redirectUrl);
             const rawUrl = text(f.fileUrl);
             const fallbackFacilityImg = DEFAULT_FACILITY_MAP[title] || getAssetUrl("/Album/ClassRoom.webp") || "/assets/Settings/Home/hero-campus.png";

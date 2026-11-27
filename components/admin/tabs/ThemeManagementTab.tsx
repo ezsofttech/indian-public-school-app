@@ -7,10 +7,15 @@ import { useTheme, ThemeConfig, DEFAULT_THEME } from "@/components/providers/The
 import { API_URL } from "../config/admin.config";
 
 interface ThemeManagementTabProps {
-  token: string;
+  token?: string;
 }
 
-export function ThemeManagementTab({ token }: ThemeManagementTabProps) {
+export function ThemeManagementTab({ token: propToken }: ThemeManagementTabProps) {
+  const token =
+    propToken ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("ips_admin_token") || ""
+      : "");
   const { activeTheme, previewTheme, setPreviewTheme, refreshTheme } = useTheme();
 
   const [themes, setThemes] = useState<ThemeConfig[]>([]);

@@ -62,7 +62,7 @@ export function QuickActions() {
             const href = text(action.redirectUrl, fallback.href);
 
             const act = action as Record<string, any>;
-            const rawIcon = act.icoUrl || act.iconUrl || act.imageUrl || act.icon;
+            const rawIcon = act.iconUrl;
             const iconUrl = typeof rawIcon === "string" && rawIcon.trim().length > 0 ? rawIcon.trim() : null;
 
             const isAdmissionAction =

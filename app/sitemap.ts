@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
-import datasource from "@/public/cloud-datasource.json";
+import { DOMAIN } from "@/lib/config";
+import { staticSchoolSettings as schoolsettings } from "@/data/school-settings";
+import { staticPages as pagesCollection } from "@/data/pages";
 
 function extractInternalRoutes(obj: unknown, foundRoutes = new Set<string>()): Set<string> {
   if (!obj || typeof obj !== "object") return foundRoutes;
@@ -28,7 +30,7 @@ function extractInternalRoutes(obj: unknown, foundRoutes = new Set<string>()): S
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_CLIENT_URL || "https://indian-public-school-app.vercel.app";
+  const baseUrl = DOMAIN;
 
   const staticRoutes: { path: string; priority: number; changeFrequency: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never" }[] = [
     { path: "", priority: 1.0, changeFrequency: "daily" },
@@ -40,7 +42,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/press-release", priority: 0.75, changeFrequency: "weekly" },
   ];
 
-  const dynamicRoutesSet = extractInternalRoutes(datasource);
+  const dynamicRoutesSet = extractInternalRoutes(schoolsettings);
+  extractInternalRoutes(pagesCollection, dynamicRoutesSet);
 
   // Add default core dynamic pages if not already extracted
   const corePages = [

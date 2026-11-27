@@ -22,7 +22,7 @@ export function About() {
   const secVid = firstSection(siteHome, "section-video");
   const sec8 = firstSection(siteHome, "section-8");
 
-  const configuredUrl = text(secVid.introFileUrl || secVid.videoUrl || sec8.introFileUrl || sec8.videoUrl);
+  const configuredUrl = text(secVid.videoUrl || sec8.videoUrl);
   const videoRaw = (configuredUrl && configuredUrl.trim().length > 0 && configuredUrl !== "/IPSIntroVideo.mp4" && configuredUrl !== "/Videos/IPSIntroVideo.mp4" && !configuredUrl.includes("v1789299171"))
     ? configuredUrl
     : DEFAULT_INTRO_VIDEO;
@@ -43,7 +43,7 @@ export function About() {
         heading: text(card?.heading, i === 0 ? "Our Mission" : i === 1 ? "Our Vision" : `Card #${i + 1}`),
         description: text(card?.description, ""),
         redirectUrl: text(card?.redirectUrl),
-        icoUrl: text(card?.icoUrl || card?.imageUrl || card?.icon || card?.fileUrl),
+        icoUrl: text(card?.icoUrl),
         icon: i === 0 ? Target : Compass,
       }))
     : [

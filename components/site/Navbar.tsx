@@ -15,8 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-const API_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
+import { API_URL } from "@/lib/config";
 
 const NAV = [
   { label: "Home", href: "/" },
@@ -258,7 +257,7 @@ export function Navbar() {
   }, [open]);
 
   const homeIdentity = (homeData(siteData).identity as Record<string, unknown>) || {};
-  const siteLogo = (siteData?.site_logo as Record<string, any>) || (homeIdentity.site_logo as Record<string, any>) || {};
+  const siteLogo = (siteData?.site_logo as Record<string, any>) || {};
   const headerConfig = (homeIdentity.header as Record<string, any>) || (siteData?.header as Record<string, any>) || {};
   const rawLogoUrl = (siteLogo.logoUrl ? String(siteLogo.logoUrl).trim() : "") || (headerConfig.logoUrl ? String(headerConfig.logoUrl).trim() : "") || DEFAULT_LOGO;
   const customLogoUrl = imageUrl(rawLogoUrl);

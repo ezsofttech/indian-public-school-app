@@ -1,11 +1,25 @@
 import type { Metadata } from "next";
-import { AdminConsole } from "@/components/admin/AdminConsole";
+import { Suspense } from "react";
+import { AdminShell } from "@/components/admin/layout/admin-shell";
+import { DashboardOverview } from "@/components/admin/dashboard/dashboard-overview";
 
 export const metadata: Metadata = {
-  title: "Admin Console | Indian Public School",
-  description: "School operations and website content management.",
+  title: "Dashboard Overview | Indian Public School",
+  description: "School operations and dashboard overview.",
 };
 
 export default function AdminPage() {
-  return <AdminConsole initialSection="overview" />;
+  return (
+    <AdminShell title="Dashboard Overview">
+      <Suspense
+        fallback={
+          <div className="py-12 text-center text-sm text-slate-500">
+            Loading dashboard overview...
+          </div>
+        }
+      >
+        <DashboardOverview />
+      </Suspense>
+    </AdminShell>
+  );
 }

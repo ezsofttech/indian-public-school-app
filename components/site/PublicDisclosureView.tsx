@@ -78,7 +78,7 @@ export function PublicDisclosureView({
 }: PublicDisclosureViewProps) {
   const siteData = useSiteData();
   const homeIdentity = (homeData(siteData).identity as Record<string, unknown>) || {};
-  const siteLogo = (siteData?.site_logo as Record<string, any>) || (homeIdentity.site_logo as Record<string, any>) || {};
+  const siteLogo = (siteData?.site_logo as Record<string, any>) || {};
   const headerConfig = (homeIdentity.header as Record<string, any>) || (siteData?.header as Record<string, any>) || {};
 
   const bannerLogo = (siteLogo.logoUrl ? String(siteLogo.logoUrl).trim() : "") ||

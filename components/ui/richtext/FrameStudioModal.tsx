@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { X, Image as ImageIcon, Eye, Check, Palette, AlignLeft, AlignCenter, AlignRight, LayoutTemplate, UploadCloud, LoaderCircle } from "lucide-react";
 import { generateFrameTemplateHtml } from "./richtext.helpers";
 import { getAssetUrl } from "@/lib/utils";
+import { API_URL, AUTH_CONFIG } from "@/lib/config";
 import axios from "axios";
 
 interface FrameStudioModalProps {
@@ -70,12 +71,11 @@ export function FrameStudioModal({
       const uploadedUrls: string[] = [];
       const token =
         typeof window !== "undefined"
-          ? localStorage.getItem("ips_admin_token") ||
+          ? localStorage.getItem(AUTH_CONFIG.tokenStorageKey) ||
             localStorage.getItem("admin_token") ||
             localStorage.getItem("token") ||
             ""
           : "";
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
       for (const file of files) {
         try {

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
+import { checkBackendHealth } from "@/lib/api/health";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -50,8 +51,7 @@ import { EASE } from "@/lib/motion-presets";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { DEFAULT_HERO_IMAGE, DEFAULT_MAP_DIRECTIONS_URL, getMapDirectionsUrl, getMapEmbedUrl, getOfficeTimingsList, text, type OfficeTimingItem } from "@/lib/site-data";
 import { formatHref, isExternalUrl, formatPhoneNumber, handlePhoneKeyDown } from "@/lib/utils";
-
-const API_BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
+import { API_URL } from "@/lib/config";
 
 function generatePublicInquiryId(): string {
   const timestamp = Date.now().toString(36).toUpperCase();
@@ -163,6 +163,13 @@ export function ContactUsView() {
   const [isSearchingTrack, setIsSearchingTrack] = useState(false);
   const [trackedResults, setTrackedResults] = useState<TrackedInquiry[] | null>(null);
   const [trackError, setTrackError] = useState<string | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
+
+  useEffect(() => {
+    checkBackendHealth().then((res) => {
+      if (!res.online) setIsOffline(true);
+    });
+  }, []);
 
   // Inquiry Form
   const inquiryForm = useForm<InquiryFormValues>({
@@ -190,6 +197,10 @@ export function ContactUsView() {
 
   // Handle Inquiry Form Submission
   const onInquirySubmit = async (values: InquiryFormValues) => {
+    if (isOffline) {
+      alert("Server is currently unavailable. Please try again later.");
+      return;
+    }
     try {
       const fullMessage = values.subject
         ? `[Subject: ${values.subject}]\n${values.message}`
@@ -198,7 +209,7 @@ export function ContactUsView() {
       const trimmedEmail = values.email?.trim() || "";
       const trimmedContact = values.contact?.trim() || "";
 
-      const res = await axios.post(`${API_BASE_URL}/inquiries`, {
+      const res = await axios.post(`${API_URL}/inquiries`, {
         name: values.name.trim(),
         contact: trimmedContact,
         email: trimmedEmail,
@@ -217,20 +228,18 @@ export function ContactUsView() {
       });
     } catch (err: any) {
       console.error("Inquiry submission error:", err);
-      // Fallback optimistic submission indicator if server is unreachable
-      setSubmittedResult({
-        id: generatePublicInquiryId(),
-        type: values.inquiryType,
-        email: values.email?.trim() || values.contact?.trim() || values.name,
-        timestamp: new Date().toLocaleString(),
-      });
+      alert(err?.response?.data?.message || "Unable to submit inquiry at this moment. Please check your connection and try again.");
     }
   };
 
   // Handle Feedback Form Submission
   const onFeedbackSubmit = async (values: FeedbackFormValues) => {
+    if (isOffline) {
+      alert("Server is currently unavailable. Please try again later.");
+      return;
+    }
     try {
-      const res = await axios.post(`${API_BASE_URL}/reviews`, {
+      const res = await axios.post(`${API_URL}/reviews`, {
         name: values.name,
         batch: values.batch || "School Community",
         rating: Number(values.rating) || 5,
@@ -249,12 +258,7 @@ export function ContactUsView() {
       });
     } catch (err: any) {
       console.error("Feedback submission error:", err);
-      setSubmittedResult({
-        id: generatePublicReviewId(),
-        type: `Testimonial Review`,
-        email: values.name,
-        timestamp: new Date().toLocaleString(),
-      });
+      alert(err?.response?.data?.message || "Unable to submit feedback at this moment. Please check your connection and try again.");
     }
   };
 
@@ -268,7 +272,7 @@ export function ContactUsView() {
     setTrackedResults(null);
 
     try {
-      const res = await axios.get(`${API_BASE_URL}/inquiries/track`, {
+      const res = await axios.get(`${API_URL}/inquiries/track`, {
         params: { query: trackQuery.trim() },
       });
       const data = res.data?.items || res.data?.data || (Array.isArray(res.data) ? res.data : []);
@@ -513,8 +517,23 @@ export function ContactUsView() {
 
                     {/* Inquiry Tab Form */}
                     <TabsContent value="inquiry" className="mt-6">
+                      {isOffline && (
+                        <div className="mb-4 rounded-2xl border border-rose-300 bg-rose-50/90 dark:bg-rose-950/40 p-4 text-center">
+                          <p className="text-sm font-semibold text-rose-700 dark:text-rose-300">
+                            Server is currently unavailable. Please try again later.
+                          </p>
+                        </div>
+                      )}
                       <Form {...inquiryForm}>
                         <form onSubmit={inquiryForm.handleSubmit(onInquirySubmit)} className="space-y-4">
+                          <fieldset
+                            disabled={isOffline || inquiryForm.formState.isSubmitting}
+                            className={`contents space-y-0 border-none p-0 m-0 ${
+                              isOffline || inquiryForm.formState.isSubmitting
+                                ? "cursor-not-allowed opacity-60 [&_*]:cursor-not-allowed"
+                                : ""
+                            }`}
+                          >
                           <div className="grid gap-4 sm:grid-cols-2">
                             <FormField
                               control={inquiryForm.control}
@@ -642,14 +661,30 @@ export function ContactUsView() {
                               </>
                             )}
                           </Button>
+                          </fieldset>
                         </form>
                       </Form>
                     </TabsContent>
 
                     {/* Feedback Tab Form */}
                     <TabsContent value="feedback" className="mt-6">
+                      {isOffline && (
+                        <div className="mb-4 rounded-2xl border border-rose-300 bg-rose-50/90 dark:bg-rose-950/40 p-4 text-center">
+                          <p className="text-sm font-semibold text-rose-700 dark:text-rose-300">
+                            Server is currently unavailable. Please try again later.
+                          </p>
+                        </div>
+                      )}
                       <Form {...feedbackForm}>
                         <form onSubmit={feedbackForm.handleSubmit(onFeedbackSubmit)} className="space-y-4">
+                          <fieldset
+                            disabled={isOffline || feedbackForm.formState.isSubmitting}
+                            className={`contents space-y-0 border-none p-0 m-0 ${
+                              isOffline || feedbackForm.formState.isSubmitting
+                                ? "cursor-not-allowed opacity-60 [&_*]:cursor-not-allowed"
+                                : ""
+                            }`}
+                          >
                           <div className="grid gap-4 sm:grid-cols-2">
                             <FormField
                               control={feedbackForm.control}
@@ -747,6 +782,7 @@ export function ContactUsView() {
                               </>
                             )}
                           </Button>
+                          </fieldset>
                         </form>
                       </Form>
                     </TabsContent>

@@ -1,4 +1,15 @@
 import axios, { type AxiosInstance, type AxiosResponse } from "axios";
+import { API_URL, API_SSR_BASE_URL as baseURL, TIMEOUTS } from "@/lib/config";
+import {
+  checkBackendHealth as checkHealthResult,
+  getClientSource,
+  type BackendHealthResult,
+  type HealthVisitorData,
+} from "@/lib/api/health";
+
+export { API_URL, baseURL };
+export type { BackendHealthResult, HealthVisitorData };
+export { getClientSource };
 
 export type ApiRecord = Record<string, unknown>;
 
@@ -22,56 +33,15 @@ export interface PaginatedData<T> {
   hasPrevPage: boolean;
 }
 
-export const API_URL = (
-  process.env.API_BASE_URL ||
-  process.env.NEXT_PUBLIC_BASE_URL ||
-  "http://localhost:5000/api/v1"
-).replace(/\/$/, "");
-
-// On server-side (Node.js SSR), resolve localhost to 127.0.0.1 to avoid Windows IPv6 (::1) lookup timeouts
-const baseURL = typeof window === "undefined"
-  ? API_URL.replace("://localhost:5000", "://127.0.0.1:5000")
-  : API_URL;
-
 export const apiClient: AxiosInstance = axios.create({
   baseURL,
-  timeout: 30000,
+  timeout: TIMEOUTS.api,
   headers: { Accept: "application/json" },
 });
 
-let cachedHealth: { isHealthy: boolean; expiresAt: number } | null = null;
-
-export async function checkBackendHealth(timeoutMs = 3000, forceCheck = false): Promise<boolean> {
-  const now = Date.now();
-  if (!forceCheck && cachedHealth && cachedHealth.expiresAt > now) {
-    return cachedHealth.isHealthy;
-  }
-
-  let isHealthy = false;
-  try {
-    const res = await apiClient.get<{ success?: boolean; statusCode?: number; data?: unknown }>("/health", {
-      timeout: timeoutMs,
-    });
-    isHealthy = res.status >= 200 && res.status < 300 && (res.data?.success !== false);
-  } catch {
-    try {
-      const rootUrl = baseURL.replace(/\/v1\/?$/, "");
-      const res = await axios.get<{ success?: boolean; statusCode?: number; data?: unknown }>(`${rootUrl}/health`, {
-        timeout: timeoutMs,
-        headers: { Accept: "application/json" },
-      });
-      isHealthy = res.status >= 200 && res.status < 300 && (res.data?.success !== false);
-    } catch {
-      isHealthy = false;
-    }
-  }
-
-  cachedHealth = {
-    isHealthy,
-    expiresAt: now + (isHealthy ? 10000 : 3000),
-  };
-
-  return isHealthy;
+export async function checkBackendHealth(timeoutMs: number = TIMEOUTS.healthCheck, forceCheck: boolean = false): Promise<boolean> {
+  const result = await checkHealthResult(undefined, timeoutMs, forceCheck);
+  return result.online;
 }
 
 export interface PaginationParams {
@@ -110,13 +80,23 @@ export async function getApi<T>(
 
 export async function getOptionalApi<T>(
   path: string,
-  params?: PaginationParams | Record<string, unknown>
+  params?: PaginationParams | Record<string, unknown>,
+  timeoutOverride?: number
 ): Promise<ApiEnvelope<T> | null> {
   try {
-    return await getApi<T>(path, params);
+    const response = await apiClient.get<ApiEnvelope<T>>(path, {
+      params: buildQueryParams(params),
+      timeout: timeoutOverride || TIMEOUTS.api,
+    });
+    return response.data;
   } catch (err: any) {
-    // Suppress noisy network error warnings when backend is intentionally offline/unattached
-    if (err?.code === "ERR_NETWORK" || err?.message?.includes("Network Error")) {
+    // Suppress noisy network error warnings when backend is intentionally offline/unattached or times out
+    if (
+      err?.code === "ERR_NETWORK" ||
+      err?.code === "ECONNABORTED" ||
+      err?.message?.includes("Network Error") ||
+      err?.message?.includes("timeout")
+    ) {
       return null;
     }
     console.warn(`[getOptionalApi] Warning for ${path}:`, err?.message || err);

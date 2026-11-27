@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Award, BookOpen, ChevronRight, Download, ExternalLink, FileText, GraduationCap, Lock } from "lucide-react";
-import datasource from "@/public/cloud-datasource.json";
+import { staticPages, getStaticPageBySlug } from "@/data/pages";
 import { DEFAULT_HERO_IMAGE, imageUrl, processHtmlAssetUrls } from "@/lib/site-data";
 import { getAssetUrl, formatHref, isExternalUrl } from "@/lib/utils";
+import { API_URL } from "@/lib/config";
 
 type Content = Record<string, unknown>;
 
@@ -115,9 +116,9 @@ function resolvePageFromDatasource(slugArray: string[]): Content | null {
   const lastSegment = slugArray.at(-1) || "";
   const normLastSeg = normalizeKey(lastSegment);
 
-  // 0. Check top-level "pages" collection in datasource first (matches database format with textContent)
-  if (Array.isArray((datasource as Content).pages)) {
-    const pagesList = (datasource as Content).pages as Content[];
+  // Check top-level "pages" collection first (matches database format with textContent)
+  if (Array.isArray(staticPages)) {
+    const pagesList = staticPages as unknown as Content[];
     const match = pagesList.find((p) => {
       if (!p || typeof p !== "object") return false;
       const s = normalizeKey(String(p.slug || ""));
@@ -125,117 +126,6 @@ function resolvePageFromDatasource(slugArray: string[]): Content | null {
       return s === normLastSeg || s === normFullPath || u === normFullPath;
     });
     if (match) return match;
-  }
-
-  function cleanDoc(val: unknown, defaultTitle = ""): Content | null {
-    if (!val) return null;
-    if (Array.isArray(val)) {
-      const first = val.find((x) => x && typeof x === "object" && !Array.isArray(x));
-      return first
-        ? { title: defaultTitle, ...(first as Content) }
-        : { title: defaultTitle, content: val };
-    }
-    if (typeof val === "object") {
-      return { title: defaultTitle, ...(val as Content) };
-    }
-    return { title: defaultTitle, description: [String(val)] };
-  }
-
-  // 1. Exact or normalized redirectUrl match anywhere in JSON
-  function searchRedirect(val: unknown): Content | null {
-    if (!val) return null;
-    if (Array.isArray(val)) {
-      for (const item of val) {
-        const res = searchRedirect(item);
-        if (res) return res;
-      }
-      return null;
-    }
-    if (typeof val === "object") {
-      const rec = val as Content;
-      if (
-        typeof rec.redirectUrl === "string" &&
-        (rec.redirectUrl === fullPath || normalizeKey(rec.redirectUrl) === normFullPath)
-      ) {
-        return rec;
-      }
-      for (const k of Object.keys(rec)) {
-        const res = searchRedirect(rec[k]);
-        if (res) return res;
-      }
-    }
-    return null;
-  }
-  const redirectMatch = searchRedirect(datasource);
-  if (redirectMatch) return redirectMatch;
-
-  // 2. Direct key or alias match in datasource tree
-  function searchTree(obj: unknown): Content | null {
-    if (!obj || typeof obj !== "object") return null;
-    if (Array.isArray(obj)) {
-      for (const item of obj) {
-        const res = searchTree(item);
-        if (res) return res;
-      }
-      return null;
-    }
-
-    const rec = obj as Content;
-    for (const [key, val] of Object.entries(rec)) {
-      if (["identity", "header", "footer", "users", "staff", "students"].includes(key)) continue;
-      const normK = normalizeKey(key);
-
-      if (normK === normLastSeg || normK === normFullPath) {
-        return cleanDoc(val, label(key));
-      }
-
-      for (const [canonKey, aliases] of Object.entries(ALIAS_MAP)) {
-        if (
-          normK === canonKey &&
-          aliases.some((a) => normalizeKey(a) === normLastSeg || normalizeKey(a) === normFullPath)
-        ) {
-          return cleanDoc(val, label(key));
-        }
-      }
-
-      if (val && typeof val === "object") {
-        const childRes = searchTree(val);
-        if (childRes) return childRes;
-      }
-    }
-    return null;
-  }
-
-  const treeMatch = searchTree(datasource);
-  if (treeMatch) return treeMatch;
-
-  // 3. Category overview fallback if top-level section requested
-  const categoryKeys: Record<string, string> = {
-    about: "aboutUs",
-    aboutus: "aboutUs",
-    infrastructure: "infrastructure",
-    admission: "admission",
-    admissions: "admission",
-    academics: "academics",
-    lifehostel: "life-hostel",
-    campuslife: "life-hostel",
-    connectivity: "connectivity",
-    download: "download",
-    downloads: "download",
-    mandatorydisclosure: "manadatory-disclosure",
-    gallery: "gallery",
-    other: "download",
-  };
-
-  const targetCategoryKey = categoryKeys[normLastSeg] || categoryKeys[normFullPath];
-  if (targetCategoryKey && (datasource as Content)[targetCategoryKey]) {
-    const categoryData = (datasource as Content)[targetCategoryKey];
-    return {
-      title: label(lastSegment),
-      heading: label(lastSegment),
-      description: [`Welcome to Indian Public School's ${label(lastSegment)} section. Explore the details below.`],
-      cardItem: Array.isArray(categoryData) ? categoryData : Object.values(categoryData as Content),
-    };
   }
 
   return null;
@@ -284,8 +174,6 @@ function stringList(value: unknown): string[] {
   return [];
 }
 
-const API_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
-
 export const dynamic = "force-dynamic";
 
 async function fetchDbPage(slugArray: string[]): Promise<Content | null> {
@@ -298,6 +186,7 @@ async function fetchDbPage(slugArray: string[]): Promise<Content | null> {
     try {
       const res = await fetch(`${API_URL}/pages/slug/${encodeURIComponent(candidate)}`, {
         cache: "no-store",
+        signal: AbortSignal.timeout(5000),
       });
       if (res.ok) {
         const json = await res.json();
@@ -305,9 +194,14 @@ async function fetchDbPage(slugArray: string[]): Promise<Content | null> {
         if (doc && doc.title) return doc as Content;
       }
     } catch {
-      // fallback cleanly
+      // fallback cleanly on timeout or network error
     }
   }
+
+  // Fallback to static collection data from @/data/pages
+  const staticMatch = getStaticPageBySlug(slugArray);
+  if (staticMatch) return staticMatch as Content;
+
   return null;
 }
 

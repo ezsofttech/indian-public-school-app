@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { GalleryAlbumClient } from "@/components/site/GalleryAlbumClient";
+import { DOMAIN } from "@/lib/config";
 
-const baseUrl = process.env.NEXT_PUBLIC_CLIENT_URL || "https://indian-public-school-app.vercel.app";
+const baseUrl = DOMAIN;
 
 export const metadata: Metadata = {
   title: "School Photo Albums | Indian Public School",

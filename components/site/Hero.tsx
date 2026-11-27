@@ -7,7 +7,6 @@ import { EASE } from "@/lib/motion-presets";
 import { DEFAULT_HERO_IMAGE, firstSection, homeData, imageUrl, text } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { SmartImage } from "@/components/ui/SmartImage";
-import fallbackSiteData from "@/public/cloud-datasource.json";
 
 export interface HeroSlide {
   bannerUrl: string;
@@ -67,15 +66,14 @@ export function Hero() {
   const rawDuration = hero.slideDuration ?? content.slideDuration ?? 5000;
   const slideDuration = typeof rawDuration === "number" && rawDuration >= 1000 ? rawDuration : 5000;
 
-  // Fallback defaults
-  const fallbackHeroConfig = (fallbackSiteData.home[0]?.hero as Record<string, unknown>) ?? {};
-  const jsonHeroImage =
-    imageUrl(fallbackHeroConfig.bannerUrl) ||
-    imageUrl(Array.isArray(fallbackHeroConfig.fileUrls) ? fallbackHeroConfig.fileUrls[0] : "");
+  const heroImage =
+    imageUrl(hero.bannerUrl) ||
+    imageUrl(Array.isArray(hero.fileUrls) ? hero.fileUrls[0] : "") ||
+    DEFAULT_HERO_IMAGE;
 
   // Build array of slides with per-slide properties
   const rawSlides: any[] = Array.isArray(hero.slides) ? hero.slides : [];
-  const slides: HeroSlide[] = useMemoSlides(rawSlides, hero, content, jsonHeroImage, DEFAULT_HERO_IMAGE);
+  const slides: HeroSlide[] = useMemoSlides(rawSlides, hero, content, heroImage, DEFAULT_HERO_IMAGE);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -216,7 +214,7 @@ export function Hero() {
           <SmartImage
             src={currentSlide.bannerUrl}
             mobileSrc={currentSlide.mobileBannerUrl}
-            fallbackSrc={jsonHeroImage || DEFAULT_HERO_IMAGE}
+            fallbackSrc={heroImage || DEFAULT_HERO_IMAGE}
             alt={rawH1 || rawTitle || "Indian Public School Campus Banner"}
             width={1920}
             height={1080}

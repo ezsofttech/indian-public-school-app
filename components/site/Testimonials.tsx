@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { API_URL } from "@/lib/config";
 import { AnimatePresence, motion } from "motion/react";
 import {
   ChevronLeft,
@@ -13,13 +15,13 @@ import {
   Loader2,
   MessageSquarePlus,
 } from "lucide-react";
-import axios from "axios";
 import { SectionHeading } from "@/components/site/Reveal";
 import { EASE } from "@/lib/motion-presets";
 import { homeData, text } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { getOptionalApi, unwrapCollection } from "@/lib/api-client";
 import { getAssetUrl } from "@/lib/utils";
+import { staticReviews } from "@/data/reviews";
 
 function TestimonialAvatar({ src, name }: { src?: string; name: string }) {
   const [failed, setFailed] = useState(false);
@@ -72,7 +74,9 @@ export function Testimonials() {
   const siteData = useSiteData();
   const initialReviews = (siteData.reviewsItems?.length
     ? siteData.reviewsItems
-    : (Array.isArray(homeData(siteData).reviews) ? homeData(siteData).reviews as Record<string, unknown>[] : [])) || [];
+    : (Array.isArray(homeData(siteData).reviews) && (homeData(siteData).reviews as any[]).length > 0
+        ? homeData(siteData).reviews as Record<string, unknown>[]
+        : (staticReviews as unknown as Record<string, unknown>[]))) || [];
 
   const [reviewsList, setReviewsList] = useState<Record<string, unknown>[]>(initialReviews);
   const [isPaused, setIsPaused] = useState(false);
@@ -117,12 +121,6 @@ export function Testimonials() {
     setIsSubmittingReview(true);
     setReviewError("");
 
-    const baseUrl = (
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      process.env.API_BASE_URL ||
-      "http://localhost:5000/api/v1"
-    ).replace(/\/$/, "");
-
     const payload = {
       name: reviewName.trim(),
       batch: reviewBatch.trim() || "School Community",
@@ -132,7 +130,7 @@ export function Testimonials() {
     };
 
     try {
-      const res = await axios.post(`${baseUrl}/reviews`, payload);
+      const res = await axios.post(`${API_URL}/reviews`, payload);
       const created = res.data?.data || res.data || payload;
 
       setReviewsList((prev) => [

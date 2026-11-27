@@ -1,0 +1,307 @@
+[
+  {
+    "_id": "6ad4b8a3f1bdb59602089bcc",
+    "publicId": "DISC-MVDSI2R3-DPG6V",
+    "sectionKey": "GENERAL_INFORMATION",
+    "sectionTitle": "A. GENERAL INFORMATION",
+    "order": 1,
+    "isPublished": true,
+    "items": [
+      {
+        "srNo": 1,
+        "title": "NAME OF THE SCHOOL",
+        "detail": "INDIAN PUBLIC SCHOOL",
+        "view": null
+      },
+      {
+        "srNo": 2,
+        "title": "AFFILIATION NO. (IF APPLICABLE)",
+        "detail": "330833",
+        "view": null
+      },
+      {
+        "srNo": 3,
+        "title": "SCHOOL CODE (IF APPLICABLE)",
+        "detail": "65830",
+        "view": null
+      },
+      {
+        "srNo": 4,
+        "title": "COMPLETE ADDRESS WITH PIN CODE",
+        "detail": "VILL-RAGHUNATHPUR, PO-KOTHIA, VIA-TAJPUR, DIST-SAMASTIPUR, BIHAR, PIN-848130",
+        "view": null
+      },
+      {
+        "srNo": 5,
+        "title": "PRINCIPAL NAME & QUALIFICATION",
+        "detail": "Mr. Principal, M.Sc., B.Ed.",
+        "view": null
+      },
+      {
+        "srNo": 6,
+        "title": "SCHOOL EMAIL ID",
+        "detail": "ipsraghunathpur@gmail.com",
+        "view": null
+      },
+      {
+        "srNo": 7,
+        "title": "CONTACT DETAILS (LANDLINE/MOBILE)",
+        "detail": "+91 9431878840 / +91 9934241077",
+        "view": null
+      }
+    ],
+    "createdAt": "2026-10-18T12:16:35.446Z",
+    "updatedAt": "2026-10-18T12:16:35.446Z"
+  },
+  {
+    "_id": "6ad4b8a3f1bdb59602089bcd",
+    "publicId": "DISC-MVDSI2R3-NKJ8A",
+    "sectionKey": "DOCUMENTS_AND_INFORMATION",
+    "sectionTitle": "B. DOCUMENTS AND INFORMATION",
+    "order": 2,
+    "isPublished": true,
+    "items": [
+      {
+        "srNo": 1,
+        "title": "COPIES OF AFFILIATION/UPGRADATION LETTER AND RECENT EXTENSION OF AFFILIATION, IF ANY",
+        "detail": "Affiliation and extension grant letter issued by CBSE New Delhi.",
+        "view": null
+      },
+      {
+        "srNo": 2,
+        "title": "COPIES OF SOCIETIES/TRUST/COMPANY REGISTRATION/RENEWAL CERTIFICATE, AS APPLICABLE",
+        "detail": "Aakash Foundation Trust registration certificate.",
+        "view": null
+      },
+      {
+        "srNo": 3,
+        "title": "COPY OF NO OBJECTION CERTIFICATE (NOC) ISSUED, IF APPLICABLE, BY THE STATE GOVT./UT",
+        "detail": "State Government of Bihar NOC certification document.",
+        "view": null
+      },
+      {
+        "srNo": 4,
+        "title": "COPIES OF RECOGNITION CERTIFICATE UNDER RTE ACT, 2009, AND IT’S RENEWAL IF ANY",
+        "detail": "Recognition certificate under RTE Act 2009 issued by competent authority.",
+        "view": null
+      },
+      {
+        "srNo": 5,
+        "title": "COPY OF VALID BUILDING SAFETY CERTIFICATE AS PER THE NATIONAL BUILDING CODE",
+        "detail": "Building safety evaluation and stability compliance certificate.",
+        "view": null
+      },
+      {
+        "srNo": 6,
+        "title": "COPY OF VALID FIRE SAFETY CERTIFICATE ISSUED BY THE COMPETENT AUTHORITY",
+        "detail": "Fire safety inspection and clearance certificate.",
+        "view": null
+      },
+      {
+        "srNo": 7,
+        "title": "COPY OF THE SELF CERTIFICATION SUBMITTED BY THE SCHOOL FOR AFFILIATION/UPGRADATION",
+        "detail": "Official self-certification document submitted to CBSE.",
+        "view": null
+      },
+      {
+        "srNo": 8,
+        "title": "COPIES OF VALID WATER, HEALTH AND SANITATION CERTIFICATES",
+        "detail": "Safe drinking water and sanitary condition clearance certificate.",
+        "view": null
+      }
+    ],
+    "createdAt": "2026-10-18T12:16:35.447Z",
+    "updatedAt": "2026-10-18T12:16:35.447Z"
+  },
+  {
+    "_id": "6ad4b8a3f1bdb59602089bce",
+    "publicId": "DISC-MVDSI2R3-DEP53",
+    "sectionKey": "RESULT_AND_ACADEMICS",
+    "sectionTitle": "C. RESULT AND ACADEMICS",
+    "order": 3,
+    "isPublished": true,
+    "items": [
+      {
+        "srNo": 1,
+        "title": "FEE STRUCTURE OF THE SCHOOL",
+        "detail": "Fee chart for Nursery to Senior Secondary academic levels.",
+        "view": null
+      },
+      {
+        "srNo": 2,
+        "title": "ANNUAL ACADEMIC CALENDAR",
+        "detail": "Curriculum schedule, examination timetable, and activities calendar.",
+        "view": null
+      },
+      {
+        "srNo": 3,
+        "title": "LIST OF SCHOOL MANAGEMENT COMMITTEE (SMC)",
+        "detail": "Details and designations of SMC members.",
+        "view": null
+      },
+      {
+        "srNo": 4,
+        "title": "LIST OF PARENTS TEACHERS ASSOCIATION (PTA) MEMBERS",
+        "detail": "Office bearers and executive committee of PTA.",
+        "view": null
+      },
+      {
+        "srNo": 5,
+        "title": "LAST THREE-YEAR RESULT OF THE BOARD EXAMINATION AS PER APPLICABILITY",
+        "detail": "CBSE Class X and Class XII board examination pass percentage and highlights.",
+        "view": null
+      }
+    ],
+    "createdAt": "2026-10-18T12:16:35.447Z",
+    "updatedAt": "2026-10-18T12:16:35.447Z"
+  },
+  {
+    "_id": "6ad4b8a3f1bdb59602089bcf",
+    "publicId": "DISC-MVDSI2R3-FJQ8O",
+    "sectionKey": "STAFF_TEACHING",
+    "sectionTitle": "D. STAFF (TEACHING)",
+    "order": 4,
+    "isPublished": true,
+    "items": [
+      {
+        "srNo": 1,
+        "title": "PRINCIPAL",
+        "detail": "1",
+        "view": null
+      },
+      {
+        "srNo": 2,
+        "title": "TOTAL NO. OF TEACHERS",
+        "detail": "PGT: 10, TGT: 14, PRT: 18, NTT: 6 (Total: 48)",
+        "view": null
+      },
+      {
+        "srNo": 3,
+        "title": "TEACHERS SECTION RATIO",
+        "detail": "1.5 : 1",
+        "view": null
+      },
+      {
+        "srNo": 4,
+        "title": "DETAILS OF SPECIAL EDUCATOR",
+        "detail": "Qualified Special Educator on campus providing inclusive learning support.",
+        "view": null
+      },
+      {
+        "srNo": 5,
+        "title": "DETAILS OF COUNSELLOR AND WELLNESS TEACHER",
+        "detail": "Certified Adolescent Psychologist & Student Wellness Officer.",
+        "view": null
+      }
+    ],
+    "createdAt": "2026-10-18T12:16:35.448Z",
+    "updatedAt": "2026-10-18T12:16:35.448Z"
+  },
+  {
+    "_id": "6ad4b8a3f1bdb59602089bd0",
+    "publicId": "DISC-MVDSI2R4-L02A3",
+    "sectionKey": "SCHOOL_INFRASTRUCTURE",
+    "sectionTitle": "E. SCHOOL INFRASTRUCTURE",
+    "order": 5,
+    "isPublished": true,
+    "items": [
+      {
+        "srNo": 1,
+        "title": "TOTAL CAMPUS AREA OF THE SCHOOL (IN SQUARE MTRS)",
+        "detail": "8,093.71 Sq. Mtrs (2.00 Acres)",
+        "view": null
+      },
+      {
+        "srNo": 2,
+        "title": "NO. AND SIZE OF THE CLASS ROOMS (IN SQ MTRS)",
+        "detail": "42 Classrooms (500 Sq. Ft / 46.45 Sq. Mtrs each)",
+        "view": null
+      },
+      {
+        "srNo": 3,
+        "title": "NO. AND SIZE OF LABORATORIES INCLUDING COMPUTER LABS (IN SQ MTRS)",
+        "detail": "Physics, Chemistry, Biology, Mathematics & Composite Science Lab (600 Sq. Ft each); Computer Lab (1000 Sq. Ft)",
+        "view": null
+      },
+      {
+        "srNo": 4,
+        "title": "INTERNET FACILITY (Y/N)",
+        "detail": "YES (High-speed 100 Mbps optical fiber Wi-Fi enabled campus)",
+        "view": null
+      },
+      {
+        "srNo": 5,
+        "title": "NO. OF GIRLS TOILETS & BOYS TOILETS",
+        "detail": "Girls Toilets: 20, Boys Toilets: 24 (Hygienic, automated sanitation)",
+        "view": null
+      },
+      {
+        "srNo": 6,
+        "title": "LINK OF YOUTUBE VIDEO OF THE INSPECTION OF SCHOOL COVERING THE INFRASTRUCTURE",
+        "detail": "Comprehensive video walk-through of the school infrastructure and labs.",
+        "view": {
+          "label": "VIEW VIDEO",
+          "type": "LINK",
+          "url": "https://www.youtube.com",
+          "openInNewTab": true
+        }
+      }
+    ],
+    "createdAt": "2026-10-18T12:16:35.448Z",
+    "updatedAt": "2026-10-18T12:16:35.448Z"
+  },
+  {
+    "_id": "6ad0d9f2080dc9d5135a0d04",
+    "createdAt": "2026-10-15T13:49:38.135Z",
+    "isPublished": true,
+    "items": [
+      {
+        "srNo": 1,
+        "title": "NAME OF THE SCHOOL",
+        "detail": "INDIAN PUBLIC SCHOOL",
+        "view": null
+      },
+      {
+        "srNo": 2,
+        "title": "AFFILIATION NUMBER",
+        "detail": "1530152",
+        "view": null
+      },
+      {
+        "srNo": 3,
+        "title": "SCHOOL CODE",
+        "detail": "15389",
+        "view": null
+      },
+      {
+        "srNo": 4,
+        "title": "COMPLETE ADDRESS WITH PIN CODE",
+        "detail": "INDIAN PUBLIC SCHOOL, MAIN ROAD, NEAR RMC, KHETRAJPUR, DISTRTCT – SAMBAPUR, ODISHA, 768006",
+        "view": null
+      },
+      {
+        "srNo": 5,
+        "title": "PRINCIPAL NAME & QUALIFICATION",
+        "detail": "MR. PATHAK SACHIN SUDHIR | MA, MPHIL, B.ED",
+        "view": null
+      },
+      {
+        "srNo": 6,
+        "title": "SCHOOL MAIL ID",
+        "detail": "ipssbp75@gmail.com",
+        "view": null
+      },
+      {
+        "srNo": 7,
+        "title": "CONTACT DETAILS",
+        "detail": "9438625404",
+        "view": null
+      }
+    ],
+    "order": 1,
+    "publicId": "DISC-MV9LI6D9-QOQ78",
+    "sectionKey": "A_GENERAL_INFORMATION",
+    "sectionTitle": "GENERAL INFORMATION",
+    "updatedAt": "2026-10-28T08:03:36.054Z"
+  }
+]

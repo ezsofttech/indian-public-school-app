@@ -18,8 +18,6 @@ import {
   Lock,
   ChevronDown,
 } from "lucide-react";
-import fallbackSiteData from "@/public/cloud-datasource.json";
-import fallbackMenuItemsList from "@/public/collections/menuitems.json";
 import { RecordItem } from "../types/admin.types";
 import { API_URL } from "../config/admin.config";
 import { HomeHeroTab } from "./home-layout/HomeHeroTab";
@@ -107,6 +105,11 @@ export function HomeLayoutEditorModal({
   const [showLivePopUpPreview, setShowLivePopUpPreview] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<string>("");
   const [isSavingLocal, setIsSavingLocal] = useState<boolean>(false);
+  const [isSavingSection, setIsSavingSection] = useState<boolean>(false);
+  const [sectionSaveSuccess, setSectionSaveSuccess] = useState<string>("");
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean>(false);
+  const [isDirty, setIsDirty] = useState<boolean>(false);
+  const [isRefreshingSection, setIsRefreshingSection] = useState<boolean>(false);
 
   React.useEffect(() => {
     const handleFullscreenChange = () => {
@@ -149,7 +152,7 @@ export function HomeLayoutEditorModal({
     if (val && typeof val === "object" && "home" in val && Array.isArray((val as any).home)) {
       return val as any;
     }
-    return fallbackSiteData as any;
+    return { home: [] } as any;
   }, [record]);
 
   const [datasource, setDatasource] = useState<any>(initialValue);
@@ -165,7 +168,7 @@ export function HomeLayoutEditorModal({
         return;
       }
       try {
-        const res = await axios.get(`${API_URL}/regarding/datasource`);
+        const res = await axios.get(`${API_URL}/school-settings/datasource`);
         const data = res.data?.data ?? res.data;
         const cleanData = data?.value ?? data;
         if (isMounted && cleanData && typeof cleanData === "object" && "home" in cleanData && Array.isArray(cleanData.home)) {
@@ -244,7 +247,7 @@ export function HomeLayoutEditorModal({
       { title: "Brochures", url: "/brochures" },
     ];
 
-    const rawMenu = (dbMenuItems && dbMenuItems.length > 0 ? dbMenuItems : (fallbackMenuItemsList as RecordItem[])) || [];
+    const rawMenu = (dbMenuItems && dbMenuItems.length > 0 ? dbMenuItems : []) as RecordItem[];
 
     // Map items by id to build full hierarchical paths
     const itemMap = new Map<string, RecordItem>();
@@ -367,6 +370,7 @@ export function HomeLayoutEditorModal({
   }, [datasource]);
 
   const updateHome = (updater: (prevHomeObj: any) => any) => {
+    setIsDirty(true);
     const updatedHomeObj = updater({ ...homeObj });
     const updatedDs = { ...datasource, home: [updatedHomeObj] };
     setDatasource(updatedDs);
@@ -432,7 +436,7 @@ export function HomeLayoutEditorModal({
       }));
 
       const data = res.data?.data ?? res.data;
-      const url = data?.url || (Array.isArray(data?.fileUrl) ? data.fileUrl[0] : data?.fileUrl);
+      const url = data?.url || data?.secure_url || (Array.isArray(data?.fileUrl) ? data.fileUrl[0] : data?.fileUrl) || data?.relativeUrl;
       if (!url) throw new Error("No URL returned from upload");
 
       setUploadStatus((prev) => ({
@@ -472,7 +476,7 @@ export function HomeLayoutEditorModal({
     const firstHome = { ...(homeList[0] || {}) };
     const currentIdentity = { ...(firstHome.identity || {}) };
 
-    const logoObj = { ...(finalVal.site_logo || currentIdentity.site_logo || {}) };
+    const logoObj = { ...(finalVal.site_logo || {}) };
     const headerObj = { ...(finalVal.header || currentIdentity.header || {}) };
     const footerObj = { ...(finalVal.footer || currentIdentity.footer || {}) };
     if (logoObj.logoUrl) {
@@ -499,11 +503,12 @@ export function HomeLayoutEditorModal({
       footer: footerObj,
       whatsapp: waObj,
       popupBanner: popupObj,
-      site_logo: logoObj,
       certified_board: certObj,
       trust_board: trustObj,
       academic_partner: partnerObj,
     };
+    delete firstHome.identity.site_logo;
+    delete (firstHome as any).site_logo;
 
     const sec1 = firstHome["section-1"];
     if (Array.isArray(sec1) && sec1[0]) {
@@ -520,18 +525,19 @@ export function HomeLayoutEditorModal({
 
     if (firstHome.hero) {
       const hero = { ...firstHome.hero };
-      if (Array.isArray(hero.slides)) {
+      if (Array.isArray(hero.slides) && hero.slides.length > 0) {
         hero.slides = hero.slides.map((s: any) => ({
           ...s,
-          bannerUrl: toCleanRelativeAssetPath(s.bannerUrl) || s.bannerUrl,
-          ...(s.mobileBannerUrl ? { mobileBannerUrl: toCleanRelativeAssetPath(s.mobileBannerUrl) || s.mobileBannerUrl } : {}),
+          bannerUrl: s.bannerUrl?.trim() || "",
+          ...(s.mobileBannerUrl ? { mobileBannerUrl: s.mobileBannerUrl.trim() } : {}),
         }));
+        // When slides carry bannerUrl, fileUrls is redundant and not required at hero in settings
+        delete (hero as any).fileUrls;
+      } else if (Array.isArray(hero.fileUrls)) {
+        hero.fileUrls = hero.fileUrls.map((u: any) => (typeof u === "string" ? u.trim() : u));
       }
       if (hero.bannerUrl) {
-        hero.bannerUrl = toCleanRelativeAssetPath(hero.bannerUrl) || hero.bannerUrl;
-      }
-      if (Array.isArray(hero.fileUrls)) {
-        hero.fileUrls = hero.fileUrls.map((u: any) => toCleanRelativeAssetPath(u) || u);
+        hero.bannerUrl = hero.bannerUrl.trim();
       }
       firstHome.hero = hero;
     }
@@ -573,6 +579,166 @@ export function HomeLayoutEditorModal({
       setIsSavingLocal(false);
     }
   };
+
+  const getActiveSectionPayload = (tab: typeof activeTab) => {
+    switch (tab) {
+      case "header": {
+        const headerObj = { ...(datasource?.header || homeObj?.identity?.header || {}) };
+        if (datasource?.site_logo?.logoUrl) headerObj.logoUrl = datasource.site_logo.logoUrl;
+        if (datasource?.site_logo?.logoText) headerObj.logoText = datasource.site_logo.logoText;
+        if (datasource?.site_logo?.logoSubText) headerObj.logoSubText = datasource.site_logo.logoSubText;
+        return headerObj;
+      }
+      case "footer": {
+        const footerObj = { ...(datasource?.footer || homeObj?.identity?.footer || {}) };
+        if (datasource?.site_logo?.logoUrl) footerObj.logoUrl = datasource.site_logo.logoUrl;
+        if (datasource?.site_logo?.logoText) footerObj.logoText = datasource.site_logo.logoText;
+        if (datasource?.site_logo?.logoSubText) footerObj.logoSubText = datasource.site_logo.logoSubText;
+        return footerObj;
+      }
+      case "whatsapp":
+        return datasource?.whatsapp || homeObj?.identity?.whatsapp || {};
+      case "popupBanner":
+        return { ...(homeObj?.identity?.popupBanner || {}), ...(datasource?.popupBanner || {}) };
+      case "hero": {
+        const hero = { ...(homeObj?.hero || {}) };
+        if (Array.isArray(hero.slides) && hero.slides.length > 0) {
+          hero.slides = hero.slides.map((s: any) => ({
+            ...s,
+            bannerUrl: toCleanRelativeAssetPath(s.bannerUrl) || s.bannerUrl,
+            ...(s.mobileBannerUrl ? { mobileBannerUrl: toCleanRelativeAssetPath(s.mobileBannerUrl) || s.mobileBannerUrl } : {}),
+          }));
+          delete (hero as any).fileUrls;
+        } else if (Array.isArray(hero.fileUrls)) {
+          hero.fileUrls = hero.fileUrls.map((u: any) => toCleanRelativeAssetPath(u) || u);
+        }
+        if (hero.bannerUrl) {
+          hero.bannerUrl = toCleanRelativeAssetPath(hero.bannerUrl) || hero.bannerUrl;
+        }
+        return hero;
+      }
+      case "quickCards":
+        return homeObj?.menuCard || [];
+      case "video":
+        return homeObj?.["section-video"] || [];
+      case "sec1": {
+        const sec1 = Array.isArray(homeObj?.["section-1"]) ? [...homeObj["section-1"]] : [];
+        if (sec1[0]) {
+          sec1[0] = {
+            ...sec1[0],
+            btnLinkText: {
+              show: sec1[0].btnLinkText?.show !== false,
+              text: sec1[0].btnLinkText?.text ?? "Discover Our Story",
+              url: sec1[0].btnLinkText?.url ?? "/about/school-establishment",
+            },
+          };
+        }
+        return sec1;
+      }
+      case "sec2":
+        return homeObj?.["section-2"] || [];
+      case "sec3":
+        return homeObj?.["section-3"] || [];
+      case "sec4":
+        return homeObj?.["section-4"] || [];
+      case "sec6":
+        return homeObj?.["section-6"] || [];
+      case "sec7":
+        return homeObj?.["section-7"] || [];
+      case "sec8":
+        return homeObj?.["section-8"] || [];
+      case "sec9":
+        return homeObj?.["section-9"] || [];
+      default:
+        return null;
+    }
+  };
+
+  const handleSaveActiveSection = async (targetTab = activeTab) => {
+    const payload = getActiveSectionPayload(targetTab);
+    if (payload === null || payload === undefined) return;
+    setIsSavingSection(true);
+    setSectionSaveSuccess("");
+    setUploadError("");
+
+    try {
+      await axios.patch(
+        `${API_URL}/school-settings/section/${targetTab}`,
+        { value: payload },
+        {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const tabLabel = EDITOR_TABS.find((t) => t.id === targetTab)?.label || targetTab;
+      setSectionSaveSuccess(`${tabLabel} updated!`);
+      setIsDirty(false);
+      setTimeout(() => setSectionSaveSuccess(""), 4000);
+    } catch (err: any) {
+      console.error("Error saving active section:", err);
+      const errMsg = err?.response?.data?.message || err?.message || "Failed to save section.";
+      setUploadError(`Section save error: ${Array.isArray(errMsg) ? errMsg.join(", ") : errMsg}`);
+    } finally {
+      setIsSavingSection(false);
+    }
+  };
+
+  const handleRefreshActiveSection = async () => {
+    setIsRefreshingSection(true);
+    try {
+      const res = await axios.get(`${API_URL}/school-settings/section/${activeTab}?t=${Date.now()}`);
+      const secData = res.data?.data?.data ?? res.data?.data ?? res.data;
+      if (secData !== undefined && secData !== null) {
+        if (["header", "footer", "whatsapp", "popupBanner"].includes(activeTab)) {
+          setDatasource((prev: any) => ({ ...prev, [activeTab]: secData }));
+        } else {
+          updateHome((prevHome: any) => {
+            const canonicalKey = activeTab === "quickCards"
+              ? "menuCard"
+              : activeTab === "video"
+              ? "section-video"
+              : activeTab === "sec1" ? "section-1"
+              : activeTab === "sec2" ? "section-2"
+              : activeTab === "sec3" ? "section-3"
+              : activeTab === "sec4" ? "section-4"
+              : activeTab === "sec6" ? "section-6"
+              : activeTab === "sec7" ? "section-7"
+              : activeTab === "sec8" ? "section-8"
+              : activeTab === "sec9" ? "section-9"
+              : activeTab;
+            return { ...prevHome, [canonicalKey]: secData };
+          });
+        }
+        setSectionSaveSuccess("Section refreshed!");
+        setIsDirty(false);
+        setTimeout(() => setSectionSaveSuccess(""), 3000);
+      }
+    } catch (err: any) {
+      console.warn("Failed to refresh section:", err);
+    } finally {
+      setIsRefreshingSection(false);
+    }
+  };
+
+  const handleTabSwitch = async (nextTab: typeof activeTab) => {
+    if (nextTab === activeTab) return;
+    if (isDirty) {
+      await handleSaveActiveSection(activeTab);
+    }
+    startTabTransition(() => {
+      setActiveTab(nextTab);
+    });
+  };
+
+  React.useEffect(() => {
+    if (!autoSaveEnabled || !isDirty) return;
+    const timer = setTimeout(() => {
+      handleSaveActiveSection(activeTab);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [datasource, autoSaveEnabled, isDirty, activeTab]);
 
   const updateHeaderField = (field: string, val: string) => {
     setDatasource((prev: any) => {
@@ -787,13 +953,13 @@ export function HomeLayoutEditorModal({
       {
         heading: raw[0]?.heading ?? "Our Mission",
         description: raw[0]?.description ?? "",
-        icoUrl: raw[0]?.icoUrl ?? raw[0]?.imageUrl ?? raw[0]?.fileUrl ?? raw[0]?.icon ?? "",
+        icoUrl: raw[0]?.icoUrl ?? "",
         redirectUrl: raw[0]?.redirectUrl ?? "",
       },
       {
         heading: raw[1]?.heading ?? "Our Vision",
         description: raw[1]?.description ?? "",
-        icoUrl: raw[1]?.icoUrl ?? raw[1]?.imageUrl ?? raw[1]?.fileUrl ?? raw[1]?.icon ?? "",
+        icoUrl: raw[1]?.icoUrl ?? "",
         redirectUrl: raw[1]?.redirectUrl ?? "",
       },
     ];
@@ -806,13 +972,13 @@ export function HomeLayoutEditorModal({
       {
         heading: raw[0]?.heading ?? "Our Mission",
         description: raw[0]?.description ?? "",
-        icoUrl: raw[0]?.icoUrl ?? raw[0]?.imageUrl ?? raw[0]?.fileUrl ?? raw[0]?.icon ?? "",
+        icoUrl: raw[0]?.icoUrl ?? "",
         redirectUrl: raw[0]?.redirectUrl ?? "",
       },
       {
         heading: raw[1]?.heading ?? "Our Vision",
         description: raw[1]?.description ?? "",
-        icoUrl: raw[1]?.icoUrl ?? raw[1]?.imageUrl ?? raw[1]?.fileUrl ?? raw[1]?.icon ?? "",
+        icoUrl: raw[1]?.icoUrl ?? "",
         redirectUrl: raw[1]?.redirectUrl ?? "",
       },
     ];
@@ -875,10 +1041,7 @@ export function HomeLayoutEditorModal({
               key={tab.id}
               type="button"
               onClick={() => {
-                if (activeTab === tab.id) return;
-                startTabTransition(() => {
-                  setActiveTab(tab.id as any);
-                });
+                handleTabSwitch(tab.id as any);
               }}
               className={`flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl transition border whitespace-nowrap cursor-pointer ${activeTab === tab.id
                 ? "border-[#1a5d9c] bg-[#1a5d9c] text-white shadow-xs"
@@ -1942,7 +2105,7 @@ export function HomeLayoutEditorModal({
 
                   <div className="grid gap-3.5 sm:grid-cols-2">
                     {sec1Cards.map((card: any, idx: number) => {
-                      const iconUrl = card.icoUrl || card.imageUrl || card.fileUrl || card.icon || "";
+                      const iconUrl = card.icoUrl || "";
                       const isUploading = uploadingCard === `sec1-${idx}`;
 
                       return (
@@ -1990,7 +2153,7 @@ export function HomeLayoutEditorModal({
                               {iconUrl && (
                                 <button
                                   type="button"
-                                  onClick={() => updateSec1Card(idx, { icoUrl: "", imageUrl: "", fileUrl: "", icon: "" })}
+                                  onClick={() => updateSec1Card(idx, { icoUrl: "" })}
                                   className="text-[10px] text-red-500 hover:text-red-700 flex items-center gap-0.5 font-medium"
                                 >
                                   <X size={11} /> Clear Icon
@@ -2050,7 +2213,7 @@ export function HomeLayoutEditorModal({
                                       try {
                                         const url = await uploadImage(file, "Home", "mission-vision");
                                         if (url) {
-                                          updateSec1Card(idx, { icoUrl: url, imageUrl: url, fileUrl: url, icon: url });
+                                          updateSec1Card(idx, { icoUrl: url });
                                         }
                                       } catch (err) {
                                         console.error("Failed to upload icon:", err);
@@ -2069,7 +2232,7 @@ export function HomeLayoutEditorModal({
                                 type="button"
                                 onClick={() => {
                                   openGalleryPicker((url) => {
-                                    updateSec1Card(idx, { icoUrl: url, imageUrl: url, fileUrl: url, icon: url });
+                                    updateSec1Card(idx, { icoUrl: url });
                                   }, `Choose Icon for ${card.heading || "Card"}`);
                                 }}
                                 className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer shrink-0 shadow-2xs"
@@ -2363,7 +2526,7 @@ export function HomeLayoutEditorModal({
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   {(Array.isArray(homeObj["section-3"]?.[0]?.cardItem) ? homeObj["section-3"][0].cardItem : []).map((card: any, idx: number) => {
-                    const currentIcon = card.icoUrl || card.icon || card.iconName || "";
+                    const currentIcon = card.icoUrl || "";
 
                     return (
                       <div key={idx} className="rounded-xl border border-slate-200 bg-white p-3 space-y-2.5 shadow-2xs">
@@ -2443,7 +2606,11 @@ export function HomeLayoutEditorModal({
                                 onClick={() => {
                                   const sec3 = [...(homeObj["section-3"] || [{}])];
                                   const cards = [...(sec3[0].cardItem || [])];
-                                  cards[idx] = { ...cards[idx], icoUrl: "", icon: "", imageUrl: "", fileUrl: "" };
+                                  const nextCard = { ...cards[idx], icoUrl: "" };
+                                  delete nextCard.icon;
+                                  delete nextCard.imageUrl;
+                                  delete nextCard.fileUrl;
+                                  cards[idx] = nextCard;
                                   sec3[0] = { ...sec3[0], cardItem: cards };
                                   updateHome((prev) => ({ ...prev, "section-3": sec3 }));
                                 }}
@@ -2479,7 +2646,11 @@ export function HomeLayoutEditorModal({
                                   openGalleryPicker((url) => {
                                     const sec3 = [...(homeObj["section-3"] || [{}])];
                                     const cards = [...(sec3[0].cardItem || [])];
-                                    cards[idx] = { ...cards[idx], icoUrl: url, icon: url, imageUrl: url, fileUrl: url };
+                                    const nextCard = { ...cards[idx], icoUrl: url };
+                                    delete nextCard.icon;
+                                    delete nextCard.imageUrl;
+                                    delete nextCard.fileUrl;
+                                    cards[idx] = nextCard;
                                     sec3[0] = { ...sec3[0], cardItem: cards };
                                     updateHome((prev) => ({ ...prev, "section-3": sec3 }));
                                   }, "Choose Card Icon from Gallery");
@@ -2507,7 +2678,11 @@ export function HomeLayoutEditorModal({
                                         if (url) {
                                           const sec3 = [...(homeObj["section-3"] || [{}])];
                                           const cards = [...(sec3[0].cardItem || [])];
-                                          cards[idx] = { ...cards[idx], icoUrl: url, icon: url, imageUrl: url, fileUrl: url };
+                                          const nextCard = { ...cards[idx], icoUrl: url };
+                                          delete nextCard.icon;
+                                          delete nextCard.imageUrl;
+                                          delete nextCard.fileUrl;
+                                          cards[idx] = nextCard;
                                           sec3[0] = { ...sec3[0], cardItem: cards };
                                           updateHome((prev) => ({ ...prev, "section-3": sec3 }));
                                         }
@@ -2672,7 +2847,7 @@ export function HomeLayoutEditorModal({
                   </h3>
                   <button
                     type="button"
-                    onClick={() => addItemToSection("section-6", { title: "New Facility", heading: "New Facility", "sub-title": "Facility features", description: "Facility features", fileUrl: "", imageUrl: "" })}
+                    onClick={() => addItemToSection("section-6", { title: "New Facility", description: "Facility features", fileUrl: "" })}
                     className="flex items-center gap-1 rounded-xl bg-[#1a5d9c] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#102a4c]"
                   >
                     <Plus size={14} /> Add Facility Card
@@ -2729,7 +2904,7 @@ export function HomeLayoutEditorModal({
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   {(Array.isArray(homeObj["section-6"]?.[0]?.cardItem) ? homeObj["section-6"][0].cardItem : []).map((infra: any, idx: number) => {
-                    const cardImgUrl = infra.fileUrl || infra.imageUrl || infra.icoUrl || "";
+                    const cardImgUrl = infra.fileUrl || "";
                     const displayImgUrl = cardImgUrl ? getAssetUrl(cardImgUrl) : "";
                     const isCardUploading = uploadingCard === `sec6-${idx}`;
 
@@ -2840,7 +3015,10 @@ export function HomeLayoutEditorModal({
                                     openGalleryPicker((url) => {
                                       const sec6 = [...(homeObj["section-6"] || [{}])];
                                       const cards = [...(sec6[0].cardItem || [])];
-                                      cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                      const nextCard = { ...cards[idx], fileUrl: url };
+                                      delete nextCard.imageUrl;
+                                      delete nextCard.icoUrl;
+                                      cards[idx] = nextCard;
                                       sec6[0] = { ...sec6[0], cardItem: cards };
                                       updateHome((prev) => ({ ...prev, "section-6": sec6 }));
                                     }, `Choose Image for ${infra.title || "Facility"}`);
@@ -2854,7 +3032,10 @@ export function HomeLayoutEditorModal({
                                   onClick={() => {
                                     const sec6 = [...(homeObj["section-6"] || [{}])];
                                     const cards = [...(sec6[0].cardItem || [])];
-                                    cards[idx] = { ...cards[idx], fileUrl: "", imageUrl: "", icoUrl: "" };
+                                    const nextCard = { ...cards[idx], fileUrl: "" };
+                                    delete nextCard.imageUrl;
+                                    delete nextCard.icoUrl;
+                                    cards[idx] = nextCard;
                                     sec6[0] = { ...sec6[0], cardItem: cards };
                                     updateHome((prev) => ({ ...prev, "section-6": sec6 }));
                                   }}
@@ -2878,7 +3059,10 @@ export function HomeLayoutEditorModal({
                                 openGalleryPicker((url) => {
                                   const sec6 = [...(homeObj["section-6"] || [{}])];
                                   const cards = [...(sec6[0].cardItem || [])];
-                                  cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                  const nextCard = { ...cards[idx], fileUrl: url };
+                                  delete nextCard.imageUrl;
+                                  delete nextCard.icoUrl;
+                                  cards[idx] = nextCard;
                                   sec6[0] = { ...sec6[0], cardItem: cards };
                                   updateHome((prev) => ({ ...prev, "section-6": sec6 }));
                                 }, `Choose Image for ${infra.title || "Facility"}`);
@@ -2912,7 +3096,10 @@ export function HomeLayoutEditorModal({
                                       if (url) {
                                         const sec6 = [...(homeObj["section-6"] || [{}])];
                                         const cards = [...(sec6[0].cardItem || [])];
-                                        cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                        const nextCard = { ...cards[idx], fileUrl: url };
+                                        delete nextCard.imageUrl;
+                                        delete nextCard.icoUrl;
+                                        cards[idx] = nextCard;
                                         sec6[0] = { ...sec6[0], cardItem: cards };
                                         updateHome((prev) => ({ ...prev, "section-6": sec6 }));
                                       }
@@ -3182,7 +3369,7 @@ export function HomeLayoutEditorModal({
                   const secVid = homeObj["section-video"]?.[0] || {};
                   const sec8 = homeObj["section-8"]?.[0] || {};
                   const DEFAULT_VIDEO = "/Videos/file_feszan.mp4";
-                  let videoUrlVal = secVid.introFileUrl || secVid.videoUrl || sec8.introFileUrl || sec8.videoUrl;
+                  let videoUrlVal = secVid.videoUrl || sec8.videoUrl;
                   if (!videoUrlVal || videoUrlVal === "/IPSIntroVideo.mp4" || videoUrlVal === "/Videos/IPSIntroVideo.mp4") {
                     videoUrlVal = DEFAULT_VIDEO;
                   }
@@ -3192,7 +3379,9 @@ export function HomeLayoutEditorModal({
                       const prevVid = prev["section-video"]?.[0] || {};
                       const prevSec8 = prev["section-8"]?.[0] || {};
                       const newVid = { ...prevVid, ...updates };
+                      delete newVid.introFileUrl;
                       const newSec8 = { ...prevSec8, ...updates };
+                      delete newSec8.introFileUrl;
                       return {
                         ...prev,
                         "section-video": [newVid],
@@ -3251,7 +3440,7 @@ export function HomeLayoutEditorModal({
                             readOnly
                             placeholder="e.g. https://res.cloudinary.com/.../IPSIntroVideo.mp4"
                             value={videoUrlVal}
-                            onChange={(e) => updateVideoData({ introFileUrl: e.target.value, videoUrl: e.target.value })}
+                            onChange={(e) => updateVideoData({ videoUrl: e.target.value })}
                             className="flex-1 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 cursor-not-allowed px-3.5 py-2.5 text-xs font-mono outline-none shadow-2xs select-all"
                           />
 
@@ -3279,7 +3468,7 @@ export function HomeLayoutEditorModal({
                                     try {
                                       const url = await uploadImage(file, "Videos", "indian-public-school/assets/Videos");
                                       if (url) {
-                                        updateVideoData({ introFileUrl: url, videoUrl: url });
+                                        updateVideoData({ videoUrl: url });
                                       }
                                     } catch (err) {
                                       console.error("Video upload failed:", err);
@@ -3298,7 +3487,7 @@ export function HomeLayoutEditorModal({
                                 type="button"
                                 onClick={() => {
                                   if (confirm("Are you sure you want to remove the intro video?")) {
-                                    updateVideoData({ introFileUrl: "", videoUrl: "" });
+                                    updateVideoData({ videoUrl: "" });
                                   }
                                 }}
                                 className="flex items-center justify-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-bold text-red-600 hover:bg-red-100 transition cursor-pointer"
@@ -3359,7 +3548,7 @@ export function HomeLayoutEditorModal({
                       onClick={() => {
                         openGalleryPicker((url) => {
                           const currentCards = [...(homeObj["section-8"]?.[0]?.cardItem || [])];
-                          currentCards.push({ title: "New Level", heading: "New Level", description: "Course level details", fileUrl: url, imageUrl: url });
+                          currentCards.push({ title: "New Level", description: "Course level details", fileUrl: url });
                           const sec8 = [...(homeObj["section-8"] || [{}])];
                           sec8[0] = { ...sec8[0], cardItem: currentCards };
                           updateHome((prev) => ({ ...prev, "section-8": sec8 }));
@@ -3371,7 +3560,7 @@ export function HomeLayoutEditorModal({
                     </button>
                     <button
                       type="button"
-                      onClick={() => addItemToSection("section-8", { title: "New Level", heading: "New Level", description: "Course level details", fileUrl: "", imageUrl: "" })}
+                      onClick={() => addItemToSection("section-8", { title: "New Level", description: "Course level details", fileUrl: "" })}
                       className="flex items-center gap-1 rounded-xl bg-[#1a5d9c] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#102a4c]"
                     >
                       <Plus size={14} /> Add Course Level
@@ -3381,7 +3570,7 @@ export function HomeLayoutEditorModal({
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   {(Array.isArray(homeObj["section-8"]?.[0]?.cardItem) ? homeObj["section-8"][0].cardItem : []).map((course: any, idx: number) => {
-                    const cardImgUrl = course.fileUrl || course.imageUrl || "";
+                    const cardImgUrl = course.fileUrl || "";
                     const isCardUploading = uploadingCard === `sec8-${idx}`;
 
                     return (
@@ -3479,7 +3668,9 @@ export function HomeLayoutEditorModal({
                                     openGalleryPicker((url) => {
                                       const sec8 = [...(homeObj["section-8"] || [{}])];
                                       const cards = [...(sec8[0].cardItem || [])];
-                                      cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                      const nextCard = { ...cards[idx], fileUrl: url };
+                                      delete nextCard.imageUrl;
+                                      cards[idx] = nextCard;
                                       sec8[0] = { ...sec8[0], cardItem: cards };
                                       updateHome((prev) => ({ ...prev, "section-8": sec8 }));
                                     }, `Choose Image for ${course.title || "Course Level"}`);
@@ -3493,7 +3684,9 @@ export function HomeLayoutEditorModal({
                                   onClick={() => {
                                     const sec8 = [...(homeObj["section-8"] || [{}])];
                                     const cards = [...(sec8[0].cardItem || [])];
-                                    cards[idx] = { ...cards[idx], fileUrl: "", imageUrl: "" };
+                                    const nextCard = { ...cards[idx], fileUrl: "" };
+                                    delete nextCard.imageUrl;
+                                    cards[idx] = nextCard;
                                     sec8[0] = { ...sec8[0], cardItem: cards };
                                     updateHome((prev) => ({ ...prev, "section-8": sec8 }));
                                   }}
@@ -3517,7 +3710,9 @@ export function HomeLayoutEditorModal({
                                 openGalleryPicker((url) => {
                                   const sec8 = [...(homeObj["section-8"] || [{}])];
                                   const cards = [...(sec8[0].cardItem || [])];
-                                  cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                  const nextCard = { ...cards[idx], fileUrl: url };
+                                  delete nextCard.imageUrl;
+                                  cards[idx] = nextCard;
                                   sec8[0] = { ...sec8[0], cardItem: cards };
                                   updateHome((prev) => ({ ...prev, "section-8": sec8 }));
                                 }, `Choose Image for ${course.title || "Course Level"}`);
@@ -3551,7 +3746,9 @@ export function HomeLayoutEditorModal({
                                       if (url) {
                                         const sec8 = [...(homeObj["section-8"] || [{}])];
                                         const cards = [...(sec8[0].cardItem || [])];
-                                        cards[idx] = { ...cards[idx], fileUrl: url, imageUrl: url };
+                                        const nextCard = { ...cards[idx], fileUrl: url };
+                                        delete nextCard.imageUrl;
+                                        cards[idx] = nextCard;
                                         sec8[0] = { ...sec8[0], cardItem: cards };
                                         updateHome((prev) => ({ ...prev, "section-8": sec8 }));
                                       }
@@ -3689,37 +3886,77 @@ export function HomeLayoutEditorModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/80 px-6 py-4">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/80 px-6 py-3.5">
+          <div className="flex flex-wrap items-center gap-2.5">
             <span className="text-xs text-slate-500 font-medium">
-              Editing <strong className="text-[#1a5d9c]">{EDITOR_TABS.find((t) => t.id === activeTab)?.label || activeTab}</strong> — edits update the live datasource instantly.
+              Editing <strong className="text-[#1a5d9c]">{EDITOR_TABS.find((t) => t.id === activeTab)?.label || activeTab}</strong>
             </span>
+            {isDirty && (
+              <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 border border-amber-200 px-2 py-0.5 text-[11px] font-bold text-amber-700 animate-in fade-in duration-150">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                Unsaved changes
+              </span>
+            )}
+            {sectionSaveSuccess && (
+              <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 animate-in fade-in duration-200">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                {sectionSaveSuccess}
+              </span>
+            )}
             {saveSuccess && (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800 animate-in fade-in duration-200">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 {saveSuccess}
               </span>
             )}
+            {/* Auto-Save Toggle */}
+            <button
+              type="button"
+              onClick={() => setAutoSaveEnabled((prev) => !prev)}
+              className={`inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-lg border transition cursor-pointer ${
+                autoSaveEnabled
+                  ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                  : "border-slate-200 bg-white text-slate-500 hover:bg-slate-100"
+              }`}
+              title="Automatically save this section 2s after editing or when switching tabs"
+            >
+              <span className={`h-1.5 w-1.5 rounded-full ${autoSaveEnabled ? "bg-emerald-500 animate-pulse" : "bg-slate-300"}`}></span>
+              Auto-Save: {autoSaveEnabled ? "ON" : "OFF"}
+            </button>
+            {/* Refresh this section button */}
+            <button
+              type="button"
+              onClick={handleRefreshActiveSection}
+              disabled={isRefreshingSection}
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-slate-600 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 transition cursor-pointer disabled:opacity-50"
+              title="Reload just this section from server without reloading entire layout"
+            >
+              <i className={`bi bi-arrow-clockwise ${isRefreshingSection ? "animate-spin" : ""}`} />
+              <span>Refresh Section</span>
+            </button>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <button
               type="button"
               onClick={handleCloseModal}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
+              className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
             >
               Close
             </button>
+            {/* Fast Section Save Button (Primary) */}
             <button
               type="button"
-              onClick={handleSave}
-              disabled={saving || isSavingLocal || uploading}
-              className={`flex items-center gap-1.5 rounded-xl px-5 py-2 text-xs font-bold text-white shadow-md transition cursor-pointer ${saveSuccess
-                ? "bg-emerald-700 hover:bg-emerald-800"
-                : "bg-emerald-600 hover:bg-emerald-700"
-                } disabled:opacity-50`}
+              onClick={() => handleSaveActiveSection()}
+              disabled={isSavingSection || uploading}
+              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold text-white shadow-xs transition cursor-pointer ${
+                sectionSaveSuccess
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : "bg-[#1a5d9c] hover:bg-[#154b7d]"
+              } disabled:opacity-50`}
+              title="Save ONLY this section (fast, lightweight partial update)"
             >
-              {saving || isSavingLocal ? <Loader2 size={14} className="animate-spin text-white" /> : null}
-              <span>{saving || isSavingLocal ? "Saving & Publishing..." : saveSuccess ? "✓ Saved & Published" : "Save & Publish Layout"}</span>
+              {isSavingSection ? <Loader2 size={13} className="animate-spin text-white" /> : null}
+              <span>{isSavingSection ? "Saving Section..." : sectionSaveSuccess ? `✓ ${EDITOR_TABS.find((t) => t.id === activeTab)?.label || "Section"} Saved` : `Save ${EDITOR_TABS.find((t) => t.id === activeTab)?.label || "Section"}`}</span>
             </button>
           </div>
         </div>
@@ -3914,11 +4151,15 @@ export function HomeLayoutEditorModal({
               updateHome((prev: any) => {
                 const prevVid = prev["section-video"]?.[0] || {};
                 const prevSec8 = prev["section-8"]?.[0] || {};
-                return {
-                  ...prev,
-                  "section-video": [{ ...prevVid, introFileUrl: url, videoUrl: url }],
-                  "section-8": [{ ...prevSec8, introFileUrl: url, videoUrl: url }],
-                };
+                  const nextVid = { ...prevVid, videoUrl: url };
+                  delete nextVid.introFileUrl;
+                  const nextSec8 = { ...prevSec8, videoUrl: url };
+                  delete nextSec8.introFileUrl;
+                  return {
+                    ...prev,
+                    "section-video": [nextVid],
+                    "section-8": [nextSec8],
+                  };
               });
             } else if (galleryPickerTarget === "videoPoster") {
               updateHome((prev: any) => {
