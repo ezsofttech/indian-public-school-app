@@ -10,7 +10,6 @@ import {
   RefreshCw,
   Crown,
   Shield,
-  KeyRound,
   LogOut,
   Check,
 } from "lucide-react";
@@ -321,25 +320,15 @@ export function AdminHeader({
           </div>
         )}
 
-        {/* Change password link */}
-        <Link
-          href="/admin/change-password"
-          className="hidden md:flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-[#102a4c] shadow-2xs hover:bg-slate-50 hover:text-[#1a5d9c] transition"
-          title="Change Password"
-        >
-          <KeyRound size={14} className="text-[#1a5d9c]" />
-          <span>Password</span>
-        </Link>
-
-        {/* Logout button */}
+        {/* Sign Out button - ONLY on phone screen */}
         <button
           type="button"
           onClick={logout}
-          className="shrink-0 rounded-xl bg-[#102a4c] px-3 sm:px-4 py-2 text-xs font-bold text-white shadow-2xs transition hover:bg-[#1a5d9c] cursor-pointer"
+          className="flex md:hidden shrink-0 items-center justify-center rounded-xl bg-[#102a4c] p-2 text-xs font-bold text-white shadow-2xs transition hover:bg-[#1a5d9c] cursor-pointer"
           title="Sign Out"
+          aria-label="Sign Out"
         >
-          <span className="hidden sm:inline">Sign Out</span>
-          <span className="sm:hidden"><LogOut size={14} /></span>
+          <LogOut size={16} />
         </button>
       </div>
     </header>
