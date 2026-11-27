@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { RecordItem } from "../types/admin.types";
 import { API_URL } from "../config/admin.config";
+import { useAuth } from "@/contexts/auth-context";
 import { HomeHeroTab } from "./home-layout/HomeHeroTab";
 import { HomeQuickCardsTab } from "./home-layout/HomeQuickCardsTab";
 import { AnimatePresence } from "motion/react";
@@ -65,6 +66,8 @@ export function HomeLayoutEditorModal({
   onClose: () => void;
   onSave: (value: Record<string, unknown>, options?: { keepOpen?: boolean }) => void | Promise<void>;
 }) {
+  const { token: contextToken } = useAuth();
+  const activeToken = token || contextToken;
   const [activeTab, setActiveTab] = useState<
     | "header"
     | "footer"
@@ -107,7 +110,13 @@ export function HomeLayoutEditorModal({
   const [isSavingLocal, setIsSavingLocal] = useState<boolean>(false);
   const [isSavingSection, setIsSavingSection] = useState<boolean>(false);
   const [sectionSaveSuccess, setSectionSaveSuccess] = useState<string>("");
-  const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean>(false);
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("ips_admin_autosave_enabled");
+      return stored === "true";
+    }
+    return false;
+  });
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [isRefreshingSection, setIsRefreshingSection] = useState<boolean>(false);
 
@@ -412,7 +421,7 @@ export function HomeLayoutEditorModal({
 
       const res = await axios.post(`${API_URL}/uploads`, formData, {
         headers: {
-          Authorization: token ? `Bearer ${token}` : "",
+          Authorization: activeToken ? `Bearer ${activeToken}` : "",
           "Content-Type": "multipart/form-data",
         },
         onUploadProgress: (progressEvent) => {
@@ -655,6 +664,7 @@ export function HomeLayoutEditorModal({
   };
 
   const handleSaveActiveSection = async (targetTab = activeTab) => {
+    if (isSavingSection) return;
     const payload = getActiveSectionPayload(targetTab);
     if (payload === null || payload === undefined) return;
     setIsSavingSection(true);
@@ -662,16 +672,50 @@ export function HomeLayoutEditorModal({
     setUploadError("");
 
     try {
-      await axios.patch(
-        `${API_URL}/school-settings/section/${targetTab}`,
-        { value: payload },
-        {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-            "Content-Type": "application/json",
+      if (targetTab === "footer" && datasource?.["contact-us"]) {
+        await axios.patch(
+          `${API_URL}/school-settings/partial`,
+          {
+            updates: {
+              footer: payload,
+              "contact-us": datasource["contact-us"],
+            },
           },
-        }
-      );
+          {
+            headers: {
+              Authorization: activeToken ? `Bearer ${activeToken}` : "",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } else if (targetTab === "video") {
+        await axios.patch(
+          `${API_URL}/school-settings/partial`,
+          {
+            updates: {
+              video: payload,
+              ...(homeObj?.["section-8"] ? { sec8: homeObj["section-8"] } : {}),
+            },
+          },
+          {
+            headers: {
+              Authorization: activeToken ? `Bearer ${activeToken}` : "",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } else {
+        await axios.patch(
+          `${API_URL}/school-settings/section/${targetTab}`,
+          { value: payload },
+          {
+            headers: {
+              Authorization: activeToken ? `Bearer ${activeToken}` : "",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
       const tabLabel = EDITOR_TABS.find((t) => t.id === targetTab)?.label || targetTab;
       setSectionSaveSuccess(`${tabLabel} updated!`);
       setIsDirty(false);
@@ -741,6 +785,7 @@ export function HomeLayoutEditorModal({
   }, [datasource, autoSaveEnabled, isDirty, activeTab]);
 
   const updateHeaderField = (field: string, val: string) => {
+    setIsDirty(true);
     setDatasource((prev: any) => {
       const homeList = Array.isArray(prev?.home) ? [...prev.home] : [{}];
       const firstHome = { ...(homeList[0] || {}) };
@@ -762,6 +807,7 @@ export function HomeLayoutEditorModal({
   };
 
   const updateFooterField = (field: string, val: string) => {
+    setIsDirty(true);
     setDatasource((prev: any) => {
       const homeList = Array.isArray(prev?.home) ? [...prev.home] : [{}];
       const firstHome = { ...(homeList[0] || {}) };
@@ -783,6 +829,7 @@ export function HomeLayoutEditorModal({
   };
 
   const updateFooterColumns = (updater: (cols: any[]) => any[]) => {
+    setIsDirty(true);
     setDatasource((prev: any) => {
       const homeList = Array.isArray(prev?.home) ? [...prev.home] : [{}];
       const firstHome = { ...(homeList[0] || {}) };
@@ -838,6 +885,7 @@ export function HomeLayoutEditorModal({
   };
 
   const updateWhatsAppField = (field: string, val: any) => {
+    setIsDirty(true);
     setDatasource((prev: any) => {
       const homeList = Array.isArray(prev?.home) ? [...prev.home] : [{}];
       const firstHome = { ...(homeList[0] || {}) };
@@ -859,6 +907,7 @@ export function HomeLayoutEditorModal({
   };
 
   const updatePopupBannerField = (field: string, val: any) => {
+    setIsDirty(true);
     setDatasource((prev: any) => {
       const homeList = Array.isArray(prev?.home) ? [...prev.home] : [{}];
       const firstHome = { ...(homeList[0] || {}) };
@@ -1156,6 +1205,7 @@ export function HomeLayoutEditorModal({
                       value={datasource?.["contact-us"]?.["google-map-link"] || ""}
                       onChange={(e) => {
                         const val = e.target.value;
+                        setIsDirty(true);
                         setDatasource((prev: any) => {
                           const next = { ...prev };
                           const cUs = { ...(next["contact-us"] || {}) };
@@ -1177,6 +1227,7 @@ export function HomeLayoutEditorModal({
                       value={datasource?.["contact-us"]?.["google-map-embed-link"] || ""}
                       onChange={(e) => {
                         const val = e.target.value;
+                        setIsDirty(true);
                         setDatasource((prev: any) => {
                           const next = { ...prev };
                           const cUs = { ...(next["contact-us"] || {}) };
@@ -1201,6 +1252,7 @@ export function HomeLayoutEditorModal({
                       <button
                         type="button"
                         onClick={() => {
+                          setIsDirty(true);
                           setDatasource((prev: any) => {
                             const next = { ...prev };
                             const contactUs = { ...(next["contact-us"] || {}) };
@@ -1249,6 +1301,7 @@ export function HomeLayoutEditorModal({
                                 value={dayKey}
                                 onChange={(e) => {
                                   const newDayKey = e.target.value;
+                                  setIsDirty(true);
                                   setDatasource((prev: any) => {
                                     const next = { ...prev };
                                     const cUs = { ...(next["contact-us"] || {}) };
@@ -1280,6 +1333,7 @@ export function HomeLayoutEditorModal({
                                 value={timeVal}
                                 onChange={(e) => {
                                   const newTimeVal = e.target.value;
+                                  setIsDirty(true);
                                   setDatasource((prev: any) => {
                                     const next = { ...prev };
                                     const cUs = { ...(next["contact-us"] || {}) };
@@ -1300,6 +1354,7 @@ export function HomeLayoutEditorModal({
                               type="button"
                               title="Delete Timing Slot"
                               onClick={() => {
+                                setIsDirty(true);
                                 setDatasource((prev: any) => {
                                   const next = { ...prev };
                                   const cUs = { ...(next["contact-us"] || {}) };
@@ -3912,7 +3967,15 @@ export function HomeLayoutEditorModal({
             {/* Auto-Save Toggle */}
             <button
               type="button"
-              onClick={() => setAutoSaveEnabled((prev) => !prev)}
+              onClick={() => {
+                setAutoSaveEnabled((prev) => {
+                  const next = !prev;
+                  if (typeof window !== "undefined") {
+                    localStorage.setItem("ips_admin_autosave_enabled", String(next));
+                  }
+                  return next;
+                });
+              }}
               className={`inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-lg border transition cursor-pointer ${
                 autoSaveEnabled
                   ? "border-emerald-300 bg-emerald-50 text-emerald-700"
