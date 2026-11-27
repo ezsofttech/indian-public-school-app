@@ -631,13 +631,6 @@
           "delaySeconds": 3,
           "onlyOncePerSession": false
         },
-        "site_logo": {
-          "logoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Logos/IPSLogo.png",
-          "secondaryLogoUrl": "https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/Settings/Logos/file_dvxond.png",
-          "showSecondaryLogo": false,
-          "logoText": "",
-          "logoSubText": ""
-        },
         "certified_board": {
           "title": "CBSE Affiliated School (Nursery to XII)",
           "subtitle": "",

@@ -180,7 +180,7 @@ export function Footer() {
   ];
 
   const headerConfig = (homeIdentity.header as Record<string, any>) || (siteData?.header as Record<string, any>) || {};
-  const siteLogo = (siteData?.site_logo as Record<string, any>) || (homeIdentity.site_logo as Record<string, any>) || {};
+  const siteLogo = (siteData?.site_logo as Record<string, any>) || {};
   const rawLogoUrl = (siteLogo.logoUrl ? String(siteLogo.logoUrl).trim() : "") || text(footerConfig.logoUrl) || (headerConfig.logoUrl ? String(headerConfig.logoUrl).trim() : "") || DEFAULT_LOGO;
   const customLogoUrl = imageUrl(rawLogoUrl);
   const isBanner = isBannerLogoUrl(rawLogoUrl);

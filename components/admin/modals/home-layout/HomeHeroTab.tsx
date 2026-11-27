@@ -179,7 +179,7 @@ export function HomeHeroTab({ homeObj, updateHome, uploadImage }: HomeHeroTabPro
   };
 
   const addNewSlide = (bannerUrl: string, extraProps: Record<string, any> = {}) => {
-    const cleanBanner = toCleanRelativeAssetPath(bannerUrl) || bannerUrl;
+    const cleanBanner = bannerUrl?.trim() || "";
     const newSlide = {
       bannerUrl: cleanBanner,
       title: "",
@@ -244,7 +244,7 @@ export function HomeHeroTab({ homeObj, updateHome, uploadImage }: HomeHeroTabPro
         if (uploaded) finalUrl = uploaded;
       }
 
-      const cleanFinalUrl = toCleanRelativeAssetPath(finalUrl) || finalUrl;
+      const cleanFinalUrl = finalUrl?.trim() || "";
 
       if (studioTarget.isNewUpload) {
         addNewSlide(cleanFinalUrl);
@@ -258,7 +258,7 @@ export function HomeHeroTab({ homeObj, updateHome, uploadImage }: HomeHeroTabPro
       }
     } catch (err) {
       console.error("Error saving cropped poster:", err);
-      const cleanSrc = toCleanRelativeAssetPath(src) || src;
+      const cleanSrc = src?.trim() || "";
       if (studioTarget.isNewUpload) {
         addNewSlide(cleanSrc);
       }
@@ -879,17 +879,17 @@ export function HomeHeroTab({ homeObj, updateHome, uploadImage }: HomeHeroTabPro
         isOpen={isGalleryOpen}
         onClose={() => setIsGalleryOpen(false)}
         onSelectImage={async (url) => {
-          const clean = toCleanRelativeAssetPath(url) || url;
-          if (clean.startsWith("data:")) {
+          const selectedUrl = url?.trim() || "";
+          if (selectedUrl.startsWith("data:")) {
             try {
-              const file = dataURLtoFile(clean, `hero-poster-gallery-crop-${Date.now()}.webp`);
+              const file = dataURLtoFile(selectedUrl, `hero-poster-gallery-crop-${Date.now()}.webp`);
               const uploaded = await uploadImage(file);
-              addNewSlide(toCleanRelativeAssetPath(uploaded) || uploaded || clean);
+              addNewSlide(uploaded || selectedUrl);
             } catch {
-              addNewSlide(clean);
+              addNewSlide(selectedUrl);
             }
           } else {
-            addNewSlide(clean);
+            addNewSlide(selectedUrl);
           }
           setIsGalleryOpen(false);
         }}

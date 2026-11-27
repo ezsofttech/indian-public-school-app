@@ -866,18 +866,10 @@ export function HeaderFooterSettingsCard({
       let rawDsVal: any = siteDsItem?.value;
       if (!rawDsVal) {
         try {
-          const res = await axios.get(`${API_URL}/school-settings/key/site_datasource?t=${Date.now()}`);
-          const itemData = res.data?.data ?? res.data;
-          if (itemData?.value) {
-            rawDsVal = itemData.value;
-          }
+          const res = await axios.get(`${API_URL}/school-settings/datasource?t=${Date.now()}`);
+          rawDsVal = res.data?.data ?? res.data;
         } catch {
-          try {
-            const res2 = await axios.get(`${API_URL}/school-settings/datasource?t=${Date.now()}`);
-            rawDsVal = res2.data?.data ?? res2.data;
-          } catch {
-            // Keep default fallback
-          }
+          // Keep default fallback
         }
       }
 
@@ -894,7 +886,7 @@ export function HeaderFooterSettingsCard({
 
       const homeIdentity = (Array.isArray(dsVal.home) ? dsVal.home[0]?.identity : dsVal.identity) || {};
 
-      const logoVal = homeIdentity.site_logo || dsVal.site_logo;
+      const logoVal = dsVal.site_logo;
       if (logoVal && typeof logoVal === "object") {
         setSiteLogo((prev) => ({ ...prev, ...(logoVal as object) }));
       }
@@ -986,11 +978,12 @@ export function HeaderFooterSettingsCard({
         ...(firstHome.identity || {}),
         header: currentHeader,
         footer: currentFooter,
-        site_logo: siteLogo,
         certified_board: certToSave,
         trust_board: trustToSave,
         academic_partner: partnerToSave,
       };
+      delete (identityObj as any).site_logo;
+      delete (firstHome as any).site_logo;
       firstHome.identity = identityObj;
       homeList[0] = firstHome;
 
@@ -1005,24 +998,24 @@ export function HeaderFooterSettingsCard({
         home: homeList,
       };
 
-      // Save all unified identity & layout settings in a single fast atomic request
-      await axios.post(
-        `${API_URL}/school-settings`,
+      // Save identity settings partially without touching home or other sections
+      await axios.patch(
+        `${API_URL}/school-settings/partial`,
         {
-          key: "site_datasource",
-          category: "Content",
-          description: "Full home page and website section layout configuration datasource",
-          value: finalVal,
-          status: "Active",
+          updates: {
+            site_logo: siteLogo,
+            certified_board: certToSave,
+            trust_board: trustToSave,
+            academic_partner: partnerToSave,
+            header: currentHeader,
+            footer: currentFooter,
+          },
         },
         { headers }
       );
 
       setFetchedDsValue(finalVal);
       setMessage("Settings saved and updated successfully!");
-      onSaveComplete();
-
-      setMessage("Settings saved successfully! Footer identity cards updated.");
       onSaveComplete();
     } catch (err) {
       if (axios.isAxiosError(err)) {

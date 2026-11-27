@@ -227,10 +227,24 @@ export function getAssetUrl(url?: any): string {
     return trimmed;
   }
 
-  // Relative path (e.g. /assets/Settings/..., /Videos/...)
+  // Relative path (e.g. /assets/Settings/..., /Videos/..., /Settings/Home/...)
   let cleanPath = trimmed.replace(/\\/g, '/').replace(/^\/+/, '');
   if (cleanPath.toLowerCase().startsWith('public/')) {
     cleanPath = cleanPath.slice('public/'.length).replace(/^\/+/, '');
+  }
+
+  // If path refers to remote cloud folders (Settings, Album, Others, Documents, Logos, Staff, Videos),
+  // map it directly to Cloudinary base URL so it renders properly in preview and production
+  const cloudFolderPrefixes = ['settings/', 'album/', 'others/', 'documents/', 'logos/', 'staff/', 'videos/'];
+  const lowerPath = cleanPath.toLowerCase();
+  const startsWithCloudFolder = cloudFolderPrefixes.some((prefix) => lowerPath.startsWith(prefix));
+
+  if (startsWithCloudFolder) {
+    const isVideo = lowerPath.endsWith('.mp4') || lowerPath.endsWith('.webm') || lowerPath.startsWith('videos/');
+    if (isVideo) {
+      return `https://res.cloudinary.com/ctpyyyuj/video/upload/ips-education/assets/${cleanPath}`;
+    }
+    return `https://res.cloudinary.com/ctpyyyuj/image/upload/f_auto,q_auto/ips-education/assets/${cleanPath}`;
   }
 
   return `/${cleanPath}`;

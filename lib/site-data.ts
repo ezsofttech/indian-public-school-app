@@ -257,14 +257,12 @@ export async function getSiteData(): Promise<SiteData> {
   // Backend IS attached -> attempt to load live data, with graceful fallback to @/data if calls fail or time out
   const [
     siteResponse,
-    logoSettingResponse,
     newsResponse,
     galleryResponse,
     reviewsResponse,
     menuItemsResponse,
   ] = await Promise.all([
     getOptionalApi<SiteData | { value?: SiteData; _doc?: { value?: SiteData } }>("/school-settings/datasource"),
-    getOptionalApi<SiteLogoSetting | { value?: SiteLogoSetting }>("/school-settings/key/site_logo"),
     getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/news", { limit: 20, page: 1, sortOrder: "desc" }),
     getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/gallery", { limit: 500, page: 1, sortOrder: "desc" }),
     getOptionalApi<SiteRecord[] | PaginatedData<SiteRecord>>("/reviews", { limit: 50, page: 1, sortOrder: "desc", isApproved: "true" }),
@@ -276,8 +274,6 @@ export async function getSiteData(): Promise<SiteData> {
     ? rawSite
     : (staticSchoolSettings as unknown as SiteData);
 
-  const dbLogoSetting = logoSettingResponse ? unwrapSetting<SiteLogoSetting>(logoSettingResponse) : null;
-  
   const apiNews = unwrapCollection(newsResponse);
   const finalNews = apiNews.length > 0
     ? apiNews
@@ -301,9 +297,7 @@ export async function getSiteData(): Promise<SiteData> {
         : (staticMenuItems as SiteRecord[]));
   const finalMenuItems = buildMenuHierarchy(menuList as SiteRecord[]);
 
-  const siteLogoFromDb = (dbLogoSetting && typeof dbLogoSetting === "object" && dbLogoSetting.logoUrl)
-    ? dbLogoSetting
-    : (siteData.site_logo || (siteData.home?.[0]?.identity as any)?.site_logo);
+  const siteLogoFromDb = siteData.site_logo;
 
   const homeList = (Array.isArray(siteData.home) && siteData.home.length > 0)
     ? siteData.home
@@ -329,7 +323,6 @@ export async function getSiteData(): Promise<SiteData> {
             ...(siteLogoFromDb.logoText ? { logoText: siteLogoFromDb.logoText } : {}),
             ...(siteLogoFromDb.logoSubText ? { logoSubText: siteLogoFromDb.logoSubText } : {}),
           },
-          site_logo: siteLogoFromDb,
         },
       };
     }

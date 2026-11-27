@@ -257,7 +257,7 @@ export function Navbar() {
   }, [open]);
 
   const homeIdentity = (homeData(siteData).identity as Record<string, unknown>) || {};
-  const siteLogo = (siteData?.site_logo as Record<string, any>) || (homeIdentity.site_logo as Record<string, any>) || {};
+  const siteLogo = (siteData?.site_logo as Record<string, any>) || {};
   const headerConfig = (homeIdentity.header as Record<string, any>) || (siteData?.header as Record<string, any>) || {};
   const rawLogoUrl = (siteLogo.logoUrl ? String(siteLogo.logoUrl).trim() : "") || (headerConfig.logoUrl ? String(headerConfig.logoUrl).trim() : "") || DEFAULT_LOGO;
   const customLogoUrl = imageUrl(rawLogoUrl);
