@@ -68,11 +68,14 @@ function NavIcon({ name, className = "h-4 w-4 shrink-0" }: { name?: string; clas
 }
 
 function isItemActive(pathname: string, item: NavItem): boolean {
+  if (item.href === "/admin" || item.href === "/admin/dashboard") {
+    return pathname === "/admin" || pathname === "/admin/dashboard";
+  }
   if (pathname === item.href) return true;
   if (item.aliases && item.aliases.some((alias) => pathname === alias || pathname.startsWith(alias + "/"))) {
     return true;
   }
-  if (item.href !== "/admin" && item.href !== "/admin/dashboard" && pathname.startsWith(item.href + "/")) {
+  if (pathname.startsWith(item.href + "/")) {
     return true;
   }
   return false;
@@ -193,7 +196,7 @@ export function AdminSidebar({
                         collapsed ? "justify-center px-2 py-2.5" : ""
                       } ${
                         active
-                          ? "bg-amber-400 text-[#102a4c] font-bold shadow-md shadow-amber-400/20"
+                          ? "bg-[#1a5d9c] text-white font-bold shadow-md shadow-blue-950/40 border border-blue-400/30"
                           : "text-slate-300 hover:bg-white/10 hover:text-white"
                       }`}
                     >
@@ -201,7 +204,7 @@ export function AdminSidebar({
                         <NavIcon
                           name={item.icon}
                           className={`h-4 w-4 transition-transform group-hover:scale-110 ${
-                            active ? "text-[#102a4c]" : "text-slate-300 group-hover:text-amber-300"
+                            active ? "text-white" : "text-slate-300 group-hover:text-blue-300"
                           }`}
                         />
                         {collapsed && badgeCount > 0 && (
@@ -218,7 +221,7 @@ export function AdminSidebar({
                             <span
                               className={`shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-extrabold shadow-xs ${
                                 active
-                                  ? "bg-[#102a4c] text-white"
+                                  ? "bg-white/20 text-white"
                                   : "bg-red-500 text-white animate-pulse"
                               }`}
                             >
@@ -227,9 +230,7 @@ export function AdminSidebar({
                           )}
                           {item.superAdminOnly && (
                             <span
-                              className={`ml-auto shrink-0 ${
-                                active ? "text-[#102a4c]" : "text-amber-300"
-                              }`}
+                              className="ml-auto shrink-0 text-amber-300"
                               title="Super Admin Only"
                             >
                               <Crown size={12} />
