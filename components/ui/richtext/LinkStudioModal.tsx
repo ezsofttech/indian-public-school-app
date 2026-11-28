@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Link as LinkIcon, X, CheckCircle2, Trash2, Check, Globe, Building2, ShieldCheck, AlertTriangle } from "lucide-react";
-import axios from "axios";
+import http from "@/lib/http";
 import { API_URL } from "@/lib/api-client";
 import { formatHref } from "@/lib/utils";
 
@@ -92,7 +92,7 @@ export const LinkStudioModal: React.FC<LinkStudioModalProps> = ({
         const fetchDynamicMenu = async () => {
             setLoadingMenu(true);
             try {
-                const res = await axios.get(`${API_URL}/menu-items?publishedOnly=true`);
+                const res = await http.get(`${API_URL}/menu-items?publishedOnly=true`);
                 const items = res.data?.data ?? res.data ?? [];
                 if (isMounted && Array.isArray(items) && items.length > 0) {
                     setRawApiItems(items);

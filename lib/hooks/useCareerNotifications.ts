@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 
 export interface CareerNotificationRecord extends Record<string, unknown> {
   id?: string;
@@ -51,7 +51,7 @@ export function useCareerNotifications(
 
     try {
       const headers = { Authorization: `Bearer ${tokenRef.current}` };
-      const res = await axios.get(`${apiUrl}/notifications/unread-count?type=CAREER_APPLICATION`, { headers });
+      const res = await http.get(`${apiUrl}/notifications/unread-count?type=CAREER_APPLICATION`, { headers });
       const body = res.data;
       let count = 0;
       let itemsList: CareerNotificationRecord[] = [];
@@ -118,7 +118,7 @@ export function useCareerNotifications(
       if (!id) return;
       try {
         const headers = tokenRef.current ? { Authorization: `Bearer ${tokenRef.current}` } : {};
-        await axios.patch(`${apiUrl}/notifications/${id}/read`, {}, { headers });
+        await http.patch(`${apiUrl}/notifications/${id}/read`, {}, { headers });
 
         setUnreadNotifications((prev) =>
           prev.filter((item) => String(item.id || item._id || item.publicId) !== id)
@@ -136,7 +136,7 @@ export function useCareerNotifications(
   const markAllAsRead = useCallback(async () => {
     try {
       const headers = tokenRef.current ? { Authorization: `Bearer ${tokenRef.current}` } : {};
-      await axios.patch(`${apiUrl}/notifications/mark-all-read?type=CAREER_APPLICATION`, {}, { headers });
+      await http.patch(`${apiUrl}/notifications/mark-all-read?type=CAREER_APPLICATION`, {}, { headers });
 
       setUnreadNotifications([]);
       setUnreadCount(0);

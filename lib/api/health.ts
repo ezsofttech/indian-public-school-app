@@ -1,6 +1,6 @@
 import { apiClient } from "@/lib/api-client";
 import { API_ROOT_URL, TIMEOUTS } from "@/lib/config";
-import axios from "axios";
+import http from "@/lib/http";
 
 export interface HealthVisitorData {
   source?: string;
@@ -56,7 +56,7 @@ export async function checkBackendHealth(
     responseData = typeof res.data === "object" ? res.data : undefined;
   } catch {
     try {
-      const res = await axios.get<any>(`${API_ROOT_URL}/health${query}`, {
+      const res = await http.get<any>(`${API_ROOT_URL}/health${query}`, {
         timeout: timeoutMs,
         headers: { Accept: "application/json" },
       });

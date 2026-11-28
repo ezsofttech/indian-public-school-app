@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import { ArrowLeft, ArrowRight, ChevronDown, ChevronRight, ExternalLink, GraduationCap, Menu, Phone, Sparkles, X } from "lucide-react";
-import axios from "axios";
+import http from "@/lib/http";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn, formatHref, isExternalUrl } from "@/lib/utils";
@@ -123,7 +123,7 @@ export function Navbar() {
 
   useEffect(() => {
     let isMounted = true;
-    axios
+    http
       .get(`${API_URL}/menu-items`, { params: { publishedOnly: "true" } })
       .then((res) => {
         if (!isMounted) return;

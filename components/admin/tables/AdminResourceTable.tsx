@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 import {
   SlidersHorizontal,
   List,
@@ -623,7 +623,7 @@ export function HeaderFooterSettingsCard({
     let isMounted = true;
     const fetchPages = async () => {
       try {
-        const res = await axios.get(`${API_URL}/pages/published`);
+        const res = await http.get(`${API_URL}/pages/published`);
         const parsed = asPaginatedPayload(res.data);
         if (Array.isArray(parsed.items) && isMounted) {
           const list: { title: string; url: string }[] = [];
@@ -746,7 +746,7 @@ export function HeaderFooterSettingsCard({
         stageMessage: "Uploading logo…",
       }));
 
-      const res = await axios.post(`${API_URL}/uploads`, formData, {
+      const res = await http.post(`${API_URL}/uploads`, formData, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
           "Content-Type": "multipart/form-data",
@@ -793,7 +793,7 @@ export function HeaderFooterSettingsCard({
       await new Promise((resolve) => setTimeout(resolve, 800));
     } catch (err: any) {
       console.error("Setting logo upload failed:", err);
-      const errMsg = axios.isAxiosError(err)
+      const errMsg = http.isAxiosError(err)
         ? String(err.response?.data?.message || err.message)
         : "Failed to upload setting logo.";
       setError(errMsg);
@@ -866,7 +866,7 @@ export function HeaderFooterSettingsCard({
       let rawDsVal: any = siteDsItem?.value;
       if (!rawDsVal) {
         try {
-          const res = await axios.get(`${API_URL}/school-settings/datasource?t=${Date.now()}`);
+          const res = await http.get(`${API_URL}/school-settings/datasource?t=${Date.now()}`);
           rawDsVal = res.data?.data ?? res.data;
         } catch {
           // Keep default fallback
@@ -999,7 +999,7 @@ export function HeaderFooterSettingsCard({
       };
 
       // Save identity settings partially without touching home or other sections
-      await axios.patch(
+      await http.patch(
         `${API_URL}/school-settings/partial`,
         {
           updates: {
@@ -1018,7 +1018,7 @@ export function HeaderFooterSettingsCard({
       setMessage("Settings saved and updated successfully!");
       onSaveComplete();
     } catch (err) {
-      if (axios.isAxiosError(err)) {
+      if (http.isAxiosError(err)) {
         const msg = (err.response?.data as { message?: string })?.message || err.message;
         setError(Array.isArray(msg) ? msg.join(", ") : String(msg));
       } else {
@@ -2504,7 +2504,7 @@ export function ResourceView({
               deletingId={deletingId}
               onTogglePublished={canEdit ? async (item, isPub) => {
                 try {
-                  await axios.patch(
+                  await http.patch(
                     `${API_URL}/${resourcePath[resource.key]}/${itemId(item)}`,
                     { isPublished: isPub },
                     { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
@@ -2626,7 +2626,7 @@ export function ResourceView({
                                       onChange={async (e) => {
                                         const newStatus = e.target.value;
                                         try {
-                                          await axios.patch(
+                                          await http.patch(
                                             `${API_URL}/${resourcePath[resource.key]}/${itemId(item)}`,
                                             { status: newStatus },
                                             { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
@@ -2714,7 +2714,7 @@ export function ResourceView({
                                       onChange={async (e) => {
                                         const newPublished = e.target.value === "Published";
                                         try {
-                                          await axios.patch(
+                                          await http.patch(
                                             `${API_URL}/${resourcePath[resource.key]}/${itemId(item)}`,
                                             { isPublished: newPublished },
                                             { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
@@ -2787,7 +2787,7 @@ export function ResourceView({
                                       onChange={async (e) => {
                                         const newActive = e.target.value === "Active";
                                         try {
-                                          await axios.patch(
+                                          await http.patch(
                                             `${API_URL}/${resourcePath[resource.key]}/${itemId(item)}`,
                                             { isActive: newActive },
                                             { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
@@ -2860,7 +2860,7 @@ export function ResourceView({
                                       onChange={async (e) => {
                                         const newApproved = e.target.value === "Approved";
                                         try {
-                                          await axios.patch(
+                                          await http.patch(
                                             `${API_URL}/${resourcePath[resource.key]}/${itemId(item)}`,
                                             { isApproved: newApproved },
                                             { headers: token ? { Authorization: `Bearer ${token}` } : undefined }

@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/contexts/toast-context";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 import { Eye, EyeOff, LoaderCircle, LockKeyhole, ShieldCheck } from "lucide-react";
 import { DEFAULT_CREST_LOGO, imageUrl } from "@/lib/site-data";
 import { CloudStatusIcon } from "@/components/ui/CloudStatusIcon";
@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
       router.replace(next?.startsWith("/admin") ? next : "/admin/dashboard");
     } catch (reason) {
       let msg = "Invalid email or password.";
-      if (axios.isAxiosError(reason)) {
+      if (http.isAxiosError(reason)) {
         msg = reason.response?.data?.message || reason.message || msg;
       } else if (reason instanceof Error) {
         msg = reason.message;

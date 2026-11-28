@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 import {
   Briefcase,
   Plus,
@@ -166,7 +166,7 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
   const fetchPosts = useCallback(async () => {
     setLoadingPosts(true);
     try {
-      const res = await axios.get(`${apiUrl}/careers?isActive=all`, {
+      const res = await http.get(`${apiUrl}/careers?isActive=all`, {
         headers: getHeaders(),
       });
       const data = res.data;
@@ -195,7 +195,7 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
 
     setLoadingApps(true);
     try {
-      const res = await axios.get(`${apiUrl}/careers/applications/all`, {
+      const res = await http.get(`${apiUrl}/careers/applications/all`, {
         headers: getHeaders(),
       });
       const data = res.data;
@@ -228,7 +228,7 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
       const formData = new FormData();
       formData.append("file", file);
       formData.append("folder", "careers/posts");
-      const res = await axios.post(`${apiUrl}/uploads`, formData, {
+      const res = await http.post(`${apiUrl}/uploads`, formData, {
         headers: {
           ...getHeaders(),
           "Content-Type": "multipart/form-data",
@@ -244,7 +244,7 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
         const formData = new FormData();
         formData.append("file", file);
         formData.append("folder", "careers/posts");
-        const res = await axios.post(`${apiUrl}/uploads/public`, formData, {
+        const res = await http.post(`${apiUrl}/uploads/public`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         const data = res.data?.data ?? res.data;
@@ -370,11 +370,11 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
 
       const postId = editingPost?._id || editingPost?.id;
       if (postId) {
-        await axios.patch(`${apiUrl}/careers/${postId}`, payload, {
+        await http.patch(`${apiUrl}/careers/${postId}`, payload, {
           headers: getHeaders(),
         });
       } else {
-        await axios.post(`${apiUrl}/careers`, payload, {
+        await http.post(`${apiUrl}/careers`, payload, {
           headers: getHeaders(),
         });
       }
@@ -393,7 +393,7 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
     if (!confirm("Are you sure you want to delete this career post?")) return;
     setDeletingPostId(id);
     try {
-      await axios.delete(`${apiUrl}/careers/${id}`, { headers: getHeaders() });
+      await http.delete(`${apiUrl}/careers/${id}`, { headers: getHeaders() });
       fetchPosts();
     } catch (err: any) {
       alert(`Failed to delete post: ${err?.response?.data?.message || err.message}`);
@@ -407,7 +407,7 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
     const id = post._id || post.id;
     if (!id) return;
     try {
-      await axios.patch(
+      await http.patch(
         `${apiUrl}/careers/${id}`,
         { isActive: !post.isActive },
         { headers: getHeaders() }
@@ -425,7 +425,7 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
   ) => {
     setUpdatingAppStatusId(id);
     try {
-      await axios.patch(
+      await http.patch(
         `${apiUrl}/careers/applications/${id}/status`,
         { status: newStatus },
         { headers: getHeaders() }
@@ -447,7 +447,7 @@ export function CareersAdmin({ apiUrl, token, onRefreshNotifications }: CareersA
     if (!confirm("Are you sure you want to delete this application record?")) return;
     setDeletingAppId(id);
     try {
-      await axios.delete(`${apiUrl}/careers/applications/${id}`, {
+      await http.delete(`${apiUrl}/careers/applications/${id}`, {
         headers: getHeaders(),
       });
       if (selectedApp && (selectedApp._id === id || selectedApp.id === id)) {

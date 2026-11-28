@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 import { KeyRound, Lock, Eye, EyeOff, LoaderCircle, CheckCircle2 } from "lucide-react";
 import { AdminShell } from "@/components/admin/layout/admin-shell";
 import { useAuth } from "@/contexts/auth-context";
@@ -47,7 +47,7 @@ export default function ChangePasswordPage() {
 
     setSubmitting(true);
     try {
-      const res = await axios.post(
+      const res = await http.post(
         `${API_URL}/auth/change-password`,
         { currentPassword, newPassword },
         {
@@ -62,7 +62,7 @@ export default function ChangePasswordPage() {
       setConfirmPassword("");
     } catch (reason) {
       let msg = "Failed to update password.";
-      if (axios.isAxiosError(reason)) {
+      if (http.isAxiosError(reason)) {
         msg = reason.response?.data?.message || reason.message || msg;
       } else if (reason instanceof Error) {
         msg = reason.message;

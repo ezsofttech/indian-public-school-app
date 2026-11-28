@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 import {
   AlertCircle,
   ChevronDown,
@@ -127,7 +127,7 @@ export function RecordDialog({
 
   React.useEffect(() => {
     let isMounted = true;
-    axios
+    http
       .get(`${API_URL}/pages/published`)
       .then((res) => {
         const parsed = asPaginatedPayload(res.data);
@@ -253,7 +253,7 @@ export function RecordDialog({
           }
         }
 
-        const res = await axios.post(`${API_URL}/uploads`, formData, {
+        const res = await http.post(`${API_URL}/uploads`, formData, {
           headers: {
             Authorization: token ? `Bearer ${token}` : "",
             "Content-Type": "multipart/form-data",
@@ -283,7 +283,7 @@ export function RecordDialog({
         const uploadedUrl = toCleanRelativeAssetPath(rawUrl);
         uploadedUrls.push(uploadedUrl);
       } catch (err) {
-        const errMsg = axios.isAxiosError(err)
+        const errMsg = http.isAxiosError(err)
           ? String(err.response?.data?.message || err.message)
           : `Failed to upload ${file.name}.`;
         setUploadError(errMsg);
@@ -342,7 +342,7 @@ export function RecordDialog({
         if (token) headers["Authorization"] = `Bearer ${token}`;
 
         // Wait with process loader until the file is removed from storage
-        await axios.delete(`${API_URL}/uploads/${encodeURIComponent(urlToRemove)}`, { headers }).catch(() => {});
+        await http.delete(`${API_URL}/uploads/${encodeURIComponent(urlToRemove)}`, { headers }).catch(() => {});
 
         const currentList = Array.isArray(values[field])
           ? (values[field] as string[])
@@ -447,7 +447,7 @@ export function RecordDialog({
     if (resource.key === "school-settings" && typeof payload.value === "string") {
       try { payload.value = JSON.parse(payload.value); } catch { /* Plain-text setting values are valid. */ }
     }
-    onSave(payload);
+    Promise.resolve(onSave(payload)).catch(() => {});
   };
 
   const isLargeModal = resource.key === "pages" || Object.values(resource.inputs).includes("richtext");

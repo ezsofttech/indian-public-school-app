@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 import {
   LayoutDashboard,
   X,
@@ -177,7 +177,7 @@ export function HomeLayoutEditorModal({
         return;
       }
       try {
-        const res = await axios.get(`${API_URL}/school-settings/datasource`);
+        const res = await http.get(`${API_URL}/school-settings/datasource`);
         const data = res.data?.data ?? res.data;
         const cleanData = data?.value ?? data;
         if (isMounted && cleanData && typeof cleanData === "object" && "home" in cleanData && Array.isArray(cleanData.home)) {
@@ -212,14 +212,14 @@ export function HomeLayoutEditorModal({
     const fetchExtraData = async () => {
       try {
         if (dbMenuItems.length === 0) {
-          const res = await axios.get(`${API_URL}/menu-items?publishedOnly=true`);
+          const res = await http.get(`${API_URL}/menu-items?publishedOnly=true`);
           const items = res.data?.data ?? res.data ?? [];
           if (isMounted && Array.isArray(items) && items.length > 0) {
             setDbMenuItems(items);
           }
         }
         if (dbSectionPages.length === 0) {
-          const res = await axios.get(`${API_URL}/pages/published`);
+          const res = await http.get(`${API_URL}/pages/published`);
           const pages = res.data?.data ?? res.data ?? [];
           if (isMounted && Array.isArray(pages) && pages.length > 0) {
             setDbSectionPages(pages);
@@ -419,7 +419,7 @@ export function HomeLayoutEditorModal({
         stageMessage: "Uploading file…",
       }));
 
-      const res = await axios.post(`${API_URL}/uploads`, formData, {
+      const res = await http.post(`${API_URL}/uploads`, formData, {
         headers: {
           Authorization: activeToken ? `Bearer ${activeToken}` : "",
           "Content-Type": "multipart/form-data",
@@ -458,7 +458,7 @@ export function HomeLayoutEditorModal({
       await new Promise((resolve) => setTimeout(resolve, 800));
       return url;
     } catch (err) {
-      const errMsg = axios.isAxiosError(err) ? String(err.response?.data?.message || err.message) : "Upload failed.";
+      const errMsg = http.isAxiosError(err) ? String(err.response?.data?.message || err.message) : "Upload failed.";
       setUploadError(errMsg);
       setUploadStatus((prev) => ({
         ...prev,
@@ -673,7 +673,7 @@ export function HomeLayoutEditorModal({
 
     try {
       if (targetTab === "footer" && datasource?.["contact-us"]) {
-        await axios.patch(
+        await http.patch(
           `${API_URL}/school-settings/partial`,
           {
             updates: {
@@ -689,7 +689,7 @@ export function HomeLayoutEditorModal({
           }
         );
       } else if (targetTab === "video") {
-        await axios.patch(
+        await http.patch(
           `${API_URL}/school-settings/partial`,
           {
             updates: {
@@ -705,7 +705,7 @@ export function HomeLayoutEditorModal({
           }
         );
       } else {
-        await axios.patch(
+        await http.patch(
           `${API_URL}/school-settings/section/${targetTab}`,
           { value: payload },
           {
@@ -732,7 +732,7 @@ export function HomeLayoutEditorModal({
   const handleRefreshActiveSection = async () => {
     setIsRefreshingSection(true);
     try {
-      const res = await axios.get(`${API_URL}/school-settings/section/${activeTab}?t=${Date.now()}`);
+      const res = await http.get(`${API_URL}/school-settings/section/${activeTab}?t=${Date.now()}`);
       const secData = res.data?.data?.data ?? res.data?.data ?? res.data;
       if (secData !== undefined && secData !== null) {
         if (["header", "footer", "whatsapp", "popupBanner"].includes(activeTab)) {
