@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 
 export interface NotificationRecord extends Record<string, unknown> {
   id?: string;
@@ -62,7 +62,7 @@ export function useInquiryNotifications(
 
     try {
       const headers = { Authorization: `Bearer ${tokenRef.current}` };
-      const res = await axios.get(`${apiUrl}/notifications/unread-count?type=INQUIRY`, { headers });
+      const res = await http.get(`${apiUrl}/notifications/unread-count?type=INQUIRY`, { headers });
       const body = res.data;
       let count = 0;
       let itemsList: NotificationRecord[] = [];
@@ -128,7 +128,7 @@ export function useInquiryNotifications(
     if (!id) return;
     try {
       const headers = tokenRef.current ? { Authorization: `Bearer ${tokenRef.current}` } : {};
-      await axios.patch(`${apiUrl}/notifications/${id}/read`, {}, { headers });
+      await http.patch(`${apiUrl}/notifications/${id}/read`, {}, { headers });
 
       // Optimistic local state update (0 delay)
       setUnreadNotifications((prev) => prev.filter((item) => String(item.id || item._id || item.publicId) !== id));
@@ -143,7 +143,7 @@ export function useInquiryNotifications(
   const markAllAsRead = useCallback(async () => {
     try {
       const headers = tokenRef.current ? { Authorization: `Bearer ${tokenRef.current}` } : {};
-      await axios.patch(`${apiUrl}/notifications/mark-all-read?type=INQUIRY`, {}, { headers });
+      await http.patch(`${apiUrl}/notifications/mark-all-read?type=INQUIRY`, {}, { headers });
 
       // Optimistic local state update (0 delay)
       setUnreadNotifications([]);

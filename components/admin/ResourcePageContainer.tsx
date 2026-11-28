@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 import { LoaderCircle, Check } from "lucide-react";
 import { AdminShell } from "@/components/admin/layout/admin-shell";
 import { ResourceView } from "@/components/admin/tables/AdminResourceTable";
@@ -79,7 +79,7 @@ export function ResourcePageContainer({ resourceKey }: ResourcePageContainerProp
           params[q.filterKey] = q.filterValue;
         }
 
-        const res = await axios.get(`${API_URL}/${path}`, {
+        const res = await http.get(`${API_URL}/${path}`, {
           params,
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         });
@@ -121,8 +121,8 @@ export function ResourcePageContainer({ resourceKey }: ResourcePageContainerProp
     if (resourceKey === "pages" || resourceKey === "menu-items") {
       try {
         const [pagesRes, menuRes] = await Promise.all([
-          axios.get(`${API_URL}/pages`, { params: { isPublished: true, limit: 100 } }),
-          axios.get(`${API_URL}/menu-items`, { params: { limit: 200 } }),
+          http.get(`${API_URL}/pages`, { params: { isPublished: true, limit: 100 } }),
+          http.get(`${API_URL}/menu-items`, { params: { limit: 200 } }),
         ]);
         setPublishedPages(asItems(pagesRes.data));
         setAllMenuItems(flattenMenuItems(asItems(menuRes.data)));
@@ -157,11 +157,11 @@ export function ResourcePageContainer({ resourceKey }: ResourcePageContainerProp
         const id = editing ? itemId(editing) : "";
         if (id) {
           const { _id, createdAt, updatedAt, __v, ...cleanValues } = values;
-          await axios.patch(`${API_URL}/auth/users/${id}`, cleanValues, {
+          await http.patch(`${API_URL}/auth/users/${id}`, cleanValues, {
             headers: { Authorization: `Bearer ${token}` },
           });
         } else {
-          await axios.post(`${API_URL}/auth/register`, values, {
+          await http.post(`${API_URL}/auth/register`, values, {
             headers: { Authorization: `Bearer ${token}` },
           });
         }
@@ -207,7 +207,7 @@ export function ResourcePageContainer({ resourceKey }: ResourcePageContainerProp
               ? `${resourcePath[resourceKey]}/${id}`
               : resourcePath[resourceKey];
 
-        await axios({
+        await http({
           method: editing ? "patch" : "post",
           url: `${API_URL}/${path}`,
           data: payload,
@@ -232,7 +232,7 @@ export function ResourcePageContainer({ resourceKey }: ResourcePageContainerProp
       }
     } catch (reason) {
       let msg = "Unable to save this record.";
-      if (axios.isAxiosError(reason)) {
+      if (http.isAxiosError(reason)) {
         const respData = reason.response?.data as { message?: string | string[] } | undefined;
         msg = respData?.message
           ? Array.isArray(respData.message)
@@ -244,7 +244,6 @@ export function ResourcePageContainer({ resourceKey }: ResourcePageContainerProp
       }
       setFormError(msg);
       showToast(msg, "error");
-      throw reason;
     } finally {
       setSaving(false);
     }
@@ -271,7 +270,7 @@ export function ResourcePageContainer({ resourceKey }: ResourcePageContainerProp
           ? `auth/users/${id}`
           : `${resourcePath[resourceKey]}/${id}`;
 
-      await axios.delete(`${API_URL}/${path}`, {
+      await http.delete(`${API_URL}/${path}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -282,7 +281,7 @@ export function ResourcePageContainer({ resourceKey }: ResourcePageContainerProp
       }
     } catch (reason) {
       let msg = "Unable to delete record.";
-      if (axios.isAxiosError(reason)) {
+      if (http.isAxiosError(reason)) {
         const respData = reason.response?.data as { message?: string | string[] } | undefined;
         msg = respData?.message
           ? Array.isArray(respData.message)

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 import { LoaderCircle } from "lucide-react";
 import { useTheme, ThemeConfig, DEFAULT_THEME } from "@/components/providers/ThemeProvider";
 import { API_URL } from "../config/admin.config";
@@ -41,7 +41,7 @@ export function ThemeManagementTab({ token: propToken }: ThemeManagementTabProps
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get(`${API_URL}/theme`);
+      const res = await http.get(`${API_URL}/theme`);
       const rawList: ThemeConfig[] = res.data.data || res.data || [];
       const seenPresetSlugs = new Set<string>();
       const list = rawList.filter((theme) => {
@@ -69,8 +69,8 @@ export function ThemeManagementTab({ token: propToken }: ThemeManagementTabProps
     setError(null);
     try {
       const selectedPortal = targetPortal || theme.portal || "web";
-      await axios.patch(`${API_URL}/theme/${theme._id}`, { portal: selectedPortal }, authHeader());
-      await axios.post(`${API_URL}/theme/${theme._id}/activate`, {}, authHeader());
+      await http.patch(`${API_URL}/theme/${theme._id}`, { portal: selectedPortal }, authHeader());
+      await http.post(`${API_URL}/theme/${theme._id}/activate`, {}, authHeader());
       setSuccessMessage(`Activated theme "${theme.name}" for portal: ${selectedPortal.toUpperCase()}`);
       await refreshTheme();
       await fetchThemes();
@@ -174,7 +174,7 @@ export function ThemeManagementTab({ token: propToken }: ThemeManagementTabProps
       if (isCreateMode) {
         // CREATE CASE: Always POST to create a brand new theme entry in DB
         const { _id, ...payload } = editingTheme as any;
-        const res = await axios.post(
+        const res = await http.post(
           `${API_URL}/theme`,
           { ...payload, isPreset: false, isActive: andActivate },
           authHeader()
@@ -182,7 +182,7 @@ export function ThemeManagementTab({ token: propToken }: ThemeManagementTabProps
         savedTheme = res.data.data || res.data;
       } else {
         // MODIFY CASE: Always PATCH to update the existing custom theme entry in DB
-        const res = await axios.patch(
+        const res = await http.patch(
           `${API_URL}/theme/${editingTheme._id}`,
           { ...editingTheme, isActive: andActivate ? true : editingTheme.isActive },
           authHeader()
@@ -191,7 +191,7 @@ export function ThemeManagementTab({ token: propToken }: ThemeManagementTabProps
       }
 
       if (andActivate && savedTheme._id) {
-        await axios.post(`${API_URL}/theme/${savedTheme._id}/activate`, {}, authHeader());
+        await http.post(`${API_URL}/theme/${savedTheme._id}/activate`, {}, authHeader());
       }
 
       setSuccessMessage(
@@ -223,7 +223,7 @@ export function ThemeManagementTab({ token: propToken }: ThemeManagementTabProps
     setSaving(true);
     setError(null);
     try {
-      await axios.delete(`${API_URL}/theme/${theme._id}`, authHeader());
+      await http.delete(`${API_URL}/theme/${theme._id}`, authHeader());
       setSuccessMessage(`Deleted theme "${theme.name}"`);
       await fetchThemes();
       setTimeout(() => setSuccessMessage(null), 4000);
@@ -240,7 +240,7 @@ export function ThemeManagementTab({ token: propToken }: ThemeManagementTabProps
     setSaving(true);
     setError(null);
     try {
-      await axios.post(`${API_URL}/theme/reset-presets`, {}, authHeader());
+      await http.post(`${API_URL}/theme/reset-presets`, {}, authHeader());
       setSuccessMessage("Preset themes restored to defaults!");
       await refreshTheme();
       await fetchThemes();
@@ -478,7 +478,7 @@ export function ThemeManagementTab({ token: propToken }: ThemeManagementTabProps
                               setThemes(prev => prev.map(t => t._id === theme._id || t.slug === theme.slug ? { ...t, portal: newPortal } : t));
                               if (theme._id) {
                                 try {
-                                  await axios.patch(`${API_URL}/theme/${theme._id}`, { portal: newPortal }, authHeader());
+                                  await http.patch(`${API_URL}/theme/${theme._id}`, { portal: newPortal }, authHeader());
                                 } catch (err) {
                                   console.error("Failed to update portal", err);
                                 }

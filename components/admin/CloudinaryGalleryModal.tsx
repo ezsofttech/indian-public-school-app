@@ -22,7 +22,7 @@ import {
   ChevronUp,
   Trash2,
 } from "lucide-react";
-import axios from "axios";
+import http from "@/lib/http";
 import { getOptionalApi, unwrapCollection, API_URL } from "@/lib/api-client";
 import { getAssetUrl, getMediaDeliveryPreset, setMediaDeliveryPreset } from "@/lib/utils";
 import { ImageStudioModal } from "./ImageStudioModal";
@@ -314,7 +314,7 @@ export function CloudinaryGalleryModal({
   // Fetch live storage metrics
   const fetchStorageUsage = useCallback(async () => {
     try {
-      const res = await axios.get(`${API_URL}/uploads/storage`);
+      const res = await http.get(`${API_URL}/uploads/storage`);
       const payload = res.data?.data || res.data;
       if (payload && payload.provider) {
         setStorageUsage(payload);
@@ -516,7 +516,7 @@ export function CloudinaryGalleryModal({
         stageMessage: "Uploading file…",
       }));
 
-      const res = await axios.post(`${API_URL}/uploads`, formData, {
+      const res = await http.post(`${API_URL}/uploads`, formData, {
         headers,
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
@@ -760,7 +760,7 @@ export function CloudinaryGalleryModal({
         const headers: Record<string, string> = {};
         if (token) headers["Authorization"] = `Bearer ${token}`;
 
-        await axios.delete(`${API_URL}/gallery/${encodeURIComponent(cleanId)}`, { headers });
+        await http.delete(`${API_URL}/gallery/${encodeURIComponent(cleanId)}`, { headers });
         setMediaList((prev) => prev.filter((m) => m.url !== item.url && m.id !== item.id));
         if (selectedUrl === item.url) {
           setSelectedUrl("");

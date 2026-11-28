@@ -5,7 +5,7 @@ import { X, Image as ImageIcon, Eye, Check, Palette, AlignLeft, AlignCenter, Ali
 import { generateFrameTemplateHtml } from "./richtext.helpers";
 import { getAssetUrl } from "@/lib/utils";
 import { API_URL, AUTH_CONFIG } from "@/lib/config";
-import axios from "axios";
+import http from "@/lib/http";
 
 interface FrameStudioModalProps {
   isOpen: boolean;
@@ -83,7 +83,7 @@ export function FrameStudioModal({
           formData.append("file", file);
           formData.append("album", "FrameStudio");
 
-          const res = await axios.post(`${API_URL}/uploads`, formData, {
+          const res = await http.post(`${API_URL}/uploads`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
               ...(token ? { Authorization: `Bearer ${token}` } : {}),

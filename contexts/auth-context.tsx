@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import http from "@/lib/http";
 import { API_URL, AUTH_CONFIG } from "@/lib/config";
 import { JwtPayload, ResourceKey } from "@/components/admin/types/admin.types";
 import {
@@ -133,7 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (email: string, password: string) => {
-      const response = await axios.post(`${API_URL}/auth/login`, {
+      const response = await http.post(`${API_URL}/auth/login`, {
         email,
         password,
       });

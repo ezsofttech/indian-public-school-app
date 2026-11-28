@@ -1,20 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
-import { ArrowRight, ChevronDown, ChevronRight, ExternalLink, GraduationCap, Menu, Phone, Sparkles, X } from "lucide-react";
-import axios from "axios";
+import { ArrowLeft, ArrowRight, ChevronDown, ChevronRight, ExternalLink, GraduationCap, Menu, Phone, Sparkles, X } from "lucide-react";
+import http from "@/lib/http";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn, formatHref, isExternalUrl } from "@/lib/utils";
 import { buildMenuHierarchy, DEFAULT_LOGO, DEFAULT_SECONDARY_LOGO, getWhatsAppConfig, homeData, imageUrl, isBannerLogoUrl, text } from "@/lib/site-data";
 import { useSiteData } from "@/components/site/SiteDataProvider";
 import { openAdmissionModal } from "@/components/site/AdmissionApplicationModal";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { API_URL } from "@/lib/config";
 
 const NAV = [
@@ -111,8 +104,12 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [expandedMobile, setExpandedMobile] = useState<Record<string, boolean>>({});
-  const [moreModalOpen, setMoreModalOpen] = useState(false);
-  const [modalTab, setModalTab] = useState<"overflow" | "all">("overflow");
+  const [navIndex, setNavIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState<1 | -1>(1);
+
+  const lastSwipeTimeRef = useRef<number>(0);
+  const swipeDeltaAccumulatorRef = useRef<number>(0);
+  const touchStartXRef = useRef<number | null>(null);
 
   const toggleMobileExpand = (key: string, e?: React.MouseEvent) => {
     if (e) {
@@ -130,7 +127,7 @@ export function Navbar() {
 
   useEffect(() => {
     let isMounted = true;
-    axios
+    http
       .get(`${API_URL}/menu-items`, { params: { publishedOnly: "true" } })
       .then((res) => {
         if (!isMounted) return;
@@ -203,8 +200,81 @@ export function Navbar() {
 
   const MAX_VISIBLE_NAV = 8;
   const hasNavOverflow = navigation.length > MAX_VISIBLE_NAV;
-  const visibleNavigation = hasNavOverflow ? navigation.slice(0, 8) : navigation;
-  const overflowNavigation = hasNavOverflow ? navigation.slice(8) : [];
+  const maxIndex = Math.max(0, navigation.length - MAX_VISIBLE_NAV);
+  const safeNavIndex = Math.min(navIndex, maxIndex);
+
+  const visibleNavigation = hasNavOverflow
+    ? navigation.slice(safeNavIndex, safeNavIndex + MAX_VISIBLE_NAV)
+    : navigation;
+
+  const canSlidePrev = hasNavOverflow && safeNavIndex > 0;
+  const canSlideNext = hasNavOverflow && safeNavIndex < maxIndex;
+
+  const handleSlideNext = () => {
+    if (canSlideNext) {
+      setSlideDirection(1);
+      setNavIndex((prev) => Math.min(prev + 1, maxIndex));
+    }
+  };
+
+  const handleSlidePrev = () => {
+    if (canSlidePrev) {
+      setSlideDirection(-1);
+      setNavIndex((prev) => Math.max(prev - 1, 0));
+    }
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (!hasNavOverflow) return;
+
+    // Detect horizontal two-finger swipe or vertical delta over menu
+    const isHorizontal = Math.abs(e.deltaX) >= Math.abs(e.deltaY);
+    const delta = isHorizontal ? e.deltaX : (e.shiftKey || Math.abs(e.deltaY) > 25 ? e.deltaY : 0);
+
+    if (Math.abs(delta) < 6) return;
+
+    const now = Date.now();
+    if (now - lastSwipeTimeRef.current < 320) {
+      return;
+    }
+
+    swipeDeltaAccumulatorRef.current += delta;
+
+    if (Math.abs(swipeDeltaAccumulatorRef.current) >= 18) {
+      if (swipeDeltaAccumulatorRef.current > 0) {
+        handleSlideNext();
+      } else {
+        handleSlidePrev();
+      }
+      lastSwipeTimeRef.current = now;
+      swipeDeltaAccumulatorRef.current = 0;
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || !hasNavOverflow) return;
+    const currentX = e.touches[0].clientX;
+    const diffX = touchStartXRef.current - currentX;
+    const now = Date.now();
+
+    if (Math.abs(diffX) > 30 && now - lastSwipeTimeRef.current > 320) {
+      if (diffX > 0) {
+        handleSlideNext();
+      } else {
+        handleSlidePrev();
+      }
+      lastSwipeTimeRef.current = now;
+      touchStartXRef.current = currentX;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    touchStartXRef.current = null;
+  };
 
   const handleNavClick = (href: string, e?: React.MouseEvent) => {
     setOpen(false);
@@ -272,13 +342,19 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 transition-all duration-300",
+        "group/header sticky top-0 z-50 transition-all duration-300",
         scrolled
           ? "border-b border-border/80 bg-background/95 shadow-[0_4px_25px_rgba(0,0,0,0.06)] backdrop-blur-xl py-1"
           : "border-b border-border/60 bg-background/90 shadow-soft backdrop-blur-md py-1.5"
       )}
     >
-      <nav className="container-page flex h-16 sm:h-20 items-center justify-between gap-4 py-2">
+      <nav
+        onWheel={handleWheel}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className="container-page flex h-16 sm:h-20 items-center justify-between gap-4 py-2"
+      >
         <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0 transition-all duration-300 dark:bg-white/95 dark:px-3 dark:py-1.5 dark:rounded-2xl dark:border dark:border-white/20 dark:shadow-md dark:backdrop-blur-md">
           <Link href="/" onClick={(e) => handleNavClick("/", e)} className="group flex items-center gap-3 shrink-0">
             {customLogoUrl && !logoError ? (
@@ -336,109 +412,188 @@ export function Navbar() {
           */}
         </div>
 
-        <ul className="hidden items-center gap-1 xl:flex">
-          {visibleNavigation.map((item, index) => {
-            const isRightSide = index >= Math.floor(visibleNavigation.length / 2);
+        <div onWheel={handleWheel} className="hidden items-center gap-1 xl:flex">
+          <ul className="flex items-center gap-0.5 sm:gap-1">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {visibleNavigation.map((item, index) => {
+                const isRightSide = index >= Math.floor(visibleNavigation.length / 2);
 
-            return (
-              <li key={`${item.href || "navigation-item"}-${index}`} className="group relative">
-                <Link
-                  href={item.href}
-                  onClick={(e) => handleNavClick(item.href, e)}
-                  className="relative flex items-center gap-1 rounded-full px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground"
-                >
-                  <span className="relative">
-                    {item.label}
-                    <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gold transition-all duration-300 group-hover:w-full" />
-                  </span>
-                  {item.subItems.length > 0 && (
-                    <ChevronDown size={13} className="text-muted-foreground transition-transform group-hover:rotate-180" />
-                  )}
-                </Link>
-
-                {item.subItems.length > 0 && (
-                  <div
-                    className={cn(
-                      "pointer-events-none absolute top-full pt-2 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100",
-                      isRightSide ? "right-0" : "left-0"
-                    )}
+                return (
+                  <motion.li
+                    key={item.label + item.href}
+                    layout
+                    initial={{ opacity: 0, x: slideDirection > 0 ? 18 : -18, filter: "blur(4px)" }}
+                    animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, x: slideDirection > 0 ? -18 : 18, filter: "blur(4px)" }}
+                    transition={{
+                      layout: { type: "spring", stiffness: 400, damping: 33 },
+                      opacity: { duration: 0.2 },
+                      x: { type: "spring", stiffness: 400, damping: 33 },
+                      filter: { duration: 0.18 },
+                    }}
+                    className="group relative shrink-0"
                   >
-                    <div className="w-56 rounded-2xl border border-border/80 bg-background/95 p-2 shadow-2xl backdrop-blur-xl">
-                      {item.subItems.map((sub, sIdx) => {
-                        const hasLevel3 = sub.subItems && sub.subItems.length > 0;
-                        const targetHref = (sub.linkUrl === "/" && hasLevel3)
-                          ? sub.subItems[0].linkUrl
-                          : (sub.linkUrl || item.href);
+                    <Link
+                      href={item.href}
+                      onClick={(e) => handleNavClick(item.href, e)}
+                      className="relative flex items-center gap-1 rounded-full px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground whitespace-nowrap"
+                    >
+                      <span className="relative">
+                        {item.label}
+                        <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gold transition-all duration-300 group-hover:w-full" />
+                      </span>
+                      {item.subItems.length > 0 && (
+                        <ChevronDown size={13} className="text-muted-foreground transition-transform group-hover:rotate-180" />
+                      )}
+                    </Link>
 
-                        return (
-                          <div key={sIdx} className="group/sub relative">
-                            <Link
-                              href={targetHref}
-                              onClick={(e) => handleNavClick(targetHref, e)}
-                              className="flex items-center justify-between rounded-xl px-3.5 py-2 text-xs font-semibold text-foreground/80 transition-colors hover:bg-primary/10 hover:text-primary"
-                            >
-                              <span>{sub.title}</span>
-                              {hasLevel3 && (
-                                <ChevronRight
-                                  size={13}
-                                  className={cn(
-                                    "text-muted-foreground transition-transform",
-                                    isRightSide
-                                      ? "rotate-180 group-hover/sub:-translate-x-0.5"
-                                      : "group-hover/sub:translate-x-0.5"
+                    {item.subItems.length > 0 && (
+                      <div
+                        className={cn(
+                          "pointer-events-none absolute top-full pt-2 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100",
+                          isRightSide ? "right-0" : "left-0"
+                        )}
+                      >
+                        <div className="w-56 rounded-2xl border border-border/80 bg-background/95 p-2 shadow-2xl backdrop-blur-xl">
+                          {item.subItems.map((sub, sIdx) => {
+                            const hasLevel3 = sub.subItems && sub.subItems.length > 0;
+                            const targetHref = (sub.linkUrl === "/" && hasLevel3)
+                              ? sub.subItems[0].linkUrl
+                              : (sub.linkUrl || item.href);
+
+                            return (
+                              <div key={sIdx} className="group/sub relative">
+                                <Link
+                                  href={targetHref}
+                                  onClick={(e) => handleNavClick(targetHref, e)}
+                                  className="flex items-center justify-between rounded-xl px-3.5 py-2 text-xs font-semibold text-foreground/80 transition-colors hover:bg-primary/10 hover:text-primary"
+                                >
+                                  <span>{sub.title}</span>
+                                  {hasLevel3 && (
+                                    <ChevronRight
+                                      size={13}
+                                      className={cn(
+                                        "text-muted-foreground transition-transform",
+                                        isRightSide
+                                          ? "rotate-180 group-hover/sub:-translate-x-0.5"
+                                          : "group-hover/sub:translate-x-0.5"
+                                      )}
+                                    />
                                   )}
-                                />
-                              )}
-                            </Link>
+                                </Link>
 
-                            {hasLevel3 && (
-                              <div
-                                className={cn(
-                                  "pointer-events-none absolute top-0 opacity-0 transition-all duration-200 group-hover/sub:pointer-events-auto group-hover/sub:opacity-100",
-                                  isRightSide ? "right-full pr-1.5" : "left-full pl-1.5"
+                                {hasLevel3 && (
+                                  <div
+                                    className={cn(
+                                      "pointer-events-none absolute top-0 opacity-0 transition-all duration-200 group-hover/sub:pointer-events-auto group-hover/sub:opacity-100",
+                                      isRightSide ? "right-full pr-1.5" : "left-full pl-1.5"
+                                    )}
+                                  >
+                                    <div className="w-56 rounded-2xl border border-border/80 bg-background/95 p-2 shadow-2xl backdrop-blur-xl">
+                                      {sub.subItems.map((sub3, s3Idx) => {
+                                        const sub3Href = sub3.linkUrl || targetHref;
+                                        return (
+                                          <Link
+                                            key={s3Idx}
+                                            href={sub3Href}
+                                            onClick={(e) => handleNavClick(sub3Href, e)}
+                                            className="block rounded-xl px-3.5 py-2 text-xs font-semibold text-foreground/80 transition-colors hover:bg-primary/10 hover:text-primary"
+                                          >
+                                            {sub3.title}
+                                          </Link>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
                                 )}
-                              >
-                                <div className="w-56 rounded-2xl border border-border/80 bg-background/95 p-2 shadow-2xl backdrop-blur-xl">
-                                  {sub.subItems.map((sub3, s3Idx) => {
-                                    const sub3Href = sub3.linkUrl || targetHref;
-                                    return (
-                                      <Link
-                                        key={s3Idx}
-                                        href={sub3Href}
-                                        onClick={(e) => handleNavClick(sub3Href, e)}
-                                        className="block rounded-xl px-3.5 py-2 text-xs font-semibold text-foreground/80 transition-colors hover:bg-primary/10 hover:text-primary"
-                                      >
-                                        {sub3.title}
-                                      </Link>
-                                    );
-                                  })}
-                                </div>
                               </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </li>
-            );
-          })}
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </motion.li>
+                );
+              })}
+            </AnimatePresence>
+          </ul>
 
           {hasNavOverflow && (
-            <li className="relative">
-              <button
-                type="button"
-                onClick={() => setMoreModalOpen(true)}
-                className="grid size-9 place-items-center rounded-full border border-border/80 bg-background/80 text-foreground/80 transition-all duration-300 hover:border-gold hover:bg-gold/10 hover:text-gold active:scale-95 cursor-pointer group shadow-2xs"
-                aria-label="View additional pages"
-                title="View additional pages"
-              >
-                <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:scale-110" />
-              </button>
-            </li>
+            <motion.div
+              layout
+              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              className="flex items-center gap-1.5 shrink-0 ml-1 opacity-0 scale-90 pointer-events-none group-hover/header:opacity-100 group-hover/header:scale-100 group-hover/header:pointer-events-auto focus-within:opacity-100 focus-within:scale-100 focus-within:pointer-events-auto transition-all duration-300 ease-out"
+            >
+              <AnimatePresence mode="popLayout" initial={false}>
+                {maxIndex === 1 ? (
+                  <motion.button
+                    key="single-toggle-arrow"
+                    layout
+                    type="button"
+                    onClick={safeNavIndex === 0 ? handleSlideNext : handleSlidePrev}
+                    className="grid size-9 place-items-center rounded-full border border-border/80 bg-background/80 text-foreground/80 transition-all duration-300 hover:border-gold hover:bg-gold/10 hover:text-gold active:scale-95 cursor-pointer group shadow-2xs"
+                    aria-label={safeNavIndex === 0 ? "Show next menu items" : "Show previous menu items"}
+                    title={safeNavIndex === 0 ? "Show next menu items" : "Show previous menu items"}
+                  >
+                    <motion.span
+                      animate={{ rotate: safeNavIndex > 0 ? 180 : 0 }}
+                      transition={{ type: "spring", stiffness: 350, damping: 24 }}
+                      className="grid place-items-center"
+                    >
+                      <ArrowRight
+                        size={16}
+                        className={cn(
+                          "transition-transform duration-300",
+                          safeNavIndex === 0
+                            ? "group-hover:translate-x-0.5 group-hover:scale-110"
+                            : "group-hover:-translate-x-0.5 group-hover:scale-110"
+                        )}
+                      />
+                    </motion.span>
+                  </motion.button>
+                ) : (
+                  <>
+                    {canSlidePrev && (
+                      <motion.button
+                        key="nav-slide-prev"
+                        layout
+                        initial={{ opacity: 0, scale: 0.8, width: 0 }}
+                        animate={{ opacity: 1, scale: 1, width: "2.25rem" }}
+                        exit={{ opacity: 0, scale: 0.8, width: 0 }}
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        type="button"
+                        onClick={handleSlidePrev}
+                        className="grid size-9 place-items-center rounded-full border border-border/80 bg-background/80 text-foreground/80 transition-all duration-300 hover:border-gold hover:bg-gold/10 hover:text-gold active:scale-95 cursor-pointer group shadow-2xs overflow-hidden"
+                        aria-label="Previous menu items"
+                        title="Previous menu items"
+                      >
+                        <ArrowLeft size={16} className="transition-transform duration-300 group-hover:-translate-x-0.5 group-hover:scale-110" />
+                      </motion.button>
+                    )}
+
+                    {canSlideNext && (
+                      <motion.button
+                        key="nav-slide-next"
+                        layout
+                        initial={{ opacity: 0, scale: 0.8, width: 0 }}
+                        animate={{ opacity: 1, scale: 1, width: "2.25rem" }}
+                        exit={{ opacity: 0, scale: 0.8, width: 0 }}
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        type="button"
+                        onClick={handleSlideNext}
+                        className="grid size-9 place-items-center rounded-full border border-border/80 bg-background/80 text-foreground/80 transition-all duration-300 hover:border-gold hover:bg-gold/10 hover:text-gold active:scale-95 cursor-pointer group shadow-2xs overflow-hidden"
+                        aria-label="Next menu items"
+                        title="Next menu items"
+                      >
+                        <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:scale-110" />
+                      </motion.button>
+                    )}
+                  </>
+                )}
+              </AnimatePresence>
+            </motion.div>
           )}
-        </ul>
+        </div>
 
         <div className="flex items-center gap-2">
           <button
@@ -677,100 +832,6 @@ export function Navbar() {
           </motion.div>
         ) : null}
       </AnimatePresence>
-
-      <Dialog open={moreModalOpen} onOpenChange={setMoreModalOpen}>
-        <DialogContent className="max-w-3xl sm:max-w-4xl max-h-[85vh] overflow-y-auto p-6 rounded-3xl border border-border/80 bg-background/98 shadow-2xl">
-          <DialogHeader className="pb-3 border-b border-border/50 text-left">
-            <DialogTitle className="font-display text-xl font-bold tracking-tight text-foreground">
-              Additional Pages & Resources
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {overflowNavigation.map((item, idx) => (
-              <div
-                key={idx}
-                className="group/card rounded-2xl border border-border/60 bg-card/50 p-4 transition-all duration-300 hover:border-gold/50 hover:bg-card hover:shadow-md flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2 border-b border-border/40 pb-2 mb-2">
-                    <Link
-                      href={item.href}
-                      onClick={(e) => {
-                        setMoreModalOpen(false);
-                        handleNavClick(item.href, e);
-                      }}
-                      className="font-display text-sm font-bold text-foreground transition-colors hover:text-primary flex items-center gap-1.5 group-hover/card:text-primary"
-                    >
-                      <span>{item.label}</span>
-                      <ExternalLink size={12} className="opacity-0 group-hover/card:opacity-100 text-gold transition-opacity" />
-                    </Link>
-                    {item.subItems.length > 0 && (
-                      <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
-                        {item.subItems.length}
-                      </span>
-                    )}
-                  </div>
-
-                  {item.subItems.length > 0 ? (
-                    <div className="space-y-1.5">
-                      {item.subItems.map((sub, sIdx) => {
-                        const hasLevel3 = sub.subItems && sub.subItems.length > 0;
-                        const targetHref =
-                          sub.linkUrl === "/" && hasLevel3
-                            ? sub.subItems[0].linkUrl
-                            : sub.linkUrl || item.href;
-
-                        return (
-                          <div key={sIdx} className="rounded-lg bg-background/70 p-2 border border-border/40 space-y-1">
-                            <Link
-                              href={targetHref}
-                              onClick={(e) => {
-                                setMoreModalOpen(false);
-                                handleNavClick(targetHref, e);
-                              }}
-                              className="flex items-center justify-between text-xs font-semibold text-foreground/90 transition-colors hover:text-primary"
-                            >
-                              <span className="flex items-center gap-1.5">
-                                <span className="size-1.5 rounded-full bg-gold" />
-                                {sub.title}
-                              </span>
-                              {hasLevel3 && <ChevronRight size={12} className="text-muted-foreground" />}
-                            </Link>
-
-                            {hasLevel3 && (
-                              <div className="pl-3.5 space-y-1 border-l border-gold/30 ml-1 pt-0.5">
-                                {sub.subItems.map((sub3, s3Idx) => {
-                                  const sub3Href = sub3.linkUrl || targetHref;
-                                  return (
-                                    <Link
-                                      key={s3Idx}
-                                      href={sub3Href}
-                                      onClick={(e) => {
-                                        setMoreModalOpen(false);
-                                        handleNavClick(sub3Href, e);
-                                      }}
-                                      className="block text-[11px] font-medium text-muted-foreground transition-colors hover:text-primary hover:translate-x-0.5"
-                                    >
-                                      • {sub3.title}
-                                    </Link>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <p className="text-[11px] text-muted-foreground/70 italic py-1">Direct link</p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
     </header>
   );
 }

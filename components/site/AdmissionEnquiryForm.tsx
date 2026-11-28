@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 import { checkBackendHealth } from "@/lib/api/health";
 import { API_URL } from "@/lib/config";
 import { useForm } from "react-hook-form";
@@ -104,7 +104,7 @@ export function AdmissionEnquiryForm({
     setInquiryId(clientRefId);
 
     try {
-      const res = await axios.post(`${API_URL}/inquiries`, {
+      const res = await http.post(`${API_URL}/inquiries`, {
         name: values.fullName,
         contact: values.phone,
         email: values.email,

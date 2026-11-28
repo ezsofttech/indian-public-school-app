@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance, type AxiosResponse } from "axios";
+import http, { type AxiosInstance, type AxiosResponse } from "@/lib/http";
 import { API_URL, API_SSR_BASE_URL as baseURL, TIMEOUTS } from "@/lib/config";
 import {
   checkBackendHealth as checkHealthResult,
@@ -33,7 +33,7 @@ export interface PaginatedData<T> {
   hasPrevPage: boolean;
 }
 
-export const apiClient: AxiosInstance = axios.create({
+export const apiClient: AxiosInstance = http.create({
   baseURL,
   timeout: TIMEOUTS.api,
   headers: { Accept: "application/json" },

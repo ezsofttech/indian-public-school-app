@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import http from "@/lib/http";
 import {
   GraduationCap,
   Users,
@@ -32,7 +32,7 @@ export function CloudinaryStorageCard({
     else setLoading(true);
     setError(null);
     try {
-      const res = await axios.get(`${API_URL}/uploads/storage`);
+      const res = await http.get(`${API_URL}/uploads/storage`);
       const payload = res.data?.data || res.data;
       if (payload && payload.provider) {
         setStorage(payload);
@@ -191,10 +191,10 @@ export function DashboardOverview({
     try {
       const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
       const [studentsRes, staffRes, inqRes, newsRes] = await Promise.allSettled([
-        axios.get(`${API_URL}/students?limit=1`, { headers }),
-        axios.get(`${API_URL}/staff?limit=1`, { headers }),
-        axios.get(`${API_URL}/inquiries?limit=4&sortBy=createdAt&sortOrder=desc`, { headers }),
-        axios.get(`${API_URL}/news?limit=1`, { headers }),
+        http.get(`${API_URL}/students?limit=1`, { headers }),
+        http.get(`${API_URL}/staff?limit=1`, { headers }),
+        http.get(`${API_URL}/inquiries?limit=4&sortBy=createdAt&sortOrder=desc`, { headers }),
+        http.get(`${API_URL}/news?limit=1`, { headers }),
       ]);
 
       const newCounts: Record<string, number> = {

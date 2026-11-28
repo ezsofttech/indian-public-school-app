@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import axios from "axios";
+import http from "@/lib/http";
 import {
   Briefcase,
   Search,
@@ -104,7 +104,7 @@ export function CareersView() {
         return;
       }
 
-      const res = await axios.get(`${API_URL}/careers?isActive=true`, { timeout: 5000 });
+      const res = await http.get(`${API_URL}/careers?isActive=true`, { timeout: 5000 });
       const body = res.data;
       const list = Array.isArray(body.data)
         ? body.data
@@ -196,7 +196,7 @@ export function CareersView() {
         stageMessage: "Uploading resume…",
       }));
 
-      const res = await axios.post(`${API_URL}/uploads/public`, formData, {
+      const res = await http.post(`${API_URL}/uploads/public`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
@@ -290,7 +290,7 @@ export function CareersView() {
         stageMessage: "Uploading photo…",
       }));
 
-      const res = await axios.post(`${API_URL}/uploads/public`, formData, {
+      const res = await http.post(`${API_URL}/uploads/public`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
@@ -351,7 +351,7 @@ export function CareersView() {
       formData.append("album", "CareerApplications");
       formData.append("folder", "indian-public-school/assets/CareerApplications");
 
-      const res = await axios.post(`${API_URL}/uploads/public`, formData, {
+      const res = await http.post(`${API_URL}/uploads/public`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -440,7 +440,7 @@ export function CareersView() {
         },
       };
 
-      const res = await axios.post(`${API_URL}/careers/apply`, payload);
+      const res = await http.post(`${API_URL}/careers/apply`, payload);
       const data = res.data?.data || res.data;
 
       const appNo = data?.applicationNo || `APP-${new Date().getFullYear()}-SUBMITTED`;

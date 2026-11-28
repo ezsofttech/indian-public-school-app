@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 import { API_URL } from "@/lib/config";
 import { AnimatePresence, motion } from "motion/react";
 import {
@@ -130,7 +130,7 @@ export function Testimonials() {
     };
 
     try {
-      const res = await axios.post(`${API_URL}/reviews`, payload);
+      const res = await http.post(`${API_URL}/reviews`, payload);
       const created = res.data?.data || res.data || payload;
 
       setReviewsList((prev) => [

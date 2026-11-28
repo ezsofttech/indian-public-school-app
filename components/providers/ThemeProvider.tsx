@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 import { API_URL } from "@/lib/config";
 
 export interface ThemeColors {
@@ -284,7 +284,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
       if (previewId && !isAdminPage) {
         try {
-          const previewRes = await axios.get(`${API_URL}/theme/${previewId}`, { timeout: 4000 });
+          const previewRes = await http.get(`${API_URL}/theme/${previewId}`, { timeout: 4000 });
           if (previewRes.data) {
             themeData = previewRes.data.data || previewRes.data;
           }
@@ -294,7 +294,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (!themeData) {
-        const res = await axios.get(`${API_URL}/theme/active?portal=web`, { timeout: 4000 });
+        const res = await http.get(`${API_URL}/theme/active?portal=web`, { timeout: 4000 });
         if (res.data) {
           themeData = res.data.data || res.data;
         }

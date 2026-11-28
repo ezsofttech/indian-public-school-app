@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useId } from "react";
-import axios from "axios";
+import http from "@/lib/http";
 import {
   FileCheck,
   Plus,
@@ -124,7 +124,7 @@ export function PublicDisclosureAdmin({ apiUrl, token }: PublicDisclosureAdminPr
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get(`${apiUrl}/public-disclosure/sections`, {
+      const res = await http.get(`${apiUrl}/public-disclosure/sections`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       const data = res.data?.data ?? res.data;
@@ -139,7 +139,7 @@ export function PublicDisclosureAdmin({ apiUrl, token }: PublicDisclosureAdminPr
 
   const fetchConfig = useCallback(async () => {
     try {
-      const res = await axios.get(`${apiUrl}/public-disclosure/config`, {
+      const res = await http.get(`${apiUrl}/public-disclosure/config`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       const data = res.data?.data ?? res.data;
@@ -165,7 +165,7 @@ export function PublicDisclosureAdmin({ apiUrl, token }: PublicDisclosureAdminPr
     setConfigSaving(true);
     setError(null);
     try {
-      await axios.patch(
+      await http.patch(
         `${apiUrl}/public-disclosure/config`,
         {
           affiliationNo: configAffiliationNo.trim(),
@@ -191,7 +191,7 @@ export function PublicDisclosureAdmin({ apiUrl, token }: PublicDisclosureAdminPr
     setLoading(true);
     setError(null);
     try {
-      await axios.post(
+      await http.post(
         `${apiUrl}/public-disclosure/seed-defaults`,
         {},
         { headers: token ? { Authorization: `Bearer ${token}` } : undefined },
@@ -238,12 +238,12 @@ export function PublicDisclosureAdmin({ apiUrl, token }: PublicDisclosureAdminPr
     try {
       if (editingSection) {
         const id = editingSection._id || editingSection.id || editingSection.publicId;
-        await axios.patch(`${apiUrl}/public-disclosure/sections/${id}`, payload, {
+        await http.patch(`${apiUrl}/public-disclosure/sections/${id}`, payload, {
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         });
         setSuccess(`Section "${sectionFormTitle}" updated successfully.`);
       } else {
-        await axios.post(`${apiUrl}/public-disclosure/sections`, payload, {
+        await http.post(`${apiUrl}/public-disclosure/sections`, payload, {
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         });
         setSuccess(`Section "${sectionFormTitle}" created successfully.`);
@@ -277,7 +277,7 @@ export function PublicDisclosureAdmin({ apiUrl, token }: PublicDisclosureAdminPr
     };
 
     try {
-      await axios.put(`${apiUrl}/public-disclosure/reorder`, payload, {
+      await http.put(`${apiUrl}/public-disclosure/reorder`, payload, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
     } catch (err: any) {
@@ -290,7 +290,7 @@ export function PublicDisclosureAdmin({ apiUrl, token }: PublicDisclosureAdminPr
   const handleTogglePublish = async (sec: DisclosureSection) => {
     const id = sec._id || sec.id || sec.publicId;
     try {
-      await axios.patch(
+      await http.patch(
         `${apiUrl}/public-disclosure/sections/${id}`,
         { isPublished: !sec.isPublished },
         { headers: token ? { Authorization: `Bearer ${token}` } : undefined },
@@ -306,7 +306,7 @@ export function PublicDisclosureAdmin({ apiUrl, token }: PublicDisclosureAdminPr
   // Delete section
   const handleDeleteSection = async (sectionId: string) => {
     try {
-      await axios.delete(`${apiUrl}/public-disclosure/sections/${sectionId}`, {
+      await http.delete(`${apiUrl}/public-disclosure/sections/${sectionId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       setSuccess("Section deleted successfully.");
@@ -434,7 +434,7 @@ export function PublicDisclosureAdmin({ apiUrl, token }: PublicDisclosureAdminPr
     setError(null);
 
     try {
-      await axios.patch(
+      await http.patch(
         `${apiUrl}/public-disclosure/sections/${secId}`,
         {
           items: sanitizedItems,
@@ -471,7 +471,7 @@ export function PublicDisclosureAdmin({ apiUrl, token }: PublicDisclosureAdminPr
 
     const secId = String(section._id || section.id || section.publicId);
     try {
-      await axios.patch(
+      await http.patch(
         `${apiUrl}/public-disclosure/sections/${secId}`,
         { items: sanitizedItems },
         { headers: token ? { Authorization: `Bearer ${token}` } : undefined },
@@ -508,7 +508,7 @@ export function PublicDisclosureAdmin({ apiUrl, token }: PublicDisclosureAdminPr
 
     const secId = String(section._id || section.id || section.publicId);
     try {
-      await axios.patch(
+      await http.patch(
         `${apiUrl}/public-disclosure/sections/${secId}`,
         { items: reindexedItems },
         { headers: token ? { Authorization: `Bearer ${token}` } : undefined },

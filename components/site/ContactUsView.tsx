@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import axios from "axios";
+import http from "@/lib/http";
 import { checkBackendHealth } from "@/lib/api/health";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -209,7 +209,7 @@ export function ContactUsView() {
       const trimmedEmail = values.email?.trim() || "";
       const trimmedContact = values.contact?.trim() || "";
 
-      const res = await axios.post(`${API_URL}/inquiries`, {
+      const res = await http.post(`${API_URL}/inquiries`, {
         name: values.name.trim(),
         contact: trimmedContact,
         email: trimmedEmail,
@@ -239,7 +239,7 @@ export function ContactUsView() {
       return;
     }
     try {
-      const res = await axios.post(`${API_URL}/reviews`, {
+      const res = await http.post(`${API_URL}/reviews`, {
         name: values.name,
         batch: values.batch || "School Community",
         rating: Number(values.rating) || 5,
@@ -272,7 +272,7 @@ export function ContactUsView() {
     setTrackedResults(null);
 
     try {
-      const res = await axios.get(`${API_URL}/inquiries/track`, {
+      const res = await http.get(`${API_URL}/inquiries/track`, {
         params: { query: trackQuery.trim() },
       });
       const data = res.data?.items || res.data?.data || (Array.isArray(res.data) ? res.data : []);
