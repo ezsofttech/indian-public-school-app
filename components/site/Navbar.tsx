@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import { ArrowLeft, ArrowRight, ChevronDown, ChevronRight, ExternalLink, GraduationCap, Menu, Phone, Sparkles, X } from "lucide-react";
 import http from "@/lib/http";
@@ -106,6 +106,10 @@ export function Navbar() {
   const [expandedMobile, setExpandedMobile] = useState<Record<string, boolean>>({});
   const [navIndex, setNavIndex] = useState(0);
   const [slideDirection, setSlideDirection] = useState<1 | -1>(1);
+
+  const lastSwipeTimeRef = useRef<number>(0);
+  const swipeDeltaAccumulatorRef = useRef<number>(0);
+  const touchStartXRef = useRef<number | null>(null);
 
   const toggleMobileExpand = (key: string, e?: React.MouseEvent) => {
     if (e) {
@@ -220,6 +224,58 @@ export function Navbar() {
     }
   };
 
+  const handleWheel = (e: React.WheelEvent) => {
+    if (!hasNavOverflow) return;
+
+    // Detect horizontal two-finger swipe or vertical delta over menu
+    const isHorizontal = Math.abs(e.deltaX) >= Math.abs(e.deltaY);
+    const delta = isHorizontal ? e.deltaX : (e.shiftKey || Math.abs(e.deltaY) > 25 ? e.deltaY : 0);
+
+    if (Math.abs(delta) < 6) return;
+
+    const now = Date.now();
+    if (now - lastSwipeTimeRef.current < 320) {
+      return;
+    }
+
+    swipeDeltaAccumulatorRef.current += delta;
+
+    if (Math.abs(swipeDeltaAccumulatorRef.current) >= 18) {
+      if (swipeDeltaAccumulatorRef.current > 0) {
+        handleSlideNext();
+      } else {
+        handleSlidePrev();
+      }
+      lastSwipeTimeRef.current = now;
+      swipeDeltaAccumulatorRef.current = 0;
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || !hasNavOverflow) return;
+    const currentX = e.touches[0].clientX;
+    const diffX = touchStartXRef.current - currentX;
+    const now = Date.now();
+
+    if (Math.abs(diffX) > 30 && now - lastSwipeTimeRef.current > 320) {
+      if (diffX > 0) {
+        handleSlideNext();
+      } else {
+        handleSlidePrev();
+      }
+      lastSwipeTimeRef.current = now;
+      touchStartXRef.current = currentX;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    touchStartXRef.current = null;
+  };
+
   const handleNavClick = (href: string, e?: React.MouseEvent) => {
     setOpen(false);
     document.body.style.overflow = "";
@@ -286,13 +342,19 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 transition-all duration-300",
+        "group/header sticky top-0 z-50 transition-all duration-300",
         scrolled
           ? "border-b border-border/80 bg-background/95 shadow-[0_4px_25px_rgba(0,0,0,0.06)] backdrop-blur-xl py-1"
           : "border-b border-border/60 bg-background/90 shadow-soft backdrop-blur-md py-1.5"
       )}
     >
-      <nav className="container-page flex h-16 sm:h-20 items-center justify-between gap-4 py-2">
+      <nav
+        onWheel={handleWheel}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className="container-page flex h-16 sm:h-20 items-center justify-between gap-4 py-2"
+      >
         <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0 transition-all duration-300 dark:bg-white/95 dark:px-3 dark:py-1.5 dark:rounded-2xl dark:border dark:border-white/20 dark:shadow-md dark:backdrop-blur-md">
           <Link href="/" onClick={(e) => handleNavClick("/", e)} className="group flex items-center gap-3 shrink-0">
             {customLogoUrl && !logoError ? (
@@ -350,7 +412,7 @@ export function Navbar() {
           */}
         </div>
 
-        <div className="hidden items-center gap-1 xl:flex">
+        <div onWheel={handleWheel} className="hidden items-center gap-1 xl:flex">
           <ul className="flex items-center gap-0.5 sm:gap-1">
             <AnimatePresence mode="popLayout" initial={false}>
               {visibleNavigation.map((item, index) => {
@@ -460,7 +522,7 @@ export function Navbar() {
             <motion.div
               layout
               transition={{ type: "spring", stiffness: 380, damping: 30 }}
-              className="flex items-center gap-1.5 shrink-0 ml-1"
+              className="flex items-center gap-1.5 shrink-0 ml-1 opacity-0 scale-90 pointer-events-none group-hover/header:opacity-100 group-hover/header:scale-100 group-hover/header:pointer-events-auto focus-within:opacity-100 focus-within:scale-100 focus-within:pointer-events-auto transition-all duration-300 ease-out"
             >
               <AnimatePresence mode="popLayout" initial={false}>
                 {maxIndex === 1 ? (
